@@ -1,0 +1,47 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "functions/**",
+      "node_modules/**",
+      "*.md",
+      "*.py"
+    ],
+    "rewrites": [
+      { "source": "/auth/naver/callback.html", "destination": "/auth/naver/callback.html" },
+      { "source": "/admin",               "destination": "/admin.html" },
+      { "source": "/admin/**",            "destination": "/admin.html" },
+      { "source": "/memoir",              "destination": "/memoir_v8.html" },
+      { "source": "/memoir/**",           "destination": "/memoir_v8.html" },
+      { "source": "/health",              "destination": "/health-detail.html" },
+      { "source": "/health/**",           "destination": "/health-detail.html" },
+      { "source": "/game",               "destination": "/game.html" },
+      { "source": "/game/**",            "destination": "/game.html" },
+      { "source": "/nostalgia",          "destination": "/nostalgia.html" },
+      { "source": "/nostalgia/**",       "destination": "/nostalgia.html" },
+      { "source": "/library",            "destination": "/library.html" },
+      { "source": "/library/**",         "destination": "/library.html" },
+      { "source": "/**",                  "destination": "/index.html" }
+    ],
+    "headers": [
+      {
+        "source": "**/*.html",
+        "headers": [
+          { "key": "Cache-Control",          "value": "no-cache, no-store, must-revalidate" },
+          { "key": "X-Frame-Options",        "value": "SAMEORIGIN" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
+      }
+    ]
+  },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

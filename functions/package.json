@@ -1,0 +1,13 @@
+{
+  "name": "dasibomlife-functions",
+  "version": "1.0.0",
+  "description": "다시봄 Firebase Cloud Functions",
+  "main": "index.js",
+  "engines": { "node": "20" },
+  "scripts": { "deploy": "firebase deploy --only functions" },
+  "dependencies": {
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.1",
+    "node-fetch": "^2.7.0"
+  }
+}

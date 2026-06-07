@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="다시보는 그때 그 시절 — 1950~90년대와 오늘의 한국 생활을 비교하는 향수 콘텐츠">
+<meta name="keywords" content="그때 그 시절, 추억, 1970년대, 향수, 옛날, 다시봄, 시니어">
+<meta property="og:title" content="다시보는 그때 그 시절 — 다시봄">
+<meta property="og:description" content="그리운 골목길부터 찬란했던 청춘까지, 멈춰있던 기억을 오늘로 소환합니다">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#A5C87A">
+<title>다시보는 그때 그 시절 — 다시봄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Square:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET ═══ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+html,body{width:100%;overflow-x:hidden}
+body{
+  font-family:'Nanum Square','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  background:#FFF9F0;color:#424242;
+  font-size:var(--fs,18px);
+  transition:font-size .2s;
+}
+:root{--fs:18px;--fs-step:0}
+
+/* ═══ GNB ═══ */
+#gnb{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;
+  background:rgba(255,249,240,.96);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(121,85,72,.1);
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
+.logo-sub{font-size:9px;letter-spacing:2px;color:#8AAA7A;font-weight:700;margin-top:-2px}
+.logo-text{font-size:20px;font-weight:800;color:#4A7A3A;letter-spacing:-.5px}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  background:none;border:1.5px solid rgba(121,85,72,.25);color:#4A7A3A;
+  font-family:inherit;font-size:14px;font-weight:700;
+  padding:9px 18px;border-radius:50px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.back-btn:hover{background:#EEF5E2;border-color:#4A7A3A}
+.back-btn:active{opacity:.7}
+
+/* ═══ HERO ═══ */
+.hero{
+  position:relative;
+  padding:100px 24px 56px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  overflow:hidden;text-align:center;
+  background:linear-gradient(160deg,#0F1E0F 0%,#1B3A12 35%,#4A7A3A 70%,#7AAD6A 100%);
+}
+/* film grain overlay */
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.07;
+}
+/* film strip decoration */
+.hero::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:6px;
+  background:repeating-linear-gradient(90deg,#A5C87A 0,#A5C87A 30px,transparent 30px,transparent 40px);
+  opacity:.4;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,213,79,.15);border:1px solid rgba(255,213,79,.35);
+  color:#A5C87A;font-size:13px;font-weight:700;letter-spacing:2px;
+  padding:7px 20px;border-radius:50px;margin-bottom:22px;
+  text-transform:uppercase;
+}
+.hero h1{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:clamp(28px,7vw,54px);font-weight:800;color:#fff;
+  letter-spacing:-.5px;line-height:1.25;margin-bottom:16px;
+  text-shadow:0 3px 24px rgba(0,0,0,.35);
+}
+.hero p{
+  font-size:clamp(15px,3.5vw,18px);color:rgba(255,255,255,.72);
+  max-width:460px;line-height:1.8;margin-bottom:36px;
+}
+.hero-stats{
+  display:flex;gap:32px;justify-content:center;flex-wrap:wrap;
+}
+.hero-stat{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+}
+.hero-stat strong{
+  font-size:clamp(24px,5vw,32px);color:#A5C87A;font-weight:800;
+  text-shadow:0 2px 12px rgba(255,213,79,.4);
+}
+.hero-stat span{font-size:13px;color:rgba(255,255,255,.55);letter-spacing:.5px}
+
+/* ═══ CATEGORY NAV ═══ */
+.cat-section{
+  position:sticky;top:57px;z-index:200;
+  background:rgba(255,249,240,.97);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(121,85,72,.1);
+}
+.cat-scroll{
+  display:flex;gap:8px;
+  overflow-x:auto;padding:12px 20px;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.cat-scroll::-webkit-scrollbar{display:none}
+.cat-tab{
+  flex-shrink:0;
+  display:flex;align-items:center;gap:5px;
+  background:none;border:1.5px solid rgba(121,85,72,.18);
+  color:#4A7A3A;font-family:inherit;font-size:14px;font-weight:700;
+  padding:8px 16px;border-radius:50px;cursor:pointer;
+  transition:all .22s;white-space:nowrap;
+}
+.cat-tab:hover{border-color:#A5C87A;background:#F5F8F0}
+.cat-tab.active{
+  background:linear-gradient(135deg,#A5C87A,#8FBC5A);
+  border-color:transparent;color:#1F2A1A;
+  box-shadow:0 3px 14px rgba(255,213,79,.4);
+}
+.cat-tab .t-icon{font-size:15px}
+.cat-tab .t-cnt{
+  font-size:11px;background:rgba(0,0,0,.1);
+  padding:1px 7px;border-radius:10px;font-weight:800;
+}
+.cat-tab.active .t-cnt{background:rgba(78,52,30,.18)}
+.cat-tab.empty{opacity:.55}
+
+/* ═══ TIMELINE ═══ */
+.tl-wrap{
+  max-width:1080px;margin:0 auto;
+  padding:48px 20px 100px;
+  position:relative;
+}
+/* center vertical line */
+.tl-wrap::before{
+  content:'';
+  position:absolute;left:50%;top:48px;bottom:100px;width:2px;
+  background:linear-gradient(180deg,#C8A882 0%,#81C784 100%);
+  transform:translateX(-50%);opacity:.25;
+  pointer-events:none;
+}
+
+/* ── Item ── */
+.tl-item{
+  display:grid;
+  grid-template-columns:1fr 80px 1fr;
+  grid-template-rows:auto auto;
+  gap:0 20px;
+  margin-bottom:72px;
+  opacity:0;transform:translateY(28px);
+  transition:opacity .55s ease,transform .55s ease;
+}
+.tl-item.show{opacity:1;transform:translateY(0)}
+.tl-item[data-hidden="true"]{display:none}
+
+/* center column */
+.tl-mid{
+  grid-column:2;grid-row:1;
+  display:flex;flex-direction:column;align-items:center;
+  position:relative;padding-top:6px;
+}
+.tl-badge{
+  width:56px;height:56px;
+  display:flex;align-items:center;justify-content:center;
+  background:#FFF9F0;border:2px solid #C8A882;border-radius:50%;
+  font-size:22px;
+  box-shadow:0 4px 14px rgba(200,168,130,.28);
+  position:relative;z-index:2;flex-shrink:0;
+}
+.tl-num{
+  font-size:10px;color:rgba(121,85,72,.45);font-weight:800;
+  margin-top:6px;letter-spacing:.5px;
+}
+.tl-topic-v{
+  font-size:12px;color:#7AAD6A;font-weight:800;
+  writing-mode:vertical-rl;text-orientation:mixed;
+  margin-top:10px;letter-spacing:1.5px;
+  max-height:100px;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* past / present cards */
+.tl-past{grid-column:1;grid-row:1}
+.tl-present{grid-column:3;grid-row:1}
+
+.tl-past,.tl-present{
+  background:#fff;border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 4px 22px rgba(0,0,0,.07);
+  transition:box-shadow .28s,transform .28s;
+  cursor:default;
+}
+.tl-past:hover,.tl-present:hover{
+  box-shadow:0 10px 36px rgba(0,0,0,.13);
+  transform:translateY(-4px);
+}
+.tl-past{border-top:4px solid #C8A882}
+.tl-present{border-top:4px solid #81C784}
+
+/* image area */
+.card-img{
+  width:100%;height:190px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;position:relative;overflow:hidden;
+}
+.tl-past .card-img{background:linear-gradient(135deg,#EDE0D4 0%,#D7C4AD 100%)}
+.tl-present .card-img{background:linear-gradient(135deg,#F5F8F0 0%,#FFF9C4 100%)}
+
+.card-img img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;
+  opacity:0;transition:opacity .4s;
+  display:block;
+}
+.card-img img.loaded{opacity:1}
+.card-img img.loaded ~ .ph{display:none}
+
+.ph{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  pointer-events:none;
+}
+.ph-icon{font-size:38px;opacity:.55}
+.ph-label{
+  font-size:11px;font-weight:700;
+  background:rgba(255,255,255,.55);
+  padding:3px 12px;border-radius:20px;
+  letter-spacing:.5px;
+}
+.tl-past .ph-label{color:#8D6030}
+.tl-present .ph-label{color:#2E6A1A}
+.ph-prompt{
+  font-size:10px;color:rgba(0,0,0,.3);
+  padding:0 16px;text-align:center;line-height:1.5;
+  max-height:32px;overflow:hidden;
+}
+
+/* card body */
+.card-body{padding:18px 20px 22px}
+.card-era{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11px;font-weight:800;letter-spacing:1.5px;
+  padding:4px 12px;border-radius:20px;margin-bottom:10px;
+  text-transform:uppercase;
+}
+.tl-past .card-era{background:#F5EAD8;color:#8D6030}
+.tl-present .card-era{background:#E8F5E9;color:#2E7D32}
+
+.card-topic{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:17px;font-weight:700;color:#0F1E0F;
+  margin-bottom:9px;line-height:1.45;
+}
+.card-desc{
+  font-size:14px;color:#616161;line-height:1.85;
+}
+
+/* comparison row */
+.tl-cmp{
+  grid-column:1/-1;grid-row:2;
+  display:flex;justify-content:center;
+  padding:16px 0 0;
+  margin-top:-8px;
+}
+.cmp-bubble{
+  display:inline-flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,#F0F5E8,#F5F8F0);
+  border:1.5px solid rgba(255,213,79,.6);
+  border-radius:30px;padding:13px 28px;
+  font-family:'Nanum Myeongjo',serif;
+  font-size:15px;color:#4A7A3A;
+  box-shadow:0 4px 18px rgba(255,213,79,.2);
+  max-width:640px;line-height:1.6;text-align:center;
+}
+.cmp-icon{font-size:18px;flex-shrink:0}
+
+/* ═══ DIVIDER / CATEGORY TITLE ═══ */
+.cat-divider{
+  grid-column:1/-1;
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:48px;margin-top:16px;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .5s ease,transform .5s ease;
+}
+.cat-divider.show{opacity:1;transform:translateY(0)}
+.cat-divider[data-hidden="true"]{display:none}
+.cat-div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,#D4B896)}
+.cat-div-line.right{background:linear-gradient(90deg,#D4B896,transparent)}
+.cat-div-badge{
+  display:flex;align-items:center;gap:8px;
+  background:#fff;border:1.5px solid #D4B896;
+  border-radius:50px;padding:8px 20px;
+  font-size:15px;font-weight:800;color:#4A7A3A;
+  box-shadow:0 3px 12px rgba(200,168,130,.18);
+  white-space:nowrap;
+}
+.cat-div-badge .d-icon{font-size:18px}
+.cat-div-cnt{
+  font-size:12px;color:rgba(121,85,72,.55);font-weight:700;
+}
+
+/* ═══ EMPTY / LOADING ═══ */
+.state-box{
+  text-align:center;padding:80px 20px;
+  color:#A8C898;
+}
+.state-box .s-icon{font-size:56px;margin-bottom:16px;display:block}
+.state-box p{font-size:16px;line-height:1.7}
+.state-box .s-sub{font-size:13px;margin-top:8px;color:#D4B896}
+
+/* ═══ FONT CONTROL ═══ */
+.font-ctrl{
+  position:fixed;bottom:28px;right:20px;z-index:500;
+  display:flex;flex-direction:column;gap:6px;
+}
+.fc-btn{
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid rgba(121,85,72,.22);
+  background:#fff;color:#4A7A3A;
+  font-family:inherit;font-weight:800;font-size:15px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.1);
+  transition:all .2s;
+}
+.fc-btn:hover{background:#EEF5E2;border-color:#C8A882;transform:scale(1.08)}
+.fc-btn:active{transform:scale(.95)}
+.fc-reset{font-size:11px;letter-spacing:.5px}
+
+/* ═══ SCROLL TO TOP ═══ */
+.to-top{
+  position:fixed;bottom:28px;left:20px;z-index:500;
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid rgba(121,85,72,.22);
+  background:#fff;color:#4A7A3A;font-size:20px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.1);
+  transition:all .2s,opacity .3s;
+  opacity:0;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.to-top.show{opacity:1;pointer-events:auto}
+.to-top:hover{background:#EEF5E2;border-color:#C8A882}
+
+/* ═══ 1일 1개 모드 ═══ */
+.hero-day{
+  font-size:14px;color:rgba(255,255,255,.65);
+  margin:-12px 0 28px;letter-spacing:.5px;
+}
+.hero-day strong{color:#A5C87A;font-size:16px}
+
+.seen-banner{
+  background:linear-gradient(135deg,#F0F5E8,#F5F8F0);
+  border:1.5px solid rgba(255,213,79,.55);
+  border-radius:16px;
+  padding:20px 28px;
+  text-align:center;
+  margin-bottom:36px;
+  color:#4A7A3A;
+}
+.seen-banner .sb-icon{font-size:30px;display:block;margin-bottom:8px}
+.seen-banner .sb-title{font-size:16px;font-weight:800;margin-bottom:4px}
+.seen-banner .sb-sub{font-size:13px;color:#7AAD6A}
+
+.tomorrow-footer{
+  text-align:center;
+  padding:44px 24px 72px;
+  border-top:1px solid rgba(200,168,130,.2);
+  margin-top:16px;
+}
+.tomorrow-footer .tf-icon{font-size:44px;display:block;margin-bottom:18px}
+.tomorrow-footer .tf-main{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:21px;font-weight:700;color:#4A7A3A;
+  margin-bottom:10px;line-height:1.5;
+}
+.tomorrow-footer .tf-sub{
+  font-size:14px;color:#A8C898;line-height:1.8;
+  max-width:320px;margin:0 auto;
+}
+.tomorrow-footer .tf-date{
+  display:inline-block;
+  margin-top:20px;
+  background:#EEF5E2;border:1px solid rgba(200,168,130,.35);
+  color:#8D6030;font-size:13px;font-weight:700;
+  padding:7px 22px;border-radius:50px;letter-spacing:.3px;
+}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:768px){
+  .tl-wrap::before{left:28px;transform:none}
+
+  .tl-item{
+    grid-template-columns:48px 1fr;
+    grid-template-rows:auto auto auto auto;
+    gap:12px 14px;
+    margin-bottom:52px;
+  }
+  .tl-mid{
+    grid-column:1;grid-row:1/3;
+    width:48px;padding-top:4px;
+  }
+  .tl-badge{width:44px;height:44px;font-size:18px;border-width:1.5px}
+  .tl-num,.tl-topic-v{display:none}
+
+  .tl-past{grid-column:2;grid-row:1}
+  .tl-present{grid-column:2;grid-row:2}
+  .tl-cmp{
+    grid-column:1/-1;grid-row:3;
+    padding-top:4px;margin-top:0;
+  }
+
+  .card-img{height:150px}
+  .ph-prompt{display:none}
+  .cmp-bubble{font-size:14px;padding:11px 20px}
+
+  .cat-divider{
+    grid-template-columns:1fr;
+    display:block;
+  }
+  .cat-div-line{display:none}
+}
+
+@media(max-width:480px){
+  #gnb{padding:12px 16px}
+  .logo-text{font-size:18px}
+  .back-btn{padding:8px 14px;font-size:13px}
+  .hero{padding:90px 16px 48px}
+  .hero h1{font-size:clamp(26px,9vw,36px)}
+  .card-body{padding:14px 16px 18px}
+  .card-topic{font-size:15px}
+  .card-desc{font-size:13px}
+  .cmp-bubble{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<header id="gnb">
+  <a href="/" class="logo">
+    <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+      <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
+      <circle cx="22" cy="13" r="5" fill="#A5C87A"/>
+      <line x1="22" y1="5" x2="22" y2="3" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="23" x2="22" y2="21" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="14" y1="13" x2="12" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="32" y1="13" x2="30" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="38" x2="22" y2="26" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M22 32 C18 30 15 27 17 24 C19 21 22 26 22 28" fill="#81C784"/>
+      <path d="M22 30 C26 28 29 25 27 22 C25 19 22 24 22 26" fill="#A5D6A7"/>
+    </svg>
+    <div>
+      <div class="logo-text">다시봄</div>
+      <div class="logo-sub">DASIBOM</div>
+    </div>
+  </a>
+  <button class="back-btn" onclick="history.back()">← 돌아가기</button>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">📽️ &nbsp;추억 여행</div>
+  <h1>다시보는<br>그때 그 시절</h1>
+  <p>1950~90년대의 그리운 풍경과<br>오늘의 일상을 나란히 펼쳐드립니다</p>
+  <p class="hero-day">오늘의 이야기 <strong id="heroDay">#—</strong></p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <strong id="statTotal">—</strong>
+      <span>가지 이야기</span>
+    </div>
+    <div class="hero-stat">
+      <strong id="statCats">30</strong>
+      <span>개 카테고리</span>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORY TABS -->
+<nav class="cat-section">
+  <div class="cat-scroll" id="catScroll">
+    <button class="cat-tab active" data-cat="all" onclick="filterCat('all',this)">
+      <span class="t-icon">🗂️</span> 전체
+      <span class="t-cnt" id="allCnt">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- TIMELINE -->
+<div class="tl-wrap" id="tlWrap">
+  <div class="state-box">
+    <span class="s-icon">📽️</span>
+    <p>이야기를 불러오는 중입니다…</p>
+  </div>
+</div>
+
+<!-- FONT SIZE CONTROL -->
+<div class="font-ctrl">
+  <button class="fc-btn" onclick="changeFs(2)" title="글자 크게">A+</button>
+  <button class="fc-btn fc-reset" onclick="changeFs(0)" title="기본 크기">기본</button>
+  <button class="fc-btn" onclick="changeFs(-2)" title="글자 작게">A-</button>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button class="to-top" id="toTop" onclick="scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ── state ── */
+  let ALL_ITEMS = [];
+  let ALL_CATS  = [];
+  let activeCat = 'all';
+  let fsStep    = parseInt(localStorage.getItem('nsFs')||'0');
+
+  /* ── boot ── */
+  applyFs();
+  loadData();
+
+  /* ── fetch ── */
+  async function loadData(){
+    try{
+      const r = await fetch('/nostalgia_data.json');
+      if(!r.ok) throw new Error(r.status);
+      const d = await r.json();
+      ALL_CATS  = d.categories || [];
+      ALL_ITEMS = d.items || [];
+      init();
+    }catch(e){
+      document.getElementById('tlWrap').innerHTML =
+        '<div class="state-box"><span class="s-icon">😢</span><p>데이터를 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.</p></div>';
+    }
+  }
+
+  /* ── 로컬 날짜 기준 일 인덱스 (한국 자정에 갱신) ── */
+  function localDayIdx(n){
+    var d=new Date(), start=new Date(2025,0,1);
+    var idx=Math.floor((d-start)/86400000);
+    return((idx%n)+n)%n;
+  }
+
+  /* ── init (1일 1개 모드) ── */
+  function init(){
+    document.querySelector('.cat-section').style.display = 'none';
+
+    const dayIndex  = localDayIdx(ALL_ITEMS.length);
+    const todayItem = ALL_ITEMS[dayIndex];
+
+    const now = new Date();
+    const ymd = now.getFullYear()
+      + String(now.getMonth()+1).padStart(2,'0')
+      + String(now.getDate()).padStart(2,'0');
+    const seenKey = 'nostalgia_seen_' + ymd;
+
+    document.getElementById('statTotal').textContent = ALL_ITEMS.length;
+    document.getElementById('statCats').textContent  = ALL_CATS.length;
+    document.getElementById('heroDay').textContent   =
+      'No.' + String(dayIndex + 1).padStart(3, '0');
+
+    renderSingleItem(todayItem, seenKey);
+  }
+
+  /* ── render single daily item ── */
+  function renderSingleItem(item, seenKey){
+    const wrap = document.getElementById('tlWrap');
+    wrap.innerHTML = '';
+
+    const alreadySeen = !!localStorage.getItem(seenKey);
+
+    if(alreadySeen){
+      const banner = document.createElement('div');
+      banner.className = 'seen-banner';
+      banner.innerHTML =
+        '<span class="sb-icon">✅</span>'+
+        '<div class="sb-title">오늘의 추억을 이미 확인하셨습니다</div>'+
+        '<div class="sb-sub">내용은 아래에서 다시 확인하실 수 있어요</div>';
+      wrap.appendChild(banner);
+    }
+
+    const card = buildCard(item);
+    wrap.appendChild(card);
+
+    if(!alreadySeen) localStorage.setItem(seenKey, '1');
+
+    const tmr = new Date();
+    tmr.setDate(tmr.getDate() + 1);
+    const tmrStr = tmr.getFullYear()+'년 '+(tmr.getMonth()+1)+'월 '+tmr.getDate()+'일';
+
+    const footer = document.createElement('div');
+    footer.className = 'tomorrow-footer';
+    footer.innerHTML =
+      '<span class="tf-icon">🌅</span>'+
+      '<div class="tf-main">내일 다시 새로운 추억이 찾아옵니다</div>'+
+      '<div class="tf-sub">매일 하나의 따뜻한 기억을 소환해 드립니다<br>내일도 잊지 말고 찾아와 주세요</div>'+
+      '<div class="tf-date">다음 이야기: '+tmrStr+'</div>';
+    wrap.appendChild(footer);
+
+    setupObserver();
+  }
+
+  /* ── category tabs ── */
+  function buildCatTabs(){
+    const scroll = document.getElementById('catScroll');
+    ALL_CATS.forEach(c=>{
+      const cnt = ALL_ITEMS.filter(i=>i.category_id===c.id).length;
+      const btn = document.createElement('button');
+      btn.className = 'cat-tab' + (cnt===0?' empty':'');
+      btn.dataset.cat = c.id;
+      btn.innerHTML =
+        `<span class="t-icon">${c.icon}</span>`+
+        `<span>${c.name}</span>`+
+        (cnt>0?`<span class="t-cnt">${cnt}</span>`:'');
+      btn.onclick = ()=> filterCat(c.id, btn);
+      scroll.appendChild(btn);
+    });
+  }
+
+  /* ── filter ── */
+  window.filterCat = function(catId, btn){
+    activeCat = catId;
+    document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    renderTimeline(catId);
+  };
+
+  /* ── render ── */
+  function renderTimeline(catId){
+    const wrap = document.getElementById('tlWrap');
+    wrap.innerHTML = '';
+
+    const items = catId==='all'
+      ? ALL_ITEMS
+      : ALL_ITEMS.filter(i=>String(i.category_id)===String(catId));
+
+    if(!items.length){
+      wrap.innerHTML =
+        '<div class="state-box"><span class="s-icon">✨</span>'+
+        '<p>이 카테고리의 이야기를 준비 중입니다.</p>'+
+        '<p class="s-sub">곧 따뜻한 이야기들로 채워질 예정입니다 :)</p></div>';
+      return;
+    }
+
+    /* group by category */
+    const groups = {};
+    const catOrder = [];
+    items.forEach(item=>{
+      const cid = item.category_id;
+      if(!groups[cid]){ groups[cid]=[]; catOrder.push(cid); }
+      groups[cid].push(item);
+    });
+
+    catOrder.forEach(cid=>{
+      const cat = ALL_CATS.find(c=>c.id===cid)||{name:'',icon:'📌'};
+      const catItems = groups[cid];
+
+      /* category divider */
+      if(catId==='all'){
+        const div = document.createElement('div');
+        div.className = 'cat-divider';
+        div.style.gridColumn='1/-1';
+        div.innerHTML =
+          `<div class="cat-div-line"></div>`+
+          `<div class="cat-div-badge">`+
+            `<span class="d-icon">${cat.icon}</span>`+
+            `<span>${cat.name}</span>`+
+            `<span class="cat-div-cnt">${catItems.length}개 이야기</span>`+
+          `</div>`+
+          `<div class="cat-div-line right"></div>`;
+        wrap.appendChild(div);
+      }
+
+      catItems.forEach(item=>{
+        wrap.appendChild(buildCard(item));
+      });
+    });
+
+    setupObserver();
+  }
+
+  /* ── build single card ── */
+  function buildCard(item){
+    const el = document.createElement('div');
+    el.className = 'tl-item';
+    el.dataset.catId = item.category_id;
+
+    const cat = ALL_CATS.find(c=>c.id===item.category_id)||{icon:'📌'};
+    const idStr = String(item.id).padStart(3,'0');
+
+    el.innerHTML =
+      /* PAST */
+      `<div class="tl-past">
+        ${imgBlock(item.past_img,'과거','📷',item.past_img_prompt)}
+        <div class="card-body">
+          <span class="card-era">📜 과거</span>
+          <div class="card-topic">${esc(item.topic)}</div>
+          <p class="card-desc">${esc(item.past_desc)}</p>
+        </div>
+      </div>`+
+      /* CENTER */
+      `<div class="tl-mid">
+        <div class="tl-badge">${cat.icon}</div>
+        <div class="tl-num">#${idStr}</div>
+        <div class="tl-topic-v">${esc(item.topic)}</div>
+      </div>`+
+      /* PRESENT */
+      `<div class="tl-present">
+        ${imgBlock(item.present_img,'현재','📱',item.present_img_prompt)}
+        <div class="card-body">
+          <span class="card-era">✨ 현재</span>
+          <div class="card-topic">${esc(item.topic)}</div>
+          <p class="card-desc">${esc(item.present_desc)}</p>
+        </div>
+      </div>`+
+      /* COMPARISON */
+      `<div class="tl-cmp">
+        <div class="cmp-bubble">
+          <span class="cmp-icon">💬</span>
+          ${esc(item.comparison_text)}
+        </div>
+      </div>`;
+
+    return el;
+  }
+
+  function imgBlock(src, era, icon, prompt){
+    if(src){
+      return `<div class="card-img">
+        <img src="${esc(src)}" alt="${era} 이미지" loading="lazy" onload="this.classList.add('loaded')">
+        <div class="ph">
+          <span class="ph-icon">${icon}</span>
+          <span class="ph-label">이미지 준비 중</span>
+        </div>
+      </div>`;
+    }
+    return `<div class="card-img">
+      <div class="ph">
+        <span class="ph-icon">${icon}</span>
+        <span class="ph-label">이미지 준비 중</span>
+        <span class="ph-prompt">${esc(prompt||'')}</span>
+      </div>
+    </div>`;
+  }
+
+  /* ── IntersectionObserver ── */
+  function setupObserver(){
+    const targets = document.querySelectorAll('.tl-item:not(.show), .cat-divider:not(.show)');
+    if(!targets.length) return;
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          setTimeout(()=>e.target.classList.add('show'), 80);
+          obs.unobserve(e.target);
+        }
+      });
+    },{threshold:.12});
+    targets.forEach(t=>obs.observe(t));
+  }
+
+  /* ── font size ── */
+  window.changeFs = function(delta){
+    if(delta===0){ fsStep=0; }
+    else{
+      fsStep = Math.max(-4, Math.min(6, fsStep+delta));
+    }
+    localStorage.setItem('nsFs', fsStep);
+    applyFs();
+  };
+  function applyFs(){
+    document.documentElement.style.setProperty('--fs', (18+fsStep)+'px');
+  }
+
+  /* ── scroll to top ── */
+  const toTop = document.getElementById('toTop');
+  window.addEventListener('scroll',()=>{
+    toTop.classList.toggle('show', window.scrollY > 600);
+  },{passive:true});
+
+  /* ── esc helper ── */
+  function esc(s){
+    return String(s||'')
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+})();
+</script>
+</body>
+</html>

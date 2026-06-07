@@ -1,0 +1,27 @@
+{
+  "name": "다시봄 — 시니어 AI 자서전",
+  "short_name": "다시봄",
+  "description": "나의 소중한 추억을 AI가 아름다운 자서전으로 완성해 드립니다.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFDE7",
+  "theme_color": "#FFD54F",
+  "lang": "ko",
+  "categories": ["lifestyle", "education"],
+  "icons": [],
+  "shortcuts": [
+    {
+      "name": "자서전 쓰기",
+      "short_name": "자서전",
+      "description": "나의 이야기를 이어서 씁니다",
+      "url": "/memoir"
+    },
+    {
+      "name": "건강돋보기",
+      "short_name": "건강",
+      "description": "시니어 맞춤 건강식품 큐레이션",
+      "url": "/health-detail.html"
+    }
+  ]
+}

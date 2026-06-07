@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>오늘의 뇌 건강 — 다시봄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Square:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;min-height:100vh;overflow-x:hidden}
+body{font-family:'Nanum Square','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#FFF9F0;color:#424242;-webkit-user-select:none;user-select:none}
+.screen{display:none;flex-direction:column;min-height:100vh}
+.screen.active{display:flex}
+
+/* GNB */
+.gnb{position:sticky;top:0;z-index:100;background:rgba(255,249,240,.96);backdrop-filter:blur(12px);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(121,85,72,.08)}
+.gnb-back{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;color:#4A7A3A;font-size:15px;font-weight:700;padding:8px 12px;border-radius:12px;font-family:inherit;transition:background .2s}
+.gnb-back:active{background:rgba(121,85,72,.1)}
+.gnb-title{font-family:'Nanum Myeongjo',serif;font-size:18px;font-weight:800;color:#1F2A1A}
+.gnb-right-btn{background:none;border:1.5px solid rgba(121,85,72,.25);border-radius:12px;padding:8px 14px;cursor:pointer;color:#4A7A3A;font-size:13px;font-weight:700;font-family:inherit;transition:all .2s}
+.gnb-right-btn:active{background:rgba(121,85,72,.1)}
+
+/* HOME */
+.home-hero{background:linear-gradient(160deg,#81C784 0%,#43A047 60%,#2E7D32 100%);padding:44px 24px 36px;text-align:center;color:#fff;border-radius:0 0 40px 40px;position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.1)}
+.home-hero::after{content:'';position:absolute;bottom:-30px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.07)}
+.hero-brain{font-size:60px;display:block;margin-bottom:12px;position:relative;z-index:1}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:50px;padding:5px 16px;font-size:11px;font-weight:800;letter-spacing:2.5px;margin-bottom:14px;position:relative;z-index:1}
+.hero-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(24px,6vw,32px);font-weight:800;line-height:1.35;margin-bottom:10px;position:relative;z-index:1}
+.hero-sub{font-size:clamp(13px,3.5vw,15px);opacity:.85;line-height:1.7;position:relative;z-index:1}
+
+.daily-strip{margin:20px 20px 0;background:linear-gradient(135deg,#F0F5E8,#F5F8F0);border-radius:20px;padding:18px 20px;border:1px solid rgba(201,168,64,.2);box-shadow:0 4px 16px rgba(201,168,64,.1)}
+.daily-strip-lbl{font-size:11px;font-weight:800;letter-spacing:2px;color:#A07830;margin-bottom:10px}
+.daily-streak{display:flex;align-items:center;gap:14px}
+.streak-num{font-family:'Nanum Myeongjo',serif;font-size:38px;font-weight:800;color:#C9A040}
+.streak-text{font-size:14px;color:#5C8A4A;line-height:1.55}
+
+.home-section{padding:24px 20px 40px}
+.section-title{font-family:'Nanum Myeongjo',serif;font-size:19px;font-weight:800;color:#1F2A1A;margin-bottom:18px}
+.game-cards{display:flex;flex-direction:column;gap:14px}
+.gcard{background:#FFF9F0;border-radius:24px;padding:22px;display:flex;align-items:center;gap:18px;box-shadow:6px 6px 18px rgba(185,168,148,.35),-4px -4px 12px rgba(255,255,255,.85);cursor:pointer;border:none;width:100%;text-align:left;transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden;font-family:inherit}
+.gcard:active{transform:scale(.97)}
+.gcard-icon{width:76px;height:76px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;flex-shrink:0}
+.gcard-card .gcard-icon{background:linear-gradient(145deg,#FCE4EC,#F8BBD9)}
+.gcard-shape .gcard-icon{background:linear-gradient(145deg,#E3F2FD,#90CAF9)}
+.gcard-number .gcard-icon{background:linear-gradient(145deg,#E8F5E9,#A5D6A7)}
+.gcard-info{flex:1}
+.gcard-name{font-family:'Nanum Myeongjo',serif;font-size:19px;font-weight:800;color:#1F2A1A;margin-bottom:5px}
+.gcard-desc{font-size:12px;color:#5C8A4A;line-height:1.6}
+.gcard-status{display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap}
+.glv-badge{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+.glv-none{background:rgba(185,168,148,.2);color:#A8C898}
+.glv-done{background:rgba(67,160,71,.15);color:#2E7D32}
+.glv-prog{background:rgba(255,213,79,.25);color:#A07830}
+.glv-score{font-size:11px;font-weight:700;color:#5C8A4A}
+.gcard-arrow{color:#C9A840;font-size:22px;flex-shrink:0}
+
+/* PLAY */
+#s-play{padding-bottom:20px}
+.play-header{padding:16px 20px 0;display:flex;align-items:center;justify-content:space-between}
+.level-badge{background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;font-size:15px;font-weight:800;padding:9px 22px;border-radius:50px;box-shadow:0 3px 12px rgba(255,213,79,.4)}
+.tries-wrap{display:flex;gap:7px}
+.try-dot{width:13px;height:13px;border-radius:50%;background:#A5C87A;box-shadow:0 2px 6px rgba(255,213,79,.4)}
+.try-dot.used{background:rgba(185,168,148,.3);box-shadow:none}
+.play-meta{padding:10px 20px 14px;display:flex;align-items:center;justify-content:space-between}
+.play-game-lbl{font-family:'Nanum Myeongjo',serif;font-size:17px;font-weight:800;color:#1F2A1A}
+.play-timer{background:#1F2A1A;color:#A5C87A;font-size:22px;font-weight:800;padding:8px 18px;border-radius:14px;min-width:68px;text-align:center;font-variant-numeric:tabular-nums}
+.play-timer.urgent{background:#E53935;animation:tPulse .5s infinite}
+@keyframes tPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.play-area{flex:1;padding:8px 20px 0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* CARD FLIP */
+.card-grid{display:grid;gap:10px;width:100%;max-width:400px}
+.cg2{grid-template-columns:repeat(2,1fr)}
+.cg3{grid-template-columns:repeat(3,1fr)}
+.cg4{grid-template-columns:repeat(4,1fr)}
+.cg5{grid-template-columns:repeat(5,1fr)}
+.flip-card{aspect-ratio:1;border-radius:14px;cursor:pointer;perspective:600px;position:relative}
+.flip-inner{width:100%;height:100%;transform-style:preserve-3d;transition:transform .38s cubic-bezier(.4,0,.2,1);position:relative}
+.flip-card.flipped .flip-inner{transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;display:flex;align-items:center;justify-content:center}
+.flip-front{background:linear-gradient(145deg,#F0F5E8,#FFE082);box-shadow:4px 4px 10px rgba(185,168,148,.35),-3px -3px 8px rgba(255,255,255,.8);font-size:26px}
+.flip-back{background:#FFF9F0;box-shadow:4px 4px 10px rgba(185,168,148,.35),-3px -3px 8px rgba(255,255,255,.8);transform:rotateY(180deg);font-size:clamp(24px,7vw,36px)}
+.flip-card.matched .flip-back{background:linear-gradient(145deg,#E8F5E9,#C8E6C9);box-shadow:0 0 0 3px #66BB6A,4px 4px 10px rgba(102,187,106,.3)}
+.flip-card.wrong-flash .flip-back{animation:wFlash .4s}
+@keyframes wFlash{0%,100%{background:#FFF9F0}50%{background:#FFCDD2}}
+
+/* SHAPE */
+.shape-grid{display:grid;gap:12px;width:100%;max-width:400px}
+.shape-cell{aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#FFF9F0;box-shadow:4px 4px 10px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.8);transition:transform .15s}
+.shape-cell:active{transform:scale(.9)}
+.shape-cell.wrong-ans{animation:sShake .35s}
+@keyframes sShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.game-inst{font-size:15px;color:#5C8A4A;text-align:center;margin-bottom:14px;font-weight:700;width:100%;max-width:400px}
+
+/* NUMBER */
+.num-prog-wrap{display:flex;align-items:center;gap:10px;margin-bottom:16px;width:100%;max-width:360px}
+.num-prog-bar{flex:1;height:9px;background:rgba(185,168,148,.2);border-radius:5px;overflow:hidden}
+.num-prog-fill{height:100%;background:linear-gradient(90deg,#66BB6A,#43A047);border-radius:5px;transition:width .3s}
+.num-next-lbl{font-size:14px;font-weight:800;color:#4A7A3A;white-space:nowrap}
+.number-grid{display:grid;gap:12px;width:100%;max-width:360px}
+.num-btn{aspect-ratio:1;border-radius:20px;border:none;cursor:pointer;font-family:'Nanum Square',sans-serif;font-size:clamp(20px,6vw,28px);font-weight:800;color:#1F2A1A;background:#FFF9F0;box-shadow:5px 5px 14px rgba(185,168,148,.38),-4px -4px 10px rgba(255,255,255,.85);transition:transform .15s;display:flex;align-items:center;justify-content:center}
+.num-btn:active{transform:scale(.88)}
+.num-btn.done{background:linear-gradient(145deg,#E8F5E9,#C8E6C9);color:#2E7D32;box-shadow:inset 2px 2px 6px rgba(0,0,0,.08);cursor:default}
+.num-btn.wrong-num{animation:wNum .3s}
+@keyframes wNum{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
+
+/* OVERLAY */
+.overlay{position:fixed;inset:0;z-index:200;background:rgba(78,52,46,.52);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.overlay-box{background:#FFF9F0;border-radius:32px;padding:36px 28px;width:100%;max-width:360px;text-align:center;box-shadow:0 20px 60px rgba(78,52,46,.25);animation:slideUp .3s cubic-bezier(.4,0,.2,1)}
+@keyframes slideUp{from{transform:translateY(28px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ov-icon{font-size:68px;margin-bottom:14px;display:block}
+.ov-title{font-family:'Nanum Myeongjo',serif;font-size:25px;font-weight:800;color:#1F2A1A;margin-bottom:10px}
+.ov-sub{font-size:14px;color:#5C8A4A;line-height:1.75;margin-bottom:26px;white-space:pre-line}
+.ov-btn{width:100%;padding:18px;border:none;border-radius:50px;cursor:pointer;font-family:'Nanum Square',sans-serif;font-size:17px;font-weight:800;margin-bottom:10px;transition:transform .15s}
+.ov-btn:active{transform:scale(.97)}
+.btn-prim{background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;box-shadow:0 5px 18px rgba(255,213,79,.4)}
+.btn-sec{background:none;border:2px solid rgba(121,85,72,.22) !important;color:#4A7A3A}
+
+/* RESULT */
+#s-result{padding:0 20px 40px;align-items:center}
+.res-game-lbl{font-size:12px;font-weight:800;letter-spacing:2.5px;color:#5C8A4A;margin-top:24px;margin-bottom:4px;text-align:center}
+.res-badge{width:140px;height:140px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:16px auto 14px;box-shadow:0 8px 32px rgba(0,0,0,.12);gap:2px}
+.res-badge-icon{font-size:44px}
+.res-tier{font-family:'Nanum Myeongjo',serif;font-size:24px;font-weight:800;margin-bottom:6px;text-align:center}
+.res-comment{font-size:14px;color:#4A7A3A;line-height:1.8;background:rgba(255,213,79,.1);border-radius:16px;padding:14px 18px;margin-bottom:20px;text-align:center;width:100%;max-width:340px}
+.res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:340px;margin-bottom:22px}
+.stat-card{background:#FFF9F0;border-radius:16px;padding:14px 6px;text-align:center;box-shadow:4px 4px 10px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.8)}
+.stat-val{font-family:'Nanum Myeongjo',serif;font-size:20px;font-weight:800;color:#1F2A1A}
+.stat-lbl{font-size:11px;color:#5C8A4A;font-weight:700;margin-top:3px}
+.res-actions{width:100%;max-width:340px;display:flex;flex-direction:column;gap:10px}
+
+/* CALENDAR */
+#s-calendar{padding:0 20px 40px;align-items:center}
+.cal-header{text-align:center;padding:20px 0 8px;width:100%}
+.cal-title-txt{font-family:'Nanum Myeongjo',serif;font-size:21px;font-weight:800;color:#1F2A1A;margin-bottom:4px}
+.cal-sub-txt{font-size:12px;color:#5C8A4A}
+.cal-nav{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.cal-nav-btn{background:none;border:1.5px solid rgba(121,85,72,.25);border-radius:12px;width:44px;height:44px;cursor:pointer;color:#4A7A3A;font-size:20px;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.cal-nav-btn:active{background:rgba(121,85,72,.1)}
+.cal-month-lbl{font-family:'Nanum Myeongjo',serif;font-size:19px;font-weight:800;color:#1F2A1A}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;width:100%;max-width:360px}
+.cal-day-lbl{text-align:center;font-size:10px;font-weight:800;color:#5C8A4A;padding:5px 0;letter-spacing:1px}
+.cal-day{aspect-ratio:1;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#424242;cursor:pointer;transition:background .2s;position:relative}
+.cal-day.empty{pointer-events:none}
+.cal-day.today{background:rgba(255,213,79,.18);border:2px solid #A5C87A;color:#1F2A1A;font-weight:800}
+.cal-day.has-r{color:#1F2A1A}
+.cal-day:not(.empty):active{background:rgba(121,85,72,.1)}
+.cal-dot{width:6px;height:6px;border-radius:50%;margin-top:2px}
+.t-excellent .cal-dot{background:#4CAF50}
+.t-good .cal-dot{background:#1E88E5}
+.t-normal .cal-dot{background:#FDD835}
+.t-poor .cal-dot{background:#FB8C00}
+.t-retry .cal-dot{background:#E53935}
+.day-detail{width:100%;max-width:360px;margin-top:16px;background:#FFF9F0;border-radius:18px;padding:18px;box-shadow:4px 4px 14px rgba(185,168,148,.3),-3px -3px 10px rgba(255,255,255,.85)}
+.dd-date{font-size:11px;font-weight:800;letter-spacing:2px;color:#A07830;margin-bottom:10px}
+.dd-tier{font-family:'Nanum Myeongjo',serif;font-size:19px;font-weight:800;margin-bottom:7px}
+.dd-comment{font-size:13px;color:#4A7A3A;line-height:1.7}
+.dd-stats{margin-top:10px;font-size:11px;color:#A8C898}
+.dd-empty{font-size:13px;color:#A8C898;text-align:center;padding:8px 0}
+.graph-wrap{width:100%;max-width:360px;margin-top:18px}
+.graph-lbl{font-size:12px;font-weight:800;color:#5C8A4A;letter-spacing:1px;margin-bottom:8px}
+.graph-bars{display:flex;align-items:flex-end;gap:3px;height:56px}
+.g-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.g-bar{width:100%;background:rgba(185,168,148,.2);border-radius:3px 3px 0 0;min-height:2px;transition:height .4s}
+.g-bar.active{background:linear-gradient(180deg,#A5C87A,#8FBC5A)}
+.g-bar-n{font-size:8px;color:#A8C898;font-weight:700}
+
+/* HOME INLINE CALENDAR */
+.home-cal-wrap{margin:0 20px 32px;background:#FFF9F0;border-radius:24px;padding:20px;box-shadow:6px 6px 18px rgba(185,168,148,.3),-4px -4px 12px rgba(255,255,255,.85)}
+.home-cal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.home-cal-title{font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:800;color:#1F2A1A}
+.home-cal-nav{display:flex;align-items:center;gap:8px}
+.hcal-nav{background:none;border:1.5px solid rgba(121,85,72,.22);border-radius:10px;width:34px;height:34px;cursor:pointer;color:#4A7A3A;font-size:18px;display:flex;align-items:center;justify-content:center;transition:background .2s;font-family:inherit}
+.hcal-nav:active{background:rgba(121,85,72,.1)}
+.hcal-month{font-size:14px;font-weight:800;color:#1F2A1A;min-width:70px;text-align:center}
+.hcal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:12px}
+.hcal-dlbl{text-align:center;font-size:9px;font-weight:800;color:#5C8A4A;padding:4px 0;letter-spacing:.5px}
+.hcal-day{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#424242;cursor:pointer;transition:background .2s}
+.hcal-day.empty{pointer-events:none}
+.hcal-day.today{background:rgba(255,213,79,.2);border:1.5px solid #A5C87A;color:#1F2A1A;font-weight:800}
+.hcal-day.has-r{color:#1F2A1A}
+.hcal-day:not(.empty):active{background:rgba(121,85,72,.08)}
+.hcal-dot{width:5px;height:5px;border-radius:50%;margin-top:1px}
+.ht-excellent .hcal-dot{background:#4CAF50}
+.ht-good .hcal-dot{background:#1E88E5}
+.ht-normal .hcal-dot{background:#FDD835}
+.ht-poor .hcal-dot{background:#FB8C00}
+.ht-retry .hcal-dot{background:#E53935}
+.hcal-detail{background:rgba(255,213,79,.08);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.hcal-detail-date{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#A07830;margin-bottom:6px}
+.hcal-detail-tier{font-size:15px;font-weight:800;margin-bottom:4px}
+.hcal-detail-msg{font-size:12px;color:#4A7A3A;line-height:1.6}
+
+/* TIER LEGEND */
+.tier-legend{display:flex;flex-direction:column;gap:7px}
+.res-tier-legend{display:flex;flex-direction:row;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;width:100%;max-width:340px}
+.res-tier-legend .tleg-row{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;background:rgba(185,168,148,.1);transition:all .2s}
+.res-tier-legend .tleg-row.tleg-active{background:rgba(78,52,46,.1);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.tleg-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.tleg-box{width:14px;height:14px;border-radius:4px;flex-shrink:0}
+.tleg-txt{font-size:13px;font-weight:700;color:#1F2A1A;flex:1}
+.tleg-pct{font-size:11px;color:#5C8A4A;font-weight:700}
+.tleg-row.tleg-active .tleg-txt{font-weight:800;color:#2E7D32}
+
+/* RESULT score % */
+.res-pct{font-family:'Nanum Myeongjo',serif;font-size:28px;font-weight:800;color:#1F2A1A;line-height:1}
+
+/* Particles */
+.p-canvas{position:fixed;inset:0;pointer-events:none;z-index:500}
+
+/* POINT TOAST */
+.pt-toast{
+  position:fixed;top:40%;left:50%;transform:translateX(-50%);
+  z-index:600;pointer-events:none;
+  background:linear-gradient(135deg,#A5C87A,#8FBC5A);
+  color:#1F2A1A;font-size:18px;font-weight:800;
+  padding:12px 28px;border-radius:50px;
+  box-shadow:0 6px 22px rgba(255,213,79,.5);white-space:nowrap;
+  animation:ptRise .95s forwards;
+}
+@keyframes ptRise{
+  0%{opacity:0;transform:translateX(-50%) translateY(0)}
+  18%{opacity:1;transform:translateX(-50%) translateY(-22px)}
+  72%{opacity:1;transform:translateX(-50%) translateY(-22px)}
+  100%{opacity:0;transform:translateX(-50%) translateY(-46px)}
+}
+/* POINT DISPLAY IN HERO */
+.pt-display{
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:16px;position:relative;z-index:1;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  border-radius:50px;padding:8px 20px;
+}
+.pt-num{
+  font-family:'Nanum Myeongjo',serif;font-size:22px;font-weight:800;
+  color:#A5C87A;line-height:1;
+}
+/* POINT ROW IN RESULT */
+.res-pts-row{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#F0F5E8,#F5F8F0);
+  border:1.5px solid rgba(255,213,79,.45);
+  border-radius:50px;padding:10px 24px;
+  font-size:15px;font-weight:800;color:#4A7A3A;
+  margin-bottom:18px;
+}
+/* Timer Bar */
+.play-timebar-wrap{width:100%;height:10px;background:rgba(0,0,0,.1);flex-shrink:0}
+.play-timebar{height:100%;background:#11CAA0;transition:width 1s linear;width:100%}
+.play-timebar.urgent{background:#FF8C00;animation:barBlink .5s infinite}
+@keyframes barBlink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Shake */
+body.shake{animation:bShake .35s}
+@keyframes bShake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px)}30%{transform:translateX(8px)}50%{transform:translateX(-5px)}70%{transform:translateX(5px)}85%{transform:translateX(-3px)}}
+
+/* TIMING GAME */
+.tm-inst{font-size:15px;color:#5C8A4A;font-weight:700;text-align:center;margin-bottom:14px;width:100%;max-width:360px}
+.tm-hits-wrap{display:flex;gap:10px;justify-content:center;margin-bottom:16px}
+.tm-hit-dot{width:22px;height:22px;border-radius:50%;background:rgba(185,168,148,.25);transition:background .25s,transform .2s}
+.tm-hit-dot.done{background:#66BB6A;transform:scale(1.2)}
+.tm-track{width:100%;max-width:360px;height:56px;background:#F0EBE3;border-radius:28px;position:relative;overflow:hidden;box-shadow:inset 3px 3px 10px rgba(0,0,0,.1);margin-bottom:24px}
+.tm-zone{position:absolute;top:0;bottom:0;background:rgba(102,187,106,.35);border-left:3px solid #66BB6A;border-right:3px solid #66BB6A}
+.tm-ball{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#A5C87A,#4A7A2A);box-shadow:0 4px 14px rgba(255,143,0,.5)}
+.tm-tap-btn{width:190px;height:190px;border-radius:50%;border:none;cursor:pointer;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;font-family:'Nanum Myeongjo',serif;font-size:32px;font-weight:800;box-shadow:0 8px 32px rgba(255,213,79,.5),inset 0 -4px 0 rgba(0,0,0,.1);transition:transform .1s,background .2s;display:flex;align-items:center;justify-content:center}
+.tm-tap-btn:active{transform:scale(.92)}
+.tm-tap-btn.tm-hit{background:linear-gradient(135deg,#66BB6A,#43A047);color:#fff;box-shadow:0 8px 32px rgba(102,187,106,.5)}
+.tm-tap-btn.tm-miss{background:linear-gradient(135deg,#EF5350,#E53935);color:#fff;box-shadow:0 8px 32px rgba(239,83,80,.4)}
+
+/* CLASSIFY GAME */
+.cl-cats{display:flex;width:100%;max-width:400px;gap:12px;margin-bottom:10px}
+.cl-cat{flex:1;border-radius:14px;padding:10px 8px;text-align:center;font-family:'Nanum Square',sans-serif;font-size:14px;font-weight:800}
+.cl-cat-left{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:2px solid #90CAF9;color:#0D47A1}
+.cl-cat-right{background:linear-gradient(135deg,#FCE4EC,#F8BBD9);border:2px solid #F48FB1;color:#880E4F}
+.cl-cat-icon{font-size:22px;display:block;margin-bottom:3px}
+.cl-prog{font-size:12px;font-weight:800;color:#A8C898;letter-spacing:1px;text-align:center;margin-bottom:10px}
+.cl-item-box{width:150px;height:150px;border-radius:24px;background:#FFF9F0;box-shadow:8px 8px 24px rgba(185,168,148,.35),-6px -6px 18px rgba(255,255,255,.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;margin:0 auto 18px}
+.cl-item-emoji{font-size:50px;line-height:1}
+.cl-item-word{font-family:'Nanum Square',sans-serif;font-size:18px;font-weight:800;color:#1F2A1A;text-align:center;word-break:keep-all;padding:0 6px}
+@keyframes clSlideIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+.cl-item-box.cl-correct-flash{animation:clOK .25s}
+@keyframes clOK{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.cl-btns{display:flex;width:100%;max-width:400px;gap:14px}
+.cl-btn{flex:1;padding:20px 0;border:none;border-radius:20px;cursor:pointer;font-family:'Nanum Square',sans-serif;font-size:18px;font-weight:800;transition:transform .12s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.cl-btn:active{transform:scale(.92)}
+.cl-btn-left{background:linear-gradient(135deg,#42A5F5,#1E88E5);color:#fff;box-shadow:0 6px 18px rgba(33,150,243,.3)}
+.cl-btn-right{background:linear-gradient(135deg,#F06292,#E91E63);color:#fff;box-shadow:0 6px 18px rgba(233,30,99,.3)}
+
+/* WORDCOMBINE GAME */
+.wc-prog-lbl{font-size:13px;font-weight:800;color:#5C8A4A;letter-spacing:1px;text-align:center;margin-bottom:8px;width:100%}
+.wc-emoji{font-size:56px;text-align:center;display:block;margin:0 auto 14px;line-height:1}
+.wc-slots{display:flex;gap:9px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+.wc-slot{width:58px;height:58px;border-radius:14px;border:2.5px dashed #C9A840;display:flex;align-items:center;justify-content:center;font-family:'Nanum Square',sans-serif;font-size:22px;font-weight:800;color:#1F2A1A;background:#F0F5E8;transition:all .2s}
+.wc-slot.filled{border-style:solid;border-color:#66BB6A;background:linear-gradient(145deg,#E8F5E9,#C8E6C9)}
+.wc-tiles{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;max-width:400px}
+.wc-tile{width:58px;height:58px;border-radius:14px;border:none;cursor:pointer;font-family:'Nanum Square',sans-serif;font-size:22px;font-weight:800;color:#1F2A1A;background:#FFF9F0;box-shadow:4px 4px 10px rgba(185,168,148,.35),-3px -3px 8px rgba(255,255,255,.85);transition:transform .12s,opacity .2s}
+.wc-tile:active{transform:scale(.88)}
+.wc-tile.wc-used{opacity:.25;pointer-events:none}
+.wc-tile.wc-wrong{animation:wcWrong .35s}
+@keyframes wcWrong{0%,100%{transform:scale(1)}50%{transform:scale(.78)}}
+
+/* WORDBINGO GAME */
+.wb-cat-box{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border:2px solid #B39DDB;border-radius:20px;padding:14px 22px;margin-bottom:10px;width:100%;max-width:400px}
+.wb-cat-icon{font-size:36px;flex-shrink:0}
+.wb-cat-label{font-size:11px;font-weight:800;letter-spacing:2px;color:#4527A0;margin-bottom:4px}
+.wb-cat-name{font-size:20px;font-weight:800;color:#311B92}
+.wb-found-wrap{display:flex;align-items:center;gap:10px;margin-bottom:10px;width:100%;max-width:400px}
+.wb-found-bar{flex:1;height:9px;background:rgba(185,168,148,.2);border-radius:5px;overflow:hidden}
+.wb-found-fill{height:100%;background:linear-gradient(90deg,#9575CD,#7E57C2);border-radius:5px;transition:width .3s}
+.wb-found-lbl{font-size:14px;font-weight:800;color:#4A7A3A;white-space:nowrap}
+.wb-grid{display:grid;gap:8px;width:100%;max-width:400px}
+.wb-cell{aspect-ratio:1;border-radius:12px;cursor:pointer;background:#FFF9F0;box-shadow:3px 3px 8px rgba(185,168,148,.3),-2px -2px 6px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-family:'Nanum Square',sans-serif;font-size:clamp(12px,3.5vw,18px);font-weight:800;color:#1F2A1A;word-break:keep-all;text-align:center;padding:4px;transition:transform .12s}
+.wb-cell:active{transform:scale(.88)}
+.wb-cell.wb-found{background:linear-gradient(145deg,#EDE7F6,#D1C4E9);box-shadow:0 0 0 3px #9575CD;cursor:default;pointer-events:none;color:#4527A0}
+.wb-cell.wb-wrong{animation:wbWrong .35s}
+@keyframes wbWrong{0%,100%{transform:scale(1)}50%{transform:scale(.78)}}
+
+/* MATCHSAME GAME */
+.ms-target-box{display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border:2px solid #90CAF9;border-radius:20px;padding:14px 22px;margin-bottom:10px;width:100%;max-width:400px}
+.ms-target-icon{font-size:44px;line-height:1;flex-shrink:0}
+.ms-target-label{font-size:11px;font-weight:800;letter-spacing:2px;color:#0D47A1;margin-bottom:4px}
+.ms-target-hint{font-size:14px;font-weight:700;color:#1565C0;line-height:1.5}
+.ms-found-wrap{display:flex;align-items:center;gap:10px;margin-bottom:10px;width:100%;max-width:400px}
+.ms-found-bar{flex:1;height:9px;background:rgba(185,168,148,.2);border-radius:5px;overflow:hidden}
+.ms-found-fill{height:100%;background:linear-gradient(90deg,#42A5F5,#1E88E5);border-radius:5px;transition:width .3s}
+.ms-found-lbl{font-size:14px;font-weight:800;color:#4A7A3A;white-space:nowrap}
+.ms-grid{display:grid;gap:8px;width:100%;max-width:400px}
+.ms-cell{aspect-ratio:1;border-radius:12px;cursor:pointer;background:#FFF9F0;box-shadow:3px 3px 8px rgba(185,168,148,.3),-2px -2px 6px rgba(255,255,255,.8);display:flex;align-items:center;justify-content:center;font-size:clamp(20px,6vw,30px);transition:transform .12s}
+.ms-cell:active{transform:scale(.88)}
+.ms-cell.ms-found{background:linear-gradient(145deg,#E8F5E9,#C8E6C9);box-shadow:0 0 0 3px #66BB6A;cursor:default;pointer-events:none}
+.ms-cell.ms-wrong{animation:msWrong .35s}
+@keyframes msWrong{0%,100%{transform:scale(1)}50%{transform:scale(.78)}}
+
+/* POSITION GAME */
+.pos-grid{display:grid;gap:10px;width:100%;max-width:400px}
+.pos-cell{aspect-ratio:1;border-radius:14px;cursor:pointer;
+  background:#FFF9F0;box-shadow:4px 4px 10px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.8);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Nanum Myeongjo',serif;font-size:clamp(18px,5vw,26px);font-weight:800;color:transparent;
+  transition:background .2s,box-shadow .2s,transform .15s}
+.pos-cell:active{transform:scale(.88)}
+.pos-cell.pos-lit{background:linear-gradient(145deg,#A5C87A,#8FBC5A);
+  box-shadow:0 0 0 3px #5C8A3A,4px 4px 10px rgba(255,213,79,.45);
+  color:#1F2A1A;transform:scale(1.08)}
+.pos-cell.pos-done{background:linear-gradient(145deg,#E8F5E9,#C8E6C9);
+  box-shadow:0 0 0 3px #66BB6A;color:#2E7D32;cursor:default}
+.pos-cell.pos-wrong{animation:posWrong .35s}
+@keyframes posWrong{0%,100%{transform:scale(1)}50%{transform:scale(.82)}}
+.pos-seq-wrap{display:flex;align-items:center;gap:10px;margin-bottom:14px;width:100%;max-width:400px}
+.pos-seq-bar{flex:1;height:9px;background:rgba(185,168,148,.2);border-radius:5px;overflow:hidden}
+.pos-seq-fill{height:100%;background:linear-gradient(90deg,#A5C87A,#5C8A3A);border-radius:5px;transition:width .3s}
+.pos-seq-lbl{font-size:14px;font-weight:800;color:#4A7A3A;white-space:nowrap}
+
+/* Flash overlays */
+.flash-ov{position:fixed;inset:0;z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;pointer-events:none}
+.flash-ov-icon{font-size:110px;animation:popIn .2s ease}
+.flash-ov-msg{font-size:18px;font-weight:800;text-align:center}
+@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* Ready countdown */
+.ready-ov{position:fixed;inset:0;z-index:300;background:rgba(255,249,240,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
+.ready-label{font-size:28px;font-weight:800;color:#5C8A4A}
+.ready-num{font-family:'Nanum Myeongjo',serif;font-size:120px;font-weight:800;color:#11CAA0;line-height:1;animation:popIn .25s ease}
+
+/* Level up banner */
+.lv-banner{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:300;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;font-size:17px;font-weight:800;padding:13px 30px;border-radius:50px;box-shadow:0 6px 22px rgba(255,213,79,.5);animation:banAnim .9s forwards;white-space:nowrap}
+@keyframes banAnim{0%{opacity:0;transform:translateX(-50%) translateY(-18px) scale(.85)}20%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.05)}70%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-8px)}}
+
+/* MISSION CARDS */
+.mission-wrap{padding:18px 20px 0}
+.mission-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.mcard{display:flex;align-items:center;gap:14px;background:#FFF9F0;border-radius:20px;padding:14px 16px;box-shadow:4px 4px 12px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.85);cursor:pointer;border:none;width:100%;font-family:inherit;transition:transform .18s;text-align:left}
+.mcard:active{transform:scale(.97)}
+.mcard.mdone{background:linear-gradient(135deg,#F1F8E9,#DCEDC8)}
+.mcard-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mcard-info{flex:1}
+.mcard-name{font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:800;color:#1F2A1A;margin-bottom:2px}
+.mcard-cat{font-size:12px;color:#5C8A4A}
+.mcard-arrow{color:#C9A840;font-size:22px;flex-shrink:0}
+.mp-row{display:flex;align-items:center;gap:10px}
+.mp-bar{flex:1;height:9px;background:rgba(185,168,148,.2);border-radius:5px;overflow:hidden}
+.mp-fill{height:100%;background:linear-gradient(90deg,#66BB6A,#43A047);border-radius:5px;transition:width .5s}
+.mp-txt{font-size:13px;font-weight:800;color:#4A7A3A;white-space:nowrap;min-width:36px;text-align:right}
+.mission-bonus-msg{font-size:12px;color:#2E7D32;font-weight:700;text-align:center;padding:8px 12px;background:rgba(102,187,106,.12);border-radius:12px;margin-top:8px}
+
+/* CATEGORY LIST */
+.all-games-wrap{padding:18px 20px 40px}
+.cat-section{background:#FFF9F0;border-radius:20px;padding:14px 16px;box-shadow:4px 4px 12px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.85);margin-bottom:12px}
+.cat-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.cat-icon-wrap{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.cat-name{font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:800;color:#1F2A1A}
+.cat-games-row{display:flex;gap:10px}
+.cgame-btn{flex:1;border:1.5px solid rgba(185,168,148,.35);border-radius:14px;padding:12px 6px;cursor:pointer;text-align:center;font-family:inherit;background:#FFF9F0;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:4px}
+.cgame-btn:active{transform:scale(.95)}
+.cgame-btn.cdone{background:linear-gradient(135deg,#F1F8E9,#DCEDC8);border-color:#81C784}
+.cgame-btn.cmission{border-color:#A5C87A;background:rgba(255,213,79,.1)}
+.cgame-icon{font-size:22px}
+.cgame-name{font-size:11px;font-weight:700;color:#1F2A1A;line-height:1.4}
+.cgame-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-top:1px}
+.cgame-badge.b-done{background:#C8E6C9;color:#2E7D32}
+.cgame-badge.b-prog{background:rgba(255,213,79,.3);color:#A07830}
+.cgame-badge.b-none{background:rgba(185,168,148,.15);color:#A8C898}
+.cgame-badge.b-coming{background:rgba(185,168,148,.15);color:#A8C898}
+
+/* RANKING SECTION */
+.rank-section{padding:0 20px 40px}
+.rank-box{background:#FFF9F0;border-radius:20px;overflow:hidden;box-shadow:4px 4px 12px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.85)}
+.rank-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid rgba(185,168,148,.1)}
+.rank-item:last-child{border-bottom:none}
+.rank-item.rank-me{background:rgba(255,213,79,.08)}
+.rank-medal{font-size:22px;width:34px;text-align:center;flex-shrink:0}
+.rank-num{font-size:13px;font-weight:800;width:34px;text-align:center;flex-shrink:0;color:#A8C898}
+.rank-avatar{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#DCEDC8,#C8E6C9);display:flex;align-items:center;justify-content:center;font-family:'Nanum Myeongjo',serif;font-size:18px;font-weight:800;color:#1F2A1A;flex-shrink:0;border:2px solid rgba(185,168,148,.18)}
+.rank-info{flex:1;min-width:0}
+.rank-name{font-size:14px;font-weight:700;color:#1F2A1A;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-sub{font-size:11px;color:#7AAD6A;margin-top:2px}
+.rank-pts{flex-shrink:0;font-size:14px;font-weight:800;color:#C9A840}
+.rank-placeholder{text-align:center;padding:30px 16px;color:#A8C898;font-size:13px;line-height:2}
+
+/* MATH GAME */
+.math-prob{font-family:'Nanum Myeongjo',serif;font-size:clamp(30px,9vw,46px);font-weight:800;color:#1F2A1A;text-align:center;padding:48px 24px 28px;line-height:1.35;letter-spacing:-1px}
+.math-choices{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:0 20px 40px}
+.math-btn{background:#FFF9F0;border:2px solid rgba(185,168,148,.3);border-radius:22px;font-family:'Nanum Myeongjo',serif;font-size:clamp(24px,7vw,32px);font-weight:800;color:#1F2A1A;padding:26px 10px;cursor:pointer;transition:transform .15s;box-shadow:4px 4px 12px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.85)}
+.math-btn:active{transform:scale(.94)}
+
+/* PATTERN GAME */
+.pat-seq{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;padding:44px 16px 12px}
+.pat-num,.pat-gap{font-family:'Nanum Myeongjo',serif;font-size:clamp(18px,5vw,26px);font-weight:800;border-radius:14px;padding:12px 14px;min-width:48px;text-align:center}
+.pat-num{color:#1F2A1A;background:#FFF9F0;border:2px solid rgba(185,168,148,.3)}
+.pat-gap{color:#C9A840;background:rgba(255,213,79,.12);border:2.5px dashed #C9A840;animation:patPulse 1.2s infinite}
+@keyframes patPulse{0%,100%{opacity:1}50%{opacity:.55}}
+.pat-sep{font-size:14px;color:#A8C898;font-weight:700;flex-shrink:0}
+.pat-label{text-align:center;font-size:15px;font-weight:700;color:#5C8A4A;padding:8px 20px 20px}
+</style>
+</head>
+<body>
+
+<canvas class="p-canvas" id="pCanvas"></canvas>
+
+<!-- ═══ HOME ═══ -->
+<div class="screen active" id="s-home">
+  <div class="gnb">
+    <button class="gnb-back" onclick="goMainSite()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="#4A7A3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      메인으로
+    </button>
+    <a href="/" class="gnb-logo" style="display:flex;align-items:center;gap:8px;text-decoration:none">
+      <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+      <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
+      <circle cx="22" cy="13" r="5" fill="#A5C87A"/>
+      <line x1="22" y1="5" x2="22" y2="3" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="23" x2="22" y2="21" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="14" y1="13" x2="12" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="32" y1="13" x2="30" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="38" x2="22" y2="26" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M22 32 C18 30 15 27 17 24 C19 21 22 26 22 28" fill="#81C784"/>
+      <path d="M22 30 C26 28 29 25 27 22 C25 19 22 24 22 26" fill="#A5D6A7"/>
+    </svg>
+      <div>
+        <div style="font-family:'Nanum Myeongjo',serif;font-size:15px;font-weight:800;color:#1F2A1A;line-height:1.1">다시봄</div>
+        <div style="font-size:9px;letter-spacing:2px;color:#8AAA7A;font-weight:700">DASIBOM</div>
+      </div>
+    </a>
+    <div style="width:72px"></div>
+  </div>
+  <div class="home-hero">
+    <span class="hero-brain">🧠</span>
+    <div class="hero-badge">BRAIN FITNESS</div>
+    <div class="hero-title">매일 3분으로<br>뇌를 깨워드립니다</div>
+    <div class="hero-sub">재미있는 게임으로<br>기억력과 집중력을 키워요</div>
+    <div class="pt-display">
+      <span style="font-size:18px">⭐</span>
+      <span style="font-size:13px;font-weight:800;color:rgba(255,255,255,.8)">오늘 포인트</span>
+      <span class="pt-num" id="todayPts">0</span>
+      <span style="font-size:13px;color:rgba(255,255,255,.55)">/300p</span>
+    </div>
+  </div>
+  <div class="daily-strip">
+    <div class="daily-strip-lbl">이번 달 연속 달성</div>
+    <div class="daily-streak">
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-text">일 연속으로<br>뇌 건강을 지키고 계세요! 🎉</div>
+    </div>
+  </div>
+  <!-- 오늘의 미션 -->
+  <div class="mission-wrap">
+    <div class="section-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <span>🎯 오늘의 미션</span>
+      <span style="font-size:12px;font-weight:700;color:#5C8A4A">3개 완주 +150P</span>
+    </div>
+    <div class="mission-cards" id="missionCards"></div>
+    <div class="mp-row">
+      <div class="mp-bar"><div class="mp-fill" id="mpFill" style="width:0%"></div></div>
+      <span class="mp-txt" id="mpTxt">0 / 3</span>
+    </div>
+    <div class="mission-bonus-msg" id="missionBonusMsg" style="display:none">🎉 오늘의 미션 완주! 150P 보너스 지급!</div>
+  </div>
+
+  <!-- 전체 게임 -->
+  <div class="all-games-wrap">
+    <div class="section-title" style="margin-bottom:14px">전체 게임</div>
+    <div id="catList"></div>
+  </div>
+
+  <!-- 인라인 달력 섹션 -->
+  <div class="home-cal-wrap">
+    <div class="home-cal-top">
+      <div class="home-cal-title">나의 뇌 건강 달력</div>
+      <div class="home-cal-nav">
+        <button class="hcal-nav" onclick="homeCalChange(-1)">‹</button>
+        <span class="hcal-month" id="hCalLbl"></span>
+        <button class="hcal-nav" onclick="homeCalChange(1)">›</button>
+      </div>
+    </div>
+    <div class="hcal-grid" id="hCalGrid"></div>
+    <div class="hcal-detail" id="hCalDetail" style="display:none"></div>
+    <div class="tier-legend">
+      <div class="tleg-row"><span class="tleg-box" style="background:#4CAF50"></span><span class="tleg-txt">매우좋음</span><span class="tleg-pct">95~100%</span></div>
+      <div class="tleg-row"><span class="tleg-box" style="background:#1E88E5"></span><span class="tleg-txt">좋음</span><span class="tleg-pct">80~94%</span></div>
+      <div class="tleg-row"><span class="tleg-box" style="background:#FDD835"></span><span class="tleg-txt">보통</span><span class="tleg-pct">60~79%</span></div>
+      <div class="tleg-row"><span class="tleg-box" style="background:#FB8C00"></span><span class="tleg-txt">아쉬워요</span><span class="tleg-pct">40~59%</span></div>
+      <div class="tleg-row"><span class="tleg-box" style="background:#E53935"></span><span class="tleg-txt">다시해요</span><span class="tleg-pct">0~39%</span></div>
+    </div>
+  </div>
+
+  <!-- 이웃 랭킹 -->
+  <div class="rank-section">
+    <div class="section-title" style="margin-bottom:14px">🏆 이웃 랭킹</div>
+    <div class="rank-box" id="rankList">
+      <div class="rank-placeholder">랭킹을 불러오는 중...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PLAY ═══ -->
+<div class="screen" id="s-play">
+  <div class="gnb">
+    <button class="gnb-back" onclick="quitGame()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="#4A7A3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      그만하기
+    </button>
+    <div class="gnb-title" id="playTitle">게임</div>
+    <div style="width:72px"></div>
+  </div>
+  <div class="play-timebar-wrap"><div class="play-timebar" id="playTimeBar"></div></div>
+  <div class="play-header">
+    <div class="level-badge" id="levelBadge">LV 1</div>
+    <div class="tries-wrap" id="triesWrap"></div>
+  </div>
+  <div class="play-meta">
+    <div class="play-game-lbl" id="playSubLbl"></div>
+    <div class="play-timer" id="playTimer">20</div>
+  </div>
+  <div class="play-area" id="playArea"></div>
+</div>
+
+<!-- ═══ RESULT ═══ -->
+<div class="screen" id="s-result">
+  <div class="gnb">
+    <button class="gnb-back" onclick="showScreen('s-home')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="#4A7A3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      처음으로
+    </button>
+    <div class="gnb-title">오늘의 성적표</div>
+    <div style="width:72px"></div>
+  </div>
+  <div class="res-game-lbl" id="resGameLbl"></div>
+  <div class="res-badge" id="resBadge">
+    <div class="res-badge-icon" id="resIcon">🟢</div>
+    <div class="res-pct" id="resPct">0%</div>
+  </div>
+  <div class="res-tier" id="resTier"></div>
+  <div class="res-tier-legend">
+    <div class="tleg-row" id="tleg-0"><span class="tleg-box" style="background:#4CAF50"></span><span class="tleg-txt">매우좋음</span></div>
+    <div class="tleg-row" id="tleg-1"><span class="tleg-box" style="background:#1E88E5"></span><span class="tleg-txt">좋음</span></div>
+    <div class="tleg-row" id="tleg-2"><span class="tleg-box" style="background:#FDD835"></span><span class="tleg-txt">보통</span></div>
+    <div class="tleg-row" id="tleg-3"><span class="tleg-box" style="background:#FB8C00"></span><span class="tleg-txt">아쉬워요</span></div>
+    <div class="tleg-row" id="tleg-4"><span class="tleg-box" style="background:#E53935"></span><span class="tleg-txt">다시해요</span></div>
+  </div>
+  <div class="res-comment" id="resComment"></div>
+  <div class="res-pts-row" id="resPtsRow">
+    <span>⭐</span>
+    <span>오늘 총 포인트: <strong id="resPtsTotal">0</strong>p</span>
+  </div>
+  <div class="res-stats">
+    <div class="stat-card"><div class="stat-val" id="sLevel"></div><div class="stat-lbl">도달 레벨</div></div>
+    <div class="stat-card"><div class="stat-val" id="sTime"></div><div class="stat-lbl">총 시간</div></div>
+    <div class="stat-card"><div class="stat-val" id="sErrors"></div><div class="stat-lbl">오답 횟수</div></div>
+  </div>
+  <div class="res-actions">
+    <button class="ov-btn btn-prim" onclick="replayGame()">한 번 더 도전하기 🔥</button>
+    <button class="ov-btn btn-sec" style="border:2px solid rgba(121,85,72,.22)" onclick="showScreen('s-home')">다른 게임 하기</button>
+  </div>
+</div>
+
+<!-- ═══ CALENDAR ═══ -->
+<div class="screen" id="s-calendar">
+  <div class="gnb">
+    <button class="gnb-back" onclick="showScreen('s-home')">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="#4A7A3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      뒤로
+    </button>
+    <div class="gnb-title">뇌 건강 달력</div>
+    <div style="width:72px"></div>
+  </div>
+  <div class="cal-header">
+    <div class="cal-title-txt">나의 뇌 건강 기록</div>
+    <div class="cal-sub-txt">날짜를 눌러 오늘의 한마디를 확인하세요</div>
+  </div>
+  <div class="cal-nav">
+    <button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button>
+    <div class="cal-month-lbl" id="calMonthLbl"></div>
+    <button class="cal-nav-btn" onclick="changeCalMonth(1)">›</button>
+  </div>
+  <div class="cal-grid" id="calGrid"></div>
+  <div class="day-detail" id="dayDetail" style="display:none"></div>
+  <div class="graph-wrap" id="graphWrap" style="display:none">
+    <div class="graph-lbl">이번 달 점수 추이</div>
+    <div class="graph-bars" id="graphBars"></div>
+  </div>
+</div>
+
+<!-- ═══ LEVEL OVERLAY ═══ -->
+<div class="overlay" id="lvOverlay" style="display:none">
+  <div class="overlay-box">
+    <span class="ov-icon" id="ovIcon"></span>
+    <div class="ov-title" id="ovTitle"></div>
+    <div class="ov-sub" id="ovSub"></div>
+    <button class="ov-btn btn-prim" id="ovActBtn" onclick="overlayAction()"></button>
+    <button class="ov-btn btn-sec" style="border:2px solid rgba(121,85,72,.2)" onclick="quitGame()">그만하기</button>
+  </div>
+</div>
+
+<script>
+// ── Config ──
+const FB_CFG = {
+  apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+  authDomain:"mylife-650f0.firebaseapp.com",
+  projectId:"mylife-650f0",
+  storageBucket:"mylife-650f0.firebasestorage.app",
+  messagingSenderId:"512010655611",
+  appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+};
+
+const GAME_NAMES = {
+  card:'기억의 짝꿍', position:'위치 기억하기',
+  shape:'다른 그림 찾기', matchsame:'같은 것 찾기',
+  number:'숫자 순서 터치', reverse:'거꾸로 숫자',
+  wordbingo:'단어 빙고', wordcombine:'글자 조합',
+  classify:'좌우 분류', timing:'타이밍 맞추기',
+  math:'암산 챌린지', pattern:'숫자 패턴'
+};
+
+const GAME_ICON = {
+  card:'🃏', position:'✨', shape:'🔍', matchsame:'🎯',
+  number:'🔢', reverse:'↩️', wordbingo:'💬', wordcombine:'🔤',
+  classify:'⚖️', timing:'⏱', math:'🧮', pattern:'📐'
+};
+
+const CATEGORIES = [
+  {id:'memory',  name:'기억력',  icon:'🧩', color:'#FCE4EC', games:['card','position']},
+  {id:'attention',name:'주의력', icon:'👁',  color:'#E3F2FD', games:['shape','matchsame']},
+  {id:'working', name:'작업기억',icon:'🔢', color:'#E8F5E9', games:['number','reverse']},
+  {id:'language',name:'언어력',  icon:'💬', color:'#EDE7F6', games:['wordbingo','wordcombine']},
+  {id:'executive',name:'실행력', icon:'⚡', color:'#EEF5E2', games:['classify','timing']},
+  {id:'arithmetic',name:'계산력',icon:'🧮', color:'#F3E5F5', games:['math','pattern']}
+];
+// 아직 미구현 게임 목록
+const COMING_SOON = [];
+
+// Per-game, per-level seconds
+const LV_TIMES = {
+  card:      [20,20,20,20,20],
+  shape:     [20,20,20,20,20],
+  number:    [20,20,20,20,20],
+  position:  [25,25,30,30,35],
+  matchsame: [20,20,25,25,30],
+  reverse:   [25,25,30,30,35],
+  wordbingo:   [20,20,25,25,30],
+  wordcombine: [25,25,30,35,45],
+  classify:    [30,30,35,35,40],
+  timing:      [25,25,30,30,35],
+  math:        [20,20,18,18,15],
+  pattern:     [25,25,22,22,20]
+};
+
+// Timing: per-level config
+const TIMING_LEVELS = [
+  {zone:32, speed:1.0, needed:3},
+  {zone:24, speed:1.3, needed:4},
+  {zone:18, speed:1.7, needed:4},
+  {zone:13, speed:2.1, needed:5},
+  {zone:10, speed:2.5, needed:5}
+];
+
+// Math: per-level config
+const MATH_LEVELS = [
+  {type:'add', a:[1,9],   b:[1,9]},
+  {type:'add', a:[10,29], b:[1,9]},
+  {type:'add', a:[10,29], b:[10,19]},
+  {type:'sub', a:[20,50], b:[5,19]},
+  {type:'mix', a:[5,20],  b:[2,9],  c:[2,9]}
+];
+
+// Pattern: per-level config
+const PATTERN_LEVELS = [
+  {type:'arith', dMin:2, dMax:4,  len:5, desc:false},
+  {type:'arith', dMin:5, dMax:10, len:5, desc:false},
+  {type:'arith', dMin:2, dMax:4,  len:5, desc:true},
+  {type:'geo',   bases:[2,3],     len:5},
+  {type:'alt',   aMin:2, aMax:5,  bMin:6, bMax:12, len:6}
+];
+
+// Classify: per-level config
+const CLASSIFY_LEVELS = [
+  {leftCat:'과일',leftIcon:'🍎',rightCat:'동물',rightIcon:'🐾',showEmoji:true,
+   items:[{w:'사과',e:'🍎',s:'L'},{w:'딸기',e:'🍓',s:'L'},{w:'포도',e:'🍇',s:'L'},{w:'수박',e:'🍉',s:'L'},{w:'복숭아',e:'🍑',s:'L'},
+          {w:'강아지',e:'🐶',s:'R'},{w:'고양이',e:'🐱',s:'R'},{w:'토끼',e:'🐰',s:'R'},{w:'호랑이',e:'🐯',s:'R'},{w:'곰',e:'🐻',s:'R'}]},
+  {leftCat:'채소',leftIcon:'🥕',rightCat:'탈것',rightIcon:'🚌',showEmoji:true,
+   items:[{w:'당근',e:'🥕',s:'L'},{w:'배추',e:'🥬',s:'L'},{w:'오이',e:'🥒',s:'L'},{w:'감자',e:'🥔',s:'L'},{w:'양파',e:'🧅',s:'L'},{w:'고추',e:'🌶️',s:'L'},
+          {w:'버스',e:'🚌',s:'R'},{w:'기차',e:'🚂',s:'R'},{w:'비행기',e:'✈️',s:'R'},{w:'배',e:'🚢',s:'R'},{w:'자동차',e:'🚗',s:'R'},{w:'지하철',e:'🚇',s:'R'}]},
+  {leftCat:'자연',leftIcon:'🌿',rightCat:'인공물',rightIcon:'🏗️',showEmoji:false,
+   items:[{w:'구름',e:'',s:'L'},{w:'바위',e:'',s:'L'},{w:'강',e:'',s:'L'},{w:'산',e:'',s:'L'},{w:'꽃',e:'',s:'L'},{w:'나무',e:'',s:'L'},{w:'바람',e:'',s:'L'},
+          {w:'다리',e:'',s:'R'},{w:'도로',e:'',s:'R'},{w:'건물',e:'',s:'R'},{w:'공장',e:'',s:'R'},{w:'터널',e:'',s:'R'},{w:'댐',e:'',s:'R'},{w:'항구',e:'',s:'R'}]},
+  {leftCat:'봄·여름',leftIcon:'🌸',rightCat:'가을·겨울',rightIcon:'❄️',showEmoji:false,
+   items:[{w:'벚꽃',e:'',s:'L'},{w:'수영',e:'',s:'L'},{w:'소풍',e:'',s:'L'},{w:'모기',e:'',s:'L'},{w:'장마',e:'',s:'L'},{w:'무더위',e:'',s:'L'},{w:'개나리',e:'',s:'L'},
+          {w:'단풍',e:'',s:'R'},{w:'눈사람',e:'',s:'R'},{w:'김장',e:'',s:'R'},{w:'군밤',e:'',s:'R'},{w:'스키',e:'',s:'R'},{w:'낙엽',e:'',s:'R'},{w:'핫초코',e:'',s:'R'}]},
+  {leftCat:'옛날',leftIcon:'📻',rightCat:'요즘',rightIcon:'📱',showEmoji:false,
+   items:[{w:'연탄',e:'',s:'L'},{w:'전화기',e:'',s:'L'},{w:'도시락',e:'',s:'L'},{w:'흑백TV',e:'',s:'L'},{w:'우물',e:'',s:'L'},{w:'뻥튀기',e:'',s:'L'},{w:'달구지',e:'',s:'L'},
+          {w:'스마트폰',e:'',s:'R'},{w:'배달앱',e:'',s:'R'},{w:'에어컨',e:'',s:'R'},{w:'인터넷',e:'',s:'R'},{w:'카드결제',e:'',s:'R'},{w:'유튜브',e:'',s:'R'},{w:'무인결제',e:'',s:'R'}]}
+];
+
+// Wordcombine: per-level config
+const WORDCOMBINE_LEVELS = [
+  {words:[
+    {emoji:'🍎',word:'사과',syl:['사','과']},
+    {emoji:'🌙',word:'달빛',syl:['달','빛']},
+  ], dist:[]},
+  {words:[
+    {emoji:'🌸',word:'꽃잎',syl:['꽃','잎']},
+    {emoji:'🌊',word:'파도',syl:['파','도']},
+    {emoji:'🎵',word:'노래',syl:['노','래']},
+  ], dist:['봄']},
+  {words:[
+    {emoji:'🌈',word:'무지개',syl:['무','지','개']},
+    {emoji:'🌤️',word:'하늘빛',syl:['하','늘','빛']},
+    {emoji:'🌿',word:'봄바람',syl:['봄','바','람']},
+  ], dist:['산']},
+  {words:[
+    {emoji:'🏡',word:'고향집',syl:['고','향','집']},
+    {emoji:'🌅',word:'노을빛',syl:['노','을','빛']},
+    {emoji:'🥾',word:'소풍길',syl:['소','풍','길']},
+  ], dist:['달','물']},
+  {words:[
+    {emoji:'🎂',word:'생일축하',syl:['생','일','축','하']},
+    {emoji:'🌻',word:'해바라기',syl:['해','바','라','기']},
+    {emoji:'🌺',word:'진달래꽃',syl:['진','달','래','꽃']},
+  ], dist:['봄','빛']}
+];
+
+// Wordbingo: per-level config
+const WORDBINGO_LEVELS = [
+  {cols:3, total:9,  count:3, category:'과일', catIcon:'🍎',
+   targets:['사과','딸기','포도'],
+   pool:['당근','기차','연필','의자','구름','책상'],
+   inst:'과일을 모두 찾아요!'},
+  {cols:4, total:12, count:4, category:'동물', catIcon:'🐾',
+   targets:['강아지','고양이','호랑이','토끼'],
+   pool:['사과','버스','의자','연필','냉장고','피아노','기차','칫솔'],
+   inst:'동물을 모두 찾아요!'},
+  {cols:4, total:16, count:5, category:'채소', catIcon:'🥦',
+   targets:['당근','배추','오이','감자','무'],
+   pool:['딸기','자동차','피아노','의사','구름','버스','학교','신발','냉장고','시계','바다'],
+   inst:'채소를 모두 찾아요!'},
+  {cols:4, total:16, count:5, category:'직업', catIcon:'👔',
+   targets:['의사','선생님','경찰','요리사','간호사'],
+   pool:['사과','당근','버스','기타','구름','바다','연필','피아노','냉장고','시계','꽃'],
+   inst:'직업을 모두 찾아요!'},
+  {cols:5, total:20, count:6, category:'탈것', catIcon:'🚌',
+   targets:['버스','지하철','기차','비행기','배','자동차'],
+   pool:['사과','강아지','의사','책상','구름','바다','연필','피아노','냉장고','달','꽃','눈사람','선생님','여름'],
+   inst:'탈것을 모두 찾아요!'}
+];
+
+// Reverse: per-level config
+const REVERSE_LEVELS = [
+  {count:5,  mode:'visible'},
+  {count:7,  mode:'visible'},
+  {count:9,  mode:'question'},
+  {count:11, mode:'blank'},
+  {count:13, mode:'blank', distract:true}
+];
+
+// Matchsame: per-level config
+const MATCHSAME_LEVELS = [
+  {cols:3, total:9,  count:2, targetIcon:'🍎', pool:['🍊','🍋','🍇','🍓','🍌'],               inst:'사과를 모두 찾아요!'},
+  {cols:4, total:12, count:3, targetIcon:'🐶', pool:['🐱','🐭','🐰','🐻','🐼'],               inst:'강아지를 모두 찾아요!'},
+  {cols:4, total:16, count:4, targetIcon:'⭐', pool:['🌟','✨','💫','⚡','🌙','☀️'],           inst:'별을 모두 찾아요!'},
+  {cols:5, total:20, count:5, targetIcon:'🌸', pool:['🌺','🌹','🌷','🌼','💐','🌻','🏵️'],   inst:'벚꽃을 모두 찾아요!'},
+  {cols:5, total:25, count:7, targetIcon:'🦋', pool:['🐝','🐛','🐌','🐞','🦗','🐜','🪲'],   inst:'나비를 모두 찾아요!'}
+];
+
+// Position: per-level grid config
+const POSITION_LEVELS = [
+  {cols:3, count:3},
+  {cols:3, count:4},
+  {cols:4, count:5},
+  {cols:4, count:6},
+  {cols:5, count:8}
+];
+
+// Card: per-level theme config
+const CARD_LEVELS = [
+  {theme:'과일', icons:['🍎','🍊','🍋','🍇'],                     count:4,  cols:2, preview:3},
+  {theme:'사물', icons:['✂️','🔑','💡','🎀','⏰','🧲'],           count:6,  cols:3, preview:3},
+  {theme:'꽃',   icons:['🌸','🌺','🌹','🌷','🌼','💐'],           count:12, cols:4, preview:4},
+  {theme:'단어', isText:true, words:['사랑','행복','봄날','기쁨','하늘','바다','나무','강물'], count:16, cols:4, preview:5},
+  {theme:'유사단어', isText:true, words:['사람','사랑','나무','나비','하나','하늘','기억','기쁨','봄날','봄비'], count:20, cols:5, preview:5}
+];
+
+// Shape: per-level content config
+const SHAPE_LEVELS = [
+  {count:6,  cols:3, kind:'emoji',     main:'🍎', odd:'🍌',                          inst:'🍌 바나나를 찾아 눌러주세요!'},
+  {count:9,  cols:3, kind:'svg_shape', color:'#81D4FA',                              inst:'세모(△)를 찾아 눌러주세요!'},
+  {count:12, cols:4, kind:'svg_ball',  mainColor:'#EF5350', oddColor:'#FF7043',      inst:'주황색 공을 찾아 눌러주세요!'},
+  {count:16, cols:4, kind:'svg_clock', mainHour:12, oddHour:3,                       inst:'다른 방향의 시계를 찾아 눌러주세요!'},
+  {count:20, cols:4, kind:'text',      main:'눈', odd:'눔',                           inst:"'눔'을 찾아 눌러주세요!"}
+];
+
+// Number: per-level count + hide mode
+const NUMBER_LEVELS = [
+  {count:4,  mode:'visible'},
+  {count:6,  mode:'visible'},
+  {count:9,  mode:'question'},
+  {count:12, mode:'blank'},
+  {count:15, mode:'shuffle', distract:true}
+];
+
+// Tier system (new thresholds + emoji dots)
+const TIER = {
+  excellent:{icon:'🟢',name:'매우좋음',color:'#1B5E20',dot:'#4CAF50',bg:'linear-gradient(135deg,#E8F5E9,#C8E6C9)',msg:'뇌가 오늘 아주 맑아요!'},
+  good:     {icon:'🔵',name:'좋음',    color:'#0D47A1',dot:'#1E88E5',bg:'linear-gradient(135deg,#E3F2FD,#BBDEFB)',msg:'안정적인 집중력입니다.'},
+  normal:   {icon:'🟡',name:'보통',    color:'#2E7D32',dot:'#FDD835',bg:'linear-gradient(135deg,#F5F8F0,#FFF9C4)',msg:'무난하게 잘하셨어요.'},
+  poor:     {icon:'🟠',name:'아쉬워요',color:'#1B5E20',dot:'#FB8C00',bg:'linear-gradient(135deg,#EEF5E2,#D8ECC8)',msg:'조금 더 집중해 볼까요?'},
+  retry:    {icon:'🔴',name:'다시해요',color:'#B71C1C',dot:'#E53935',bg:'linear-gradient(135deg,#FFEBEE,#FFCDD2)',msg:'내일은 더 잘하실 거예요!'}
+};
+
+const TIER_ORDER = ['excellent','good','normal','poor','retry'];
+
+function calcScore(){
+  var levelScore=Math.round((_levelsPassed/5)*70);
+  var times=LV_TIMES[_game];
+  var totalPossible=times?times.reduce(function(a,b){return a+b;},0):100;
+  var timeScore=totalPossible>0?Math.round((_timeRemainingSum/totalPossible)*30):0;
+  return Math.min(100,Math.max(0,levelScore+timeScore));
+}
+function scoreToTier(pct){
+  if(pct>=95)return 'excellent';
+  if(pct>=80)return 'good';
+  if(pct>=60)return 'normal';
+  if(pct>=40)return 'poor';
+  return 'retry';
+}
+
+// ── State ──
+var _db=null,_auth=null,_uid=null,_fbReady=false;
+var _game=null,_level=1,_tries=3,_errors=0,_totalTime=0;
+var _levelsPassed=0,_timeRemainingSum=0;
+var _timeLeft=0,_timerIv=null,_gameActive=false;
+var _flipped=[],_matched=0,_waiting=false;
+var _numCells=[],_numNextExpect=1,_numTarget=4,_numMode='visible';
+var _posSeq=[],_posNextIdx=0,_posCells=[];
+var _msFound=0,_msTotal=0,_msCells=[];
+var _revCells=[],_revNextExpect=1,_revTarget=5,_revMode='visible';
+var _wbFound=0,_wbTotal=0,_wbCells=[];
+var _wcWords=[],_wcWordIdx=0,_wcExpect=0,_wcSlotEls=[],_wcTileEls=[],_wcDone=false;
+var _clItems=[],_clIdx=0;
+var _tmPos=50,_tmDir=1,_tmHits=0,_tmNeeded=3,_tmZone=32,_tmSpeed=1.0,_tmAnim=null;
+var _mathCorrect=null,_patAnswer=null;
+var _ovMode='';
+var _calY=new Date().getFullYear(),_calM=new Date().getMonth(),_calData={};
+
+// ── Firebase ──
+function initFB(){
+  return new Promise(function(res){
+    if(_fbReady){res();return;}
+    var srcs=['https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+              'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+              'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'];
+    var loaded=0;
+    srcs.forEach(function(src){
+      var s=document.createElement('script');s.src=src;
+      s.onload=function(){
+        if(++loaded===srcs.length){
+          try{
+            if(!firebase.apps.length)firebase.initializeApp(FB_CFG);
+            _auth=firebase.auth();_db=firebase.firestore();
+            _auth.onAuthStateChanged(function(u){_uid=u?u.uid:null;});
+            _fbReady=true;
+          }catch(e){}
+          res();
+        }
+      };
+      s.onerror=function(){if(++loaded===srcs.length)res();};
+      document.head.appendChild(s);
+    });
+  });
+}
+
+function lsKey(){return 'brain_'+((_uid)||'guest');}
+function bestKey(){return 'brain_best_'+((_uid)||'guest');}
+
+function saveBest(game,score,completed){
+  try{
+    var k=bestKey(),st=JSON.parse(localStorage.getItem(k)||'{}');
+    var prev=st[game]||{score:0,completed:false};
+    if(score>prev.score||completed){
+      st[game]={score:Math.max(score,prev.score),completed:prev.completed||completed};
+      localStorage.setItem(k,JSON.stringify(st));
+    }
+  }catch(e){}
+}
+function getBest(){
+  try{return JSON.parse(localStorage.getItem(bestKey())||'{}');}catch(e){return {};}
+}
+
+async function saveResult(dateStr,data){
+  try{
+    var k=lsKey(),st=JSON.parse(localStorage.getItem(k)||'{}');
+    var prev=st[dateStr];
+    if(!prev||(data.score||0)>=(prev.score||0))st[dateStr]=data;
+    localStorage.setItem(k,JSON.stringify(st));
+  }catch(e){}
+  if(_db&&_uid){
+    try{
+      var prevSnap=await _db.collection('users').doc(_uid).collection('brain_game').doc(dateStr).get();
+      var prevScore=prevSnap.exists?((prevSnap.data().score)||0):0;
+      if(!prevSnap.exists||(data.score||0)>=prevScore){
+        await _db.collection('users').doc(_uid).collection('brain_game').doc(dateStr).set(data,{merge:true});
+      }
+    }catch(e){}
+  }
+}
+
+async function loadCalData(y,m){
+  _calData={};
+  var pfx=y+'-'+String(m+1).padStart(2,'0');
+  try{var k=lsKey(),st=JSON.parse(localStorage.getItem(k)||'{}');Object.keys(st).forEach(function(d){if(d.startsWith(pfx))_calData[d]=st[d];});}catch(e){}
+  if(_db&&_uid){
+    try{
+      var snap=await _db.collection('users').doc(_uid).collection('brain_game')
+        .where(firebase.firestore.FieldPath.documentId(),'>=',pfx+'-01')
+        .where(firebase.firestore.FieldPath.documentId(),'<=',pfx+'-31').get();
+      snap.forEach(function(d){_calData[d.id]=d.data();});
+    }catch(e){}
+  }
+}
+
+// ── Screens ──
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var el=document.getElementById(id);
+  if(el){el.classList.add('active');el.scrollTop=0;}
+  if(id==='s-calendar')renderCalendar();
+  if(id==='s-home'){updateHomeDots();renderHomeCal();updateTodayPtsDisplay();renderMissionCards();renderCategoryList();}
+}
+function goMainSite(){window.location.href='/';}
+
+// ── Game Flow ──
+function startGame(type){
+  _game=type;_level=1;_tries=3;_errors=0;_totalTime=0;
+  _levelsPassed=0;_timeRemainingSum=0;
+  showScreen('s-play');
+  loadLevel();
+}
+function replayGame(){startGame(_game);}
+function quitGame(){
+  clearInterval(_timerIv);_gameActive=false;
+  document.getElementById('lvOverlay').style.display='none';
+  showScreen('s-home');
+}
+
+function loadLevel(){
+  clearInterval(_timerIv);_gameActive=false;
+  var times=LV_TIMES[_game];
+  _timeLeft=times?times[_level-1]:20;
+  document.getElementById('levelBadge').textContent='LV '+_level;
+  document.getElementById('playTitle').textContent=GAME_NAMES[_game]||_game;
+  document.getElementById('playSubLbl').textContent=_level+'단계';
+  renderTimer();renderTries();
+  document.getElementById('playArea').innerHTML='';
+  readyCountdown(function(){
+    document.getElementById('playArea').innerHTML='';
+    if(_game==='card'){buildCardGame();startCardPreview();}
+    else if(_game==='shape'){buildShapeGame();setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},400);}
+    else if(_game==='number'){buildNumberGame();}
+    else if(_game==='position'){buildPositionGame();}
+    else if(_game==='matchsame'){buildMatchsameGame();}
+    else if(_game==='reverse'){buildReverseGame();}
+    else if(_game==='wordbingo'){buildWordbingoGame();}
+    else if(_game==='wordcombine'){buildWordcombineGame();}
+    else if(_game==='classify'){buildClassifyGame();}
+    else if(_game==='timing'){buildTimingGame();}
+    else if(_game==='math'){buildMathGame();}
+    else if(_game==='pattern'){buildPatternGame();}
+    else{document.getElementById('playArea').innerHTML='<div style="font-size:18px;color:#5C8A4A;text-align:center;padding:40px">준비 중입니다 🔧</div>';}
+  });
+}
+
+function renderTimer(){
+  var el=document.getElementById('playTimer');
+  el.textContent=_timeLeft;
+  var urgent=_timeLeft<=3;
+  el.classList.toggle('urgent',urgent);
+  var bar=document.getElementById('playTimeBar');
+  if(bar){
+    var total=LV_TIMES[_game]?LV_TIMES[_game][_level-1]:20;
+    bar.style.width=((_timeLeft/total)*100)+'%';
+    bar.classList.toggle('urgent',urgent);
+  }
+}
+function renderTries(){
+  var el=document.getElementById('triesWrap');el.innerHTML='';
+  for(var i=0;i<3;i++){var d=document.createElement('div');d.className='try-dot'+(i>=_tries?' used':'');el.appendChild(d);}
+}
+function tickTimer(){
+  _timeLeft--;renderTimer();
+  if(_timeLeft<=0){clearInterval(_timerIv);_gameActive=false;onLevelFail('time');}
+}
+
+// ── Card Flip ──
+function buildCardGame(){
+  var lv=CARD_LEVELS[_level-1];
+  var n=lv.count;
+  _matched=0;_flipped=[];_waiting=false;
+  var pairs=n/2,arr=[];
+  for(var i=0;i<pairs;i++)arr.push(i,i);
+  arr=shuffle(arr);
+  var g=document.createElement('div');
+  g.className='card-grid cg'+lv.cols;
+  arr.forEach(function(val){
+    var c=document.createElement('div');c.className='flip-card';
+    c.dataset.val=val;
+    var backContent=lv.isText
+      ?'<span style="font-size:clamp(12px,3.5vw,17px);font-weight:900;color:#1F2A1A;word-break:keep-all;text-align:center;padding:4px">'+lv.words[val]+'</span>'
+      :lv.icons[val];
+    c.innerHTML='<div class="flip-inner"><div class="flip-front">🌿</div><div class="flip-back">'+backContent+'</div></div>';
+    c.addEventListener('click',function(){onCardClick(c,val);});
+    g.appendChild(c);
+  });
+  document.getElementById('playArea').appendChild(g);
+}
+
+function startCardPreview(){
+  var previewSec=CARD_LEVELS[_level-1].preview;
+  document.querySelectorAll('.flip-card').forEach(function(c){c.classList.add('flipped');c.style.pointerEvents='none';});
+  var overlay=document.createElement('div');overlay.id='previewOv';
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8px;pointer-events:none;z-index:10;';
+  var badge=document.createElement('div');
+  badge.style.cssText='background:rgba(78,52,46,.75);color:#A5C87A;font-size:14px;font-weight:800;padding:8px 20px;border-radius:50px;backdrop-filter:blur(4px);';
+  badge.textContent='잘 기억하세요! '+previewSec+'초 후 시작';
+  overlay.appendChild(badge);
+  document.getElementById('playArea').style.position='relative';
+  document.getElementById('playArea').appendChild(overlay);
+  var count=previewSec;
+  var iv=setInterval(function(){
+    count--;
+    if(count>0){badge.textContent='잘 기억하세요! '+count+'초 후 시작';}
+    else{
+      clearInterval(iv);badge.textContent='시작!';
+      setTimeout(function(){
+        overlay.remove();
+        document.querySelectorAll('.flip-card').forEach(function(c){c.classList.remove('flipped');c.style.pointerEvents='';});
+        _gameActive=true;_timerIv=setInterval(tickTimer,1000);
+      },600);
+    }
+  },1000);
+}
+
+function onCardClick(card,val){
+  if(!_gameActive||_waiting)return;
+  if(card.classList.contains('flipped')||card.classList.contains('matched'))return;
+  if(_flipped.length>=2)return;
+  card.classList.add('flipped');_flipped.push({card:card,val:val});
+  snd('flip');
+  if(_flipped.length===2){_waiting=true;setTimeout(checkCardPair,700);}
+}
+
+function checkCardPair(){
+  var a=_flipped[0],b=_flipped[1];
+  if(a.val===b.val){
+    a.card.classList.add('matched');b.card.classList.add('matched');_matched++;
+    snd('correct');particles(a.card);
+    if(_matched===CARD_LEVELS[_level-1].count/2){_waiting=false;_flipped=[];setTimeout(onLevelPass,300);return;}
+  }else{
+    a.card.classList.remove('flipped');b.card.classList.remove('flipped');
+    a.card.classList.add('wrong-flash');b.card.classList.add('wrong-flash');
+    setTimeout(function(){a.card.classList.remove('wrong-flash');b.card.classList.remove('wrong-flash');},400);
+    _errors++;snd('wrong');shake();
+  }
+  _waiting=false;_flipped=[];
+}
+
+// ── Shape Game ──
+function buildShapeGame(){
+  var lv=SHAPE_LEVELS[_level-1];
+  var n=lv.count;
+  var cols=lv.cols;
+  var szMap=[48,38,30,24,20];
+  var sz=szMap[_level-1];
+  var oddIdx=Math.floor(Math.random()*n);
+
+  var inst=document.createElement('div');inst.className='game-inst';inst.textContent=lv.inst;
+  var g=document.createElement('div');g.className='shape-grid cg'+cols;
+
+  for(var i=0;i<n;i++){
+    var cell=document.createElement('div');cell.className='shape-cell';
+    var isOdd=(i===oddIdx);
+    cell.innerHTML=renderShapeCell(lv,isOdd,sz);
+    (function(odd){cell.addEventListener('click',function(){onShapeClick(odd);});})(isOdd);
+    g.appendChild(cell);
+  }
+  document.getElementById('playArea').appendChild(inst);
+  document.getElementById('playArea').appendChild(g);
+}
+
+function renderShapeCell(lv,isOdd,sz){
+  var svgSz=sz*2;
+  if(lv.kind==='emoji'){
+    return '<span style="font-size:'+sz+'px;line-height:1">'+(isOdd?lv.odd:lv.main)+'</span>';
+  }
+  if(lv.kind==='svg_shape'){
+    if(isOdd){
+      return '<svg width="'+svgSz+'" height="'+svgSz+'" viewBox="0 0 60 60"><polygon points="30,6 56,54 4,54" fill="'+lv.color+'"/></svg>';
+    }
+    return '<svg width="'+svgSz+'" height="'+svgSz+'" viewBox="0 0 60 60"><circle cx="30" cy="30" r="26" fill="'+lv.color+'"/></svg>';
+  }
+  if(lv.kind==='svg_ball'){
+    var c=isOdd?lv.oddColor:lv.mainColor;
+    return '<svg width="'+svgSz+'" height="'+svgSz+'" viewBox="0 0 60 60">'
+      +'<circle cx="30" cy="30" r="26" fill="'+c+'"/>'
+      +'<circle cx="22" cy="22" r="7" fill="rgba(255,255,255,0.28)"/>'
+      +'</svg>';
+  }
+  if(lv.kind==='svg_clock'){
+    var hour=isOdd?lv.oddHour:lv.mainHour;
+    var rad=((hour*30)-90)*Math.PI/180;
+    var hx=(30+16*Math.cos(rad)).toFixed(1);
+    var hy=(30+16*Math.sin(rad)).toFixed(1);
+    var ticks='';
+    for(var t=0;t<12;t++){
+      var ta=(t*30-90)*Math.PI/180;
+      var tx=(30+22*Math.cos(ta)).toFixed(1);
+      var ty=(30+22*Math.sin(ta)).toFixed(1);
+      ticks+='<circle cx="'+tx+'" cy="'+ty+'" r="1.8" fill="#A8C898"/>';
+    }
+    return '<svg width="'+svgSz+'" height="'+svgSz+'" viewBox="0 0 60 60">'
+      +'<circle cx="30" cy="30" r="26" fill="#FFF9F0" stroke="#4A7A3A" stroke-width="2.5"/>'
+      +ticks
+      +'<line x1="30" y1="30" x2="'+hx+'" y2="'+hy+'" stroke="#1F2A1A" stroke-width="5" stroke-linecap="round"/>'
+      +'<circle cx="30" cy="30" r="3" fill="#1F2A1A"/>'
+      +'</svg>';
+  }
+  if(lv.kind==='text'){
+    return '<span style="font-size:'+(sz+4)+'px;font-weight:900;font-family:\'Nanum Square\',sans-serif;color:#1F2A1A;line-height:1">'
+      +(isOdd?lv.odd:lv.main)+'</span>';
+  }
+  return '';
+}
+
+function onShapeClick(isOdd){
+  if(!_gameActive)return;
+  if(isOdd){
+    snd('correct');
+    particles(document.querySelector('.shape-cell'));
+    onLevelPass();
+  }else{
+    _errors++;snd('wrong');shake();
+    document.querySelectorAll('.shape-cell').forEach(function(c){
+      c.classList.add('wrong-ans');
+      setTimeout(function(){c.classList.remove('wrong-ans');},380);
+    });
+    onLevelFail('wrong');
+  }
+}
+
+// ── Number Game ──
+function buildNumberGame(){
+  var lv=NUMBER_LEVELS[_level-1];
+  _numTarget=lv.count;_numMode=lv.mode;_numNextExpect=1;_numCells=[];
+  var colMap=[2,3,3,4,5];
+  var cols=colMap[_level-1];
+  var nums=shuffle(Array.from({length:_numTarget},function(_,i){return i+1;}));
+
+  // Lv5: 방해 글자 추가 (5개)
+  var allItems=nums.map(function(n){return {val:n,isNum:true,display:String(n)};});
+  if(lv.distract){
+    var dchars=['가','나','다','라','마'];
+    dchars.forEach(function(c){allItems.push({val:c,isNum:false,display:c});});
+    allItems=shuffle(allItems);
+  }
+
+  var instTxt;
+  if(_numMode==='visible')instTxt='1부터 '+_numTarget+'까지 순서대로 눌러요!';
+  else if(_numMode==='question')instTxt='잘 보고 기억해요! 곧 ?로 바뀌어요';
+  else instTxt=lv.distract?'숫자만 순서대로! 글자는 무시하세요':'잘 보고 기억해요! 곧 숨겨져요';
+
+  var inst=document.createElement('div');inst.className='game-inst';inst.textContent=instTxt;
+  var progWrap=document.createElement('div');progWrap.className='num-prog-wrap';
+  progWrap.innerHTML='<div class="num-prog-bar"><div class="num-prog-fill" id="nFill" style="width:0%"></div></div><div class="num-next-lbl" id="nNext">▶ 1</div>';
+
+  var g=document.createElement('div');g.className='number-grid cg'+cols;
+  allItems.forEach(function(item){
+    var btn=document.createElement('button');btn.className='num-btn';
+    if(!item.isNum)btn.style.cssText+='color:#A8C898;font-size:clamp(16px,4vw,22px);';
+    btn.dataset.val=item.val;btn.dataset.isnum=item.isNum?'1':'0';
+    btn.textContent=item.display;
+    btn.addEventListener('click',function(){onNumClick(this);});
+    g.appendChild(btn);
+    if(item.isNum)_numCells.push({el:btn,val:item.val});
+  });
+
+  var area=document.getElementById('playArea');
+  area.appendChild(inst);area.appendChild(progWrap);area.appendChild(g);
+
+  if(_numMode!=='visible'){
+    startNumberPreview();
+  }else{
+    setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},300);
+  }
+}
+
+function startNumberPreview(){
+  _numCells.forEach(function(c){c.el.style.pointerEvents='none';});
+  var previewSec=3;
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8px;pointer-events:none;z-index:10;';
+  var badge=document.createElement('div');
+  badge.style.cssText='background:rgba(78,52,46,.75);color:#A5C87A;font-size:14px;font-weight:800;padding:8px 20px;border-radius:50px;backdrop-filter:blur(4px);';
+  badge.textContent='잘 기억하세요! '+previewSec+'초 후 시작';
+  overlay.appendChild(badge);
+  document.getElementById('playArea').style.position='relative';
+  document.getElementById('playArea').appendChild(overlay);
+  var count=previewSec;
+  var iv=setInterval(function(){
+    count--;
+    if(count>0){badge.textContent='잘 기억하세요! '+count+'초 후 시작';}
+    else{
+      clearInterval(iv);badge.textContent='시작!';
+      setTimeout(function(){
+        overlay.remove();
+        _numCells.forEach(function(c){
+          c.el.style.pointerEvents='';
+          if(!c.el.classList.contains('done')){
+            if(_numMode==='question')c.el.textContent='?';
+            else c.el.textContent='';
+          }
+        });
+        _gameActive=true;_timerIv=setInterval(tickTimer,1000);
+      },600);
+    }
+  },1000);
+}
+
+function onNumClick(btn){
+  if(!_gameActive)return;
+  if(btn.classList.contains('done'))return;
+  if(btn.dataset.isnum==='0'){shake();return;}
+  var n=parseInt(btn.dataset.val);
+  if(n===_numNextExpect){
+    btn.classList.add('done');btn.textContent=n;btn.disabled=true;
+    snd('correct');_numNextExpect++;
+    var pct=((_numNextExpect-1)/_numTarget)*100;
+    var fillEl=document.getElementById('nFill');if(fillEl)fillEl.style.width=pct+'%';
+    if(_numNextExpect>_numTarget){
+      var nextEl=document.getElementById('nNext');if(nextEl)nextEl.textContent='완료! 🎉';
+      particles(btn);setTimeout(onLevelPass,300);
+    }else{
+      var nextEl=document.getElementById('nNext');if(nextEl)nextEl.textContent='▶ '+_numNextExpect;
+      if(_numMode==='shuffle')shuffleRemainingNumbers();
+    }
+  }else{
+    _errors++;snd('wrong');shake();
+    btn.classList.add('wrong-num');setTimeout(function(){btn.classList.remove('wrong-num');},300);
+    onLevelFail('wrong');
+  }
+}
+
+function shuffleRemainingNumbers(){
+  var remaining=_numCells.filter(function(c){return !c.el.classList.contains('done');});
+  if(remaining.length<2)return;
+  var vals=shuffle(remaining.map(function(c){return parseInt(c.el.dataset.val);}));
+  remaining.forEach(function(c,i){c.el.dataset.val=vals[i];});
+}
+
+// ── Timing Game ──
+function buildTimingGame(){
+  var lv=TIMING_LEVELS[_level-1];
+  _tmPos=50;_tmDir=1;_tmHits=0;_tmNeeded=lv.needed;_tmZone=lv.zone;_tmSpeed=lv.speed;
+
+  var area=document.getElementById('playArea');area.innerHTML='';
+
+  var inst=document.createElement('div');inst.className='tm-inst';
+  inst.textContent='초록 구역에 공이 들어올 때 탭 버튼을 눌러요!';
+
+  var hitsWrap=document.createElement('div');hitsWrap.className='tm-hits-wrap';hitsWrap.id='tmHits';
+  for(var i=0;i<lv.needed;i++){
+    var dot=document.createElement('div');dot.className='tm-hit-dot';hitsWrap.appendChild(dot);
+  }
+
+  var track=document.createElement('div');track.className='tm-track';
+  var zoneEl=document.createElement('div');zoneEl.className='tm-zone';zoneEl.id='tmZone';
+  zoneEl.style.left=(50-lv.zone)+'%';
+  zoneEl.style.width=(lv.zone*2)+'%';
+  var ball=document.createElement('div');ball.className='tm-ball';ball.id='tmBall';
+  ball.style.left='calc(50% - 20px)';
+  track.appendChild(zoneEl);track.appendChild(ball);
+
+  var tapBtn=document.createElement('button');tapBtn.className='tm-tap-btn';tapBtn.id='tmBtn';
+  tapBtn.textContent='탭!';
+  tapBtn.addEventListener('click',onTimingTap);
+
+  area.appendChild(inst);area.appendChild(hitsWrap);area.appendChild(track);area.appendChild(tapBtn);
+
+  setTimeout(function(){
+    _gameActive=true;
+    _timerIv=setInterval(tickTimer,1000);
+    var last=performance.now();
+    function step(now){
+      if(!_gameActive){_tmAnim=null;return;}
+      var dt=(now-last)/1000;last=now;
+      _tmPos+=_tmDir*_tmSpeed*dt*100;
+      if(_tmPos>=98){_tmPos=98;_tmDir=-1;}
+      if(_tmPos<=2){_tmPos=2;_tmDir=1;}
+      var b=document.getElementById('tmBall');
+      if(b)b.style.left='calc('+_tmPos+'% - 20px)';
+      _tmAnim=requestAnimationFrame(step);
+    }
+    _tmAnim=requestAnimationFrame(step);
+  },400);
+}
+
+function onTimingTap(){
+  if(!_gameActive)return;
+  var lv=TIMING_LEVELS[_level-1];
+  var inZone=(_tmPos>=(50-lv.zone)&&_tmPos<=(50+lv.zone));
+  var btn=document.getElementById('tmBtn');
+  if(inZone){
+    snd('correct');_tmHits++;
+    if(btn){btn.classList.add('tm-hit');setTimeout(function(){btn.classList.remove('tm-hit');},300);}
+    var dots=document.querySelectorAll('.tm-hit-dot');
+    if(dots[_tmHits-1])dots[_tmHits-1].classList.add('done');
+    if(_tmHits>=_tmNeeded){
+      cancelAnimationFrame(_tmAnim);_tmAnim=null;
+      particles(btn||document.body);
+      setTimeout(onLevelPass,300);
+    }
+  }else{
+    _errors++;snd('wrong');shake();
+    if(btn){btn.classList.add('tm-miss');setTimeout(function(){btn.classList.remove('tm-miss');},300);}
+    onLevelFail('wrong');
+  }
+}
+
+// ── Classify Game ──
+function buildClassifyGame(){
+  var lv=CLASSIFY_LEVELS[_level-1];
+  _clItems=shuffle(lv.items.slice());_clIdx=0;
+
+  var area=document.getElementById('playArea');area.innerHTML='';
+
+  var cats=document.createElement('div');cats.className='cl-cats';
+  cats.innerHTML='<div class="cl-cat cl-cat-left"><span class="cl-cat-icon">'+lv.leftIcon+'</span>'+lv.leftCat+'</div>'
+    +'<div class="cl-cat cl-cat-right"><span class="cl-cat-icon">'+lv.rightIcon+'</span>'+lv.rightCat+'</div>';
+
+  var prog=document.createElement('div');prog.className='cl-prog';prog.id='clProg';
+  prog.textContent='0 / '+_clItems.length;
+
+  var itemBox=document.createElement('div');itemBox.className='cl-item-box';itemBox.id='clItem';
+  itemBox.innerHTML=lv.showEmoji
+    ?'<div class="cl-item-emoji" id="clEmoji"></div><div class="cl-item-word" id="clWord"></div>'
+    :'<div class="cl-item-word" id="clWord" style="font-size:clamp(20px,6vw,28px)"></div>';
+
+  var btns=document.createElement('div');btns.className='cl-btns';
+  var lBtn=document.createElement('button');lBtn.className='cl-btn cl-btn-left';
+  lBtn.innerHTML='◀<br><span style="font-size:13px">'+lv.leftCat+'</span>';
+  lBtn.addEventListener('click',function(){onClassify('L');});
+  var rBtn=document.createElement('button');rBtn.className='cl-btn cl-btn-right';
+  rBtn.innerHTML='▶<br><span style="font-size:13px">'+lv.rightCat+'</span>';
+  rBtn.addEventListener('click',function(){onClassify('R');});
+  btns.appendChild(lBtn);btns.appendChild(rBtn);
+
+  area.appendChild(cats);area.appendChild(prog);area.appendChild(itemBox);area.appendChild(btns);
+
+  showClItem();
+  setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},400);
+}
+
+function showClItem(){
+  var lv=CLASSIFY_LEVELS[_level-1];
+  var item=_clItems[_clIdx];
+  var box=document.getElementById('clItem');if(!box)return;
+  if(lv.showEmoji){var e=document.getElementById('clEmoji');if(e)e.textContent=item.e;}
+  var w=document.getElementById('clWord');if(w)w.textContent=item.w;
+  box.style.animation='none';
+  void box.offsetWidth;
+  box.style.animation='clSlideIn .2s ease';
+}
+
+function onClassify(side){
+  if(!_gameActive)return;
+  var item=_clItems[_clIdx];
+  if(side===item.s){
+    snd('correct');_clIdx++;
+    var prog=document.getElementById('clProg');if(prog)prog.textContent=_clIdx+' / '+_clItems.length;
+    var box=document.getElementById('clItem');
+    if(box){box.classList.add('cl-correct-flash');setTimeout(function(){box.classList.remove('cl-correct-flash');},260);}
+    if(_clIdx>=_clItems.length){
+      particles(document.getElementById('clItem')||document.body);
+      setTimeout(onLevelPass,300);
+    }else{
+      setTimeout(showClItem,280);
+    }
+  }else{
+    _errors++;snd('wrong');shake();
+    onLevelFail('wrong');
+  }
+}
+
+// ── Wordcombine Game ──
+function buildWordcombineGame(){
+  var lv=WORDCOMBINE_LEVELS[_level-1];
+  _wcWords=lv.words;_wcWordIdx=0;
+  document.getElementById('playArea').innerHTML='';
+  renderWcWord();
+  setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},400);
+}
+
+function renderWcWord(){
+  var lv=WORDCOMBINE_LEVELS[_level-1];
+  var w=_wcWords[_wcWordIdx];
+  _wcExpect=0;_wcSlotEls=[];_wcTileEls=[];_wcDone=false;
+
+  var area=document.getElementById('playArea');
+  area.innerHTML='';
+
+  var prog=document.createElement('div');
+  prog.className='wc-prog-lbl';
+  prog.textContent=(_wcWordIdx+1)+' / '+_wcWords.length+' 번째 단어';
+
+  var em=document.createElement('div');
+  em.className='wc-emoji';em.textContent=w.emoji;
+
+  var slots=document.createElement('div');slots.className='wc-slots';
+  w.syl.forEach(function(){
+    var s=document.createElement('div');s.className='wc-slot';
+    slots.appendChild(s);_wcSlotEls.push(s);
+  });
+
+  var tileData=shuffle(w.syl.slice().concat(lv.dist));
+  var tiles=document.createElement('div');tiles.className='wc-tiles';
+  tileData.forEach(function(syl){
+    var btn=document.createElement('button');btn.className='wc-tile';
+    btn.textContent=syl;btn.dataset.syl=syl;
+    btn.addEventListener('click',function(){onWcClick(btn,syl);});
+    tiles.appendChild(btn);_wcTileEls.push(btn);
+  });
+
+  area.appendChild(prog);area.appendChild(em);area.appendChild(slots);area.appendChild(tiles);
+}
+
+function onWcClick(btn,syl){
+  if(!_gameActive||_wcDone)return;
+  if(btn.classList.contains('wc-used'))return;
+  var w=_wcWords[_wcWordIdx];
+  if(syl===w.syl[_wcExpect]){
+    btn.classList.add('wc-used');
+    var slot=_wcSlotEls[_wcExpect];
+    slot.textContent=syl;slot.classList.add('filled');
+    snd('correct');_wcExpect++;
+    if(_wcExpect>=w.syl.length){
+      _wcDone=true;_wcWordIdx++;
+      if(_wcWordIdx>=_wcWords.length){
+        particles(slot);setTimeout(onLevelPass,400);
+      }else{
+        setTimeout(renderWcWord,700);
+      }
+    }
+  }else{
+    _errors++;snd('wrong');shake();
+    btn.classList.add('wc-wrong');
+    setTimeout(function(){btn.classList.remove('wc-wrong');},350);
+    onLevelFail('wrong');
+  }
+}
+
+// ── Wordbingo Game ──
+function buildWordbingoGame(){
+  var lv=WORDBINGO_LEVELS[_level-1];
+  _wbFound=0;_wbTotal=lv.count;_wbCells=[];
+
+  var items=[];
+  lv.targets.forEach(function(w){items.push({word:w,isTarget:true});});
+  for(var j=0;j<lv.total-lv.count;j++)items.push({word:lv.pool[j%lv.pool.length],isTarget:false});
+  items=shuffle(items);
+
+  var catBox=document.createElement('div');
+  catBox.className='wb-cat-box';
+  catBox.innerHTML='<div class="wb-cat-icon">'+lv.catIcon+'</div>'
+    +'<div><div class="wb-cat-label">찾아야 할 종류</div>'
+    +'<div class="wb-cat-name">'+lv.category+'</div></div>';
+
+  var foundWrap=document.createElement('div');
+  foundWrap.className='wb-found-wrap';
+  foundWrap.innerHTML='<div class="wb-found-bar"><div class="wb-found-fill" id="wbFill" style="width:0%"></div></div>'
+    +'<div class="wb-found-lbl" id="wbLbl">0 / '+lv.count+' 찾음</div>';
+
+  var g=document.createElement('div');
+  g.className='wb-grid cg'+lv.cols;
+  items.forEach(function(item){
+    var cell=document.createElement('div');
+    cell.className='wb-cell';
+    cell.textContent=item.word;
+    (function(isTarget){
+      cell.addEventListener('click',function(){onWordbingoClick(cell,isTarget);});
+    })(item.isTarget);
+    g.appendChild(cell);
+    _wbCells.push(cell);
+  });
+
+  var area=document.getElementById('playArea');
+  area.appendChild(catBox);
+  area.appendChild(foundWrap);
+  area.appendChild(g);
+
+  setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},400);
+}
+
+function onWordbingoClick(cell,isTarget){
+  if(!_gameActive)return;
+  if(cell.classList.contains('wb-found'))return;
+  if(isTarget){
+    cell.classList.add('wb-found');
+    snd('correct');
+    _wbFound++;
+    var pct=(_wbFound/_wbTotal)*100;
+    var fill=document.getElementById('wbFill');if(fill)fill.style.width=pct+'%';
+    var lbl=document.getElementById('wbLbl');if(lbl)lbl.textContent=_wbFound+' / '+_wbTotal+' 찾음';
+    if(_wbFound>=_wbTotal){particles(cell);setTimeout(onLevelPass,300);}
+  }else{
+    _errors++;snd('wrong');shake();
+    cell.classList.add('wb-wrong');
+    setTimeout(function(){cell.classList.remove('wb-wrong');},380);
+    onLevelFail('wrong');
+  }
+}
+
+// ── Reverse Game ──
+function buildReverseGame(){
+  var lv=REVERSE_LEVELS[_level-1];
+  _revTarget=lv.count;_revMode=lv.mode;_revNextExpect=lv.count;_revCells=[];
+  var colMap=[3,3,3,4,4];
+  var cols=colMap[_level-1];
+  var nums=shuffle(Array.from({length:lv.count},function(_,i){return i+1;}));
+
+  var allItems=nums.map(function(n){return {val:n,isNum:true,display:String(n)};});
+  if(lv.distract){
+    ['가','나','다','라','마'].forEach(function(c){allItems.push({val:c,isNum:false,display:c});});
+    allItems=shuffle(allItems);
+  }
+
+  var instTxt;
+  if(_revMode==='visible')instTxt='큰 수부터 눌러요! ('+lv.count+' → 1)';
+  else if(_revMode==='question')instTxt='기억하고 큰 수부터! 곧 ?로 바뀌어요';
+  else instTxt=lv.distract?'숫자만! 큰 수부터! 글자는 무시':'기억하고 큰 수부터! 곧 숨겨져요';
+
+  var inst=document.createElement('div');inst.className='game-inst';inst.textContent=instTxt;
+  var progWrap=document.createElement('div');progWrap.className='num-prog-wrap';
+  progWrap.innerHTML='<div class="num-prog-bar"><div class="num-prog-fill" id="rFill" style="width:0%"></div></div>'
+    +'<div class="num-next-lbl" id="rNext">▶ '+lv.count+'</div>';
+
+  var g=document.createElement('div');g.className='number-grid cg'+cols;
+  allItems.forEach(function(item){
+    var btn=document.createElement('button');btn.className='num-btn';
+    if(!item.isNum)btn.style.cssText+='color:#A8C898;font-size:clamp(16px,4vw,22px);';
+    btn.dataset.val=item.val;btn.dataset.isnum=item.isNum?'1':'0';
+    btn.textContent=item.display;
+    btn.addEventListener('click',function(){onRevClick(this);});
+    g.appendChild(btn);
+    if(item.isNum)_revCells.push({el:btn,val:item.val});
+  });
+
+  var area=document.getElementById('playArea');
+  area.appendChild(inst);area.appendChild(progWrap);area.appendChild(g);
+
+  if(_revMode!=='visible'){
+    startReversePreview();
+  }else{
+    setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},300);
+  }
+}
+
+function startReversePreview(){
+  _revCells.forEach(function(c){c.el.style.pointerEvents='none';});
+  var previewSec=3;
+  var overlay=document.createElement('div');
+  overlay.style.cssText='position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:8px;pointer-events:none;z-index:10;';
+  var badge=document.createElement('div');
+  badge.style.cssText='background:rgba(78,52,46,.75);color:#A5C87A;font-size:14px;font-weight:800;padding:8px 20px;border-radius:50px;backdrop-filter:blur(4px);';
+  badge.textContent='잘 기억하세요! '+previewSec+'초 후 시작';
+  overlay.appendChild(badge);
+  document.getElementById('playArea').style.position='relative';
+  document.getElementById('playArea').appendChild(overlay);
+  var count=previewSec;
+  var iv=setInterval(function(){
+    count--;
+    if(count>0){badge.textContent='잘 기억하세요! '+count+'초 후 시작';}
+    else{
+      clearInterval(iv);badge.textContent='시작!';
+      setTimeout(function(){
+        overlay.remove();
+        _revCells.forEach(function(c){
+          c.el.style.pointerEvents='';
+          if(!c.el.classList.contains('done')){
+            if(_revMode==='question')c.el.textContent='?';
+            else c.el.textContent='';
+          }
+        });
+        _gameActive=true;_timerIv=setInterval(tickTimer,1000);
+      },600);
+    }
+  },1000);
+}
+
+function onRevClick(btn){
+  if(!_gameActive)return;
+  if(btn.classList.contains('done'))return;
+  if(btn.dataset.isnum==='0'){shake();return;}
+  var n=parseInt(btn.dataset.val);
+  if(n===_revNextExpect){
+    btn.classList.add('done');btn.textContent=n;btn.disabled=true;
+    snd('correct');_revNextExpect--;
+    var pct=((_revTarget-_revNextExpect)/_revTarget)*100;
+    var fillEl=document.getElementById('rFill');if(fillEl)fillEl.style.width=pct+'%';
+    if(_revNextExpect<1){
+      var nextEl=document.getElementById('rNext');if(nextEl)nextEl.textContent='완료! 🎉';
+      particles(btn);setTimeout(onLevelPass,300);
+    }else{
+      var nextEl=document.getElementById('rNext');if(nextEl)nextEl.textContent='▶ '+_revNextExpect;
+    }
+  }else{
+    _errors++;snd('wrong');shake();
+    btn.classList.add('wrong-num');setTimeout(function(){btn.classList.remove('wrong-num');},300);
+    onLevelFail('wrong');
+  }
+}
+
+// ── Matchsame Game ──
+function buildMatchsameGame(){
+  var lv=MATCHSAME_LEVELS[_level-1];
+  _msFound=0;_msTotal=lv.count;_msCells=[];
+
+  // count개 타겟 + (total-count)개 방해 아이템 배치
+  var items=[];
+  for(var i=0;i<lv.count;i++)items.push({icon:lv.targetIcon,isTarget:true});
+  for(var j=0;j<lv.total-lv.count;j++)items.push({icon:lv.pool[j%lv.pool.length],isTarget:false});
+  items=shuffle(items);
+
+  var targetBox=document.createElement('div');
+  targetBox.className='ms-target-box';
+  targetBox.innerHTML='<div class="ms-target-icon">'+lv.targetIcon+'</div>'
+    +'<div><div class="ms-target-label">찾아야 할 것</div>'
+    +'<div class="ms-target-hint">'+lv.targetIcon+' '+lv.inst+'</div></div>';
+
+  var foundWrap=document.createElement('div');
+  foundWrap.className='ms-found-wrap';
+  foundWrap.innerHTML='<div class="ms-found-bar"><div class="ms-found-fill" id="msFill" style="width:0%"></div></div>'
+    +'<div class="ms-found-lbl" id="msLbl">0 / '+lv.count+' 찾음</div>';
+
+  var g=document.createElement('div');
+  g.className='ms-grid cg'+lv.cols;
+  items.forEach(function(item){
+    var cell=document.createElement('div');
+    cell.className='ms-cell';
+    cell.textContent=item.icon;
+    (function(isTarget){
+      cell.addEventListener('click',function(){onMatchsameClick(cell,isTarget);});
+    })(item.isTarget);
+    g.appendChild(cell);
+    _msCells.push(cell);
+  });
+
+  var area=document.getElementById('playArea');
+  area.appendChild(targetBox);
+  area.appendChild(foundWrap);
+  area.appendChild(g);
+
+  setTimeout(function(){_gameActive=true;_timerIv=setInterval(tickTimer,1000);},400);
+}
+
+function onMatchsameClick(cell,isTarget){
+  if(!_gameActive)return;
+  if(cell.classList.contains('ms-found'))return;
+  if(isTarget){
+    cell.classList.add('ms-found');
+    snd('correct');
+    _msFound++;
+    var pct=(_msFound/_msTotal)*100;
+    var fill=document.getElementById('msFill');if(fill)fill.style.width=pct+'%';
+    var lbl=document.getElementById('msLbl');if(lbl)lbl.textContent=_msFound+' / '+_msTotal+' 찾음';
+    if(_msFound>=_msTotal){particles(cell);setTimeout(onLevelPass,300);}
+  }else{
+    _errors++;snd('wrong');shake();
+    cell.classList.add('ms-wrong');
+    setTimeout(function(){cell.classList.remove('ms-wrong');},380);
+    onLevelFail('wrong');
+  }
+}
+
+// ── Position Game ──
+function buildPositionGame(){
+  var lv=POSITION_LEVELS[_level-1];
+  var total=lv.cols*lv.cols;
+  _posCells=[];_posNextIdx=0;
+
+  // 순서 시퀀스: count개 위치를 랜덤 선택
+  var idxArr=shuffle(Array.from({length:total},function(_,i){return i;}));
+  _posSeq=idxArr.slice(0,lv.count);
+
+  var inst=document.createElement('div');
+  inst.className='game-inst';
+  inst.textContent='반짝이는 순서대로 눌러요!';
+
+  var seqWrap=document.createElement('div');
+  seqWrap.className='pos-seq-wrap';
+  seqWrap.innerHTML='<div class="pos-seq-bar"><div class="pos-seq-fill" id="pFill" style="width:0%"></div></div><div class="pos-seq-lbl" id="pNext">준비중...</div>';
+
+  var g=document.createElement('div');
+  g.className='pos-grid cg'+lv.cols;
+  for(var i=0;i<total;i++){
+    var cell=document.createElement('div');
+    cell.className='pos-cell';
+    cell.dataset.idx=i;
+    (function(idx){cell.addEventListener('click',function(){onPositionClick(idx);});})(i);
+    g.appendChild(cell);
+    _posCells.push(cell);
+  }
+
+  var area=document.getElementById('playArea');
+  area.appendChild(inst);
+  area.appendChild(seqWrap);
+  area.appendChild(g);
+
+  startPositionPreview();
+}
+
+function startPositionPreview(){
+  _posCells.forEach(function(c){c.style.pointerEvents='none';});
+  var step=0;
+  var delay=700; // 셀당 켜있는 시간(ms)
+  var gap=200;   // 꺼진 후 다음 셀까지 간격
+
+  function showStep(){
+    if(step>=_posSeq.length){
+      // 모두 보여줬으면 입력 시작
+      setTimeout(function(){
+        _posCells.forEach(function(c){c.style.pointerEvents='';});
+        var nextEl=document.getElementById('pNext');
+        if(nextEl)nextEl.textContent='▶ 1 / '+_posSeq.length;
+        _gameActive=true;
+        _timerIv=setInterval(tickTimer,1000);
+      },400);
+      return;
+    }
+    var idx=_posSeq[step];
+    var cell=_posCells[idx];
+    cell.classList.add('pos-lit');
+    cell.textContent=step+1;
+    setTimeout(function(){
+      cell.classList.remove('pos-lit');
+      cell.textContent='';
+      step++;
+      setTimeout(showStep,gap);
+    },delay);
+  }
+
+  // 0.5초 후 시작
+  setTimeout(showStep,500);
+}
+
+function onPositionClick(idx){
+  if(!_gameActive)return;
+  var cell=_posCells[idx];
+  if(cell.classList.contains('pos-done'))return;
+
+  if(idx===_posSeq[_posNextIdx]){
+    cell.classList.add('pos-done');
+    cell.textContent=_posNextIdx+1;
+    snd('correct');
+    _posNextIdx++;
+    var pct=(_posNextIdx/_posSeq.length)*100;
+    var fillEl=document.getElementById('pFill');
+    if(fillEl)fillEl.style.width=pct+'%';
+    if(_posNextIdx>=_posSeq.length){
+      var nextEl=document.getElementById('pNext');
+      if(nextEl)nextEl.textContent='완료! 🎉';
+      particles(cell);
+      setTimeout(onLevelPass,300);
+    }else{
+      var nextEl=document.getElementById('pNext');
+      if(nextEl)nextEl.textContent='▶ '+(_posNextIdx+1)+' / '+_posSeq.length;
+    }
+  }else{
+    _errors++;snd('wrong');shake();
+    cell.classList.add('pos-wrong');
+    setTimeout(function(){cell.classList.remove('pos-wrong');},350);
+    onLevelFail('wrong');
+  }
+}
+
+// ── 암산 챌린지 ──
+function _rnd(mn,mx){return Math.floor(Math.random()*(mx-mn+1))+mn;}
+function buildMathGame(){
+  var cfg=MATH_LEVELS[_level-1];
+  var prob,ans;
+  if(cfg.type==='add'){
+    var a=_rnd(cfg.a[0],cfg.a[1]),b=_rnd(cfg.b[0],cfg.b[1]);
+    prob=a+' + '+b+' = ?'; ans=a+b;
+  } else if(cfg.type==='sub'){
+    var a=_rnd(cfg.a[0],cfg.a[1]),b=_rnd(cfg.b[0],cfg.b[1]);
+    if(a<=b+1)a=b+_rnd(2,8);
+    prob=a+' − '+b+' = ?'; ans=a-b;
+  } else {
+    var a=_rnd(cfg.a[0],cfg.a[1]),b=_rnd(cfg.b[0],cfg.b[1]),c=_rnd(cfg.c[0],cfg.c[1]);
+    var sub=(Math.random()>0.5)&&(a+b>c+2);
+    if(sub){prob=a+' + '+b+' − '+c+' = ?';ans=a+b-c;}
+    else{prob=a+' + '+b+' + '+c+' = ?';ans=a+b+c;}
+  }
+  _mathCorrect=ans;
+  var wrongs=[];
+  var offs=[1,-1,2,-2,5,-5,3,-3,10,-10,7,-7];
+  for(var i=0;i<offs.length&&wrongs.length<3;i++){
+    var w=ans+offs[i];
+    if(w>=0&&w!==ans&&wrongs.indexOf(w)<0)wrongs.push(w);
+  }
+  var choices=[ans].concat(wrongs).sort(function(){return Math.random()-.5;});
+  var area=document.getElementById('playArea');
+  area.innerHTML='<div class="math-prob">'+prob+'</div>'+
+    '<div class="math-choices">'+
+    choices.map(function(c){
+      return '<button class="math-btn" onclick="onMathClick(this,'+c+')">'+c+'</button>';
+    }).join('')+'</div>';
+  _gameActive=true;_timerIv=setInterval(tickTimer,1000);
+}
+function onMathClick(el,val){
+  if(!_gameActive)return;
+  clearInterval(_timerIv);_gameActive=false;
+  if(val===_mathCorrect){particles(el);setTimeout(onLevelPass,300);}
+  else onLevelFail('wrong');
+}
+
+// ── 숫자 패턴 ──
+function buildPatternGame(){
+  var cfg=PATTERN_LEVELS[_level-1];
+  var seq=[],gapIdx,ans;
+  if(cfg.type==='arith'){
+    var d=_rnd(cfg.dMin,cfg.dMax);
+    var st=cfg.desc?_rnd(20,40):_rnd(1,15);
+    for(var i=0;i<cfg.len;i++)seq.push(cfg.desc?st-d*i:st+d*i);
+  } else if(cfg.type==='geo'){
+    var r=cfg.bases[_rnd(0,cfg.bases.length-1)],st=_rnd(1,2);
+    for(var i=0;i<cfg.len;i++)seq.push(st*Math.pow(r,i)|0);
+  } else {
+    var a=_rnd(cfg.aMin,cfg.aMax),b=_rnd(cfg.bMin,cfg.bMax),st=_rnd(1,8);
+    seq.push(st);
+    for(var i=1;i<cfg.len;i++)seq.push(seq[i-1]+(i%2===1?a:b));
+  }
+  gapIdx=_rnd(1,seq.length-2);
+  ans=seq[gapIdx];
+  _patAnswer=ans;
+  var seqHtml=seq.map(function(n,i){
+    return (i===gapIdx?'<span class="pat-gap">?</span>':'<span class="pat-num">'+n+'</span>')+
+      (i<seq.length-1?'<span class="pat-sep">→</span>':'');
+  }).join('');
+  var wrongs=[],offs=[1,-1,2,-2,3,-3,5,-5,4,-4];
+  for(var i=0;i<offs.length&&wrongs.length<3;i++){
+    var w=ans+offs[i];
+    if(w>0&&w!==ans&&wrongs.indexOf(w)<0)wrongs.push(w);
+  }
+  var choices=[ans].concat(wrongs).sort(function(){return Math.random()-.5;});
+  var area=document.getElementById('playArea');
+  area.innerHTML=
+    '<div class="pat-seq">'+seqHtml+'</div>'+
+    '<div class="pat-label">? 에 들어갈 숫자는?</div>'+
+    '<div class="math-choices">'+
+    choices.map(function(c){
+      return '<button class="math-btn" onclick="onPatternClick(this,'+c+')">'+c+'</button>';
+    }).join('')+'</div>';
+  _gameActive=true;_timerIv=setInterval(tickTimer,1000);
+}
+function onPatternClick(el,val){
+  if(!_gameActive)return;
+  clearInterval(_timerIv);_gameActive=false;
+  if(val===_patAnswer){particles(el);setTimeout(onLevelPass,300);}
+  else onLevelFail('wrong');
+}
+
+// ── Level Pass / Fail ──
+function onLevelPass(){
+  clearInterval(_timerIv);_gameActive=false;
+  _levelsPassed++;
+  _timeRemainingSum+=_timeLeft;
+  _totalTime+=(LV_TIMES[_game]?LV_TIMES[_game][_level-1]:20)-_timeLeft;
+  awardPoints(_game,'lv'+_level,10).then(function(e){if(e>0)showPointToast(10,'레벨 통과!');});
+  snd('levelup');
+  showSuccessFlash(function(){
+    if(_level===5){showFinalResult();return;}
+    showLvBanner('🎉 '+_level+'단계 통과!');
+    _ovMode='pass';
+    showOverlay('🎉',_level+'단계 통과!','훌륭해요! '+(_level+1)+'단계로 올라갑니다.\n더 어려워지니 집중하세요!',(_level+1)+'단계 시작하기 ▶');
+  });
+}
+
+function onLevelFail(reason){
+  clearInterval(_timerIv);_gameActive=false;
+  _tries--;renderTries();
+  if(_tries<=0){
+    _totalTime+=(LV_TIMES[_game]?LV_TIMES[_game][_level-1]:20)-Math.max(_timeLeft,0);
+    snd('fail');
+    showFailFlash(reason,function(){
+      _ovMode='over';
+      showOverlay('😢','아쉬워요...',_level+'단계에서 멈췄어요.\n성적표를 확인해볼까요?','성적표 보기');
+    });
+  }else{
+    snd('wrong');
+    showFailFlash(reason,function(){
+      _ovMode='retry';
+      var msg=(reason==='time'?'시간이 다 됐어요!':'틀렸어요!')+'\n다시 도전할 기회가 '+_tries+'번 남았어요.';
+      showOverlay('⏱','아직 기회가 있어요!',msg,'다시 도전하기 ('+_tries+'번 남음)');
+    });
+  }
+}
+
+function showOverlay(icon,title,sub,btn){
+  document.getElementById('ovIcon').textContent=icon;
+  document.getElementById('ovTitle').textContent=title;
+  document.getElementById('ovSub').textContent=sub;
+  document.getElementById('ovActBtn').textContent=btn;
+  document.getElementById('lvOverlay').style.display='flex';
+}
+function overlayAction(){
+  document.getElementById('lvOverlay').style.display='none';
+  if(_ovMode==='pass'){_level++;_tries=3;loadLevel();}
+  else if(_ovMode==='retry')loadLevel();
+  else showFinalResult();
+}
+function readyCountdown(cb){
+  var ov=document.createElement('div');ov.className='ready-ov';
+  var lbl=document.createElement('div');lbl.className='ready-label';lbl.textContent='준비하세요';
+  var num=document.createElement('div');num.className='ready-num';num.textContent='3';
+  ov.appendChild(lbl);ov.appendChild(num);document.body.appendChild(ov);
+  var c=3;
+  var iv=setInterval(function(){
+    c--;
+    if(c>0){num.style.animation='none';num.textContent=c;void num.offsetWidth;num.style.animation='';}
+    else{clearInterval(iv);ov.remove();cb();}
+  },1000);
+}
+
+function showSuccessFlash(cb){
+  var ov=document.createElement('div');ov.className='flash-ov';
+  ov.style.background='rgba(17,202,160,.12)';
+  var icon=document.createElement('div');icon.className='flash-ov-icon';icon.textContent='⭕';
+  ov.appendChild(icon);document.body.appendChild(ov);
+  setTimeout(function(){ov.remove();cb();},500);
+}
+
+function showFailFlash(reason,cb){
+  var ov=document.createElement('div');ov.className='flash-ov';
+  ov.style.background='rgba(255,100,50,.1)';
+  var icon=document.createElement('div');icon.className='flash-ov-icon';icon.textContent='❌';
+  var msg=document.createElement('div');msg.className='flash-ov-msg';msg.style.color='#2E7D32';
+  msg.textContent='아쉬워요! 다시 한 번 찾아보세요';
+  ov.appendChild(icon);ov.appendChild(msg);document.body.appendChild(ov);
+  shake();
+  setTimeout(function(){ov.remove();cb();},900);
+}
+
+function showLvBanner(txt){
+  var b=document.createElement('div');b.className='lv-banner';b.textContent=txt;
+  document.body.appendChild(b);setTimeout(function(){b.remove();},1000);
+}
+
+// ── Final Result ──
+async function showFinalResult(){
+  var pct=calcScore(),tier=scoreToTier(pct),t=TIER[tier],today=todayStr();
+  var completed=(_levelsPassed===5);
+  var data={game:_game,gameName:GAME_NAMES[_game]||_game,levelReached:_levelsPassed,totalErrors:_errors,totalTime:_totalTime,tier:tier,score:pct,completed:completed,ts:Date.now()};
+  saveBest(_game,pct,completed);
+  await saveResult(today,data);
+  if(completed){
+    var _bonus=await awardPoints(_game,'complete',50);
+    if(_bonus>0)showPointToast(50,'완주 보너스!');
+  }
+  // 미션 완주 체크
+  markMissionDone(_game,tier);
+  var _ms=getDailyMission(),_md=getMissionDone();
+  if(_ms.every(function(g){return _md[g];})){
+    var _mpts=await awardPoints('mission','complete_'+todayStr(),150);
+    if(_mpts>0)showPointToast(150,'미션 완주 보너스! 🎉');
+  }
+  updateTodayPtsDisplay();
+  var _ptd=_ptLoad();
+  document.getElementById('resPtsTotal').textContent=_ptd.total;
+  document.getElementById('resGameLbl').textContent=GAME_NAMES[_game]||_game;
+  var badge=document.getElementById('resBadge');badge.style.background=t.bg;
+  document.getElementById('resIcon').textContent=t.icon;
+  document.getElementById('resPct').textContent=pct+'%';
+  document.getElementById('resTier').textContent=t.name;
+  document.getElementById('resTier').style.color=t.color;
+  document.getElementById('resComment').textContent=t.msg;
+  document.getElementById('sLevel').textContent=_levelsPassed+' / 5';
+  document.getElementById('sTime').textContent=fmtTime(_totalTime);
+  document.getElementById('sErrors').textContent=_errors+'회';
+  TIER_ORDER.forEach(function(k,i){
+    var el=document.getElementById('tleg-'+i);
+    if(el)el.classList.toggle('tleg-active',k===tier);
+  });
+  showScreen('s-result');snd('finish');spawnCenter();updateHomeDots();renderHomeCal();
+}
+
+// ── Calendar ──
+function changeCalMonth(d){
+  _calM+=d;
+  if(_calM>11){_calM=0;_calY++;}
+  if(_calM<0){_calM=11;_calY--;}
+  renderCalendar();
+}
+async function renderCalendar(){
+  document.getElementById('calMonthLbl').textContent=_calY+'년 '+(_calM+1)+'월';
+  await loadCalData(_calY,_calM);
+  buildCalGrid();buildGraph();
+}
+function buildCalGrid(){
+  var grid=document.getElementById('calGrid');grid.innerHTML='';
+  ['일','월','화','수','목','금','토'].forEach(function(d){
+    var l=document.createElement('div');l.className='cal-day-lbl';l.textContent=d;grid.appendChild(l);
+  });
+  var first=new Date(_calY,_calM,1).getDay();
+  var days=new Date(_calY,_calM+1,0).getDate();
+  var now=new Date();
+  for(var i=0;i<first;i++){var e=document.createElement('div');e.className='cal-day empty';grid.appendChild(e);}
+  for(var d=1;d<=days;d++){
+    var cell=document.createElement('div');cell.className='cal-day';
+    var ds=_calY+'-'+String(_calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    if(now.getFullYear()===_calY&&now.getMonth()===_calM&&now.getDate()===d)cell.classList.add('today');
+    cell.textContent=d;
+    var res=_calData[ds];
+    if(res){
+      cell.classList.add('has-r','t-'+res.tier);
+      var dot=document.createElement('div');dot.className='cal-dot';cell.appendChild(dot);
+      (function(r,s){cell.addEventListener('click',function(){showDayDetail(s,r);});})(res,ds);
+    }
+    grid.appendChild(cell);
+  }
+  document.getElementById('dayDetail').style.display='none';
+}
+function showDayDetail(ds,res){
+  var t=TIER[res.tier],detail=document.getElementById('dayDetail');
+  detail.style.display='block';
+  detail.innerHTML='<div class="dd-date">'+ds.replace(/-/g,'.')+'&nbsp;·&nbsp;'+(res.gameName||GAME_NAMES[res.game])+'</div>'
+    +'<div class="dd-tier" style="color:'+t.color+'">'+t.icon+' '+t.name+'</div>'
+    +'<div class="dd-comment">'+t.msg+'</div>'
+    +'<div class="dd-stats">도달 레벨: '+res.levelReached+'/5 &nbsp;·&nbsp; 오답: '+res.totalErrors+'회 &nbsp;·&nbsp; 시간: '+fmtTime(res.totalTime)+'</div>';
+  detail.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function buildGraph(){
+  var wrap=document.getElementById('graphWrap'),bars=document.getElementById('graphBars');
+  bars.innerHTML='';
+  var days=new Date(_calY,_calM+1,0).getDate();
+  var scores={excellent:5,good:4,normal:3,poor:2,retry:1};
+  var hasAny=false;
+  for(var d=1;d<=days;d++){
+    var ds=_calY+'-'+String(_calM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var res=_calData[ds],sc=res?(scores[res.tier]||0):0;
+    if(sc)hasAny=true;
+    var h=sc?((sc/5)*48+4):2;
+    var wrap2=document.createElement('div');wrap2.className='g-bar-wrap';
+    var bar=document.createElement('div');bar.className='g-bar'+(sc?' active':'');bar.style.height=h+'px';
+    var lbl=document.createElement('div');lbl.className='g-bar-n';lbl.textContent=(d%5===0)?d:'';
+    wrap2.appendChild(bar);wrap2.appendChild(lbl);bars.appendChild(wrap2);
+  }
+  wrap.style.display=hasAny?'block':'none';
+}
+
+// ── Home Inline Calendar ──
+var _hCalY=new Date().getFullYear(),_hCalM=new Date().getMonth();
+function homeCalChange(d){
+  _hCalM+=d;
+  if(_hCalM>11){_hCalM=0;_hCalY++;}
+  if(_hCalM<0){_hCalM=11;_hCalY--;}
+  renderHomeCal();
+}
+async function renderHomeCal(){
+  document.getElementById('hCalLbl').textContent=_hCalY+'년 '+(_hCalM+1)+'월';
+  await loadCalData(_hCalY,_hCalM);
+  var grid=document.getElementById('hCalGrid');grid.innerHTML='';
+  ['일','월','화','수','목','금','토'].forEach(function(d){
+    var l=document.createElement('div');l.className='hcal-dlbl';l.textContent=d;grid.appendChild(l);
+  });
+  var first=new Date(_hCalY,_hCalM,1).getDay();
+  var days=new Date(_hCalY,_hCalM+1,0).getDate();
+  var now=new Date();
+  for(var i=0;i<first;i++){var e=document.createElement('div');e.className='hcal-day empty';grid.appendChild(e);}
+  for(var d=1;d<=days;d++){
+    var cell=document.createElement('div');cell.className='hcal-day';
+    var ds=_hCalY+'-'+String(_hCalM+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    if(now.getFullYear()===_hCalY&&now.getMonth()===_hCalM&&now.getDate()===d)cell.classList.add('today');
+    cell.textContent=d;
+    var res=_calData[ds];
+    if(res){
+      cell.classList.add('has-r','ht-'+res.tier);
+      var dot=document.createElement('div');dot.className='hcal-dot';cell.appendChild(dot);
+      (function(r,s){cell.addEventListener('click',function(){showHCalDetail(s,r);});})(res,ds);
+    }
+    grid.appendChild(cell);
+  }
+}
+function showHCalDetail(ds,res){
+  var t=TIER[res.tier],el=document.getElementById('hCalDetail');
+  el.style.display='block';
+  el.innerHTML='<div class="hcal-detail-date">'+ds.replace(/-/g,'.')+'&nbsp;·&nbsp;'+(res.gameName||GAME_NAMES[res.game])+'</div>'
+    +'<div class="hcal-detail-tier" style="color:'+t.color+'">'+t.icon+' '+t.name+' '+(res.score||'')+'%</div>'
+    +'<div class="hcal-detail-msg">'+t.msg+'</div>';
+}
+
+// ── Home Status ──
+function updateHomeDots(){
+  try{
+    var best=getBest();
+    ['card','shape','number'].forEach(function(g){
+      var el=document.getElementById('dots-'+g);if(!el)return;
+      var b=best[g];
+      if(!b){el.innerHTML='<span class="glv-badge glv-none">미도전</span>';return;}
+      if(b.completed){
+        el.innerHTML='<span class="glv-badge glv-done">✓ 완료</span><span class="glv-score">최고 '+b.score+'%</span>';
+      }else{
+        el.innerHTML='<span class="glv-badge glv-prog">도전 중</span><span class="glv-score">최고 '+b.score+'%</span>';
+      }
+    });
+    var st=JSON.parse(localStorage.getItem(lsKey())||'{}');
+    var streak=0,now=new Date();
+    for(var i=0;i<365;i++){var dd=new Date(now);dd.setDate(dd.getDate()-i);var ds=dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');if(st[ds])streak++;else if(i>0)break;}
+    document.getElementById('streakNum').textContent=streak;
+  }catch(e){}
+}
+
+// ── Audio ──
+var _actx=null;
+function getActx(){if(!_actx)_actx=new(window.AudioContext||window.webkitAudioContext)();return _actx;}
+function tone(f,t,d,v,delay){
+  try{var c=getActx(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);
+  o.type=t||'sine';o.frequency.value=f;var st=c.currentTime+(delay||0);
+  g.gain.setValueAtTime(v||0.25,st);g.gain.exponentialRampToValueAtTime(0.001,st+d);
+  o.start(st);o.stop(st+d);}catch(e){}
+}
+function snd(type){
+  if(type==='flip')tone(600,'sine',.08,.1);
+  else if(type==='correct'){tone(880,'sine',.12,.2);tone(1100,'sine',.1,.15,.1);}
+  else if(type==='wrong')tone(200,'sawtooth',.15,.25);
+  else if(type==='levelup')[523,659,784,1047].forEach(function(f,i){tone(f,'sine',.22,.28,i*.1);});
+  else if(type==='fail')[440,330,220].forEach(function(f,i){tone(f,'sine',.2,.2,i*.15);});
+  else if(type==='finish')[523,659,784,880,1047].forEach(function(f,i){tone(f,'sine',.25,.3,i*.08);});
+}
+
+// ── Particles ──
+var pCvs=document.getElementById('pCanvas'),pCtx=pCvs.getContext('2d'),_parts=[],_raf=null;
+function resizeCvs(){pCvs.width=window.innerWidth;pCvs.height=window.innerHeight;}
+window.addEventListener('resize',resizeCvs);resizeCvs();
+var PCOLS=['#A5C87A','#81C784','#FF8A65','#64B5F6','#F48FB1','#CE93D8'];
+function spawnAt(cx,cy,n){
+  for(var i=0;i<n;i++){
+    var a=Math.random()*Math.PI*2,sp=3+Math.random()*5;
+    _parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2,r:5+Math.random()*7,c:PCOLS[Math.floor(Math.random()*PCOLS.length)],life:1,decay:.022+Math.random()*.02});
+  }
+  if(!_raf)animP();
+}
+function particles(el){if(!el)return;var r=el.getBoundingClientRect();spawnAt(r.left+r.width/2,r.top+r.height/2,14);}
+function spawnCenter(){spawnAt(window.innerWidth/2,window.innerHeight/3,32);}
+function animP(){
+  pCtx.clearRect(0,0,pCvs.width,pCvs.height);
+  _parts=_parts.filter(function(p){return p.life>0;});
+  _parts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.life-=p.decay;pCtx.globalAlpha=p.life;pCtx.fillStyle=p.c;pCtx.beginPath();pCtx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);pCtx.fill();});
+  pCtx.globalAlpha=1;
+  if(_parts.length)_raf=requestAnimationFrame(animP);else _raf=null;
+}
+function shake(){document.body.classList.add('shake');setTimeout(function(){document.body.classList.remove('shake');},380);}
+
+// ── Utils ──
+function shuffle(a){var b=[].concat(a);for(var i=b.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t;}return b;}
+function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtTime(s){if(!s)return '0초';var m=Math.floor(s/60),r=s%60;return m?m+'분 '+r+'초':r+'초';}
+
+// ── Point System ──
+function _ptLoad(){
+  try{ return JSON.parse(localStorage.getItem('pts_'+todayStr())||'{"total":0,"keys":[]}'); }
+  catch(e){ return {total:0,keys:[]}; }
+}
+function _ptSave(d){ try{ localStorage.setItem('pts_'+todayStr(),JSON.stringify(d)); }catch(e){} }
+
+async function awardPoints(gameId, tag, pts){
+  var key=gameId+'_'+tag;
+  var d=_ptLoad();
+  if(d.keys.indexOf(key)>=0) return 0;
+  var cap=Math.max(0,300-d.total);
+  if(cap<=0) return 0;
+  var actual=Math.min(pts,cap);
+  d.total+=actual; d.keys.push(key);
+  _ptSave(d);
+  var grand=parseInt(localStorage.getItem('pts_total')||'0')+actual;
+  localStorage.setItem('pts_total',grand);
+  updateTodayPtsDisplay();
+  if(_db&&_uid){
+    _db.collection('user_logs').doc(_uid).collection('points').doc(todayStr())
+      .set({total:d.total,keys:d.keys,updatedAt:firebase.firestore.FieldValue.serverTimestamp()})
+      .catch(function(){});
+    _db.collection('users').doc(_uid)
+      .set({totalPoints:firebase.firestore.FieldValue.increment(actual)},{merge:true})
+      .catch(function(){});
+  }
+  return actual;
+}
+
+function showPointToast(pts, label){
+  var el=document.createElement('div');
+  el.className='pt-toast';
+  el.textContent='+'+pts+'p'+(label?' '+label:'');
+  document.body.appendChild(el);
+  setTimeout(function(){el.remove();},1000);
+}
+
+function updateTodayPtsDisplay(){
+  var d=_ptLoad();
+  var el=document.getElementById('todayPts');
+  if(el) el.textContent=d.total;
+}
+
+// ── Daily Mission System ──
+function getDailyMission(){
+  var k='mission_'+todayStr();
+  var cached=localStorage.getItem(k);
+  if(cached){try{return JSON.parse(cached);}catch(e){}}
+  var seed=parseInt(todayStr().replace(/-/g,''));
+  function sr(s){var x=Math.sin(s+1)*10000;return x-Math.floor(x);}
+  var arr=[0,1,2,3,4];
+  for(var i=4;i>0;i--){var j=Math.floor(sr(seed*(i+7))*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}
+  var sel=arr.slice(0,3).map(function(ci,i){
+    var cat=CATEGORIES[ci];
+    return cat.games[sr(seed*(ci+99)+i)<0.5?0:1];
+  });
+  localStorage.setItem(k,JSON.stringify(sel));
+  return sel;
+}
+function getMissionDone(){
+  try{return JSON.parse(localStorage.getItem('mdone_'+todayStr())||'{}');}catch(e){return {};}
+}
+function markMissionDone(gid,tier){
+  var done=getMissionDone();
+  if(!done[gid]){done[gid]=tier;localStorage.setItem('mdone_'+todayStr(),JSON.stringify(done));}
+}
+function renderMissionCards(){
+  var mission=getDailyMission(),done=getMissionDone();
+  var el=document.getElementById('missionCards');
+  if(!el)return;
+  el.innerHTML='';
+  mission.forEach(function(gid){
+    var catIdx=CATEGORIES.findIndex(function(c){return c.games.indexOf(gid)>=0;});
+    var cat=CATEGORIES[catIdx]||CATEGORIES[0];
+    var isDone=!!done[gid];
+    var isComingSoon=COMING_SOON.indexOf(gid)>=0;
+    var btn=document.createElement('button');
+    btn.className='mcard'+(isDone?' mdone':'');
+    if(!isDone&&!isComingSoon)btn.onclick=function(){startGame(gid);};
+    btn.innerHTML=
+      '<div class="mcard-icon" style="background:'+cat.color+'">'+(GAME_ICON[gid]||'🎮')+'</div>'
+      +'<div class="mcard-info">'
+        +'<div class="mcard-name">'+(GAME_NAMES[gid]||gid)+'</div>'
+        +'<div class="mcard-cat">'+cat.icon+' '+cat.name+(isComingSoon?' · 준비중':'')+'</div>'
+      +'</div>'
+      +(isDone?'<span style="font-size:22px">✅</span>':isComingSoon?'<span style="font-size:14px;color:#A8C898">🔧</span>':'<span class="mcard-arrow">›</span>');
+    el.appendChild(btn);
+  });
+  var doneCount=mission.filter(function(g){return done[g];}).length;
+  var fill=document.getElementById('mpFill');
+  var txt=document.getElementById('mpTxt');
+  if(fill)fill.style.width=(doneCount/3*100)+'%';
+  if(txt)txt.textContent=doneCount+' / 3';
+  var bonusMsg=document.getElementById('missionBonusMsg');
+  if(bonusMsg)bonusMsg.style.display=(doneCount===3?'block':'none');
+}
+function renderCategoryList(){
+  var el=document.getElementById('catList');
+  if(!el)return;
+  el.innerHTML='';
+  var best=getBest();
+  var mission=getDailyMission();
+  CATEGORIES.forEach(function(cat){
+    var sec=document.createElement('div');
+    sec.className='cat-section';
+    var inner='<div class="cat-header"><div class="cat-icon-wrap" style="background:'+cat.color+'">'+cat.icon+'</div><div class="cat-name">'+cat.name+'</div></div><div class="cat-games-row">';
+    cat.games.forEach(function(gid){
+      var b=best[gid];
+      var isMission=mission.indexOf(gid)>=0;
+      var isComingSoon=COMING_SOON.indexOf(gid)>=0;
+      var badgeTxt=b?(b.completed?'완료':'도전중'):'미도전';
+      if(isComingSoon)badgeTxt='준비중';
+      var badgeCls=b?(b.completed?'b-done':'b-prog'):'b-none';
+      if(isComingSoon)badgeCls='b-coming';
+      inner+='<button class="cgame-btn'+(b&&b.completed?' cdone':'')+(isMission?' cmission':'')+'" '
+        +(isComingSoon?'disabled style="opacity:.55;cursor:default"':'onclick="startGame(\''+gid+'\')"')+'>'
+        +'<span class="cgame-icon">'+(GAME_ICON[gid]||'🎮')+'</span>'
+        +'<span class="cgame-name">'+(GAME_NAMES[gid]||gid)+(isMission?' ★':'')+'</span>'
+        +'<span class="cgame-badge '+badgeCls+'">'+(b&&!isComingSoon?b.score+'%':badgeTxt)+'</span>'
+        +'</button>';
+    });
+    inner+='</div>';
+    sec.innerHTML=inner;
+    el.appendChild(sec);
+  });
+}
+
+// ── Community Ranking ──
+function _escR(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+async function renderRanking(){
+  var el=document.getElementById('rankList');
+  if(!el)return;
+  var user=firebase.auth().currentUser;
+  if(!user){
+    el.innerHTML='<div class="rank-placeholder">로그인하면<br>이웃들과 함께 랭킹을 확인할 수 있어요 🏆</div>';
+    return;
+  }
+  try{
+    var snap=await _db.collection('users').orderBy('totalPoints','desc').limit(10).get();
+    if(snap.empty){
+      el.innerHTML='<div class="rank-placeholder">아직 기록이 없습니다.<br>첫 번째 랭커가 되어보세요! 🎉</div>';
+      return;
+    }
+    var medals=['🥇','🥈','🥉'];
+    var html='';var rank=1;
+    snap.forEach(function(doc){
+      var d=doc.data();
+      if(!d.totalPoints||d.totalPoints<1)return;
+      var pts=d.totalPoints||0;
+      var name=d.name||'익명';
+      var initial=name.charAt(0)||'?';
+      var isMe=doc.id===_uid;
+      var numHtml=rank<=3
+        ?'<div class="rank-medal">'+medals[rank-1]+'</div>'
+        :'<div class="rank-num">'+rank+'위</div>';
+      html+='<div class="rank-item'+(isMe?' rank-me':'')+'">'+
+        numHtml+
+        '<div class="rank-avatar">'+_escR(initial)+'</div>'+
+        '<div class="rank-info">'+
+          '<div class="rank-name">'+_escR(name)+(isMe?' (나)':'')+'</div>'+
+          '<div class="rank-sub">누적 포인트</div>'+
+        '</div>'+
+        '<div class="rank-pts">⭐'+pts.toLocaleString()+'p</div>'+
+      '</div>';
+      rank++;
+    });
+    el.innerHTML=html||'<div class="rank-placeholder">아직 기록이 없습니다.</div>';
+  }catch(e){
+    el.innerHTML='<div class="rank-placeholder">랭킹 불러오기 실패<br>잠시 후 다시 시도해주세요</div>';
+  }
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded',function(){
+  _calY=new Date().getFullYear();_calM=new Date().getMonth();
+  _hCalY=_calY;_hCalM=_calM;
+  initFB().then(function(){updateHomeDots();renderHomeCal();updateTodayPtsDisplay();renderMissionCards();renderCategoryList();renderRanking();});
+});
+</script>
+</body>
+</html>

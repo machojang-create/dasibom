@@ -1,0 +1,1974 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>나의 추억, 너의 기억</title>
+<!-- PortOne (아임포트) PG SDK -->
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+<script src="/social-login.js"></script>
+<script src="questions_v3.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+.no-copy{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none}
+:root{
+  --ink:#1A1510;--inkL:#3D3228;
+  --cream:#F5F0E8;--warm:#FBF8F3;
+  --sepia:#8B6F47;--sepiaL:#C4A882;--sepiaP:#E8D9C0;
+  --gold:#C9A84C;--goldL:#E8CC7A;
+  --red:#B03020;--green:#2D6A4F;
+  --orange:#C8784A;--orangeL:#E8A882;
+}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;background:#0a0805;color:var(--cream);min-height:100vh}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--inkL);color:var(--cream);padding:12px 24px;font-size:12px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);border-radius:2px;opacity:0;transition:opacity .3s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* ── 인트로 ── */
+#s-intro{position:relative;overflow:hidden;background:#0a0805;min-height:100vh}
+.intro-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 65% 45%,rgba(180,100,40,.32) 0%,transparent 55%),radial-gradient(ellipse at 20% 70%,rgba(120,60,20,.2) 0%,transparent 50%),linear-gradient(180deg,#0a0805 0%,#1c0e06 45%,#280f04 70%,#0a0805 100%);z-index:0}
+.intro-page{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 36px;text-align:center;z-index:10;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.intro-page.active{opacity:1;pointer-events:auto}
+.p1-badge{font-size:12px;color:rgba(200,160,100,.5);letter-spacing:3px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;margin-bottom:28px;opacity:0;transition:opacity 1s ease}
+.p1-badge.show{opacity:1}
+.p1-main{font-size:clamp(26px,7vw,40px);font-weight:700;color:#f0e4d0;line-height:1.45;letter-spacing:-.5px;margin-bottom:24px;opacity:0;transition:opacity 1s ease}
+.p1-main.show{opacity:1}
+.p1-sub{font-size:clamp(14px,3.8vw,18px);font-weight:300;color:rgba(210,180,140,.7);line-height:1.9;opacity:0;transition:opacity 1s ease}
+.p1-sub.show{opacity:1}
+.p2-q{font-size:clamp(22px,6vw,34px);font-weight:700;color:#f0e4d0;line-height:1.5;margin-bottom:36px;opacity:0;transition:opacity 1s ease}
+.p2-q.show{opacity:1}
+.p2-items{display:flex;flex-direction:column;gap:12px;opacity:0;transition:opacity 1s ease}
+.p2-items.show{opacity:1}
+.p2-item{font-size:clamp(13px,3.5vw,16px);color:rgba(200,170,130,.65);font-weight:300;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+.p2-trigger{margin-top:40px;font-size:clamp(16px,4.5vw,22px);font-weight:700;color:rgba(230,195,150,.9);line-height:1.6;opacity:0;transition:opacity 1s ease}
+.p2-trigger.show{opacity:1}
+.p3-main{font-size:clamp(18px,5vw,26px);font-weight:300;color:rgba(220,190,150,.8);line-height:1.7;margin-bottom:16px;opacity:0;transition:opacity 1s ease}
+.p3-main.show{opacity:1}
+.p3-key{font-size:clamp(26px,7vw,38px);font-weight:700;color:#f5ead8;line-height:1.4;letter-spacing:-.5px;margin-bottom:52px;opacity:0;transition:opacity 1s ease}
+.p3-key.show{opacity:1}
+.p3-btns{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:320px;opacity:0;transition:opacity 1s ease}
+.p3-btns.show{opacity:1}
+.page-dots{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20}
+.page-dot{width:6px;height:6px;border-radius:50%;background:rgba(200,160,100,.3);transition:all .4s ease}
+.page-dot.active{background:rgba(200,160,100,.9);width:20px;border-radius:3px}
+.btn-cta{width:100%;padding:18px 0;border:none;cursor:pointer;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:17px;font-weight:700;border-radius:50px;box-shadow:0 8px 28px rgba(200,120,70,.4);transition:all .3s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+.btn-cta:active{transform:scale(.97)}
+.btn-cta-ghost{background:transparent;border:none;color:rgba(200,170,130,.55);font-size:13px;cursor:pointer;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;text-decoration:underline;padding:4px}
+
+/* ── 패키지 ── */
+#s-package{background:var(--warm);overflow-y:auto}
+.pkg-hero{background:linear-gradient(180deg,#1a0e06 0%,#2a1808 60%,var(--warm) 100%);padding:48px 28px 36px;text-align:center}
+.pkg-hero-title{font-size:clamp(18px,5vw,24px);font-weight:700;color:var(--cream);line-height:1.6;margin-bottom:6px}
+.pkg-hero-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:rgba(196,168,130,.6);font-weight:300}
+.pkg-body{padding:16px 24px 60px}
+.pkg-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+/* 카드 공통 */
+.pkg-card{border:2px solid var(--sepiaP);padding:22px;cursor:pointer;transition:all .22s;position:relative;background:var(--warm);border-radius:16px}
+.pkg-card.selected{border-color:var(--orange);background:rgba(200,120,70,.04);transform:scale(1.01)}
+/* 프리미엄 골드 카드 */
+.pkg-card.pkg-premium{
+  background:linear-gradient(145deg,#FFFDF0,#FFF8E1);
+  border:2px solid rgba(201,168,64,.4);
+  box-shadow:0 6px 24px rgba(201,168,64,.18);
+}
+.pkg-card.pkg-premium.selected{
+  border-color:var(--gold);
+  box-shadow:0 8px 32px rgba(201,168,64,.38),0 0 0 1px rgba(201,168,64,.25);
+}
+.pkg-card.pkg-premium::before{
+  content:'✦ 추천';position:absolute;top:-1px;right:16px;
+  background:linear-gradient(135deg,#C9A840,#E8CC70);
+  color:#fff;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:10px;font-weight:800;padding:4px 12px;border-radius:0 0 8px 8px;
+  letter-spacing:1px;
+}
+.pkg-card.pkg-free::before{
+  content:'무료';position:absolute;top:-1px;right:16px;
+  background:rgba(139,111,71,.45);color:#fff;
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:10px;font-weight:700;padding:4px 10px;border-radius:0 0 6px 6px;
+}
+.pkg-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.pkg-name{font-size:18px;font-weight:800;color:var(--ink)}
+.pkg-price{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:17px;color:var(--orange);font-weight:800}
+.pkg-price span{font-size:11px;font-weight:300;color:var(--sepiaL)}
+.pkg-price .pkg-price-orig{text-decoration:line-through;margin-right:5px;opacity:.75}
+.pkg-info{display:flex;gap:16px;margin-bottom:6px}
+.pkg-info-item{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia);font-weight:600}
+.pkg-info-item span{color:var(--orange);font-weight:700}
+.pkg-slogan{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);margin-bottom:8px;line-height:1.7;font-style:italic}
+.pkg-feat{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);line-height:1.9}
+.pkg-feat-gold{color:var(--gold);font-weight:700}
+.pkg-price-gold{color:var(--gold)!important}
+/* 인쇄 세트 선택 */
+.print-set-wrap{
+  display:none;background:rgba(201,168,64,.06);border:1px solid rgba(201,168,64,.3);
+  border-radius:14px;padding:18px 20px;margin-bottom:18px;
+}
+.print-set-wrap.show{display:block}
+.print-set-title{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;font-weight:700;color:var(--sepia);margin-bottom:4px}
+.print-set-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL);margin-bottom:12px;line-height:1.7}
+.print-set-btns{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.print-set-btn{
+  width:100%;padding:13px 16px;border:1.5px solid var(--sepiaP);border-radius:10px;
+  background:var(--warm);cursor:pointer;display:flex;justify-content:space-between;align-items:center;
+  transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+.print-set-btn.selected{border-color:var(--orange);background:rgba(200,120,70,.07)}
+.print-set-btn-label{font-size:14px;font-weight:700;color:var(--ink)}
+.print-set-btn-price{font-size:13px;color:var(--orange);font-weight:700}
+.print-set-none{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);cursor:pointer;text-decoration:underline;display:inline-block;margin-bottom:6px}
+.print-warn{
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:#9b7a4a;
+  background:rgba(155,122,74,.1);border-radius:8px;padding:8px 12px;margin-top:8px;line-height:1.7;display:none;
+}
+.print-warn.show{display:block}
+.print-total-price{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;font-weight:700;color:var(--orange);margin-top:6px}
+/* ── 표지 사진 업로드 (제목 화면) ── */
+.cover-upload-section{margin-bottom:28px}
+.cover-upload-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--sepia);letter-spacing:2.5px;margin-bottom:10px;display:block;opacity:.7}
+.cover-upload-area{
+  width:100%;height:160px;border:2px dashed var(--sepiaP);border-radius:14px;
+  cursor:pointer;transition:border-color .25s;background:rgba(255,255,255,.35);
+  overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;
+}
+.cover-upload-area:hover{border-color:var(--orange)}
+.cover-upload-area.has-photo{border-style:solid;border-color:var(--orange)}
+.cover-ph{display:flex;flex-direction:column;align-items:center;gap:8px;pointer-events:none}
+.cover-ph-icon{font-size:30px;opacity:.35}
+.cover-ph-txt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);text-align:center;line-height:1.7}
+.cover-ph-sub{font-size:10px;opacity:.55;margin-top:2px}
+.cover-preview-img{width:100%;height:100%;object-fit:cover;display:none}
+.cover-upload-area.has-photo .cover-ph{display:none}
+.cover-upload-area.has-photo .cover-preview-img{display:block}
+.cover-change-lbl{
+  position:absolute;bottom:10px;right:10px;
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;
+  background:rgba(0,0,0,.55);color:#fff;padding:4px 10px;border-radius:20px;
+  display:none;pointer-events:none;letter-spacing:.5px;
+}
+.cover-upload-area.has-photo .cover-change-lbl{display:block}
+/* ── 미리보기 커버 사진 헤더 ── */
+.pv-head.has-cover{
+  background-size:cover;background-position:center top;background-repeat:no-repeat;
+  position:relative;
+}
+.pv-head.has-cover::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,8,5,.18) 0%,rgba(10,8,5,.72) 55%,rgba(10,8,5,.96) 100%);
+  z-index:0;
+}
+.pv-head.has-cover>*{position:relative;z-index:1;}
+/* ── 본문 드롭캡 + 챕터 장식 ── */
+.pv-chapter-first .pv-p:first-child::first-letter{
+  font-size:3.8em;float:left;line-height:.85;
+  margin:6px 10px 0 0;color:var(--orange);
+  font-family:'Georgia','Batang',serif;font-weight:700;
+}
+.pv-chapter-sep{text-align:center;margin:36px 0 28px;color:var(--orange);font-size:14px;letter-spacing:10px;opacity:.35}
+/* ── 인쇄 전용 ── */
+@media print{
+  /* 화면 요소 숨기기 */
+  .pv-back,.pv-badge,.cta,#pvCta,.pv-lock-overlay,
+  #s-intro,#s-package,#s-dash,#s-q,#s-title,#s-gen,
+  .lm-bg,.modal-bg,.toast{display:none!important}
+  /* 미리보기 화면만 표시 */
+  #s-preview{display:block!important;min-height:auto}
+  /* 표지 페이지 */
+  .pv-head{
+    page-break-after:always;min-height:100vh;
+    display:flex!important;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:80px 60px;text-align:center;
+  }
+  .pv-head.has-cover{background-size:cover!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .pv-head.has-cover::before{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .pv-orn{opacity:.6!important;font-size:28px!important;margin-top:28px!important}
+  .pv-title{font-size:32pt!important;color:#fff!important;margin-bottom:12px!important}
+  .pv-sub{font-size:12pt!important;color:rgba(255,255,255,.7)!important;opacity:1!important}
+  /* 본문 */
+  .pv-body{padding:40px 60px!important}
+  .pv-chapter{page-break-inside:avoid;margin-bottom:48px!important}
+  .pv-chapter-first{page-break-before:always}
+  .pv-p{font-size:11pt!important;line-height:2.1!important;color:#222!important}
+  .pv-story-lbl{color:#C8784A!important;font-size:10pt!important;border-bottom:1px solid #e0cdb8!important}
+  .pv-blur-content{filter:none!important;opacity:1!important}
+  .pv-blur-section{overflow:visible!important}
+  .pv-chapter-sep{color:#C8784A!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .pv-chapter-first .pv-p:first-child::first-letter{color:#C8784A!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  body,html{background:#fff!important}
+}
+/* 결제 합계 표시 */
+.pkg-total-bar{
+  background:var(--ink);color:var(--cream);border-radius:14px;
+  padding:16px 20px;margin-bottom:14px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.pkg-total-label{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;opacity:.7}
+.pkg-total-amount{font-size:20px;font-weight:800;color:var(--gold)}
+.btn-pkg{width:100%;padding:18px 0;border:none;cursor:pointer;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:17px;font-weight:700;border-radius:50px;box-shadow:0 6px 20px rgba(200,120,70,.3);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:all .2s}
+
+/* ── 대시보드 ── */
+#s-dash{background:var(--warm)}
+.dash-top{background:var(--ink);padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+.dash-pkg-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--orange);letter-spacing:2px;opacity:.8;margin-bottom:2px}
+.dash-name{font-size:16px;font-weight:700;color:var(--cream)}
+.dash-reset{background:none;border:1px solid rgba(196,168,130,.3);color:var(--sepiaL);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;padding:6px 14px;cursor:pointer}
+.dash-body{padding:28px 24px;overflow-y:auto}
+.prog-card{background:var(--ink);padding:24px;margin-bottom:14px}
+.prog-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);letter-spacing:1px;margin-bottom:10px;opacity:.8}
+.prog-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px}
+.prog-n{font-size:38px;font-weight:700;color:var(--cream)}
+.prog-of{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepiaL);margin-bottom:6px}
+.prog-track{height:4px;background:rgba(196,168,130,.15);border-radius:2px;margin-bottom:8px}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:2px;transition:width .6s}
+.prog-st{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL);opacity:.6}
+.dash-btns{display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+.btn{width:100%;padding:18px 0;border:none;cursor:pointer;font-size:17px;font-family:'Georgia','Batang',serif;font-weight:700;letter-spacing:.5px;transition:all .2s;text-align:center}
+.btn-dark{background:var(--ink);color:var(--cream)}
+.btn-orange{background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;border-radius:50px;box-shadow:0 4px 16px rgba(200,120,70,.25)}
+.btn-ghost{background:transparent;color:var(--sepia);border:1px solid var(--sepiaP);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;font-weight:400}
+.story-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepia);letter-spacing:1px;margin-bottom:12px;opacity:.7}
+.story-row{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--sepiaP)}
+.story-name{font-size:15px;color:var(--inkL);margin-bottom:3px;font-weight:600}
+.story-name.done{color:var(--green)}
+.story-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepia);opacity:.55}
+.story-st{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);opacity:.7}
+.story-st.done{color:var(--green);opacity:1}
+
+/* ── 이야기 전환 ── */
+#s-ch{background:var(--ink);align-items:center;justify-content:center;padding:32px;text-align:center}
+.cr-badge{display:inline-block;border:1px solid rgba(200,120,70,.4);color:rgba(200,120,70,.8);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;letter-spacing:2px;padding:6px 16px;margin-bottom:24px}
+.cr-name{font-size:clamp(28px,7vw,42px);font-weight:700;color:var(--cream);line-height:1.3;margin-bottom:14px}
+.cr-div{width:40px;height:1px;background:var(--orange);margin:18px auto;opacity:.5}
+.cr-desc{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;color:var(--sepiaL);font-weight:300;opacity:.75;line-height:1.7}
+
+/* ── 질문 ── */
+#s-q{background:var(--warm)}
+.qbar{height:8px;background:var(--sepiaP);position:fixed;top:0;left:0;right:0;z-index:100;border-radius:0 0 4px 4px}
+.qbar-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));transition:width .5s;border-radius:0 4px 4px 0}
+.q-top{padding:26px 24px 0;display:flex;justify-content:space-between;align-items:center}
+.q-step{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepia);letter-spacing:1px}
+.q-top-r{display:flex;align-items:center;gap:12px}
+.q-savelbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--green)}
+.q-cnt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL)}
+.q-body{flex:1;padding:24px 24px 12px}
+.q-progress-txt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);margin-bottom:14px;opacity:.8}
+.q-num{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--sepiaL);letter-spacing:2px;margin-bottom:12px;opacity:.5}
+.q-txt{font-size:clamp(19px,5vw,25px);font-weight:700;color:var(--ink);line-height:1.6;margin-bottom:10px;letter-spacing:-.3px}
+.q-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;color:var(--sepia);opacity:.65;margin-bottom:24px;line-height:1.7}
+.mode-row{display:flex;gap:8px;margin-bottom:16px}
+.mode-btn{flex:1;padding:9px 0;cursor:pointer;transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;border:1px solid var(--sepiaP)}
+.mode-btn.on{background:var(--sepiaP);border-color:var(--sepiaL);color:var(--inkL)}
+.mode-btn:not(.on){background:transparent;color:var(--sepia)}
+.q-ta{width:100%;min-height:150px;padding:18px;background:var(--cream);border:1px solid var(--sepiaP);font-family:'Georgia','Batang',serif;font-size:16px;color:var(--ink);line-height:2;resize:none;outline:none;box-sizing:border-box}
+.v-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
+.v-btn{width:76px;height:76px;border-radius:50%;cursor:pointer;font-size:26px;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.v-btn.idle{background:var(--ink);border:2px solid var(--sepiaL)}
+.v-btn.rec{background:var(--red);border:2px solid var(--red);box-shadow:0 0 0 12px rgba(176,48,32,.1)}
+.v-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia)}
+.v-ta{width:100%;min-height:100px;padding:14px;background:var(--cream);border:1px solid var(--sepiaP);font-family:'Georgia','Batang',serif;font-size:14px;color:var(--ink);line-height:1.9;resize:none;outline:none;box-sizing:border-box}
+.q-foot{padding:12px 24px 36px;display:flex;flex-direction:column;gap:10px}
+/* 시니어 친화 네비게이션 버튼 */
+.btn-q-skip{
+  text-align:center;background:none;
+  border:1px dashed rgba(139,111,71,.3);color:rgba(139,111,71,.65);
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:14px;cursor:pointer;padding:12px 16px;border-radius:10px;
+  letter-spacing:.3px;width:100%;
+}
+.q-nav-row{display:flex;gap:12px;align-items:stretch}
+.btn-q-prev{
+  flex:0 0 auto;min-width:130px;padding:20px 14px;
+  border:none;cursor:pointer;
+  background:#E8E0D8;color:#6B5A4E;
+  font-size:15px;font-weight:700;border-radius:16px;
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  transition:all .2s;display:flex;align-items:center;
+  justify-content:center;gap:5px;line-height:1.3;
+}
+.btn-q-prev:active{transform:scale(.97)}
+.btn-q-next{
+  flex:1;padding:20px 14px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,#c8784a,#d4845a);
+  color:#fff;font-size:16px;font-weight:700;border-radius:16px;
+  box-shadow:0 6px 22px rgba(200,120,70,.38);
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  transition:all .2s;line-height:1.4;
+}
+.btn-q-next:active{transform:scale(.97)}
+.q-dashlink{background:none;border:none;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL);cursor:pointer;opacity:.4;margin-top:4px;text-align:center}
+
+/* ── 제목 선택 화면 ── */
+#s-title{background:var(--warm);overflow-y:auto}
+.title-top{background:var(--ink);padding:18px 24px}
+.title-toplbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);letter-spacing:2px}
+.title-body{padding:32px 24px 48px}
+.title-h{font-size:clamp(20px,5vw,26px);font-weight:700;color:var(--ink);line-height:1.5;margin-bottom:8px;letter-spacing:-.5px}
+.title-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);margin-bottom:28px;line-height:1.7;font-weight:300}
+.title-input{width:100%;padding:16px;background:var(--cream);border:2px solid var(--sepiaP);font-family:'Georgia','Batang',serif;font-size:16px;color:var(--ink);outline:none;box-sizing:border-box;margin-bottom:24px;text-align:center}
+.title-input:focus{border-color:var(--orange)}
+.title-suggest-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepia);letter-spacing:2px;margin-bottom:14px;opacity:.7}
+.title-suggest-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.title-suggest-card{padding:16px 20px;border:1px solid var(--sepiaP);background:var(--cream);cursor:pointer;transition:all .2s;text-align:center}
+.title-suggest-card:active{background:var(--sepiaP)}
+.title-suggest-card.selected{border-color:var(--orange);background:rgba(200,120,70,.04)}
+.title-suggest-name{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px}
+.title-suggest-desc{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL);opacity:.7}
+.title-loading{text-align:center;padding:32px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia)}
+
+/* ── 생성 중 ── */
+#s-gen{background:var(--ink);align-items:center;justify-content:center;padding:32px;text-align:center}
+.gen-q{font-size:52px;margin-bottom:28px;animation:fq 2s ease-in-out infinite}
+@keyframes fq{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-10px) rotate(-5deg)}}
+.gen-t{font-size:clamp(18px,5vw,24px);font-weight:300;color:var(--cream);margin-bottom:8px;line-height:1.6}
+.gen-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepiaL);opacity:.6;margin-bottom:32px}
+.gen-progress{width:100%;max-width:300px;margin-bottom:24px}
+.gen-progress-bar{height:4px;background:rgba(196,168,130,.2);border-radius:2px;margin-bottom:12px;overflow:hidden}
+.gen-progress-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:2px;transition:width .5s ease;width:0%}
+.gen-progress-txt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);letter-spacing:1px}
+
+/* ── 미리보기 ── */
+#s-preview{background:var(--warm);overflow-y:auto}
+.pv-head{background:linear-gradient(180deg,#1a0e06,#0a0805);padding:52px 28px 44px;text-align:center;position:relative}
+.pv-back{position:absolute;top:16px;left:16px;background:none;border:none;color:var(--sepiaL);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;cursor:pointer;opacity:.6}
+.pv-badge{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--orange);letter-spacing:3px;margin-bottom:14px;opacity:.8}
+.pv-title{font-size:clamp(20px,6vw,28px);font-weight:700;color:var(--cream);font-style:italic;margin-bottom:8px}
+.pv-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);opacity:.55}
+.pv-orn{color:var(--orange);font-size:20px;margin-top:20px;opacity:.4}
+.pv-body{padding:36px 28px 0}
+.pv-chapter{margin-bottom:32px}
+.pv-story-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);margin-bottom:14px;opacity:.8;font-weight:600;border-bottom:1px solid var(--sepiaP);padding-bottom:8px}
+.pv-p{font-size:15px;line-height:2.3;color:var(--inkL);font-family:'Georgia','Batang',serif}
+
+/* 블러 처리 — 유료 유도 */
+.pv-blur-section{position:relative;overflow:hidden}
+.pv-blur-content{filter:blur(4px);user-select:none;pointer-events:none;opacity:.7}
+.pv-lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(251,248,243,.85);padding:32px;text-align:center}
+.pv-lock-icon{font-size:36px;margin-bottom:16px}
+.pv-lock-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.pv-lock-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);margin-bottom:24px;line-height:1.7;font-weight:300}
+
+.cta{margin:32px 24px;background:linear-gradient(180deg,#1a0e06,#0a0805);padding:36px 24px;text-align:center;border-radius:8px}
+.cta-ey{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);letter-spacing:2px;margin-bottom:10px;opacity:.8}
+.cta-h{font-size:20px;font-weight:700;color:var(--cream);line-height:1.5;margin-bottom:8px}
+.cta-s{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);margin-bottom:28px;opacity:.6}
+.prod-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.prod-card{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:all .2s;border:1px solid rgba(196,168,130,.18)}
+.prod-card.on{border-color:var(--orange);background:rgba(200,120,70,.05)}
+.prod-name{font-size:14px;color:var(--cream);margin-bottom:3px}
+.prod-desc{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL);opacity:.55}
+.prod-price{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;color:var(--orangeL);font-weight:500}
+.prod-bdg{background:var(--orange);color:#fff;font-size:10px;padding:2px 6px;margin-left:6px;font-weight:700}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;z-index:500;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-bg.open{opacity:1;pointer-events:auto}
+.modal-box{width:100%;background:var(--warm);padding:32px 28px 52px;border-radius:12px 12px 0 0}
+.modal-t{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.modal-s{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);margin-bottom:28px;line-height:1.8}
+.modal-btns{display:flex;flex-direction:column;gap:10px}
+
+/* ── 소셜 로그인 (인트로 하단) ── */
+.social-section{margin-top:28px;width:100%;max-width:340px;opacity:0;transition:opacity 1s ease}
+.social-section.show{opacity:1}
+.social-divider{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.social-divider::before,.social-divider::after{content:'';flex:1;height:1px;background:rgba(200,170,130,.2)}
+.social-divider span{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:rgba(200,170,130,.5);white-space:nowrap;letter-spacing:1px}
+/* 인트로 소셜 버튼: 세로 배치 + 큼직하게 (시니어 친화) */
+.social-btns-row{display:flex;flex-direction:column;gap:11px}
+.btn-social{display:flex;align-items:center;justify-content:center;gap:10px;padding:17px 0;border:none;cursor:pointer;border-radius:14px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:16px;font-weight:700;transition:all .18s;letter-spacing:-.2px;width:100%}
+.btn-social:active{transform:scale(.97)}
+.btn-kakao{background:#FEE500;color:#191919}
+.btn-naver{background:#03C75A;color:#fff}
+.btn-google-s{background:rgba(255,255,255,.93);color:#333}
+.social-note{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:rgba(200,170,130,.4);margin-top:12px;text-align:center;letter-spacing:.3px;line-height:1.7}
+
+/* ── 로그인/업그레이드 모달 ── */
+.lm-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);display:flex;align-items:flex-end;z-index:8000;opacity:0;pointer-events:none;transition:opacity .25s}
+.lm-bg.open{opacity:1;pointer-events:auto}
+.lm-box{width:100%;background:var(--warm);border-radius:24px 24px 0 0;padding:36px 28px 56px;text-align:center;transform:translateY(24px);transition:transform .28s ease}
+.lm-bg.open .lm-box{transform:translateY(0)}
+.lm-close{position:absolute;top:16px;right:20px;background:none;border:none;font-size:22px;color:var(--sepiaL);cursor:pointer;opacity:.5;padding:6px;line-height:1}
+.lm-free-badge{display:inline-block;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:50px;margin-bottom:16px}
+.lm-title{font-size:24px;font-weight:700;color:var(--ink);line-height:1.4;margin-bottom:10px}
+.lm-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;color:var(--sepia);line-height:2;margin-bottom:26px;font-weight:300}
+.lm-social-btns{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
+/* 모달 소셜 버튼: 최대한 크게 (시니어 엄지 터치 최적화) */
+.lm-btn{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;padding:20px 0;border:none;cursor:pointer;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:18px;font-weight:700;border-radius:16px;transition:opacity .18s;letter-spacing:-.2px}
+.lm-btn:active{opacity:.8}
+.lm-btn-kakao{background:#FEE500;color:#191919}
+.lm-btn-naver{background:#03C75A;color:#fff}
+.lm-btn-google{background:#fff;color:#333;border:1.5px solid #e0e0e0}
+.lm-guest-btn{background:none;border:none;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepiaL);cursor:pointer;padding:10px;opacity:.5;text-decoration:underline;text-underline-offset:3px}
+/* ── 자서전 티저 블록 ── */
+.lm-teaser{display:none;background:linear-gradient(160deg,rgba(201,168,76,.08),rgba(139,111,71,.05));border:1.5px solid rgba(201,168,76,.25);border-radius:14px;padding:18px 18px 14px;margin-bottom:20px;text-align:left;position:relative;overflow:hidden}
+.lm-teaser.visible{display:block}
+.lm-teaser-label{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;color:var(--gold);margin-bottom:10px}
+.lm-teaser-text{font-family:'Georgia','Batang',serif;font-size:15px;color:var(--ink);line-height:1.9;max-height:72px;overflow:hidden;position:relative}
+.lm-teaser-text::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,var(--warm))}
+.lm-teaser-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia);margin-top:10px;opacity:.7}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- ════ 인트로 ════ -->
+<div class="screen active" id="s-intro">
+  <div class="intro-bg"></div>
+  <div class="intro-page" id="page1">
+    <div class="p1-badge" id="p1badge">나의 추억, 너의 기억</div>
+    <div class="p1-main" id="p1main">사람은 두 번 떠납니다</div>
+    <div class="p1-sub" id="p1sub">한 번은 삶에서,<br>그리고 또 한 번은<br>기억에서 잊혀질 때</div>
+  </div>
+  <div class="intro-page" id="page2">
+    <div class="p2-q" id="p2q">당신은<br>당신의 삶을<br>얼마나 기억하고 있나요?</div>
+    <div class="p2-items" id="p2items">
+      <div class="p2-item">어떤 꿈을 꾸었는지</div>
+      <div class="p2-item">무엇을 좋아했는지</div>
+      <div class="p2-item">어떤 후회를 남겼는지</div>
+    </div>
+    <div class="p2-trigger" id="p2trigger">그 기억은<br><strong>언젠가 사라질지도 모릅니다</strong></div>
+  </div>
+  <div class="intro-page" id="page3">
+    <div class="p3-main" id="p3main">모든 순간이 사라지지 않도록</div>
+    <div class="p3-key" id="p3key">지금,<br>당신의 삶을<br>기억으로 남기세요</div>
+    <div class="p3-btns" id="p3btns">
+      <button class="btn-cta" id="btnStart">무료로 시작하기 (15문항 무료)</button>
+      <button class="btn-cta-ghost" id="btnContinue">이어서 작성하기</button>
+    </div>
+    <div class="social-section" id="p3social">
+      <div class="social-divider"><span>3초 만에 시작하기</span></div>
+      <div class="social-btns-row">
+        <button class="btn-social btn-kakao" id="introKakao">
+          <svg width="16" height="15" viewBox="0 0 18 17"><path d="M9 0C4.03 0 0 3.1 0 6.9c0 2.45 1.56 4.6 3.91 5.84L3 17l5.08-3.45c.3.04.62.05.92.05 4.97 0 9-3.1 9-6.9S13.97 0 9 0z" fill="#3C1E1E"/></svg>
+          카카오
+        </button>
+        <button class="btn-social btn-naver" id="introNaver">
+          <span style="font-size:16px;font-weight:900;letter-spacing:-1px;line-height:1;font-family:sans-serif">N</span>
+          네이버
+        </button>
+        <button class="btn-social btn-google-s" id="introGoogle">
+          <svg width="14" height="14" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          구글
+        </button>
+      </div>
+      <div class="social-note">로그인하면 영구 저장 · 기기 간 동기화 · 무제한 질문</div>
+    </div>
+  </div>
+  <div class="page-dots">
+    <div class="page-dot active" id="dot0"></div>
+    <div class="page-dot" id="dot1"></div>
+    <div class="page-dot" id="dot2"></div>
+  </div>
+  <div id="introNextBtn" style="position:fixed;bottom:80px;right:24px;z-index:30;opacity:0;transition:opacity .5s">
+    <button id="btnPageNext" style="background:rgba(200,120,70,0.85);border:none;color:#fff;font-size:14px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;padding:12px 22px;border-radius:50px;cursor:pointer;box-shadow:0 4px 16px rgba(200,120,70,0.4)">다음 ›</button>
+  </div>
+</div>
+
+<!-- ════ 패키지 ════ -->
+<div class="screen" id="s-package">
+  <div class="pkg-hero">
+    <div class="pkg-hero-title">당신의 이야기를<br>어디까지 남기시겠습니까?</div>
+    <div class="pkg-hero-sub">언제든지 바꿀 수 있습니다</div>
+  </div>
+  <div class="pkg-body">
+    <div class="pkg-cards">
+
+      <div class="pkg-card pkg-free" data-pkg="free" data-q="15" data-price="0">
+        <div class="pkg-row">
+          <div class="pkg-name">무료 체험</div>
+          <div class="pkg-price">0원</div>
+        </div>
+        <div class="pkg-info">
+          <div class="pkg-info-item">질문 <span>15</span>가지</div>
+          <div class="pkg-info-item">예상 분량 <span>5</span>페이지 맛보기</div>
+        </div>
+        <div class="pkg-slogan">가볍게 시작해보는 나의 첫 자서전.</div>
+        <div class="pkg-feat">어린 시절 · 청년 시절 핵심만 · PDF 미리보기 제공</div>
+      </div>
+
+      <div class="pkg-card" data-pkg="basic" data-q="45" data-price="49000">
+        <div class="pkg-row">
+          <div class="pkg-name">나의 자서전</div>
+          <div class="pkg-price"><span class="pkg-price-orig">정가 98,000원</span> 49,000원 <span>/ PDF 제공</span></div>
+        </div>
+        <div class="pkg-info">
+          <div class="pkg-info-item">질문 <span>45</span>가지</div>
+          <div class="pkg-info-item">예상 분량 <span>35~45</span>페이지</div>
+        </div>
+        <div class="pkg-slogan">35~45페이지 분량의 깊이 있는 디지털 자서전.</div>
+        <div class="pkg-feat">음성 녹음 · 표지 사진 · PDF · 인쇄본 추가 선택 가능</div>
+      </div>
+
+      <div class="pkg-card pkg-premium" data-pkg="premium" data-q="75" data-price="129000">
+        <div class="pkg-row">
+          <div class="pkg-name">나의 인생 전집</div>
+          <div class="pkg-price pkg-price-gold"><span class="pkg-price-orig">정가 258,000원</span> 129,000원 <span>/ PDF 제공</span></div>
+        </div>
+        <div class="pkg-info">
+          <div class="pkg-info-item">질문 <span>75</span>가지</div>
+          <div class="pkg-info-item">예상 분량 <span>65~80</span>페이지</div>
+        </div>
+        <div class="pkg-slogan">65~80페이지, 인생을 통째로 담는 자서전 전집.</div>
+        <div class="pkg-feat pkg-feat-gold">AI 최고 품질 · 음성 녹음 · 표지 사진 · PDF · 인쇄본 추가 선택 가능</div>
+      </div>
+
+    </div>
+
+    <!-- 인쇄 세트 선택 (베이직/프리미엄) -->
+    <div class="print-set-wrap" id="printSetWrap">
+      <div class="print-set-title">📚 인쇄본 추가 (선택)</div>
+      <div class="print-set-sub">실물 책으로 소장하실 수 있습니다. 원하지 않으시면 PDF만 받으셔도 됩니다.</div>
+      <div class="print-set-btns">
+        <button class="print-set-btn" data-qty="5" data-price="50000">
+          <span class="print-set-btn-label">5권 세트</span>
+          <span class="print-set-btn-price">+50,000원</span>
+        </button>
+        <button class="print-set-btn" data-qty="10" data-price="90000">
+          <span class="print-set-btn-label">10권 세트</span>
+          <span class="print-set-btn-price">+90,000원</span>
+        </button>
+        <button class="print-set-btn" data-qty="30" data-price="250000">
+          <span class="print-set-btn-label">30권 세트</span>
+          <span class="print-set-btn-price">+250,000원</span>
+        </button>
+      </div>
+      <span class="print-set-none" id="printSetNone">인쇄 없이 PDF만 받기</span>
+      <div class="print-warn" id="printBasicWarn">※ 나의 자서전(35~45페이지)은 책 두께가 얇아 책등(세로면)에 제목이 들어가지 않을 수 있습니다.</div>
+      <div class="print-total-price" id="printTotalPrice"></div>
+    </div>
+
+    <!-- 결제 합계 -->
+    <div class="pkg-total-bar" id="pkgTotalBar" style="display:none">
+      <div class="pkg-total-label">최종 결제 금액</div>
+      <div class="pkg-total-amount" id="pkgTotalAmount">0원</div>
+    </div>
+
+    <button class="btn-pkg" id="btnPkgSelect">이 방식으로 시작하기</button>
+  </div>
+</div>
+
+<!-- ════ 대시보드 ════ -->
+<div class="screen" id="s-dash">
+  <div class="dash-top">
+    <div>
+      <div class="dash-pkg-lbl" id="dashPkgLbl">무료 체험</div>
+      <div class="dash-name">나의 이야기</div>
+    </div>
+    <button class="dash-reset" id="btnReset">처음부터</button>
+  </div>
+  <div class="dash-body">
+    <div class="prog-card">
+      <div class="prog-lbl" id="progLbl">당신의 이야기가 만들어지고 있습니다</div>
+      <div class="prog-row">
+        <span class="prog-n" id="progN">0</span>
+        <span class="prog-of" id="progOf">/ 15 완료</span>
+      </div>
+      <div class="prog-track"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      <div class="prog-st" id="progSt">아직 시작 전이에요</div>
+    </div>
+    <div class="dash-btns" id="dashBtns"></div>
+    <div class="story-lbl">이야기 목록</div>
+    <div id="chList"></div>
+  </div>
+</div>
+
+<!-- ════ 이야기 전환 ════ -->
+<div class="screen" id="s-ch">
+  <div class="cr-badge" id="crBadge">첫 번째 이야기</div>
+  <div class="cr-name" id="crName">어린 시절</div>
+  <div class="cr-div"></div>
+  <div class="cr-desc" id="crDesc">잊혀진 줄 알았던 그 시절의 기억들</div>
+</div>
+
+<!-- ════ 질문 ════ -->
+<div class="screen" id="s-q">
+  <div class="qbar"><div class="qbar-fill" id="qBarFill" style="width:0%"></div></div>
+  <div class="q-top">
+    <span class="q-step" id="qStep"></span>
+    <div class="q-top-r">
+      <span class="q-savelbl" id="qSaveLbl"></span>
+      <span class="q-cnt" id="qCnt"></span>
+    </div>
+  </div>
+  <div class="q-body">
+    <div class="q-progress-txt" id="qProgressTxt"></div>
+    <div id="qSched" style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;font-weight:700;color:#0e9d7d;margin-bottom:10px;display:none"></div>
+    <div class="q-num" id="qNum"></div>
+    <div class="q-txt" id="qTxt"></div>
+    <div class="q-hint" id="qHint"></div>
+    <div class="mode-row">
+      <button class="mode-btn on" id="mTxt">✏️ 글로 쓰기</button>
+      <button class="mode-btn" id="mVoice">🎤 말로 하기</button>
+    </div>
+    <div id="iText">
+      <textarea class="q-ta" id="tArea" placeholder="자유롭게 적어주세요...&#10;짧아도 괜찮습니다."></textarea>
+    </div>
+    <div id="iVoice" style="display:none">
+      <div class="v-wrap">
+        <button class="v-btn idle" id="vBtn">🎤</button>
+        <span class="v-lbl" id="vLbl">버튼을 눌러 말씀해주세요</span>
+        <textarea class="v-ta" id="vArea" placeholder="말씀하신 내용이 여기에 적힙니다...&#10;직접 고치셔도 됩니다."></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="q-foot">
+    <button class="btn-q-skip" id="btnSkip">이 질문 건너뛰기</button>
+    <div class="q-nav-row">
+      <button class="btn-q-prev" id="btnPrev">← 이전<br>질문으로</button>
+      <button class="btn-q-next" id="btnNext">기억 저장하고<br>다음으로 →</button>
+    </div>
+    <button class="q-dashlink" id="btnQDash">목록으로 돌아가기</button>
+  </div>
+</div>
+
+<!-- ════ 오늘 완료 (하루 3문항 스케줄) ════ -->
+<div class="screen" id="s-daydone">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;gap:16px">
+    <img src="img/bom_smile.png" alt="봄이" style="width:150px;height:auto;filter:drop-shadow(0 12px 24px rgba(180,120,80,.2))" onerror="this.style.display='none'">
+    <div id="ddTitle" style="font-family:'Nanum Myeongjo','Batang',serif;font-size:26px;font-weight:800;color:#1F2A1A"></div>
+    <div id="ddMsg" style="font-size:17px;line-height:1.7;color:#2D3A2A"></div>
+    <div id="ddProgress" style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;font-weight:700;color:#0e9d7d"></div>
+    <button id="btnDayDone" style="margin-top:12px;max-width:300px;width:100%;padding:16px 24px;border:none;border-radius:50px;background:#1F2A1A;color:#fff;font-size:16px;font-weight:600;cursor:pointer">목록으로 돌아가기</button>
+  </div>
+</div>
+
+<!-- ════ 제목 선택 ════ -->
+<div class="screen" id="s-title">
+  <div class="title-top">
+    <div class="title-toplbl">마지막 단계</div>
+  </div>
+  <div class="title-body">
+    <div class="title-h">이 이야기의 제목은<br>무엇일까요?</div>
+    <div class="title-sub">표지에 실릴 사진을 먼저 고르고,<br>제목을 정해주세요.</div>
+    <!-- 표지 사진 업로드 -->
+    <div class="cover-upload-section">
+      <span class="cover-upload-lbl">COVER PHOTO — 표지 사진 (선택)</span>
+      <div class="cover-upload-area" id="coverUploadArea">
+        <img class="cover-preview-img" id="coverPreviewImg" alt="표지 사진">
+        <div class="cover-ph">
+          <div class="cover-ph-icon">🖼️</div>
+          <div class="cover-ph-txt">
+            사진을 눌러 선택해주세요
+            <div class="cover-ph-sub">가족사진 · 풍경 · 소중한 순간 · JPG / PNG</div>
+          </div>
+        </div>
+        <span class="cover-change-lbl">사진 변경</span>
+      </div>
+      <input type="file" id="coverFileInput" accept="image/*" style="display:none">
+    </div>
+    <input class="title-input" id="titleInput" type="text" placeholder="제목을 직접 입력해주세요">
+    <div class="title-suggest-lbl">AI가 추천하는 제목</div>
+    <div id="titleSuggestWrap">
+      <div class="title-loading">🪶 당신의 이야기를 읽고 제목을 만들고 있습니다...</div>
+    </div>
+    <button class="btn-pkg" id="btnTitleConfirm" style="margin-top:8px">이 제목으로 자서전 만들기</button>
+  </div>
+</div>
+
+<!-- ════ 생성 중 ════ -->
+<div class="screen" id="s-gen">
+  <div class="gen-q">🪶</div>
+  <div class="gen-t">당신의 삶이 하나의 이야기로<br>정리되고 있습니다</div>
+  <div class="gen-sub">답변 하나하나를 이야기로 풀어쓰는 중입니다</div>
+  <div class="gen-progress">
+    <div class="gen-progress-bar"><div class="gen-progress-fill" id="genProgressFill"></div></div>
+    <div class="gen-progress-txt" id="genProgressTxt">준비 중...</div>
+  </div>
+</div>
+
+<!-- ════ 미리보기 ════ -->
+<div class="screen" id="s-preview">
+  <div class="pv-head" id="pvHead">
+    <button class="pv-back" id="btnPvBack">← 목록으로</button>
+    <div class="pv-badge">나의 자서전 · 미리보기</div>
+    <div class="pv-title" id="pvTitle"></div>
+    <div class="pv-sub" id="pvSub"></div>
+    <div class="pv-orn">❧</div>
+  </div>
+  <div class="pv-body" id="pvBody"></div>
+  <div class="cta" id="pvCta" style="display:none">
+    <div class="cta-ey">소중한 선물</div>
+    <div class="cta-h">"이 이야기를<br>기억으로 남겨보세요"</div>
+    <div class="cta-s">당신의 삶은 책이 될 자격이 있습니다</div>
+    <div class="prod-cards" id="prodCards"></div>
+    <button class="btn-pkg" id="btnBuy">지금 만들기</button>
+  </div>
+</div>
+
+<!-- ════ 소셜 로그인 모달 ════ -->
+<div class="lm-bg" id="loginModalBg">
+  <div class="lm-box" style="position:relative">
+    <button class="lm-close" id="lmClose">×</button>
+    <div class="lm-free-badge" id="lmBadge" style="background:rgba(200,120,70,.1);color:var(--orange)">무료 체험 완료</div>
+    <div class="lm-title" id="lmTitle">여기까지는 무료입니다!</div>
+    <div class="lm-sub" id="lmSub">더 많은 질문과 <strong>영구 저장</strong>을 원하시면<br><strong>3초 로그인</strong>을 해주세요</div>
+    <!-- 자서전 초안 티저 (게이트 팝업 시 자동 생성) -->
+    <div class="lm-teaser" id="lmTeaser">
+      <div class="lm-teaser-label">✦ 나의 자서전 초안 미리보기</div>
+      <div class="lm-teaser-text" id="lmTeaserText"></div>
+      <div class="lm-teaser-hint">로그인하면 나머지 이야기도 완성할 수 있습니다 →</div>
+    </div>
+    <div class="lm-social-btns">
+      <button class="lm-btn lm-btn-kakao" id="lmKakao">
+        <svg width="22" height="21" viewBox="0 0 18 17"><path d="M9 0C4.03 0 0 3.1 0 6.9c0 2.45 1.56 4.6 3.91 5.84L3 17l5.08-3.45c.3.04.62.05.92.05 4.97 0 9-3.1 9-6.9S13.97 0 9 0z" fill="#3C1E1E"/></svg>
+        카카오로 계속하기
+      </button>
+      <button class="lm-btn lm-btn-naver" id="lmNaver">
+        <span style="font-size:22px;font-weight:900;letter-spacing:-1px;line-height:1;font-family:sans-serif">N</span>
+        네이버로 계속하기
+      </button>
+      <button class="lm-btn lm-btn-google" id="lmGoogle">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+        구글로 계속하기
+      </button>
+    </div>
+    <button class="lm-guest-btn" id="lmGuestContinue">게스트로 계속하기 (저장 안 됨)</button>
+  </div>
+</div>
+
+<!-- ════ 결제 모달 ════ -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal-box">
+    <div class="modal-t" id="modalT"></div>
+    <div class="modal-s">당신의 이야기는 당신만의 것입니다.<br>소중한 누군가에게 전해보세요.</div>
+    <div class="modal-btns">
+      <button class="btn btn-dark" id="btnPurchase">결제 진행하기 →</button>
+      <button class="btn btn-ghost" id="btnModalClose">취소</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══ FIREBASE 초기화 ══
+var _fbReady = false;
+var _authReady = false;
+var _auth = null, _db = null, _functions = null;
+
+function initFirebase(){
+  if(_fbReady) return Promise.resolve();
+  return new Promise(function(resolve){
+    var scripts = [
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
+      'https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js'
+    ];
+    var loaded = 0;
+    scripts.forEach(function(src){
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = function(){
+        loaded++;
+        if(loaded === scripts.length){
+          firebase.initializeApp({
+            apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+            authDomain:"mylife-650f0.firebaseapp.com",
+            projectId:"mylife-650f0",
+            storageBucket:"mylife-650f0.firebasestorage.app",
+            messagingSenderId:"512010655611",
+            appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+          });
+          _auth      = firebase.auth();
+          _db        = firebase.firestore();
+          _functions = firebase.app().functions('asia-northeast3'); // 서울 리전
+          _fbReady   = true;
+          resolve();
+        }
+      };
+      document.head.appendChild(s);
+    });
+  });
+}
+
+// ── 자동 익명 로그인 + 이전 데이터 복원 ──
+async function autoSignIn(){
+  try{
+    await initFirebase();
+    // 네이버 Authorization Code 콜백 처리 (/auth/naver/callback?code=xxx)
+    var params = new URLSearchParams(window.location.search);
+    var naverCode = params.get('code');
+    if(naverCode && window.location.pathname.indexOf('/auth/naver') !== -1){
+      await _auth.signInAnonymously();
+      _authReady = true;
+      await handleNaverCodeCallback(naverCode, params.get('state'));
+      return;
+    }
+    _auth.onAuthStateChanged(async function(user){
+      if(user){
+        _authReady = true;
+        // 소셜 로그인 사용자만 Firestore에서 복원
+        if(isSocialUser()) await loadFromFirestore(user.uid);
+        updateAuthUI(user);
+      }else{
+        await _auth.signInAnonymously();
+      }
+    });
+  }catch(e){ console.warn('인증 초기화 실패:', e.message); }
+}
+
+// Firestore에서 이전 작성 내용 불러오기
+async function loadFromFirestore(uid){
+  try{
+    var doc = await _db.collection('memoirs').doc(uid).get();
+    if(!doc.exists) return;
+    var data = doc.data();
+    var localCnt = Object.keys(APP.answers).length;
+    var cloudCnt = data.answers ? Object.keys(data.answers).length : 0;
+    // 클라우드 데이터가 더 많거나 같으면 클라우드 우선 복원
+    if(cloudCnt >= localCnt && cloudCnt > 0){
+      APP.answers   = data.answers;
+      APP.pkg       = data.pkg       || APP.pkg;
+      APP.maxQ      = data.maxQ      || APP.maxQ;
+      if(data.qDates) APP.qDates = data.qDates;
+      APP.bookTitle = data.bookTitle || APP.bookTitle;
+      if(data.preview) APP.preview = data.preview;
+      LS.save('answers',   APP.answers);
+      LS.save('pkg',       APP.pkg);
+      LS.save('maxQ',      APP.maxQ);
+      LS.save('bookTitle', APP.bookTitle);
+      LS.save('qDates',    APP.qDates||{});
+      buildQuestionList();
+      if(APP.preview) LS.save('preview', APP.preview);
+      popToast('이전에 작성하신 내용을 불러왔습니다 ✓', 4000);
+      // 인트로의 "이어서 작성하기" 버튼 표시
+      var btn = el('btnContinue');
+      if(btn) btn.style.display = '';
+    }
+  }catch(e){ console.warn('Firestore 불러오기 실패:', e.message); }
+}
+
+// ══ 소셜 로그인 설정 ══
+var KAKAO_APP_KEY   = '870c36c36fea1421ed701cefe6fc6562';
+var NAVER_CLIENT_ID = 'bgI3PFJTzufz_2aWDfvF';
+var NAVER_CALLBACK  = 'https://dasibomlife.com/auth/naver/callback.html';
+
+// 소셜 로그인 여부 확인 (Google: isAnonymous=false / Kakao·Naver: localStorage 기록)
+function isSocialUser(){
+  if(_auth && _auth.currentUser && !_auth.currentUser.isAnonymous) return true;
+  return !!LS.load('socialProvider', null);
+}
+
+// ── 스크립트 동적 로드 헬퍼 ──
+function loadScript(src){
+  return new Promise(function(resolve, reject){
+    var s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// ── 카카오 로그인 (리다이렉트 방식 — index.html 동일본) ──
+async function kakaoLogin(){
+  try{
+    if(!window.Kakao) await loadScript('https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js');
+    if(!Kakao.isInitialized()) Kakao.init(KAKAO_APP_KEY);
+    Kakao.Auth.authorize({
+      redirectUri: 'https://dasibomlife.com/auth/kakao/callback.html'
+    });
+  }catch(e){ popToast('카카오 로그인 중 오류가 발생했습니다',3000); }
+}
+
+// ── 네이버 로그인 (index.html 동일본) ──
+function naverLogin(){
+  var state = Math.random().toString(36).slice(2);
+  sessionStorage.setItem('naver_state', state);
+  location.href = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=bgI3PFJTzufz_2aWDfvF&redirect_uri=' + encodeURIComponent('https://dasibomlife.com/auth/naver/callback.html') + '&state=' + encodeURIComponent(state);
+}
+
+// 네이버 콜백: Cloud Function으로 code 교환 → 사용자 정보 수신
+async function handleNaverCodeCallback(code, state){
+  // URL 즉시 정리
+  history.replaceState(null, '', '/memoir');
+  popToast('네이버 로그인 중...', 6000);
+  try{
+    var fn     = _functions.httpsCallable('naverAuth');
+    var result = await fn({ code: code, state: state || '' });
+    var profile = result.data; // { id, name, email, uid }
+    await handleSocialLogin('naver', profile.id, profile.name, profile.email);
+    // 로그인 후 화면 이동
+    var hasSaved = Object.keys(APP.answers).length > 0;
+    if(hasSaved){ renderDash(); go('s-dash'); }
+    else{ go('s-intro'); showPage(2); }
+    return true;
+  }catch(e){
+    console.warn('네이버 콜백 처리 실패:', e.message);
+    popToast('네이버 로그인 중 오류가 발생했습니다. 다시 시도해주세요.', 4000);
+    go('s-intro'); showPage(2);
+    return false;
+  }
+}
+
+// ── 구글 로그인 ──
+async function googleLogin(){
+  try{
+    await initFirebase();
+    var provider = new firebase.auth.GoogleAuthProvider();
+    var result;
+    if(_auth.currentUser && _auth.currentUser.isAnonymous){
+      try{
+        result = await _auth.currentUser.linkWithPopup(provider);
+      }catch(linkErr){
+        // 이미 다른 계정에 연결된 credential → 그 계정으로 로그인 후 데이터 이전
+        if(linkErr.code === 'auth/credential-already-in-use'){
+          var guestAnswers = Object.assign({}, APP.answers);
+          result = await _auth.signInWithPopup(provider);
+          if(Object.keys(guestAnswers).length > 0){
+            APP.answers = Object.assign(guestAnswers, APP.answers);
+          }
+        }else{ throw linkErr; }
+      }
+    }else{
+      result = await _auth.signInWithPopup(provider);
+    }
+    var user = result.user;
+    await saveUserProfile(user.uid,'google',user.uid,user.displayName||'',user.email||'');
+    LS.save('socialProvider','google');
+    LS.save('userName', user.displayName||'');
+    await saveToFirestore(APP.answers, APP.pkg, APP.bookTitle);
+    popToast('구글 계정으로 저장됩니다 ✓', 3000);
+    closeLoginModal();
+    updateAuthUIBySocial('google', user.displayName||'');
+  }catch(e){
+    if(e.code !== 'auth/popup-closed-by-user'){
+      console.warn('구글 로그인:', e.message);
+      popToast('로그인 중 문제가 발생했습니다', 3000);
+    }
+  }
+}
+
+// ── 소셜 로그인 공통 처리 (카카오·네이버) ──
+async function handleSocialLogin(provider, socialId, name, email){
+  try{
+    // 게스트 작성 데이터 백업
+    var guestAnswers = Object.assign({}, APP.answers);
+    // Firestore에서 동일 소셜ID로 가입된 기존 계정 조회
+    var existing = await _db.collection('users')
+      .where('provider','==',provider).where('socialId','==',socialId).limit(1).get();
+
+    if(!existing.empty){
+      // 기존 계정 → 해당 memoir 불러와 merge
+      var existingUid = existing.docs[0].id;
+      var memoirDoc = await _db.collection('memoirs').doc(existingUid).get();
+      if(memoirDoc.exists){
+        var cloudData = memoirDoc.data();
+        var cloudAnswers = cloudData.answers || {};
+        // 게스트 + 클라우드 merge (클라우드 우선, 게스트의 새 답변 추가)
+        APP.answers   = Object.assign({}, guestAnswers, cloudAnswers);
+        APP.pkg       = cloudData.pkg      || APP.pkg;
+        APP.maxQ      = cloudData.maxQ     || APP.maxQ;
+        APP.bookTitle = cloudData.bookTitle|| APP.bookTitle;
+        if(cloudData.preview) APP.preview = cloudData.preview;
+        LS.save('answers',APP.answers); LS.save('pkg',APP.pkg);
+        LS.save('maxQ',APP.maxQ); LS.save('bookTitle',APP.bookTitle);
+      }
+      // 현재 익명 UID로 merge된 데이터 저장 (기기 연속성)
+      await _db.collection('memoirs').doc(existingUid).set({
+        answers:APP.answers, pkg:APP.pkg, maxQ:APP.maxQ,
+        bookTitle:APP.bookTitle,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      },{merge:true});
+      popToast('다시 오셨군요! 이전 내용을 불러왔습니다 ✓', 4000);
+    }else{
+      // 신규 가입 → 현재 UID에 게스트 데이터 저장
+      var uid = _auth && _auth.currentUser ? _auth.currentUser.uid : 'guest';
+      await saveUserProfile(uid, provider, socialId, name, email);
+      await saveToFirestoreForce(APP.answers, APP.pkg, APP.bookTitle);
+      popToast('가입 완료! 이제 모든 내용이 영구 저장됩니다 ✓', 4000);
+    }
+    LS.save('socialProvider', provider);
+    LS.save('userName', name);
+    closeLoginModal();
+    updateAuthUIBySocial(provider, name);
+    // 인트로 "이어서 작성하기" 버튼 표시
+    var btn = el('btnContinue');
+    if(btn && Object.keys(APP.answers).length > 0) btn.style.display = '';
+  }catch(e){
+    console.warn('소셜 로그인 처리 실패:', e.message);
+    popToast('로그인 중 문제가 발생했습니다', 3000);
+  }
+}
+
+// users 컬렉션에 프로필 저장
+async function saveUserProfile(uid, provider, socialId, name, email){
+  try{
+    await _db.collection('users').doc(uid).set({
+      provider:  provider,
+      socialId:  String(socialId),
+      name:      name  || '',
+      email:     email || '',
+      joinedAt:  firebase.firestore.FieldValue.serverTimestamp(),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+  }catch(e){ console.warn('프로필 저장 실패:', e.message); }
+}
+
+// ── 자서전 티저 생성 (답변 내용을 짧은 문학적 문장으로 변환) ──
+function buildTeaserText(answers){
+  var keys = Object.keys(answers).sort(function(a,b){ return Number(a)-Number(b); });
+  if(!keys.length) return '';
+  // 첫 3개 답변을 쉼표로 이어 한 문단으로 구성
+  var snippets = keys.slice(0, 3).map(function(k){
+    var raw = String(answers[k] || '').trim();
+    // 너무 길면 20자에서 자름
+    return raw.length > 20 ? raw.slice(0, 20) + '...' : raw;
+  }).filter(function(s){ return s.length > 0; });
+  if(!snippets.length) return '';
+  return snippets.join(', ') + '  그 시절의 이야기가 아직 끝나지 않았습니다.';
+}
+
+// ── 로그인 모달 ──
+function showLoginModal(reason){
+  var badge=el('lmBadge'), title=el('lmTitle'), sub=el('lmSub');
+  var guestBtn=el('lmGuestContinue');
+  var teaser=el('lmTeaser'), teaserText=el('lmTeaserText');
+  if(reason==='gate'){
+    badge.style.background='rgba(200,120,70,.12)'; badge.style.color='var(--orange)';
+    badge.textContent='✦ 무료 15문항 완료';
+    title.textContent='지금까지 잘 써내려 오셨어요';
+    sub.innerHTML='더 많은 질문과 <strong>데이터 영구 저장</strong>을 위해<br><strong>3초 로그인</strong>을 해주세요<br><span style="font-size:13px;opacity:.55;display:block;margin-top:8px">작성한 15개 답변은 계정에 자동 저장됩니다</span>';
+    if(guestBtn) guestBtn.style.display='none'; // 게이트에서는 게스트 계속하기 숨김
+    // 자서전 티저 표시
+    var teaserStr = buildTeaserText(APP.answers);
+    if(teaserStr && teaser && teaserText){
+      teaserText.textContent = teaserStr;
+      teaser.classList.add('visible');
+    }
+  }else{
+    badge.style.background='rgba(200,120,70,.12)'; badge.style.color='var(--orange)';
+    badge.textContent='3초 만에 시작하기';
+    title.textContent='내 이야기를 안전하게 보관하세요';
+    sub.innerHTML='한 번 로그인하면 어떤 기기에서도<br>이어서 쓸 수 있습니다';
+    if(guestBtn) guestBtn.style.display=''; // 일반 모달에서는 게스트 계속하기 표시
+    if(teaser) teaser.classList.remove('visible');
+  }
+  el('loginModalBg').classList.add('open');
+}
+function closeLoginModal(){
+  el('loginModalBg').classList.remove('open');
+  // 소셜 로그인 완료 후 대기 중이던 다음 질문으로 자동 진행
+  if(_pendingQAdvance && isSocialUser()){
+    _pendingQAdvance = false;
+    setTimeout(function(){
+      var maxQ=APP.maxQ; var next=APP.curQ+1;
+      if(next>=maxQ){goTitleScreen();return;}
+      var pc=QS[APP.curQ].ch, nc=QS[next].ch;
+      APP.curQ=next; saveState();
+      popToast('로그인 완료! 이어서 계속합니다 ✓', 2500);
+      if(nc!==pc){showStory(nc,function(){renderQ(next);go('s-q');});}
+      else{renderQ(next);go('s-q');}
+    },400);
+  }
+}
+
+// 소셜 로그인 완료 UI 반영
+function updateAuthUIBySocial(provider, name){
+  var label = {google:'구글',kakao:'카카오',naver:'네이버'}[provider]||provider;
+  var icon  = {google:'🔵',kakao:'💛',naver:'🟢'}[provider]||'✓';
+  var nick  = (name||'').split(' ')[0];
+  var social = el('p3social');
+  if(social){
+    social.innerHTML='<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 0">'
+      +'<span style="font-size:20px">'+icon+'</span>'
+      +'<span style="font-family:\'Apple SD Gothic Neo\',\'Malgun Gothic\',sans-serif;font-size:13px;color:rgba(200,180,150,.9)">'
+      +(nick?nick+'님 ':'')+label+' 로그인 완료 ✓</span></div>';
+  }
+}
+function updateAuthUI(user){
+  if(!user) return;
+  var isGoogle = user.providerData && user.providerData.some(function(p){return p.providerId==='google.com';});
+  if(isGoogle){ updateAuthUIBySocial('google', user.displayName||''); return; }
+  var sp = LS.load('socialProvider',null);
+  if(sp){ updateAuthUIBySocial(sp, LS.load('userName','')); }
+}
+
+// ── Firestore 저장 (소셜 로그인 사용자만) ──
+async function saveToFirestore(answers, pkg, bookTitle){
+  try{
+    if(!_authReady || !_auth || !_auth.currentUser) return;
+    if(!isSocialUser()) return; // 게스트는 localStorage만 사용
+    await saveToFirestoreForce(answers, pkg, bookTitle);
+  }catch(e){ console.warn('Firestore 저장 실패 (로컬에는 저장됨):', e.message); }
+}
+async function saveToFirestoreForce(answers, pkg, bookTitle){
+  if(!_auth || !_auth.currentUser) return;
+  var uid = _auth.currentUser.uid;
+  var ref = _db.collection('memoirs').doc(uid);
+  var answerCount = Object.keys(answers).length;
+  var estimatedPages = Math.ceil(answerCount * 0.7);
+  var snap = await ref.get();
+  var hasCreatedAt = snap.exists && snap.data().createdAt;
+  var data = {
+    uid:            uid,
+    answers:        answers,
+    pkg:            pkg || 'free',
+    maxQ:           APP.maxQ,
+    qDates:         APP.qDates||{},
+    bookTitle:      bookTitle || '',
+    answerCount:    answerCount,
+    estimatedPages: estimatedPages,
+    updatedAt:      firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if(!hasCreatedAt){ data.createdAt = firebase.firestore.FieldValue.serverTimestamp(); }
+  await ref.set(data, {merge:true});
+}
+
+async function saveGeneratedToFirestore(title, preview){
+  try{
+    if(!_authReady || !_auth || !_auth.currentUser || !isSocialUser()) return;
+    var uid = _auth.currentUser.uid;
+    await _db.collection('memoirs').doc(uid).set({
+      bookTitle:  title,
+      generatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    },{merge:true});
+  }catch(e){ console.warn('생성 저장 실패:', e.message); }
+}
+
+// ── 이야기 데이터 ──
+var STORIES=[ /* 폴백용 구 데이터 — 정상 시 questions_v3.js + buildQuestionList()가 런타임에 덮어씀 */
+  {badge:"첫 번째 이야기",  name:"어린 시절",      desc:"잊혀진 줄 알았던 그 시절의 기억들",  step:"첫 번째 이야기 · 어린 시절"},
+  {badge:"두 번째 이야기",  name:"청년 시절",       desc:"꿈을 꾸고 부딪히던 뜨거운 날들",     step:"두 번째 이야기 · 청년 시절"},
+  {badge:"세 번째 이야기",  name:"사랑과 인연",     desc:"삶을 함께한 소중한 사람들",          step:"세 번째 이야기 · 사랑과 인연"},
+  {badge:"네 번째 이야기",  name:"인생의 고비",     desc:"넘어지고 다시 일어선 이야기",        step:"네 번째 이야기 · 인생의 고비"},
+  {badge:"다섯 번째 이야기",name:"남기고 싶은 말",  desc:"당신이 세상에 남기고 싶은 말",       step:"다섯 번째 이야기 · 남기고 싶은 말"},
+  {badge:"여섯 번째 이야기",name:"기억의 조각들",   desc:"삶을 물들인 소소하고도 소중한 것들", step:"여섯 번째 이야기 · 기억의 조각들"},
+  {badge:"일곱 번째 이야기",name:"나만의 취향",     desc:"오직 나만 아는 소소한 이야기들",     step:"일곱 번째 이야기 · 나만의 취향"},
+  {badge:"여덟 번째 이야기",name:"과거의 나에게",   desc:"그때로 돌아갈 수 있다면",            step:"여덟 번째 이야기 · 과거의 나에게"}
+];
+
+var QS=[ /* 폴백용 구 데이터 — 정상 시 questions_v3.js + buildQuestionList()가 런타임에 덮어씀 */
+  {q:"태어나고 자란 곳은 어디인가요?",h:"구체적인 장소나 풍경이 기억난다면 함께 적어주세요",ch:0},
+  {q:"어린 시절 집은 어떤 분위기였나요?",h:"따뜻했는지, 조용했는지, 시끌벅적했는지...",ch:0},
+  {q:"부모님은 어떤 분들이었나요?",h:"각각의 모습을 자유롭게 표현해주세요",ch:0},
+  {q:"형제자매와의 기억이 있다면?",h:"외동이라면 혼자였던 기억을 떠올려보세요",ch:0},
+  {q:"기억에 남는 친구가 있나요?",h:"이름, 얼굴, 함께한 기억...",ch:0},
+  {q:"학교에서 어떤 아이였나요?",h:"조용했나요, 활발했나요?",ch:0},
+  {q:"어린 시절 가장 행복했던 순간은?",h:"눈을 감으면 떠오르는 그 장면",ch:0},
+  {q:"혼났던 기억이 있다면?",h:"지금 돌이켜보면 어떤 감정인가요?",ch:0},
+  {q:"어린 시절 가장 좋아했던 음식은?",h:"그 냄새나 맛이 지금도 기억나나요?",ch:0},
+  {q:"어린 시절의 나를 한마디로 표현한다면?",h:"그때의 나에게 어떤 별명을 붙여주고 싶나요?",ch:0},
+  {q:"어른이 되고 싶었던 이유가 있었나요?",h:"어서 빨리 크고 싶었던 그 이유",ch:1},
+  {q:"어린 시절 꿈은 무엇이었나요?",h:"진지하게 꿈꿨던 것, 잠깐 상상했던 것 모두 좋아요",ch:1},
+  {q:"그 꿈을 이루었나요?",h:"이루었다면 어떻게, 아니라면 왜 달라졌는지",ch:1},
+  {q:"가장 큰 도전이 있었다면?",h:"결과와 관계없이 용기냈던 그 순간",ch:1},
+  {q:"인생을 바꾼 결정적 순간이 있나요?",h:"그 전과 후가 달라진 터닝포인트",ch:1},
+  {q:"가장 열정적이었던 시기는?",h:"불꽃처럼 타올랐던 그때",ch:1},
+  {q:"포기했던 것이 있다면?",h:"포기하면서 무엇을 얻었나요?",ch:1},
+  {q:"당신을 성장시킨 계기는?",h:"아픔이었든 기쁨이었든",ch:1},
+  {q:"지금도 후회되는 선택이 있다면?",h:"말하기 어렵더라도 괜찮습니다",ch:1},
+  {q:"이 시기의 나를 한마디로 표현한다면?",h:"그 시절의 내가 보여주고 싶은 모습",ch:1},
+  {q:"소중한 사람을 처음 만난 순간을 기억하나요?",h:"그 첫인상이 지금도 선명한가요?",ch:2},
+  {q:"사랑하게 된 이유는 무엇인가요?",h:"한 가지라도 좋습니다",ch:2},
+  {q:"함께하기로 결심하게 된 계기는?",h:"그 순간이 언제였나요?",ch:2},
+  {q:"함께한 가장 행복한 순간은?",h:"사진처럼 선명히 남아있는 그날",ch:2},
+  {q:"함께한 가장 힘든 순간은?",h:"그때 서로에게 어떤 존재였나요?",ch:2},
+  {q:"새 생명이 태어난 순간을 기억한다면?",h:"그 감정을 다시 느껴보세요",ch:2},
+  {q:"가장 뿌듯했던 순간은?",h:"스스로 대견했던 그때",ch:2},
+  {q:"미안했던 기억이 있다면?",h:"말하지 못했던 그 마음",ch:2},
+  {q:"가장 크게 희생했던 것은?",h:"그 선택을 지금도 잘했다고 생각하나요?",ch:2},
+  {q:"당신에게 인연이란 어떤 의미인가요?",h:"한 문장이어도 충분합니다",ch:2},
+  {q:"인생에서 가장 힘들었던 순간은?",h:"당시 어떤 감정이었는지 기억하나요?",ch:3},
+  {q:"그 힘든 시간을 어떻게 버텼나요?",h:"버틸 수 있었던 이유",ch:3},
+  {q:"포기하고 싶었던 순간이 있었나요?",h:"그때 무엇이 당신을 붙잡았나요?",ch:3},
+  {q:"다시 일어날 수 있었던 이유는?",h:"사람이었든, 신념이었든, 우연이었든",ch:3},
+  {q:"인생에서 가장 자랑스러운 순간은?",h:"아무도 몰라도 스스로 대견했던 그때",ch:3},
+  {q:"가장 큰 실패의 경험은?",h:"그 실패가 지금의 나를 어떻게 만들었나요?",ch:3},
+  {q:"돈보다 더 중요하게 선택했던 순간은?",h:"그 선택을 지금도 후회하지 않나요?",ch:3},
+  {q:"인생에 가장 큰 영향을 준 사람은?",h:"좋은 영향이든, 아픈 영향이든",ch:3},
+  {q:"당신 삶의 결정적 사건이 있다면?",h:"그 전과 후, 내가 달라진 순간",ch:3},
+  {q:"그 모든 순간들을 지금 돌아보면?",h:"솔직하게 말씀해주세요",ch:3},
+  {q:"당신에게 가장 중요한 것은?",h:"삶에서 절대 포기하지 않았던 것",ch:4},
+  {q:"지금 가장 감사한 것이 있다면?",h:"작은 것도 괜찮습니다",ch:4},
+  {q:"당신의 삶을 한 문장으로 표현한다면?",h:"제목처럼, 한 줄 요약처럼",ch:4},
+  {q:"인생에서 가장 잘한 선택은?",h:"지금도 잘했다고 확신하는 것",ch:4},
+  {q:"다시 한번 살 수 있다면?",h:"달리 살고 싶은 부분이 있나요?",ch:4},
+  {q:"아직 이루지 못한 바람이 있다면?",h:"지금도 포기하지 않은 그 바람",ch:4},
+  {q:"누군가에게 꼭 전하고 싶은 한마디는?",h:"읽어줬으면 하는 말",ch:4},
+  {q:"곁에 있는 누군가에게 남기고 싶은 말은?",h:"평소에 하지 못했던 말도 좋습니다",ch:4},
+  {q:"어떻게 기억되길 바라나요?",h:"떠난 후에도 남아있길 바라는 모습",ch:4},
+  {q:"당신의 삶은 어떤 이야기였나요?",h:"소설이라면 어떤 제목이었을까요?",ch:4},
+  {q:"가장 영향을 받은 책이나 영화가 있나요?",h:"그것이 당신을 어떻게 바꿨나요?",ch:5},
+  {q:"가장 외로웠던 순간은?",h:"그 외로움 속에서 무엇을 했나요?",ch:5},
+  {q:"가장 크게 웃었던 날은?",h:"배꼽 빠지게 웃었던 그날",ch:5},
+  {q:"당신의 인생 철학이 있다면?",h:"늘 마음속에 품고 살아온 말",ch:5},
+  {q:"후회 없는 삶이었다고 할 수 있나요?",h:"솔직하게 답해주세요",ch:5},
+  {q:"지금의 당신에게 한마디 한다면?",h:"오늘 이 순간의 당신에게",ch:5},
+  {q:"젊은 시절의 당신에게 조언을 준다면?",h:"그때의 당신이 들을 수 있다면",ch:5},
+  {q:"평생 지키고 싶었던 것은?",h:"잃지 않으려 애썼던 것",ch:5},
+  {q:"평생 사랑했던 것들을 말해주세요",h:"장소, 음식, 계절, 순간... 무엇이든",ch:5},
+  {q:"마지막으로, 한마디 남겨주세요.",h:"이 자서전을 읽을 누군가에게",ch:5},
+  {q:"가장 좋아했던 노래(18번)는 무엇인가요?",h:"그 노래가 좋았던 이유도 말해주세요",ch:6},
+  {q:"그 노래를 들으면 떠오르는 기억은?",h:"어떤 장면이 떠오르나요?",ch:6},
+  {q:"가장 좋아하는 색깔은 무엇인가요?",h:"그 색이 좋은 이유가 있나요?",ch:6},
+  {q:"좋아했던 계절과 이유는?",h:"그 계절에 주로 무엇을 했나요?",ch:6},
+  {q:"싫어했던 음식은 무엇인가요?",h:"지금도 여전히 싫은가요?",ch:6},
+  {q:"자주 가던 단골 가게가 있었나요?",h:"그곳에서의 기억이 있다면",ch:6},
+  {q:"가장 좋아했던 영화는 무엇인가요?",h:"몇 번이나 봤나요?",ch:6},
+  {q:"좋아했던 연예인은 누구였나요?",h:"왜 좋아했는지도 말해주세요",ch:6},
+  {q:"자주 보던 TV 프로그램은?",h:"그 시간이 기다려지던 이유",ch:6},
+  {q:"가장 오래 했던 취미는?",h:"언제부터 시작했나요?",ch:6},
+  {q:"하고 싶었지만 못했던 취미는?",h:"왜 하지 못했나요?",ch:6},
+  {q:"배워보고 싶었지만 못한 것은?",h:"지금이라도 배우고 싶은가요?",ch:6},
+  {q:"혼자 있을 때 주로 무엇을 했나요?",h:"아무도 모르는 나만의 시간",ch:6},
+  {q:"나만의 습관이나 버릇이 있었나요?",h:"지금도 여전한가요?",ch:6},
+  {q:"마음이 힘들 때 어떻게 달랬나요?",h:"가장 효과적이었던 방법",ch:6},
+  {q:"가장 편안한 장소는 어디였나요?",h:"지금도 가끔 그곳이 그립나요?",ch:6},
+  {q:"사실은 좋아했지만 숨겼던 것이 있나요?",h:"이제는 말할 수 있지요?",ch:6},
+  {q:"사실은 싫어했지만 참고 있었던 것은?",h:"왜 참았나요?",ch:6},
+  {q:"남들에게 말하지 못한 나만의 취미가 있었나요?",h:"이제 털어놓아도 괜찮아요",ch:6},
+  {q:"나를 가장 나답게 만드는 것은?",h:"없어지면 내가 아닌 것 같은 것",ch:6},
+  {q:"젊은 시절로 돌아간다면 가장 먼저 할 일은?",h:"지금의 당신이 그때의 당신에게 줄 수 있는 것",ch:7},
+  {q:"과거의 당신에게 꼭 해주고 싶은 말은?",h:"상처받았던 그때의 당신에게",ch:7},
+  {q:"다시 태어난다면 어떤 삶을 살고 싶나요?",h:"이번 생과 달리 살고 싶은 부분",ch:7},
+  {q:"인생에서 다시 선택할 수 있다면 바꾸고 싶은 것은?",h:"더 나은 선택으로",ch:7},
+  {q:"그때로 돌아간다면 놓치지 않을 것은?",h:"당시엔 몰랐지만 이제야 아는 것",ch:7},
+  {q:"꼭 가보고 싶었던 곳은 어디인가요?",h:"그곳을 꿈꾼 이유",ch:7},
+  {q:"결국 가지 못한 이유는 무엇인가요?",h:"아직도 아쉬운가요?",ch:7},
+  {q:"꼭 해보고 싶었지만 못한 경험은?",h:"어떤 경험이었나요?",ch:7},
+  {q:"아버지께 하지 못한 말은 무엇인가요?",h:"이제 이 글 속에서 전해보세요",ch:7},
+  {q:"어머니께 하지 못한 말은 무엇인가요?",h:"마음속에 담아두었던 그 말",ch:7},
+  {q:"누군가에게 전하지 못한 진심이 있나요?",h:"누구에게, 어떤 말을 하고 싶었나요?",ch:7},
+  {q:"미안하다고 말하고 싶은 사람이 있나요?",h:"지금이라도 전할 수 있다면",ch:7},
+  {q:"사랑한다고 말하지 못한 사람이 있나요?",h:"그 마음을 여기에 남겨두세요",ch:7},
+  {q:"아직도 잊히지 않는 순간은 무엇인가요?",h:"눈을 감으면 선명하게 떠오르는",ch:7},
+  {q:"평생 마음에 남아있는 후회는 무엇인가요?",h:"말하기 어려워도 괜찮습니다",ch:7},
+  {q:"다시 그 순간이 온다면 어떻게 하겠습니까?",h:"지금의 당신이 그때의 당신이라면",ch:7},
+  {q:"지금도 가끔 떠오르는 사람이 있나요?",h:"어떤 사람인가요?",ch:7},
+  {q:"당신 인생에서 가장 되돌리고 싶은 순간은?",h:"그 순간이 달라졌다면 지금은 어떨까요?",ch:7}
+];
+
+var PRODUCTS=[
+  {id:"pdf",  icon:"📄",name:"PDF 자서전",   desc:"바로 받아보실 수 있어요",   price:"12,900원",badge:null},
+  {id:"book", icon:"📖",name:"인쇄 책",      desc:"제본해서 배송 (약 7일)",    price:"59,000원",badge:"인기"},
+  {id:"video",icon:"🎬",name:"영상 자서전",  desc:"목소리로 들려드립니다",     price:"129,000원",badge:null}
+];
+
+// 패키지 설정 (model 필드는 참고용 — 실제 사용 모델은 서버 functions/index.js가 pkg로 최종 결정)
+var PKG_CONFIG={
+  free:   {name:"무료 체험",q:15, pages:"5페이지 맛보기",paraPerQ:1, price:0,     model:'claude-haiku-4-5'},
+  basic:  {name:"나의 자서전",   q:45, pages:"35~45페이지",paraPerQ:2, price:49000, listPrice:98000,  model:'claude-opus-4-8'},
+  premium:{name:"나의 인생 전집", q:75, pages:"65~80페이지",paraPerQ:3, price:129000, listPrice:258000, model:'claude-opus-4-8'}
+};
+
+// ── localStorage ──
+var LS={
+  save:function(k,v){try{localStorage.setItem('memoir_'+k,JSON.stringify(v));}catch(e){}},
+  load:function(k,d){try{var v=localStorage.getItem('memoir_'+k);return v?JSON.parse(v):d;}catch(e){return d;}}
+};
+
+var APP={
+  pkg:     LS.load('pkg','free'),
+  maxQ:    LS.load('maxQ',15),
+  curQ:    LS.load('curQ',0),
+  answers: LS.load('answers',{}),
+  preview: LS.load('preview',null),
+  bookTitle:LS.load('bookTitle',''),
+  printSet:null, coverPhoto:LS.load('coverPhoto',null),
+  qDates:  LS.load('qDates',{}),   // {질문index:'YYYY-MM-DD'} 처음 답변/패스한 날 (하루 캡·일차 계산용)
+  selProd: 'book', mode:'text',
+  recording:false, rec:null, chTimer:null, genIv:null
+};
+
+function saveState(){
+  LS.save('pkg',APP.pkg); LS.save('maxQ',APP.maxQ);
+  LS.save('curQ',APP.curQ); LS.save('answers',APP.answers);
+  LS.save('qDates',APP.qDates||{});
+  LS.save('bookTitle',APP.bookTitle);
+  if(APP.preview) LS.save('preview',APP.preview);
+  if(APP.coverPhoto) LS.save('coverPhoto',APP.coverPhoto);
+  // Firestore 백그라운드 저장 (실패해도 로컬엔 저장됨)
+  if(Object.keys(APP.answers).length > 0){
+    saveToFirestore(APP.answers, APP.pkg, APP.bookTitle);
+  }
+}
+
+var toastTimer;
+function popToast(msg,ms){
+  ms=ms||3000; var e=document.getElementById('toast');
+  e.textContent=msg; e.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){e.classList.remove('show');},ms);
+}
+function go(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function el(id){return document.getElementById(id);}
+
+// ── C-2b 질문풀 v3 연동: 티어별 리스트 조립 + {호칭}/세대 치환 ──
+function _honorific(){ try{ return localStorage.getItem('dasibom_honorific')||'어르신'; }catch(e){ return '어르신'; } }
+function _genKey(){ var y=0; try{ y=parseInt(localStorage.getItem('dasibom_birthyear'),10)||0; }catch(e){} if(y && y<=1959) return 'y50'; if(y>=1970) return 'y70'; return 'y60'; }
+function _josa(w,a,b){ var c=w.charCodeAt(w.length-1); var jong=(c>=0xAC00&&c<=0xD7A3)?((c-0xAC00)%28!==0):false; return jong?a:b; } // 받침有→a / 받침無→b
+function resolveBom(q){
+  var t = q.gen ? (q.gen[_genKey()]||q.gen.y60||q.gen.y50) : (q.bom||'');
+  var h=_honorific();
+  return String(t)
+    .replace(/\{호칭\}은/g, h+_josa(h,'은','는'))
+    .replace(/\{호칭\}이/g, h+_josa(h,'이','가'))
+    .replace(/\{호칭\}을/g, h+_josa(h,'을','를'))
+    .replace(/\{호칭\}/g, h);
+}
+function buildQuestionList(){
+  var pool = (window.QPOOL||[]);
+  if(!pool.length){ return QS; } // questions_v3.js 미로드 시 기존(폴백) QS 유지
+  function sel(tier,n){ var p=pool.filter(function(q){return q.tier===tier && !q.reserve;});
+    var sh=p.filter(function(q){return q.show;});
+    var rest=p.filter(function(q){return !q.show;}).sort(function(a,b){return (b.pri||0)-(a.pri||0);});
+    return sh.concat(rest).slice(0,n); }
+  var pkg=APP.pkg||'free';
+  var ordered = pool.filter(function(q){return q.tier==='free' && !q.reserve;});
+  if(pkg==='basic'||pkg==='premium') ordered=ordered.concat(sel('paid1',30));
+  if(pkg==='premium') ordered=ordered.concat(sel('paid2',30));
+  APP.maxQ = ordered.length; // 무료15 / 자서전45 / 전집75
+  var cats=[]; ordered.forEach(function(q){ if(cats.indexOf(q.cat)<0) cats.push(q.cat); });
+  STORIES = cats.map(function(c,i){ return {name:c, step:'이야기 '+(i+1), badge:'🌸', desc:c+'에 대한 이야기를 들려주세요.'}; });
+  QS = ordered.map(function(q){ return {
+    id:q.id, cat:q.cat, ch:cats.indexOf(q.cat),
+    q:resolveBom(q), h:q.gist||'', gist:q.gist||'', ex:q.ex||'',
+    sensitive:!!q.sensitive, hint:!!q.hint
+  }; });
+  return QS;
+}
+buildQuestionList();
+
+// ── 인트로 3페이지 ──
+var curPage=0, pageTimers=[];
+function showPage(idx){
+  ['page1','page2','page3'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  [0,1,2].forEach(function(i){document.getElementById('dot'+i).classList.toggle('active',i===idx);});
+  document.getElementById(['page1','page2','page3'][idx]).classList.add('active');
+  curPage=idx;
+  // 다음 버튼: 1,2페이지만 표시, 3페이지(idx===2)에서는 숨김
+  var nb=document.getElementById('introNextBtn');
+  if(nb){
+    nb.style.opacity='0';
+    nb.style.display=(idx===2)?'none':'block';
+    if(idx!==2){
+      setTimeout(function(){nb.style.opacity='1';},1500);
+    }
+  }
+  clearPageTimers();
+  if(idx===0){
+    setTimeout(function(){el('p1badge').classList.add('show');},300);
+    setTimeout(function(){el('p1main').classList.add('show');},1000);
+    setTimeout(function(){el('p1sub').classList.add('show');},2000);
+    pageTimers.push(setTimeout(function(){showPage(1);},7500));
+  }else if(idx===1){
+    setTimeout(function(){el('p2q').classList.add('show');},400);
+    setTimeout(function(){el('p2items').classList.add('show');},1400);
+    setTimeout(function(){el('p2trigger').classList.add('show');},2600);
+    pageTimers.push(setTimeout(function(){showPage(2);},8000));
+  }else{
+    setTimeout(function(){el('p3main').classList.add('show');},400);
+    setTimeout(function(){el('p3key').classList.add('show');},1200);
+    setTimeout(function(){el('p3btns').classList.add('show');},2400);
+    setTimeout(function(){var s=el('p3social');if(s)s.classList.add('show');},3200);
+  }
+}
+function clearPageTimers(){
+  pageTimers.forEach(function(t){clearTimeout(t);}); pageTimers=[];
+  ['p1badge','p1main','p1sub','p2q','p2items','p2trigger','p3main','p3key','p3btns','p3social'].forEach(function(id){
+    var e=document.getElementById(id); if(e)e.classList.remove('show');
+  });
+}
+function initIntroTouch(){
+  var s=0;
+  document.getElementById('s-intro').addEventListener('touchstart',function(e){s=e.touches[0].clientX;},{passive:true});
+  document.getElementById('s-intro').addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-s;
+    if(Math.abs(dx)>50){if(dx<0&&curPage<2)showPage(curPage+1);else if(dx>0&&curPage>0)showPage(curPage-1);}
+  });
+  document.getElementById('s-intro').addEventListener('click',function(e){
+    if(e.target.tagName==='BUTTON')return;
+    if(curPage<2)showPage(curPage+1);
+  });
+}
+
+// ── 패키지 ──
+var selPkg=APP.pkg;
+var selPrintSet=null; // {qty, price} or null
+
+function updatePkgTotal(){
+  var card=document.querySelector('.pkg-card.selected');
+  if(!card)return;
+  var basePrice=Number(card.dataset.price)||0;
+  var printAdd=selPrintSet?selPrintSet.price:0;
+  var total=basePrice+printAdd;
+  var bar=el('pkgTotalBar');
+  if(total>0){
+    bar.style.display='flex';
+    el('pkgTotalAmount').textContent=total.toLocaleString('ko-KR')+'원';
+  } else {
+    bar.style.display='none';
+  }
+}
+
+function initPkgCards(){
+  function hasPrint(pkg){ return pkg==='basic'||pkg==='premium'; }
+
+  document.querySelectorAll('.pkg-card').forEach(function(card){
+    if(card.dataset.pkg===selPkg)card.classList.add('selected');
+    card.addEventListener('click',function(){
+      document.querySelectorAll('.pkg-card').forEach(function(c){c.classList.remove('selected');});
+      this.classList.add('selected'); selPkg=this.dataset.pkg;
+      selPrintSet=null;
+      document.querySelectorAll('.print-set-btn').forEach(function(b){b.classList.remove('selected');});
+      el('printTotalPrice').textContent='';
+      el('printSetWrap').classList.toggle('show', hasPrint(selPkg));
+      el('printBasicWarn').classList.toggle('show', selPkg==='basic');
+      updatePkgTotal();
+    });
+  });
+
+  // 초기 상태
+  el('printSetWrap').classList.toggle('show', hasPrint(selPkg));
+  el('printBasicWarn').classList.toggle('show', selPkg==='basic');
+  updatePkgTotal();
+
+  // 인쇄 세트 버튼
+  document.querySelectorAll('.print-set-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var price=Number(this.dataset.price);
+      var qty=Number(this.dataset.qty);
+      if(selPrintSet&&selPrintSet.price===price){
+        // 같은 버튼 재클릭 → 선택 해제
+        selPrintSet=null;
+        document.querySelectorAll('.print-set-btn').forEach(function(b){b.classList.remove('selected');});
+        el('printTotalPrice').textContent='';
+      } else {
+        document.querySelectorAll('.print-set-btn').forEach(function(b){b.classList.remove('selected');});
+        this.classList.add('selected');
+        selPrintSet={qty:qty,price:price};
+        el('printTotalPrice').textContent='인쇄 비용: '+price.toLocaleString('ko-KR')+'원';
+      }
+      updatePkgTotal();
+    });
+  });
+
+  el('printSetNone').addEventListener('click',function(){
+    selPrintSet=null;
+    document.querySelectorAll('.print-set-btn').forEach(function(b){b.classList.remove('selected');});
+    el('printTotalPrice').textContent='';
+    updatePkgTotal();
+  });
+}
+
+// ── 대시보드 ──
+function renderDash(){
+  var maxQ=APP.maxQ;
+  var cnt=Object.keys(APP.answers).filter(function(k){return Number(k)<maxQ;}).length;
+  var pct=maxQ?Math.round(cnt/maxQ*100):0;
+  var cfg=PKG_CONFIG[APP.pkg]||PKG_CONFIG.free;
+  el('dashPkgLbl').textContent=cfg.name+' · '+maxQ+'가지 이야기 · '+cfg.pages;
+  el('progN').textContent=cnt;
+  el('progOf').textContent='/ '+maxQ+' 완료';
+  el('progFill').style.width=pct+'%';
+  if(pct>0)el('progLbl').textContent='당신의 이야기가 '+pct+'% 완성되었습니다';
+  el('progSt').textContent=cnt===0?'아직 시작 전이에요':cnt<maxQ?'이어서 계속 써내려 가세요':'모든 이야기 완료 ✦';
+
+  var btns=el('dashBtns'); btns.innerHTML='';
+  if(cnt===0){
+    btns.innerHTML='<button class="btn btn-orange" id="db1">이야기 시작하기 →</button>';
+    el('db1').addEventListener('click',startNew);
+  }else if(cnt<maxQ){
+    btns.innerHTML='<button class="btn btn-orange" id="db1">이어서 쓰기 ('+cnt+'/'+maxQ+')</button><button class="btn btn-ghost" id="db2" style="margin-top:4px">처음부터 다시 시작</button>';
+    el('db1').addEventListener('click',resumeJourney);
+    el('db2').addEventListener('click',confirmReset);
+  }else{
+    var html=APP.preview?'<button class="btn btn-orange" id="db1">내 자서전 보기 ✦</button>':'<button class="btn btn-orange" id="db1">자서전 만들기 →</button>';
+    html+='<button class="btn btn-ghost" id="db2" style="margin-top:4px">처음부터 다시 시작</button>';
+    btns.innerHTML=html;
+    el('db1').addEventListener('click',APP.preview?showPreview:goTitleScreen);
+    el('db2').addEventListener('click',confirmReset);
+  }
+
+  var list=el('chList'); list.innerHTML='';
+  var activeQS=QS.slice(0,maxQ);
+  var chs=[];
+  activeQS.forEach(function(q){if(chs.indexOf(q.ch)===-1)chs.push(q.ch);});
+  chs.forEach(function(ci){
+    var total=activeQS.filter(function(q){return q.ch===ci;}).length;
+    var done=activeQS.filter(function(q,i){return q.ch===ci&&APP.answers[i];}).length;
+    var full=done===total;
+    list.innerHTML+='<div class="story-row"><div><div class="story-name'+(full?' done':'')+'">'+( full?'✓ ':'')+STORIES[ci].name+'</div><div class="story-sub">'+done+' / '+total+' 완료</div></div><div class="story-st'+(full?' done':'')+'">'+( full?'완료':done>0?'쓰는 중':'아직')+'</div></div>';
+  });
+  renderProds();
+}
+
+function confirmReset(){
+  if(confirm('처음부터 다시 시작할까요?\n저장된 내용이 모두 삭제됩니다.')){
+    APP.answers={};APP.preview=null;APP.curQ=0;APP.bookTitle='';saveState();go('s-package');
+  }
+}
+function startNew(){
+  APP.curQ=0;APP.answers={};APP.preview=null;APP.bookTitle='';APP.qDates={};buildQuestionList();saveState();
+  showStory(QS[0].ch,function(){renderQ(0);go('s-q');});
+}
+function resumeJourney(){
+  buildQuestionList();
+  var maxQ=APP.maxQ;
+  var keys=Object.keys(APP.answers).map(Number).filter(function(k){return k<maxQ;});
+  var last=keys.length?Math.max.apply(null,keys):-1;
+  var next=Math.min(last+1,maxQ-1);
+  // 게스트가 이미 5문항 이상 답변한 경우 게이트 표시
+  if(!isSocialUser() && next >= GUEST_LIMIT){
+    _pendingQAdvance = true;
+    APP.curQ = GUEST_LIMIT - 1;
+    renderQ(APP.curQ); go('s-q');
+    setTimeout(function(){ showLoginModal('gate'); }, 600);
+    return;
+  }
+  if(dailyCapReached() && !APP.answers[next]){ APP.curQ=Math.max(last,0); showDayDone(); return; }
+  APP.curQ=next; renderQ(next); go('s-q');
+}
+function showStory(idx,cb){
+  clearTimeout(APP.chTimer);
+  el('crBadge').textContent=STORIES[idx].badge;
+  el('crName').textContent=STORIES[idx].name;
+  el('crDesc').textContent=STORIES[idx].desc;
+  go('s-ch');
+  APP.chTimer=setTimeout(function(){if(cb)cb();},2300);
+}
+function renderQ(i){
+  var q=QS[i]; var maxQ=APP.maxQ;
+  var pct=Math.round(i/maxQ*100);
+  el('qBarFill').style.width=pct+'%';
+  el('qStep').textContent=STORIES[q.ch].step;
+  // 게스트: 무료 잔여 표시 / 소셜 로그인: 전체 진행 표시
+  if(!isSocialUser() && i < GUEST_LIMIT){
+    el('qCnt').textContent='무료 '+(i+1)+'/'+GUEST_LIMIT+'문항';
+  } else {
+    el('qCnt').textContent=(i+1)+' / '+maxQ;
+  }
+  // 하루 스케줄 표시 (무료만): "N일차 · 오늘 M/3"
+  var _sched=el('qSched');
+  if(_sched){ if(isFreeTier()){ _sched.textContent=dayNumber()+'일차 · 오늘 '+consumedToday()+'/'+DAILY_CAP; _sched.style.display=''; } else { _sched.style.display='none'; } }
+  el('qProgressTxt').textContent='당신의 이야기가 만들어지고 있습니다 ('+pct+'%)';
+  el('qNum').textContent=String(i+1).padStart(3,'0')+' 번째 질문';
+  el('qTxt').textContent=q.q;
+  el('qHint').textContent=q.h;
+  // 이전 답변 복원 (이전/다음 이동 시 데이터 유지)
+  el('tArea').value=APP.answers[i]||'';
+  el('vArea').value=APP.answers[i]||'';
+  // 다음 버튼 텍스트
+  el('btnNext').innerHTML=i<maxQ-1?'기억 저장하고<br>다음으로 →':'기억 저장하고<br>제목 정하기 →';
+  // 첫 번째 질문이면 이전 버튼 숨김
+  el('btnPrev').style.display=i===0?'none':'';
+  el('qSaveLbl').textContent='';
+}
+function setMode(m){
+  APP.mode=m;
+  el('iText').style.display=m==='text'?'':'none';
+  el('iVoice').style.display=m==='voice'?'':'none';
+  el('mTxt').className='mode-btn'+(m==='text'?' on':'');
+  el('mVoice').className='mode-btn'+(m==='voice'?' on':'');
+}
+function getVal(){return APP.mode==='text'?el('tArea').value.trim():el('vArea').value.trim();}
+function commit(){
+  var v=getVal();
+  if(v){APP.answers[APP.curQ]=v;saveState();el('qSaveLbl').textContent='저장됨 ✓';setTimeout(function(){el('qSaveLbl').textContent='';},2000);}
+}
+var GUEST_LIMIT = 15; // 무료 15문항 (index 0~14)
+var _pendingQAdvance = false; // 소셜 로그인 후 자동 진행 플래그
+
+// ─────────────────────────────────────────────────────────────
+// C-1 하루 3문항 스케줄 · 입력게이트 설정 (테스트하며 자유롭게 조정 가능)
+// ─────────────────────────────────────────────────────────────
+var DAILY_CAP   = 3;     // [조정] 하루에 새로 진행(답변/패스)할 수 있는 질문 수 — 무료만 적용
+var MIN_CHARS   = 10;    // [조정] 답변 최소 글자 수 (이 미만이면 저장/다음 막음)
+var PASS_COUNTS = true;  // [조정] '건너뛰기(패스)'도 하루 한도에 포함할지 (false면 패스는 무제한)
+var DONE_TITLE  = '오늘은 여기까지예요';                                  // [조정] 완료 화면 제목
+var DONE_MSG    = '오늘의 이야기 ' + DAILY_CAP + '가지, 잘 들었어요.<br>봄이가 내일 새 질문으로 다시 올게요 🌸'; // [조정] 완료 화면 문구
+
+function _todayStr(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+function isFreeTier(){ return (APP.pkg||'free')==='free'; }                         // 무료 등급인가
+function consumedToday(){ var t=_todayStr(),m=APP.qDates||{},n=0; for(var k in m){ if(m[k]===t) n++; } return n; } // 오늘 진행한 질문 수
+function dayNumber(){ var m=APP.qDates||{},s={}; for(var k in m){ s[m[k]]=1; } var c=Object.keys(s).length; return c<1?1:c; } // 며칠차
+function recordConsumed(i){ APP.qDates=APP.qDates||{}; if(APP.qDates[i]==null) APP.qDates[i]=_todayStr(); } // 처음 진행한 날 기록
+function dailyCapReached(){ return isFreeTier() && consumedToday() >= DAILY_CAP; } // 무료가 오늘 몫 다 했나
+function validAnswer(v){ v=(v||'').trim(); if(v.length<MIN_CHARS) return false; if(/^(.)\1+$/.test(v.replace(/\s/g,''))) return false; if(!/[가-힣A-Za-z0-9]/.test(v)) return false; return true; } // 입력게이트
+function showDayDone(){
+  el('ddTitle').textContent=DONE_TITLE;
+  el('ddMsg').innerHTML=DONE_MSG;
+  el('ddProgress').textContent= isFreeTier() ? (dayNumber()+'일차 · 오늘 '+consumedToday()+'/'+DAILY_CAP+' 완료') : '';
+  go('s-daydone');
+}
+
+function goNext(){
+  var v=getVal();
+  if(!validAnswer(v)){ popToast('조금만 더 들려주세요 — 최소 '+MIN_CHARS+'자로 적어주시거나, 아래 「이 질문 건너뛰기」를 눌러주세요'); return; }
+  commit();
+  recordConsumed(APP.curQ);
+  var maxQ=APP.maxQ; var next=APP.curQ+1;
+  // 유료 전환 게이트: 무료 15문항 후 로그인 요청
+  if(next >= GUEST_LIMIT && !isSocialUser()){
+    _pendingQAdvance = true; saveState();
+    showLoginModal('gate');
+    return;
+  }
+  if(next>=maxQ){goTitleScreen();return;}
+  // 무료 하루 캡: 오늘 몫 다 했고 다음이 새 질문이면 → 오늘 완료
+  if(dailyCapReached() && !APP.answers[next]){ saveState(); showDayDone(); return; }
+  var pc=QS[APP.curQ].ch,nc=QS[next].ch;
+  APP.curQ=next; saveState();
+  if(next===Math.floor(maxQ*0.8))setTimeout(function(){popToast('당신의 삶이 하나의 이야기로 정리되고 있습니다');},500);
+  if(nc!==pc){showStory(nc,function(){renderQ(next);go('s-q');});}
+  else renderQ(next);
+}
+function goPrev(){
+  if(APP.curQ <= 0) return;
+  // 현재 작성 중인 답변 임시 저장
+  var v=getVal();
+  if(v){ APP.answers[APP.curQ]=v; saveState(); }
+  APP.curQ--;
+  saveState();
+  renderQ(APP.curQ);
+  go('s-q');
+}
+function goSkip(){
+  if(PASS_COUNTS) recordConsumed(APP.curQ);
+  var maxQ=APP.maxQ; var next=APP.curQ+1;
+  // 건너뛰기도 동일하게 무료 15 로그인 게이트 적용
+  if(next >= GUEST_LIMIT && !isSocialUser()){
+    _pendingQAdvance = true; saveState();
+    showLoginModal('gate');
+    return;
+  }
+  if(next>=maxQ){goTitleScreen();return;}
+  // 무료 하루 캡: 오늘 몫 다 했고 다음이 새 질문이면 → 오늘 완료
+  if(dailyCapReached() && !APP.answers[next]){ saveState(); showDayDone(); return; }
+  var pc=QS[APP.curQ].ch,nc=QS[next].ch;
+  APP.curQ=next; saveState();
+  if(nc!==pc){showStory(nc,function(){renderQ(next);go('s-q');});}
+  else renderQ(next);
+}
+
+// ── 음성 ──
+function toggleRec(){
+  if(APP.recording){APP.rec&&APP.rec.stop();APP.recording=false;el('vBtn').className='v-btn idle';el('vBtn').textContent='🎤';el('vLbl').textContent='버튼을 눌러 말씀해주세요';return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){simVoice();return;}
+  var r=new SR();r.lang='ko-KR';r.continuous=true;r.interimResults=true;
+  r.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;el('vArea').value=t;};
+  r.onend=function(){APP.recording=false;el('vBtn').className='v-btn idle';el('vBtn').textContent='🎤';el('vLbl').textContent='버튼을 눌러 말씀해주세요';};
+  r.start();APP.rec=r;APP.recording=true;
+  el('vBtn').className='v-btn rec';el('vBtn').textContent='⏹';el('vLbl').textContent='말씀해주세요 · 다시 누르면 종료';
+}
+function simVoice(){
+  // 브라우저가 음성 인식을 지원하지 않을 때
+  popToast('음성 입력은 Chrome·Edge 브라우저에서만 사용 가능합니다.', 4000);
+  // 자동으로 글쓰기 모드로 전환
+  setMode('text');
+}
+
+// ── 제목 선택 화면 ──
+var titleSuggestions=[];
+async function goTitleScreen(){
+  go('s-title');
+  el('titleInput').value=APP.bookTitle||'';
+  // 기존 표지 사진 복원
+  if(APP.coverPhoto){
+    var img=el('coverPreviewImg');
+    img.src=APP.coverPhoto;
+    el('coverUploadArea').classList.add('has-photo');
+  }
+  el('titleSuggestWrap').innerHTML='<div class="title-loading">🪶 당신의 이야기를 읽고 제목을 만들고 있습니다...</div>';
+  try{
+    var suggestions=await genTitleSuggestions();
+    titleSuggestions=suggestions;
+    renderTitleSuggestions();
+  }catch(e){
+    // 폴백 제목
+    titleSuggestions=[
+      {title:"한 사람의 이야기",desc:"당신의 삶 전체를 담은 제목"},
+      {title:"그래도 살아온 날들",desc:"고비를 넘어온 모든 날들에"},
+      {title:"기억 속에 남겨두고 싶은 것들",desc:"사라지지 않길 바라는 소중한 순간들"},
+      {title:"내가 살아온 이유",desc:"삶을 버티게 해준 모든 것들에 대해"}
+    ];
+    renderTitleSuggestions();
+  }
+}
+
+async function genTitleSuggestions(){
+  await initFirebase();
+  var answers=Object.keys(APP.answers).slice(0,5).map(function(i){
+    return {q:QS[i].q, a:APP.answers[i]};
+  });
+  var fn=firebase.app().functions('asia-northeast3').httpsCallable('generateTitles');
+  var result=await fn({answers:answers});
+  return result.data.titles;
+}
+
+function renderTitleSuggestions(){
+  var wrap=el('titleSuggestWrap');
+  wrap.innerHTML=titleSuggestions.map(function(s,i){
+    return '<div class="title-suggest-card" data-idx="'+i+'"><div class="title-suggest-name">'+s.title+'</div><div class="title-suggest-desc">'+s.desc+'</div></div>';
+  }).join('');
+  wrap.querySelectorAll('.title-suggest-card').forEach(function(card){
+    card.addEventListener('click',function(){
+      wrap.querySelectorAll('.title-suggest-card').forEach(function(c){c.classList.remove('selected');});
+      this.classList.add('selected');
+      el('titleInput').value=titleSuggestions[Number(this.dataset.idx)].title;
+    });
+  });
+}
+
+// ── 방법 B: 답변 하나하나 확장 생성 ──
+async function startGen(title){
+  APP.bookTitle=title; saveState();
+  saveGeneratedToFirestore(title, null);
+  go('s-gen');
+
+  var activeAnswers=Object.keys(APP.answers)
+    .map(Number).sort(function(a,b){return a-b;})
+    .filter(function(i){return i<APP.maxQ;});
+
+  var total=activeAnswers.length;
+  var generated=[];
+  var paraPerQ=PKG_CONFIG[APP.pkg].paraPerQ;
+
+  for(var idx=0;idx<activeAnswers.length;idx++){
+    var i=activeAnswers[idx];
+    var pct=Math.round((idx/total)*100);
+    el('genProgressFill').style.width=pct+'%';
+    el('genProgressTxt').textContent=(idx+1)+' / '+total+' 번째 이야기 쓰는 중...';
+
+    try{
+      var para=await expandAnswer(QS[i].q, APP.answers[i], STORIES[QS[i].ch].name, paraPerQ);
+      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:para});
+    }catch(e){
+      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:APP.answers[i]});
+    }
+  }
+
+  el('genProgressFill').style.width='100%';
+  el('genProgressTxt').textContent='완성되었습니다!';
+
+  APP.preview={title:title, chapters:groupByChapter(generated)};
+  saveState();
+  setTimeout(showPreview, 800);
+}
+
+async function expandAnswer(question, answer, chapterName, paraCount){
+  await initFirebase();
+  var fn=firebase.app().functions('asia-northeast3').httpsCallable('generateSection');
+  var result=await fn({question:question, answer:answer, chapterName:chapterName, paraCount:paraCount, pkg:APP.pkg});
+  return result.data.text;
+}
+
+function groupByChapter(items){
+  var result={};
+  items.forEach(function(item){
+    var key=item.ch;
+    if(!result[key]) result[key]={storyName:item.storyName,texts:[]};
+    result[key].texts.push(item.text);
+  });
+  return result;
+}
+
+// ── 미리보기 ──
+function showPreview(){
+  var p=APP.preview;
+  el('pvTitle').textContent=p.title||'나의 이야기';
+  el('pvSub').textContent=new Date().getFullYear()+'년 · 나의 자서전';
+
+  // 표지 사진 적용
+  var head=el('pvHead');
+  if(APP.coverPhoto){
+    head.style.backgroundImage='url('+APP.coverPhoto+')';
+    head.classList.add('has-cover');
+  } else {
+    head.style.backgroundImage='';
+    head.classList.remove('has-cover');
+  }
+
+  var body=el('pvBody'); body.innerHTML='';
+  var chs=Object.keys(p.chapters).map(Number).sort(function(a,b){return a-b;});
+  var isFree=APP.pkg==='free';
+
+  chs.forEach(function(ci,idx){
+    var chData=p.chapters[ci];
+    var div=document.createElement('div');
+    // 첫 번째 챕터에 드롭캡 클래스
+    div.className='pv-chapter'+(idx===0?' pv-chapter-first':'');
+
+    // 챕터 구분 장식 (첫 챕터 제외)
+    if(idx>0){
+      var sep=document.createElement('div');
+      sep.className='pv-chapter-sep';
+      sep.textContent='✦  ✦  ✦';
+      div.appendChild(sep);
+    }
+
+    var lbl=document.createElement('div');
+    lbl.className='pv-story-lbl';
+    lbl.textContent=STORIES[ci].badge+' · '+chData.storyName;
+    div.appendChild(lbl);
+
+    var content=document.createElement('div');
+    if(isFree&&idx>0){
+      content.className='pv-blur-section';
+      var blurred=document.createElement('div');
+      blurred.className='pv-blur-content no-copy';
+      blurred.innerHTML='<p class="pv-p">'+chData.texts.join('</p><p class="pv-p">')+'</p>';
+      content.appendChild(blurred);
+      if(idx===1){
+        var overlay=document.createElement('div');
+        overlay.className='pv-lock-overlay';
+        overlay.innerHTML='<div class="pv-lock-icon">🔒</div>'
+          +'<div class="pv-lock-title">나머지 이야기가 있습니다</div>'
+          +'<div class="pv-lock-sub">무료 체험은 첫 번째 이야기만 보실 수 있어요.<br>기본 패키지부터 전체 자서전을 받아보실 수 있습니다.</div>'
+          +'<button class="btn-pkg" style="max-width:260px" onclick="scrollToCta()">전체 자서전 받아보기</button>';
+        content.appendChild(overlay);
+      }
+    } else {
+      content.className='no-copy';
+      content.innerHTML='<p class="pv-p">'+chData.texts.join('</p><p class="pv-p" style="margin-top:22px">')+'</p>';
+    }
+    div.appendChild(content);
+    body.appendChild(div);
+  });
+
+  // CTA
+  el('pvCta').style.display='block';
+  renderProds();
+  go('s-preview');
+
+  // 복사 방지
+  document.addEventListener('contextmenu',function(e){e.preventDefault();});
+  document.addEventListener('copy',function(e){e.preventDefault();popToast('복사는 완성본 구매 후 가능합니다');});
+}
+
+function scrollToCta(){document.getElementById('pvCta').scrollIntoView({behavior:'smooth'});}
+
+function renderProds(){
+  var e=el('prodCards'); if(!e)return;
+  e.innerHTML=PRODUCTS.map(function(p){
+    return '<div class="prod-card'+(APP.selProd===p.id?' on':'')+'" data-id="'+p.id+'"><div><div class="prod-name">'+p.icon+' '+p.name+'</div><div class="prod-desc">'+p.desc+'</div></div><div class="prod-price">'+p.price+(p.badge?'<span class="prod-bdg">'+p.badge+'</span>':'')+' </div></div>';
+  }).join('');
+  e.querySelectorAll('.prod-card').forEach(function(card){card.addEventListener('click',function(){APP.selProd=this.dataset.id;renderProds();});});
+}
+function openModal(){var p=PRODUCTS.find(function(p){return p.id===APP.selProd;});el('modalT').textContent=p.name+' 만들기 — '+p.price;el('modalBg').classList.add('open');}
+function closeModal(){el('modalBg').classList.remove('open');}
+function completePurchase(){closeModal();popToast('결제 페이지로 이동합니다 (준비 중)');}
+
+// ── 이벤트 바인딩 ──
+document.addEventListener('DOMContentLoaded',function(){
+  // Firebase 초기화 + 익명 로그인 + 이전 내용 복원 (백그라운드)
+  autoSignIn();
+
+  var hasSaved=Object.keys(APP.answers).length>0;
+  if(!hasSaved)el('btnContinue').style.display='none';
+
+  showPage(0);
+  initIntroTouch();
+
+  // 다음 버튼
+  var btnPN = document.getElementById('btnPageNext');
+  if(btnPN){
+    btnPN.addEventListener('click',function(e){
+      e.stopPropagation();
+      if(curPage < 2) showPage(curPage+1);
+    });
+  }
+
+  el('btnStart').addEventListener('click',function(){go('s-package');});
+  el('btnContinue').addEventListener('click',function(){renderDash();go('s-dash');});
+  el('btnDayDone').addEventListener('click',function(){renderDash();go('s-dash');});
+
+  initPkgCards();
+  el('btnPkgSelect').addEventListener('click',function(){
+    var card=document.querySelector('.pkg-card.selected');
+    if(!card){popToast('원하시는 방식을 선택해주세요');return;}
+    APP.pkg=card.dataset.pkg;
+    APP.maxQ=Number(card.dataset.q);
+    APP.printSet=selPrintSet;
+    APP.answers={};APP.curQ=0;APP.preview=null;APP.bookTitle='';APP.qDates={};
+    buildQuestionList();
+    saveState();renderDash();go('s-dash');
+  });
+
+  el('btnReset').addEventListener('click',function(){if(confirm('처음으로 돌아갈까요?'))go('s-package');});
+
+  el('mTxt').addEventListener('click',function(){setMode('text');});
+  el('mVoice').addEventListener('click',function(){setMode('voice');});
+  el('vBtn').addEventListener('click',toggleRec);
+  el('btnPrev').addEventListener('click',goPrev);
+  el('btnNext').addEventListener('click',goNext);
+  el('btnSkip').addEventListener('click',goSkip);
+  el('btnQDash').addEventListener('click',function(){renderDash();go('s-dash');});
+
+  // ── 표지 사진 업로드 ──
+  el('coverUploadArea').addEventListener('click',function(){el('coverFileInput').click();});
+  el('coverFileInput').addEventListener('change',function(){
+    var file=this.files[0];
+    if(!file)return;
+    // Canvas로 리사이즈 후 dataURL 저장 (최대 1200px, JPEG 0.85)
+    var reader=new FileReader();
+    reader.onload=function(e){
+      var img=new Image();
+      img.onload=function(){
+        var maxPx=1200, w=img.width, h=img.height;
+        if(w>maxPx||h>maxPx){
+          if(w>h){h=Math.round(h*maxPx/w);w=maxPx;}
+          else{w=Math.round(w*maxPx/h);h=maxPx;}
+        }
+        var canvas=document.createElement('canvas');
+        canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h);
+        var dataUrl=canvas.toDataURL('image/jpeg',0.85);
+        APP.coverPhoto=dataUrl;
+        LS.save('coverPhoto',dataUrl);
+        var pv=el('coverPreviewImg');
+        pv.src=dataUrl;
+        el('coverUploadArea').classList.add('has-photo');
+        popToast('표지 사진이 등록되었습니다 ✓');
+      };
+      img.src=e.target.result;
+    };
+    reader.readAsDataURL(file);
+    this.value=''; // 같은 파일 재선택 허용
+  });
+
+  // 제목 확정 버튼
+  el('btnTitleConfirm').addEventListener('click',function(){
+    var title=el('titleInput').value.trim();
+    if(!title){popToast('제목을 입력하거나 선택해주세요');return;}
+    startGen(title);
+  });
+
+  el('btnPvBack').addEventListener('click',function(){renderDash();go('s-dash');});
+  el('btnBuy').addEventListener('click',openModal);
+  el('modalBg').addEventListener('click',function(e){if(e.target===this)closeModal();});
+  el('btnPurchase').addEventListener('click',completePurchase);
+  el('btnModalClose').addEventListener('click',closeModal);
+
+  // ── 소셜 로그인 버튼 (인트로 page3) ──
+  el('introKakao').addEventListener('click', kakaoLogin);
+  el('introNaver').addEventListener('click', naverLogin);
+  el('introGoogle').addEventListener('click', googleLogin);
+
+  // ── 소셜 로그인 모달 ──
+  el('lmKakao').addEventListener('click', kakaoLogin);
+  el('lmNaver').addEventListener('click', naverLogin);
+  el('lmGoogle').addEventListener('click', googleLogin);
+  // X 버튼 / 배경 클릭 시 pendingAdvance 취소 (게스트는 현재 질문에 머무름)
+  el('lmClose').addEventListener('click', function(){ _pendingQAdvance=false; closeLoginModal(); });
+  el('loginModalBg').addEventListener('click', function(e){ if(e.target===this){ _pendingQAdvance=false; closeLoginModal(); } });
+  el('lmGuestContinue').addEventListener('click', function(){
+    _pendingQAdvance=false;
+    closeLoginModal();
+    popToast('게스트 모드로 계속합니다. 브라우저를 닫으면 저장되지 않아요.', 4000);
+  });
+
+  // 이미 소셜 로그인 되어 있으면 UI 갱신
+  if(isSocialUser()){
+    var sp = LS.load('socialProvider',null);
+    if(sp) updateAuthUIBySocial(sp, LS.load('userName',''));
+  }
+});
+</script>
+</body>
+</html>

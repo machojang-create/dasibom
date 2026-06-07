@@ -1,0 +1,291 @@
+{
+  "generated_at": "2026-03-28T00:00:00",
+  "_note": "이 파일은 health_crawl.py를 실행하면 자동으로 갱신됩니다. 아래는 UI 개발용 샘플 데이터입니다.",
+  "categories": {
+    "눈": {
+      "label": "눈 건강",
+      "icon": "👁️",
+      "products": [
+        {
+          "id": "eye001",
+          "name": "루테인 지아잔틴 복합 60캡슐",
+          "price": 18900,
+          "original_price": 35000,
+          "image": "",
+          "ingredients": ["루테인 20mg", "지아잔틴 4mg", "오메가3"],
+          "category": "눈",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "눈의 피로와 황반 건강을 지켜주는 루테인 복합 제품",
+            "how_it_helps": "루테인은 눈 속 황반을 보호해 시력 저하를 늦춰줍니다.\n스마트폰·TV 화면에서 나오는 블루라이트 피해를 줄여줍니다.\n지아잔틴은 빛으로 인한 눈 손상을 막아주는 성분입니다.",
+            "how_to_take": "하루 1캡슐, 식후 물과 함께 드세요.",
+            "caution": "임산부·수유 중이시면 의사와 먼저 상담하세요."
+          }
+        },
+        {
+          "id": "eye002",
+          "name": "빌베리 아스타잔틴 눈 건강 30정",
+          "price": 22000,
+          "original_price": 42000,
+          "image": "",
+          "ingredients": ["빌베리 추출물 160mg", "아스타잔틴 4mg", "비타민A"],
+          "category": "눈",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "어두운 곳에서 잘 보이도록 돕는 빌베리 눈 건강 제품",
+            "how_it_helps": "빌베리는 밤에 빛을 보는 능력을 도와줍니다.\n아스타잔틴은 눈의 피로를 줄여 오래 볼 수 있게 해줍니다.\n비타민A가 안구 건조를 예방해 눈물막을 튼튼하게 합니다.",
+            "how_to_take": "하루 1정, 아침 식사 후 드세요.",
+            "caution": "비타민A가 포함되어 있어 다른 비타민제와 함께 드실 때 주의하세요."
+          }
+        },
+        {
+          "id": "eye003",
+          "name": "마리골드 꽃 루테인 90mg 고함량",
+          "price": 29000,
+          "original_price": 55000,
+          "image": "",
+          "ingredients": ["루테인 90mg", "마리골드꽃 추출물", "비타민E"],
+          "category": "눈",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "루테인 고함량으로 눈의 노화를 막아주는 마리골드 제품",
+            "how_it_helps": "루테인이 90mg 고함량으로 황반변성 예방에 도움이 됩니다.\n마리골드 꽃에서 추출한 천연 성분으로 흡수율이 높습니다.\n비타민E가 함께 들어 있어 눈 세포를 보호해줍니다.",
+            "how_to_take": "하루 1캡슐, 식사와 함께 드세요.",
+            "caution": "고함량 제품이므로 하루 1캡슐을 초과하지 마세요."
+          }
+        }
+      ]
+    },
+    "간": {
+      "label": "간 건강",
+      "icon": "🫀",
+      "products": [
+        {
+          "id": "liver001",
+          "name": "밀크시슬 실리마린 80% 60캡슐",
+          "price": 15900,
+          "original_price": 28000,
+          "image": "",
+          "ingredients": ["밀크시슬 추출물 150mg (실리마린 80%)", "비타민B군"],
+          "category": "간",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "피로한 간을 회복시켜주는 밀크시슬 고함량 제품",
+            "how_it_helps": "밀크시슬은 간세포를 보호하고 재생을 도와줍니다.\n음주 후 간이 받은 손상을 줄이는 데 도움이 됩니다.\n비타민B군이 함께 들어 에너지 생성을 도와 피로를 줄여줍니다.",
+            "how_to_take": "하루 2캡슐, 아침저녁 식사 후 드세요.",
+            "caution": "간 질환 치료 중이시면 의사와 상담 후 복용하세요."
+          }
+        },
+        {
+          "id": "liver002",
+          "name": "헛개나무 간 건강 진액 30포",
+          "price": 32000,
+          "original_price": 58000,
+          "image": "",
+          "ingredients": ["헛개나무열매 추출물 2000mg", "홍화씨", "강황"],
+          "category": "간",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "술 드신 다음 날 간 회복에 도움을 주는 헛개나무 진액",
+            "how_it_helps": "헛개나무는 오래전부터 간 보호에 써온 전통 식품입니다.\n알코올이 간에 쌓이는 것을 줄여주는 역할을 합니다.\n강황 성분이 간의 염증을 줄이는 데 도움이 됩니다.",
+            "how_to_take": "하루 1포, 공복 또는 식사 후 물과 함께 드세요.",
+            "caution": "음주를 완전히 대체하는 것은 아니니 절주를 권장합니다."
+          }
+        },
+        {
+          "id": "liver003",
+          "name": "간 건강 복합 영양제 (강황+밀크시슬+아티초크)",
+          "price": 26500,
+          "original_price": 48000,
+          "image": "",
+          "ingredients": ["강황 추출물 500mg", "밀크시슬 200mg", "아티초크 추출물 150mg"],
+          "category": "간",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "강황·밀크시슬·아티초크 세 가지 성분이 간을 함께 지켜주는 제품",
+            "how_it_helps": "강황의 커큐민이 간의 염증을 줄이고 해독을 도와줍니다.\n밀크시슬이 간세포 막을 튼튼하게 보호해줍니다.\n아티초크는 담즙 분비를 도와 소화도 편하게 해줍니다.",
+            "how_to_take": "하루 2정, 식후에 드세요.",
+            "caution": "강황에 알레르기가 있으신 분은 섭취를 피하세요."
+          }
+        }
+      ]
+    },
+    "혈행": {
+      "label": "혈행 개선",
+      "icon": "❤️",
+      "products": [
+        {
+          "id": "blood001",
+          "name": "오메가3 EPA·DHA 고함량 rTG 90캡슐",
+          "price": 28900,
+          "original_price": 52000,
+          "image": "",
+          "ingredients": ["EPA 540mg", "DHA 360mg", "비타민E"],
+          "category": "혈행",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "혈액을 맑게 하고 혈관을 탄탄하게 해주는 오메가3",
+            "how_it_helps": "EPA가 혈중 중성지방을 줄여 혈액이 잘 흐르게 돕습니다.\nDHA는 뇌 기능을 유지하고 기억력 저하를 늦춰줍니다.\nrTG 형태로 체내 흡수율이 일반 오메가3보다 훨씬 높습니다.",
+            "how_to_take": "하루 3캡슐, 식사와 함께 드세요.",
+            "caution": "혈액 희석제(와파린 등) 드시는 분은 의사와 먼저 상담하세요."
+          }
+        },
+        {
+          "id": "blood002",
+          "name": "코엔자임Q10 100mg + 비타민B 복합",
+          "price": 21000,
+          "original_price": 39000,
+          "image": "",
+          "ingredients": ["코엔자임Q10 100mg", "비타민B1", "비타민B6", "비타민B12"],
+          "category": "혈행",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "심장 건강과 에너지를 동시에 챙겨주는 코엔자임Q10",
+            "how_it_helps": "코엔자임Q10은 심장 근육이 힘차게 뛰도록 도와주는 성분입니다.\n나이가 들수록 몸에서 만들어지는 양이 줄어들어 보충이 필요합니다.\n비타민B군이 피로 해소와 에너지 생성에 함께 작용합니다.",
+            "how_to_take": "하루 1캡슐, 아침 식후에 드세요.",
+            "caution": "혈압약을 복용 중이신 분은 의사와 상담 후 드세요."
+          }
+        },
+        {
+          "id": "blood003",
+          "name": "홍국쌀 나토키나제 혈행 복합 60정",
+          "price": 24500,
+          "original_price": 44000,
+          "image": "",
+          "ingredients": ["홍국쌀 추출물 100mg", "나토키나제 2000FU", "마늘 분말"],
+          "category": "혈행",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "혈전을 녹이고 혈관 건강을 지키는 나토키나제 복합 제품",
+            "how_it_helps": "나토키나제는 혈관 속 피떡(혈전)을 녹이는 효소입니다.\n홍국쌀이 나쁜 콜레스테롤(LDL)을 줄이는 데 도움을 줍니다.\n마늘 성분이 혈관을 넓혀 혈액 순환을 개선해줍니다.",
+            "how_to_take": "하루 2정, 식사 후 물과 함께 드세요.",
+            "caution": "항응고제 복용자는 반드시 의사와 먼저 상담하세요."
+          }
+        }
+      ]
+    },
+    "관절": {
+      "label": "관절 건강",
+      "icon": "🦴",
+      "products": [
+        {
+          "id": "joint001",
+          "name": "글루코사민 황산염 1500mg + MSM",
+          "price": 19800,
+          "original_price": 36000,
+          "image": "",
+          "ingredients": ["글루코사민황산염 1500mg", "MSM 500mg", "콘드로이틴"],
+          "category": "관절",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "무릎 연골을 보호하고 관절 통증을 줄이는 글루코사민",
+            "how_it_helps": "글루코사민은 닳아가는 연골을 재생하는 데 도움이 됩니다.\nMSM 성분이 관절의 뻣뻣함을 풀어주는 역할을 합니다.\n콘드로이틴이 관절액을 채워 움직임을 부드럽게 해줍니다.",
+            "how_to_take": "하루 3정, 식사 후 나눠서 드세요.",
+            "caution": "갑각류(새우·게) 알레르기가 있으시면 원료를 확인하세요."
+          }
+        },
+        {
+          "id": "joint002",
+          "name": "비타민D3 + 칼슘 + 마그네슘 90정",
+          "price": 14900,
+          "original_price": 27000,
+          "image": "",
+          "ingredients": ["칼슘 600mg", "비타민D3 2000IU", "마그네슘 300mg"],
+          "category": "관절",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "뼈를 튼튼하게 하고 골다공증을 예방하는 칼슘 복합 제품",
+            "how_it_helps": "칼슘이 뼈를 만드는 핵심 재료 역할을 합니다.\n비타민D3가 칼슘이 뼈에 잘 흡수되도록 도와줍니다.\n마그네슘이 뼈 강도를 높이고 근육 경련도 예방합니다.",
+            "how_to_take": "하루 3정, 식사와 함께 나눠서 드세요.",
+            "caution": "신장 결석 이력이 있으시면 의사와 상담 후 복용하세요."
+          }
+        },
+        {
+          "id": "joint003",
+          "name": "보스웰리아 관절 추출물 200mg 60정",
+          "price": 23000,
+          "original_price": 42000,
+          "image": "",
+          "ingredients": ["보스웰리아 추출물 200mg", "강황 추출물 100mg", "생강 추출물"],
+          "category": "관절",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "관절 염증을 줄여 무릎 통증 완화에 도움이 되는 보스웰리아",
+            "how_it_helps": "보스웰리아는 관절 염증을 일으키는 물질을 억제해줍니다.\n강황과 생강이 함께 작용해 관절 부기와 통증을 줄입니다.\n천연 식물성 성분이라 오래 드셔도 위 부담이 적습니다.",
+            "how_to_take": "하루 2정, 식후 물과 함께 드세요.",
+            "caution": "임신 중에는 섭취를 삼가세요."
+          }
+        }
+      ]
+    },
+    "면역": {
+      "label": "면역 강화",
+      "icon": "🛡️",
+      "products": [
+        {
+          "id": "immune001",
+          "name": "6년근 홍삼 농축액 100g",
+          "price": 38000,
+          "original_price": 72000,
+          "image": "",
+          "ingredients": ["홍삼 농축액 (6년근)", "진세노사이드 Rg1 Rb1 Rg3"],
+          "category": "면역",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "6년 정성으로 키운 홍삼으로 면역력을 높여주는 농축액",
+            "how_it_helps": "홍삼의 진세노사이드 성분이 면역세포를 활성화시켜줍니다.\n피로 해소와 체력 회복에 오래전부터 검증된 한국 전통 성분입니다.\n혈행 개선에도 도움을 줘 손발이 따뜻해지는 효과가 있습니다.",
+            "how_to_take": "하루 1회 1g (작은 스푼 1개), 공복에 드시면 더 좋습니다.",
+            "caution": "고혈압·당뇨 약 복용 중이시면 의사와 먼저 상담하세요."
+          }
+        },
+        {
+          "id": "immune002",
+          "name": "프로바이오틱스 100억 유산균 30캡슐",
+          "price": 17500,
+          "original_price": 32000,
+          "image": "",
+          "ingredients": ["혼합유산균(19종) 100억 CFU", "프리바이오틱스", "아연"],
+          "category": "면역",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "장을 건강하게 해서 면역력 전체를 높여주는 유산균",
+            "how_it_helps": "유산균이 장 속 나쁜 균을 줄이고 유익균을 늘려줍니다.\n장 건강이 좋아지면 몸의 면역력이 60~70%까지 올라갑니다.\n아연이 함께 들어 있어 감기 등 감염에 저항력을 높여줍니다.",
+            "how_to_take": "하루 1캡슐, 아침 공복 또는 식후에 드세요.",
+            "caution": "냉장 보관하면 더 오래 유산균이 살아있습니다."
+          }
+        },
+        {
+          "id": "immune003",
+          "name": "비타민C 1000mg + 아연 + 엘더베리 90정",
+          "price": 13900,
+          "original_price": 25000,
+          "image": "",
+          "ingredients": ["비타민C 1000mg", "아연 15mg", "엘더베리 추출물 100mg"],
+          "category": "면역",
+          "crawled_at": "2026-03-28",
+          "source_url": "#",
+          "description_senior": {
+            "summary": "감기 예방과 피로 회복을 함께 도와주는 비타민C 복합 제품",
+            "how_it_helps": "비타민C가 면역세포를 튼튼하게 하고 피부 콜라겐을 만들어줍니다.\n아연이 바이러스와 싸우는 면역 반응을 강화시켜줍니다.\n엘더베리는 감기·독감 예방에 전통적으로 사용되어온 열매입니다.",
+            "how_to_take": "하루 1정, 식사와 함께 드세요.",
+            "caution": "신장 결석이 있으신 분은 고용량 비타민C 섭취에 주의하세요."
+          }
+        }
+      ]
+    }
+  }
+}

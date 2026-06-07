@@ -1,0 +1,2466 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>다시봄 — 다시 오는 봄, 다시 보는 인생</title>
+<meta name="description" content="은퇴 이후의 삶은 끝이 아닌 또 하나의 시작입니다. 다시봄은 실버세대를 위한 따뜻한 콘텐츠 공간입니다.">
+<meta name="keywords" content="다시봄, 시니어, 자서전, 인생 기록, 건강 정보, 노년, dasibom">
+<meta name="robots" content="index, follow">
+<meta name="author" content="다시봄(Dasibom)">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dasibomlife.com/">
+<meta property="og:title" content="다시봄 — 다시 오는 봄, 다시 보는 인생">
+<meta property="og:description" content="은퇴 이후의 삶은 끝이 아닌 또 하나의 시작입니다. 다시봄은 실버세대를 위한 따뜻한 콘텐츠 공간입니다.">
+<meta property="og:image" content="https://dasibomlife.com/og-image.png">
+<meta property="og:site_name" content="다시봄">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="다시봄 — 다시 오는 봄, 다시 보는 인생">
+<meta name="twitter:description" content="은퇴 이후의 삶은 끝이 아닌 또 하나의 시작입니다.">
+<meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#F5F1E8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="다시봄">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css" rel="stylesheet">
+
+<style>
+  :root{
+    --cream:#F5F1E8;
+    --cream-2:#EDE7D7;
+    --paper:#FBF8F0;
+    --ink:#1F2A1A;
+    --ink-2:#2D3A2A;
+    --muted:#6B6B5C;
+    --sage:#5C7A4A;
+    --sage-deep:#3F5A30;
+    --gold:#C9A961;
+    --gold-soft:#E0C988;
+    --line:rgba(45,58,42,0.14);
+    --shadow:0 30px 80px -40px rgba(45,58,42,0.35);
+    --r-lg:28px;
+    --r-md:18px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--cream);color:var(--ink);}
+  body{
+    font-family:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
+    font-feature-settings:"ss01","ss02";
+    -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  .serif{font-family:"Nanum Myeongjo",serif;letter-spacing:-0.01em;}
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+
+  .wrap{max-width:1320px;margin:0 auto;padding:0 40px;}
+  @media(max-width:760px){.wrap{padding:0 22px}}
+
+  /* Nav */
+  .nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    backdrop-filter:blur(14px) saturate(140%);
+    background:rgba(245,241,232,0.72);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s,background .3s;
+  }
+  .nav.scrolled{border-bottom-color:var(--line);background:rgba(245,241,232,0.88)}
+  .nav .row{display:flex;align-items:center;justify-content:space-between;height:74px;}
+  .logo{display:flex;align-items:baseline;gap:8px}
+  .logo .mark{
+    width:30px;height:30px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,var(--gold-soft),var(--sage) 75%);
+    box-shadow:inset -3px -4px 8px rgba(0,0,0,0.12);
+    align-self:center;
+  }
+  .logo .name{font-family:"Nanum Myeongjo",serif;font-size:22px;font-weight:800;letter-spacing:0.02em;white-space:nowrap}
+  .logo .name em{font-style:normal;color:var(--sage-deep)}
+  .nav ul{display:flex;gap:34px;list-style:none;flex-shrink:0}
+  .nav ul a{font-size:14.5px;color:var(--ink-2);opacity:.78;transition:opacity .2s;white-space:nowrap}
+  .nav ul a:hover{opacity:1}
+  .nav .cta{
+    padding:11px 20px;border-radius:999px;background:var(--ink-2);color:var(--paper);
+    font-size:14px;font-weight:500;transition:transform .2s,background .2s;white-space:nowrap;
+  }
+  .nav .cta:hover{background:var(--sage-deep);transform:translateY(-1px)}
+  @media(max-width:1024px){.nav ul{display:none}}
+
+  /* Nav 로그인 영역 */
+  #nav-auth{display:flex;align-items:center;gap:12px}
+  .nav-user{
+    display:flex;align-items:center;gap:10px;
+    font-size:14px;color:var(--ink-2);
+  }
+  .nav-avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%,var(--gold-soft),var(--sage) 75%);
+    display:grid;place-items:center;font-size:14px;font-weight:700;color:#fff;
+    flex-shrink:0;
+  }
+  .nav-user-info{display:flex;flex-direction:column;gap:2px}
+  .nav-name{font-weight:600;font-size:14px;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .nav-provider{
+    font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px;
+  }
+  .nav-provider-badge{
+    display:inline-flex;align-items:center;gap:3px;
+    padding:2px 7px;border-radius:999px;font-size:10.5px;font-weight:600;
+  }
+  .badge-kakao{background:#FEE500;color:#191919}
+  .badge-naver{background:#03C75A;color:#fff}
+  .badge-google{background:#f1f1f1;color:#444;border:1px solid #ddd}
+  .nav-logout{
+    padding:8px 16px;border-radius:999px;border:1px solid var(--line);
+    font-size:13px;color:var(--muted);cursor:pointer;background:none;
+    transition:border-color .2s,color .2s;white-space:nowrap;
+  }
+  .nav-logout:hover{border-color:var(--ink-2);color:var(--ink-2)}
+
+  /* Hero */
+  .hero{
+    position:relative;min-height:100vh;padding:0 0 80px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    overflow:hidden;
+  }
+  .hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none;}
+  .hero-bg::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 60% 50% at 85% 20%,rgba(201,169,97,0.18),transparent 60%),
+      radial-gradient(ellipse 70% 55% at 10% 80%,rgba(92,122,74,0.15),transparent 65%);
+  }
+  .hero-grid{
+    position:relative;z-index:1;
+    display:grid;grid-template-columns:1.2fr 1fr;gap:60px;align-items:end;
+  }
+  @media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:40px}}
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:13px;letter-spacing:0.18em;text-transform:uppercase;
+    color:var(--sage-deep);font-weight:500;margin-bottom:28px;
+  }
+  .eyebrow::before{content:"";width:28px;height:1px;background:var(--sage-deep);display:inline-block}
+
+  h1.headline{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:clamp(56px,8vw,132px);
+    line-height:0.96;letter-spacing:-0.025em;font-weight:800;color:var(--ink);
+  }
+  h1.headline .accent{color:var(--sage-deep);font-style:italic;font-weight:400}
+  h1.headline .gold{color:var(--gold);}
+  .lead{
+    margin-top:32px;font-size:clamp(17px,1.4vw,20px);
+    color:var(--ink-2);max-width:46ch;line-height:1.7;opacity:.85;
+  }
+  .hero-actions{display:flex;gap:14px;margin-top:42px;flex-wrap:wrap}
+  .btn{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:16px 26px;border-radius:999px;font-size:15.5px;font-weight:500;
+    transition:transform .2s ease,background .2s,color .2s,border-color .2s;
+  }
+  .btn-primary{background:var(--ink-2);color:var(--paper);}
+  .btn-primary:hover{background:var(--sage-deep);transform:translateY(-2px)}
+  .btn-ghost{background:transparent;color:var(--ink-2);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--ink-2);transform:translateY(-2px)}
+  .btn .arrow{
+    width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.18);
+    display:inline-grid;place-items:center;font-size:11px;
+  }
+  .btn-ghost .arrow{background:rgba(45,58,42,0.08)}
+
+  .hero-visual{
+    position:relative;aspect-ratio:4/5;min-height:420px;
+    border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow);
+    background:linear-gradient(160deg,#E0C988 0%,#C9A961 30%,#8FA670 65%,#5C7A4A 100%);
+  }
+  .hero-visual::before{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(31,42,26,0.10) 0%,transparent 30%,rgba(31,42,26,0.55) 100%);
+  }
+  .visual-tag{
+    position:absolute;left:24px;bottom:24px;z-index:2;
+    color:rgba(255,253,245,0.85);font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;
+    font-family:ui-monospace,Menlo,monospace;
+  }
+  .visual-card{
+    position:absolute;right:-32px;bottom:64px;z-index:3;
+    background:rgba(251,248,240,0.94);backdrop-filter:blur(10px);
+    border-radius:18px;padding:18px 22px;width:240px;
+    box-shadow:0 24px 60px -28px rgba(0,0,0,.4);
+    border:1px solid rgba(255,255,255,0.7);
+  }
+  .visual-card .k{font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .visual-card .v{font-family:"Nanum Myeongjo",serif;font-size:22px;color:var(--ink);line-height:1.3}
+  @media(max-width:960px){.visual-card{right:18px}}
+
+  .hero-foot{
+    position:relative;z-index:1;margin-top:80px;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:30px;flex-wrap:wrap;
+  }
+  .stats{display:flex;gap:60px;flex-wrap:wrap}
+  .stat{font-family:"Nanum Myeongjo",serif;}
+  .stat .num{font-size:42px;font-weight:800;color:var(--ink);line-height:1}
+  .stat .lbl{font-size:13px;color:var(--muted);margin-top:6px;font-family:"Pretendard",sans-serif}
+  .scroll-hint{
+    display:inline-flex;align-items:center;gap:12px;color:var(--muted);font-size:12.5px;letter-spacing:0.1em;
+  }
+  .scroll-hint .line{width:34px;height:1px;background:currentColor;display:inline-block;position:relative;overflow:hidden}
+  .scroll-hint .line::after{content:"";position:absolute;left:-40%;top:0;width:40%;height:100%;background:var(--ink);animation:slide 2.4s ease-in-out infinite}
+  @keyframes slide{0%{left:-40%}60%{left:100%}100%{left:100%}}
+
+  /* Marquee */
+  .marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--paper);}
+  .marquee-track{
+    display:flex;gap:60px;padding:24px 0;
+    animation:marq 38s linear infinite;white-space:nowrap;
+    font-family:"Nanum Myeongjo",serif;font-style:italic;font-size:28px;color:var(--ink-2);
+  }
+  .marquee-track span{display:inline-flex;align-items:center;gap:60px}
+  .marquee-track .dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+  @keyframes marq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* Sections */
+  section{padding:140px 0;position:relative}
+  @media(max-width:760px){section{padding:96px 0}}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:80px;flex-wrap:wrap}
+  .sec-title{font-family:"Nanum Myeongjo",serif;font-size:clamp(40px,5vw,72px);line-height:1.05;letter-spacing:-0.02em;font-weight:800;color:var(--ink);max-width:18ch}
+  .sec-title em{font-style:italic;font-weight:400;color:var(--sage-deep)}
+  .sec-sub{color:var(--muted);font-size:16px;max-width:38ch;line-height:1.7}
+
+  /* Story */
+  .story{background:var(--paper);position:relative;}
+  .story::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:var(--line);}
+  .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+  @media(max-width:880px){.story-grid{grid-template-columns:1fr;gap:48px}}
+  .story-img{
+    position:relative;aspect-ratio:1/1.1;border-radius:var(--r-lg);overflow:hidden;
+    background:linear-gradient(160deg,#E0C988 0%,#C9A961 35%,#8FA670 70%,#5C7A4A 100%);
+    box-shadow:var(--shadow);
+  }
+  .story-img img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transition:transform 12s ease-in-out;
+  }
+  .story-img:hover img{transform:scale(1.04)}
+  .story-img::before{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,transparent 50%,rgba(31,42,26,0.45) 100%);
+  }
+  .story-img .caption{
+    position:absolute;left:24px;bottom:24px;z-index:2;color:rgba(255,253,245,0.85);
+    font-family:ui-monospace,Menlo,monospace;font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;
+  }
+  .story-text h2{
+    font-family:"Nanum Myeongjo",serif;font-size:clamp(36px,4vw,60px);line-height:1.1;letter-spacing:-0.02em;font-weight:800;
+  }
+  .story-text h2 em{font-style:italic;font-weight:400;color:var(--sage-deep)}
+  .story-text .meaning{margin-top:36px;display:flex;flex-direction:column;gap:24px;}
+  .meaning-row{
+    display:grid;grid-template-columns:80px 1fr;gap:24px;align-items:start;
+    padding-top:24px;border-top:1px solid var(--line);
+  }
+  .meaning-row:first-child{padding-top:0;border-top:0}
+  .meaning-row .num{font-family:"Nanum Myeongjo",serif;font-size:20px;color:var(--gold);font-style:italic;}
+  .meaning-row .label{font-family:"Nanum Myeongjo",serif;font-size:24px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+  .meaning-row p{color:var(--ink-2);opacity:.82;font-size:16px;line-height:1.7}
+
+  /* Contents */
+  .contents{background:var(--cream);}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+  @media(max-width:760px){.cards{grid-template-columns:1fr}}
+  .card{
+    position:relative;background:var(--paper);
+    border-radius:var(--r-lg);padding:36px 36px 32px;
+    border:1px solid var(--line);overflow:hidden;
+    transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s,border-color .35s;
+    min-height:420px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .card:hover{transform:translateY(-6px);box-shadow:var(--shadow);border-color:transparent}
+  .card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+  .card .idx{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:0.16em;color:var(--muted);text-transform:uppercase}
+  .card .tag{
+    font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-deep);
+    background:rgba(92,122,74,0.1);padding:6px 12px;border-radius:999px;
+  }
+  .card .title{font-family:"Nanum Myeongjo",serif;font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-0.01em;color:var(--ink);margin-bottom:14px}
+  .card .desc{color:var(--ink-2);opacity:.78;font-size:15.5px;line-height:1.7;max-width:32ch}
+  .card .visual{
+    margin-top:30px;height:180px;border-radius:18px;
+    position:relative;overflow:hidden;
+  }
+  .card .visual .ph{
+    position:absolute;left:14px;bottom:12px;color:rgba(255,255,255,0.92);
+    font-family:ui-monospace,Menlo,monospace;font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;
+    background:rgba(31,42,26,0.42);backdrop-filter:blur(6px);
+    padding:6px 10px;border-radius:999px;z-index:2;
+  }
+  .card-1 .visual{background:linear-gradient(135deg,#A8896B,#6B5A45);}
+  .card-2 .visual{background:linear-gradient(135deg,#8FA670,#3F5A30);}
+  .card-3 .visual{background:linear-gradient(135deg,#E0C988,#A8845A);}
+  .card-4 .visual{background:linear-gradient(135deg,#C9A961,#5C7A4A);}
+  .card .visual::after{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,transparent 40%,rgba(31,42,26,0.35) 100%);
+  }
+  .card .arrow-cta{
+    position:absolute;right:30px;bottom:30px;
+    width:48px;height:48px;border-radius:50%;background:var(--ink-2);color:var(--paper);
+    display:grid;place-items:center;transition:transform .35s,background .2s;z-index:2;
+  }
+  .card:hover .arrow-cta{transform:translate(4px,-4px) rotate(-12deg);background:var(--sage-deep)}
+
+  /* Manifesto */
+  .manifesto{background:var(--ink-2);color:var(--paper);position:relative;overflow:hidden}
+  .manifesto::before{
+    content:"";position:absolute;inset:0;
+    background:
+      radial-gradient(ellipse 50% 40% at 80% 30%,rgba(201,169,97,0.15),transparent 60%),
+      radial-gradient(ellipse 60% 50% at 10% 80%,rgba(92,122,74,0.18),transparent 60%);
+  }
+  .manifesto .wrap{position:relative;z-index:1}
+  .manifesto blockquote{
+    font-family:"Nanum Myeongjo",serif;font-size:clamp(34px,4.4vw,68px);line-height:1.25;
+    letter-spacing:-0.02em;font-weight:400;max-width:22ch;
+  }
+  .manifesto blockquote em{color:var(--gold-soft);font-style:italic}
+  .manifesto .sig{display:flex;align-items:center;gap:20px;margin-top:60px;color:rgba(251,248,240,0.6);font-size:13.5px;letter-spacing:0.1em}
+  .manifesto .sig .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+
+  /* Journey */
+  .journey{background:var(--paper)}
+  .journey-list{display:flex;flex-direction:column}
+  .j-row{
+    display:grid;grid-template-columns:80px 1.4fr 1.6fr 80px;gap:30px;align-items:center;
+    padding:28px 0;border-bottom:1px solid var(--line);transition:padding .3s;
+  }
+  .j-row:hover{padding-left:8px}
+  .j-row:last-child{border-bottom:0}
+  .j-row .step{font-family:"Nanum Myeongjo",serif;font-style:italic;font-size:18px;color:var(--gold)}
+  .j-row .name{font-family:"Nanum Myeongjo",serif;font-size:28px;font-weight:700;color:var(--ink);letter-spacing:-0.01em}
+  .j-row .blurb{color:var(--muted);font-size:15px;line-height:1.6;max-width:46ch}
+  .j-row .more{justify-self:end;color:var(--ink-2);font-size:13px;opacity:.6}
+  @media(max-width:760px){
+    .j-row{grid-template-columns:60px 1fr;gap:14px;padding:22px 0}
+    .j-row .blurb,.j-row .more{grid-column:2}
+    .j-row .name{font-size:22px}
+  }
+
+  /* Join */
+  .joinwrap{padding:160px 0}
+  .join{
+    background:var(--cream-2);border-radius:36px;padding:80px 60px;
+    display:grid;grid-template-columns:1.3fr 1fr;gap:60px;align-items:center;
+    position:relative;overflow:hidden;
+  }
+  @media(max-width:880px){.join{grid-template-columns:1fr;padding:50px 30px}}
+  .join::before{
+    content:"";position:absolute;right:-20%;top:-20%;width:60%;aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(circle,rgba(201,169,97,0.4),transparent 70%);filter:blur(20px);
+  }
+  .join h3{font-family:"Nanum Myeongjo",serif;font-size:clamp(34px,4vw,56px);line-height:1.1;font-weight:800;letter-spacing:-0.02em}
+  .join h3 em{font-style:italic;font-weight:400;color:var(--sage-deep)}
+  .join p{margin-top:18px;color:var(--ink-2);opacity:.8;font-size:16px;max-width:36ch;line-height:1.7}
+  .join-form{display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+  .join-form input{
+    height:58px;border-radius:14px;border:1px solid var(--line);background:var(--paper);
+    padding:0 22px;font:inherit;font-size:15.5px;color:var(--ink);outline:none;transition:border-color .2s;
+  }
+  .join-form input:focus{border-color:var(--sage-deep)}
+  .join-form .note{color:var(--muted);font-size:13px;line-height:1.5}
+  .join-form button{
+    height:58px;border-radius:14px;background:var(--ink-2);color:var(--paper);
+    font-size:15.5px;font-weight:500;transition:background .2s,transform .2s;
+  }
+  .join-form button:hover{background:var(--sage-deep);transform:translateY(-1px)}
+
+  /* Footer */
+  footer{background:var(--cream);padding:80px 0 50px;border-top:1px solid var(--line)}
+  .ft{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px}
+  @media(max-width:760px){.ft{grid-template-columns:1fr 1fr;gap:36px}}
+  .ft h5{font-size:11.5px;letter-spacing:0.16em;text-transform:uppercase;color:var(--muted);margin-bottom:18px;font-weight:600}
+  .ft ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+  .ft a{font-size:14.5px;color:var(--ink-2);opacity:.78}
+  .ft a:hover{opacity:1;color:var(--sage-deep)}
+  .ft .brand p{margin-top:18px;color:var(--muted);font-size:14px;max-width:30ch;line-height:1.7}
+  .ft-bottom{
+    margin-top:60px;padding-top:24px;border-top:1px solid var(--line);
+    display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
+    color:var(--muted);font-size:13px;
+  }
+
+  /* Reveal */
+  [data-reveal]{opacity:0;transform:translateY(28px);transition:opacity 1s ease,transform 1s cubic-bezier(.2,.7,.2,1)}
+  [data-reveal].in{opacity:1;transform:none}
+
+  /* ── 오늘의 지혜 ── */
+  .wisdom-outer{
+    position:relative;z-index:1;
+    padding-top:90px; /* nav 74px + 여백 */
+  }
+  .wisdom-band{
+    display:flex;align-items:flex-start;gap:32px;
+    background:#FAFDF6;
+    border-radius:24px;padding:28px 36px;
+    border:1px solid rgba(201,169,97,0.28);
+    box-shadow:0 8px 32px -12px rgba(92,122,74,0.18);
+    position:relative;overflow:hidden;
+  }
+  .wisdom-band::before{
+    content:"❝";position:absolute;right:24px;top:10px;
+    font-size:120px;color:rgba(201,169,97,0.10);line-height:1;
+    font-family:"Nanum Myeongjo",serif;pointer-events:none;
+  }
+  .wisdom-deco{flex:1;min-width:0}
+  .wisdom-badge{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--sage-deep);font-weight:700;margin-bottom:14px;
+  }
+  .wisdom-badge::before{content:"✦";font-size:10px}
+  .wisdom-quote{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:clamp(18px,2vw,22px);
+    font-weight:700;color:var(--ink);line-height:1.55;
+    margin-bottom:14px;word-break:keep-all;
+  }
+  .wisdom-author-row{
+    display:flex;align-items:center;gap:10px;
+    margin-bottom:12px;flex-wrap:wrap;
+  }
+  .wisdom-author-name{
+    font-size:18px;font-weight:700;color:var(--sage-deep);
+  }
+  .wisdom-sep{color:var(--muted);font-size:14px}
+  .wisdom-author-bio{font-size:14px;color:var(--muted)}
+  .wisdom-interpretation{
+    font-size:16px;color:var(--ink-2);line-height:1.75;
+    opacity:.88;padding-left:14px;
+    border-left:3px solid var(--gold);
+    word-break:keep-all;
+  }
+  .wisdom-share-col{
+    display:flex;flex-direction:column;gap:8px;
+    flex-shrink:0;min-width:130px;
+  }
+  .wshr-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    padding:13px 16px;border-radius:12px;
+    font-size:15px;font-weight:600;cursor:pointer;border:none;
+    transition:transform .2s,opacity .2s;white-space:nowrap;
+    min-height:50px;
+  }
+  .wshr-btn:hover{transform:translateY(-2px);opacity:.88}
+  .wshr-web{background:var(--ink-2);color:var(--paper)}
+  .wshr-kakao{background:#FEE500;color:#191919}
+  .wshr-email{background:rgba(92,122,74,0.12);color:var(--sage-deep);border:1px solid rgba(92,122,74,0.25)}
+  .wshr-img{background:rgba(201,169,97,0.15);color:#8B6914;border:1px solid rgba(201,169,97,0.35)}
+  @media(max-width:880px){
+    .wisdom-band{flex-direction:column;padding:24px 20px;gap:20px}
+    .wisdom-share-col{flex-direction:row;flex-wrap:wrap;width:100%;min-width:unset}
+    .wshr-btn{flex:1;min-width:120px}
+  }
+  @media(max-width:760px){
+    .wisdom-outer{padding-top:84px}
+    .wisdom-quote{font-size:18px}
+  }
+
+  /* ── GNB 포인트 배지 ── */
+  .nav-pts{
+    display:flex;align-items:center;gap:5px;
+    background:rgba(201,169,97,.13);border:1px solid rgba(201,169,97,.32);
+    color:#8B6914;font-size:12px;font-weight:700;
+    padding:5px 12px;border-radius:50px;white-space:nowrap;
+    transition:background .2s;
+  }
+  .nav-pts .np-num{font-size:14px;font-weight:800;font-family:"Nanum Myeongjo",serif}
+  @media(max-width:600px){.nav-pts{display:none}}
+
+  /* ── 지혜 카드뉴스 ── */
+  .wisdom-outer{position:relative;z-index:1;padding-top:90px}
+  .wisdom-card-news{
+    position:relative;border-radius:28px;overflow:hidden;
+    box-shadow:0 12px 48px -16px rgba(0,0,0,.35);
+  }
+  .wc-bg{
+    position:absolute;inset:0;
+    background:linear-gradient(135deg,#C9A961 0%,#5C7A4A 100%);
+    transition:background .6s ease;
+  }
+  .wc-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(160deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.58) 100%);
+  }
+  .wc-inner{
+    position:relative;z-index:1;
+    padding:40px 44px;
+    display:flex;gap:36px;align-items:flex-start;
+  }
+  .wc-body{flex:1;min-width:0}
+  .wc-hdr{display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+  .wc-badge{
+    font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);
+    color:#fff;padding:5px 14px;border-radius:50px;font-weight:700;
+  }
+  .wc-topic{
+    font-size:12px;color:rgba(255,255,255,.75);font-weight:600;
+    background:rgba(255,255,255,.12);padding:4px 10px;border-radius:20px;
+  }
+  .wc-date{
+    margin-left:auto;font-size:11px;color:rgba(255,255,255,.5);
+    font-family:ui-monospace,monospace;letter-spacing:.08em;
+  }
+  .wc-quote{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:clamp(20px,2.5vw,28px);font-weight:700;line-height:1.65;
+    color:#fff;margin-bottom:14px;word-break:keep-all;
+    text-shadow:0 2px 12px rgba(0,0,0,.3);
+  }
+  .wc-author-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .wc-author{font-size:16px;font-weight:700;color:rgba(255,255,255,.95)}
+  .wc-sep{color:rgba(255,255,255,.4)}
+  .wc-bio{font-size:13px;color:rgba(255,255,255,.65)}
+  .wc-interp{
+    font-size:15px;line-height:1.82;color:rgba(255,255,255,.85);
+    padding-left:14px;border-left:3px solid rgba(255,255,255,.38);
+    word-break:keep-all;
+  }
+  .wc-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0;min-width:136px}
+  .wca-btn{
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    padding:12px 16px;border-radius:12px;
+    font-family:inherit;font-size:14px;font-weight:600;
+    cursor:pointer;border:none;transition:transform .2s,opacity .2s;
+    min-height:48px;white-space:nowrap;
+  }
+  .wca-btn:hover{transform:translateY(-2px);opacity:.9}
+  .wca-web{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.3)}
+  .wca-kakao{background:#FEE500;color:#191919}
+  .wca-email{background:rgba(255,255,255,.12);color:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.25)}
+  .wca-img{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border:1px solid rgba(255,255,255,.22)}
+  @media(max-width:880px){
+    .wc-inner{flex-direction:column;padding:28px 22px;gap:22px}
+    .wc-actions{flex-direction:row;flex-wrap:wrap;width:100%;min-width:unset}
+    .wca-btn{flex:1;min-width:110px}
+  }
+  @media(max-width:760px){
+    .wisdom-outer{padding-top:82px}
+    .wc-quote{font-size:19px}
+  }
+
+  /* ── 그때 그 시절 미리보기 ── */
+  .ns-prev{padding:56px 0;background:var(--paper);border-top:1px solid var(--line)}
+  .ns-prev-head{
+    display:flex;align-items:flex-start;justify-content:space-between;
+    margin-bottom:24px;flex-wrap:wrap;gap:14px;
+  }
+  .ns-title-wrap .nt-badge{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:clamp(22px,3vw,30px);font-weight:800;color:var(--ink);
+    display:flex;align-items:center;gap:10px;
+  }
+  .ns-title-wrap .nt-sub{font-size:13px;color:var(--muted);margin-top:5px}
+  .ns-ctrl-wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .ns-ctrl-btn{
+    padding:10px 20px;border-radius:50px;
+    border:1.5px solid var(--line);color:var(--muted);
+    font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    transition:all .22s;background:none;
+  }
+  .ns-ctrl-btn:hover{border-color:var(--gold);color:var(--ink)}
+  .ns-ctrl-btn.on{background:var(--ink-2);color:var(--paper);border-color:transparent}
+  .ns-more-link{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:14px;color:var(--sage-deep);font-weight:700;
+    padding:10px 20px;border-radius:50px;
+    background:rgba(92,122,74,.08);border:1.5px solid rgba(92,122,74,.2);
+    transition:background .2s;
+  }
+  .ns-more-link:hover{background:rgba(92,122,74,.15)}
+  .ns-mini{margin-bottom:0}
+  .ns-mini-pair{
+    display:grid;grid-template-columns:1fr 52px 1fr;
+    gap:16px;align-items:center;
+    background:#fff;border-radius:20px;padding:24px;
+    box-shadow:0 4px 20px rgba(0,0,0,.07);
+    border:1px solid var(--line);
+  }
+  .ns-era-badge{
+    display:inline-flex;align-items:center;gap:5px;
+    font-size:11px;font-weight:800;letter-spacing:1px;
+    padding:4px 10px;border-radius:20px;margin-bottom:8px;
+  }
+  .ns-past-h .ns-era-badge{background:#F5EAD8;color:#8D6030}
+  .ns-present-h .ns-era-badge{background:#E8F5E9;color:#2E7D32}
+  .ns-mini-topic{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:17px;font-weight:800;color:#3E2723;margin-bottom:6px;
+  }
+  .ns-mini-desc{font-size:13px;color:#616161;line-height:1.8}
+  .ns-mid-col{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .ns-mid-icon{
+    width:48px;height:48px;border-radius:50%;
+    background:#FFF9F0;border:2px solid #C8A882;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;box-shadow:0 3px 12px rgba(200,168,130,.25);
+  }
+  .ns-cmp{
+    margin-top:14px;
+    background:linear-gradient(135deg,#FFF8E1,#FFFDE7);
+    border:1.5px solid rgba(255,213,79,.5);
+    border-radius:18px;padding:14px 20px;
+    font-family:"Nanum Myeongjo",serif;
+    font-size:14px;color:#795548;line-height:1.65;
+    display:flex;align-items:flex-start;gap:8px;
+  }
+  .ns-cmp-icon{font-size:16px;flex-shrink:0;margin-top:2px}
+  .ns-loading{text-align:center;padding:48px 20px;color:var(--muted);font-size:16px}
+  @media(max-width:760px){
+    .ns-mini-pair{grid-template-columns:1fr;gap:10px}
+    .ns-mid-col{flex-direction:row;justify-content:center}
+    .ns-mid-icon{width:38px;height:38px;font-size:16px}
+  }
+  .ns-mini-img{
+    width:100%;border-radius:12px;overflow:hidden;
+    background:#e8dfd4;margin-bottom:12px;
+  }
+  .ns-mini-img img{
+    width:100%;height:auto;display:block;
+    opacity:0;transition:opacity .4s;
+  }
+  .ns-mini-img img.loaded{opacity:1}
+
+  /* ── 오늘의 게임 3선 ── */
+  .gp-section{padding:48px 0;background:var(--paper);border-top:1px solid var(--line)}
+  .gp-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px}
+  .gp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:760px){.gp-cards{grid-template-columns:1fr}}
+  .gp-card{
+    display:flex;flex-direction:column;align-items:center;
+    background:#fff;border-radius:20px;padding:32px 20px 24px;
+    text-align:center;transition:transform .2s,box-shadow .2s;
+    text-decoration:none;color:var(--ink);border:1px solid var(--line);
+  }
+  .gp-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(45,58,42,.10)}
+  .gp-cat-icon{font-size:40px;margin-bottom:12px}
+  .gp-cat-badge{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;font-weight:500}
+  .gp-name{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;margin-bottom:20px;color:var(--ink)}
+  .gp-play{
+    display:inline-block;padding:11px 24px;border-radius:999px;
+    background:var(--sage);color:#fff;font-size:13.5px;font-weight:600;
+    transition:background .2s;
+  }
+  .gp-card:hover .gp-play{background:var(--sage-deep)}
+
+  /* ── 서비스 카드 간격 ── */
+  .svc-section{padding:80px 0}
+
+  /* Accessibility: large text */
+  body.large{font-size:18px}
+  body.large .lead{font-size:21px}
+  body.large .card .desc{font-size:17.5px}
+  body.large .nav ul a{font-size:16px}
+
+  /* Dark mode */
+  body.dark{
+    --cream:#1A201A;--cream-2:#222A22;--paper:#262E26;--ink:#F2EFE3;--ink-2:#E8E6DA;
+    --muted:#9CA193;--line:rgba(255,255,255,0.08);--sage-deep:#A8C28D;--gold:#E0C988;
+  }
+  body.dark .nav{background:rgba(26,32,26,0.78)}
+  body.dark .btn-primary{background:#E8E6DA;color:#1A201A}
+  body.dark .btn-primary:hover{background:#A8C28D;color:#1A201A}
+  body.dark .nav .cta{background:#E8E6DA;color:#1A201A}
+  body.dark .card .arrow-cta{background:#E8E6DA;color:#1A201A}
+  body.dark .join-form button{background:#E8E6DA;color:#1A201A}
+
+  /* ═══ CINEMATIC HERO ═══ */
+  .cine-hero{
+    position:relative;min-height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    overflow:hidden;
+    background:#0C1A0C url('/img/hero.jpg') center/cover no-repeat;
+  }
+  .ch-g1,.ch-g2,.ch-g3{position:absolute;inset:0;pointer-events:none;}
+  /* 사진 위에 덧씌우는 어두운 컬러 오버레이 */
+  .ch-g1{background:linear-gradient(to bottom,rgba(8,20,8,.72) 0%,rgba(12,26,12,.55) 50%,rgba(8,20,8,.78) 100%);animation:none;}
+  .ch-g2{background:radial-gradient(ellipse 70% 60% at 18% 75%,rgba(90,55,20,.45),transparent 68%);animation:chG2 13s ease-in-out infinite alternate;}
+  .ch-g3{background:radial-gradient(ellipse 60% 55% at 82% 20%,rgba(180,140,60,.18),transparent 62%);animation:chG3 9s ease-in-out infinite alternate;}
+  @keyframes chG1{from{opacity:.5;transform:scale(1)}to{opacity:1;transform:scale(1.08)}}
+  @keyframes chG2{from{opacity:.3;transform:translate(-4%,2%)}to{opacity:.75;transform:translate(4%,-3%)}}
+  @keyframes chG3{from{opacity:.2;transform:translate(3%,-5%)}to{opacity:.65;transform:translate(-3%,4%)}}
+  .ch-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;}
+  .ch-inner{position:relative;z-index:10;text-align:center;padding:0 24px;max-width:960px;width:100%;}
+  .ch-pre{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:rgba(201,169,97,.58);margin-bottom:36px;opacity:0;animation:chUp 1s ease .3s forwards;}
+  .ch-title{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:clamp(88px,20vw,200px);
+    line-height:.9;letter-spacing:-.04em;font-weight:800;color:#F5F1E8;
+    opacity:0;animation:chUp 1.2s ease .65s forwards;
+    text-shadow:0 0 140px rgba(201,169,97,.2),0 4px 60px rgba(0,0,0,.55);
+  }
+  .ch-meanings{
+    display:flex;align-items:center;justify-content:center;
+    gap:52px;margin-top:48px;flex-wrap:wrap;
+    opacity:0;animation:chUp 1s ease 1.25s forwards;
+  }
+  .ch-meaning{text-align:center;}
+  .ch-meaning .m-num{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.22em;color:rgba(201,169,97,.5);margin-bottom:8px;}
+  .ch-meaning .m-ko{font-family:"Nanum Myeongjo",serif;font-size:clamp(18px,3vw,23px);color:rgba(245,241,232,.92);font-weight:700;line-height:1.3;}
+  .ch-meaning .m-en{font-size:11.5px;color:rgba(245,241,232,.36);letter-spacing:.09em;margin-top:6px;}
+  .ch-vline{width:1px;height:64px;background:linear-gradient(to bottom,transparent,rgba(201,169,97,.36),transparent);flex-shrink:0;}
+  .ch-cta-wrap{margin-top:68px;opacity:0;animation:chUp 1s ease 1.9s forwards;}
+  .ch-cta-a{
+    display:inline-flex;align-items:center;gap:14px;
+    padding:17px 36px;border-radius:999px;
+    background:rgba(245,241,232,.07);border:1px solid rgba(245,241,232,.16);
+    color:rgba(245,241,232,.78);font-size:15.5px;font-weight:500;
+    transition:all .3s;cursor:pointer;text-decoration:none;
+  }
+  .ch-cta-a:hover{background:rgba(201,169,97,.18);border-color:rgba(201,169,97,.4);color:#F5F1E8;transform:translateY(-2px);}
+  .ch-cta-arrow{
+    width:36px;height:36px;border-radius:50%;
+    background:rgba(201,169,97,.18);border:1px solid rgba(201,169,97,.28);
+    display:grid;place-items:center;font-size:14px;
+    color:rgba(201,169,97,.88);flex-shrink:0;transition:transform .3s;
+  }
+  .ch-cta-a:hover .ch-cta-arrow{transform:translateY(4px);}
+  .ch-scroll{
+    position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    opacity:0;animation:chFadeIn 1s ease 2.8s forwards;pointer-events:none;
+  }
+  .ch-scroll-bar{width:1px;height:52px;background:linear-gradient(to bottom,rgba(201,169,97,.55),transparent);animation:chScrollDrop 2s ease-in-out infinite;transform-origin:top;}
+  .ch-scroll-txt{font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:rgba(245,241,232,.22);}
+  @keyframes chScrollDrop{0%,100%{transform:scaleY(1);opacity:.55}50%{transform:scaleY(.65);opacity:1}}
+  @keyframes chUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes chFadeIn{from{opacity:0}to{opacity:1}}
+  @media(max-width:580px){.ch-vline{display:none}.ch-meanings{gap:28px;flex-direction:column}}
+  /* Wisdom section */
+  #wisdom-section{scroll-margin-top:80px;padding:72px 0 0;background:var(--cream);}
+
+  /* Hero visual image */
+  .hero-visual .bg{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;
+    animation:heroZoom 18s ease-in-out infinite alternate;
+  }
+  @keyframes heroZoom{
+    from{transform:scale(1.02) translateY(0)}
+    to{transform:scale(1.12) translateY(-2%)}
+  }
+
+  /* Card images */
+  .card .visual img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    transition:transform .8s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover .visual img{transform:scale(1.06)}
+
+  /* Login modal */
+  .modal-overlay{
+    position:fixed;inset:0;z-index:200;
+    background:rgba(31,42,26,0.55);backdrop-filter:blur(8px);
+    display:flex;align-items:center;justify-content:center;
+    opacity:0;pointer-events:none;transition:opacity .3s;
+  }
+  .modal-overlay.open{opacity:1;pointer-events:all}
+  .modal{
+    background:var(--paper);border-radius:28px;padding:48px 44px;
+    max-width:420px;width:90%;text-align:center;
+    box-shadow:0 40px 100px -30px rgba(0,0,0,0.4);
+    transform:translateY(16px);transition:transform .3s;
+    position:relative;
+  }
+  .modal-overlay.open .modal{transform:translateY(0)}
+  .modal-close{
+    position:absolute;top:18px;right:20px;
+    width:32px;height:32px;border-radius:50%;border:none;background:var(--line);
+    color:var(--muted);font-size:16px;cursor:pointer;display:grid;place-items:center;
+  }
+  .modal h2{font-family:"Nanum Myeongjo",serif;font-size:28px;font-weight:800;margin-bottom:10px;color:var(--ink)}
+  .modal p{color:var(--muted);font-size:15px;line-height:1.6;margin-bottom:32px}
+  .social-btn{
+    display:flex;align-items:center;justify-content:center;gap:12px;
+    width:100%;height:56px;border-radius:14px;
+    font-size:16px;font-weight:600;cursor:pointer;border:none;margin-bottom:12px;
+    transition:transform .2s,opacity .2s;
+  }
+  .social-btn:hover{transform:translateY(-2px);opacity:.92}
+  .social-btn:last-child{margin-bottom:0}
+  .btn-kakao{background:#FEE500;color:#191919}
+  .btn-naver{background:#03C75A;color:#fff}
+  .btn-google{background:#fff;color:#1F2A1A;border:1px solid var(--line)}
+  .social-btn svg{flex-shrink:0}
+
+  /* Accessibility toolbar */
+  .a11y-bar{
+    position:fixed;bottom:24px;right:24px;z-index:100;
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .a11y-btn{
+    width:48px;height:48px;border-radius:50%;
+    background:var(--ink-2);color:var(--paper);
+    display:grid;place-items:center;font-size:14px;font-weight:700;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+    transition:transform .2s,background .2s;cursor:pointer;border:none;
+  }
+  .a11y-btn:hover{transform:scale(1.1);background:var(--sage-deep)}
+</style>
+<style>
+/* ════════ 다시봄 인트로 스타일 (스코핑: #dasibom-intro 하위로 격리) ════════ */
+#dasibom-intro{
+  position:fixed; inset:0; z-index:99999;
+  overflow:hidden;
+  background:linear-gradient(168deg,#ffe9d4 0%,#ffe0d8 22%,#ffe4e6 44%,#fde8ee 64%,#f3ecf5 82%,#e8eef2 100%);
+  font-family:'Noto Serif KR',serif;
+  opacity:1; transition:opacity 0.8s ease;
+}
+#dasibom-intro.di-hide{ opacity:0; pointer-events:none; }
+#dasibom-intro canvas{
+  position:absolute; inset:0; z-index:2;
+  pointer-events:none; background:transparent !important;
+}
+#di-sunglow{
+  position:absolute; top:-30%; left:50%;
+  width:120%; height:80%; transform:translateX(-50%);
+  z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(255,250,235,0.8) 0%,rgba(255,245,225,0.4) 28%,rgba(255,255,255,0) 65%);
+  opacity:0; animation:diGlowIn 4s ease forwards 2.5s;
+}
+@keyframes diGlowIn{ to{ opacity:1; } }
+#di-stage{
+  position:absolute; inset:0; z-index:10;
+  display:flex; align-items:center; justify-content:center;
+  pointer-events:none; padding:0 8vw;
+}
+#dasibom-intro .di-phase{
+  position:absolute; width:84vw; max-width:760px; text-align:center;
+  opacity:0; transition:opacity 1.5s ease-in-out; line-height:1.7;
+}
+#dasibom-intro .di-phase.show{ opacity:1; }
+#dasibom-intro .di-line{
+  font-weight:400; font-size:clamp(19px,5.2vw,28px);
+  color:#3d3a38; letter-spacing:0.01em; margin:0.15em 0;
+}
+#dasibom-intro .di-hl-green{ font-weight:700; font-size:1.3em; color:#11CAA0; }
+#dasibom-intro .di-hl-gold{ font-weight:700; font-size:1.28em; color:#c79a3a; text-shadow:0 0 24px rgba(220,180,90,0.4); }
+#dasibom-intro .di-hl-bold{ font-weight:700; font-size:1.18em; color:#7a4a2e; }
+#dasibom-intro .di-finale{
+  font-weight:700; font-size:clamp(30px,8vw,46px);
+  color:#11CAA0; letter-spacing:0.18em; text-shadow:0 0 30px rgba(17,202,160,0.3);
+}
+#di-enter-wrap{
+  position:absolute; inset:0; z-index:15;
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity 1.6s ease;
+}
+#di-enter-wrap.show{ opacity:1; pointer-events:auto; }
+#di-enter-btn{
+  font-family:'Noto Serif KR',serif; font-size:clamp(20px,5vw,26px);
+  font-weight:500; color:#0e9d7d;
+  background:linear-gradient(145deg,#ffffff 0%,#f4fffb 100%);
+  border:none; border-radius:60px; padding:24px 52px; cursor:pointer;
+  box-shadow:0 10px 28px rgba(17,202,160,0.28),0 4px 10px rgba(0,0,0,0.10),inset 0 2px 3px rgba(255,255,255,0.9),inset 0 -3px 6px rgba(17,202,160,0.12);
+  animation:diBtnPulse 2.6s ease-in-out infinite;
+  transition:transform 0.18s ease,box-shadow 0.18s ease;
+}
+#di-enter-btn:active{
+  transform:translateY(2px) scale(0.97);
+  box-shadow:0 4px 12px rgba(17,202,160,0.25),0 2px 5px rgba(0,0,0,0.10),inset 0 2px 4px rgba(17,202,160,0.15);
+}
+@keyframes diBtnPulse{
+  0%,100%{ box-shadow:0 10px 28px rgba(17,202,160,0.28),0 4px 10px rgba(0,0,0,0.10),inset 0 2px 3px rgba(255,255,255,0.9),inset 0 -3px 6px rgba(17,202,160,0.12); }
+  50%{ box-shadow:0 14px 40px rgba(17,202,160,0.45),0 6px 14px rgba(0,0,0,0.12),inset 0 2px 3px rgba(255,255,255,0.95),inset 0 -3px 6px rgba(17,202,160,0.15); }
+}
+#di-whiteout{
+  position:absolute; inset:0; z-index:40; pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,1) 0%,rgba(255,245,250,1) 60%,rgba(255,235,245,1) 100%);
+  opacity:0;
+}
+#di-vignette{
+  position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:radial-gradient(ellipse at 50% 42%,transparent 52%,rgba(150,90,70,0.08) 100%);
+}
+#di-mist{
+  position:absolute; inset:0; z-index:50; pointer-events:none;
+  background:radial-gradient(ellipse 130% 100% at 50% 45%,rgba(255,255,255,0.85) 0%,rgba(255,252,250,0.93) 45%,rgba(255,250,248,0.98) 100%);
+  opacity:1; animation:diMistClear 4.5s cubic-bezier(0.4,0,0.2,1) forwards 0.5s;
+}
+@keyframes diMistClear{ to{ opacity:0; } }
+#di-skip{
+  position:absolute; right:18px; bottom:18px; z-index:60;
+  font-family:'Noto Serif KR',serif; font-size:15px; color:#8a6a5a;
+  background:rgba(255,255,255,0.55); border:1px solid rgba(150,90,70,0.18);
+  border-radius:30px; padding:10px 20px; cursor:pointer;
+  -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+</style>
+
+<style>
+/* ════════ 봄이 온보딩 (스코핑: #dasibom-onboarding 하위 격리) ════════ */
+#dasibom-onboarding{
+  position:fixed; inset:0; z-index:99998;
+  display:none;
+  background:linear-gradient(180deg,#ffd24a 0%,#ffb74a 46%,#ff9d5c 100%);
+  font-family:'Pretendard','Pretendard Variable',-apple-system,sans-serif;
+  overflow:hidden;
+}
+#dasibom-onboarding.dob-on{ display:block; }
+#dasibom-onboarding .dob-screen{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:32px 24px; text-align:center;
+  opacity:0; transform:translateY(12px);
+  transition:opacity .55s ease, transform .55s ease;
+  pointer-events:none;
+}
+#dasibom-onboarding .dob-screen.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+#dasibom-onboarding .dob-bom{
+  width:clamp(150px,38vw,210px); height:auto; margin-bottom:18px;
+  filter:drop-shadow(0 14px 28px rgba(180,120,80,0.22));
+  animation:dobFloat 3.4s ease-in-out infinite;
+}
+@keyframes dobFloat{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+#dasibom-onboarding .dob-bubble{
+  background:#fff; border-radius:24px; padding:22px 26px;
+  box-shadow:0 16px 40px -18px rgba(150,90,50,0.4);
+  max-width:480px; width:100%;
+  font-size:clamp(18px,4.6vw,22px); line-height:1.6; color:#3a352f;
+  font-weight:500;
+}
+#dasibom-onboarding .dob-bubble .dob-em{ color:#0e9d7d; font-weight:800; }
+#dasibom-onboarding .dob-btn{
+  margin-top:22px; font-family:inherit;
+  font-size:clamp(19px,4.8vw,22px); font-weight:700; color:#fff;
+  background:linear-gradient(145deg,#13d3a6,#0e9d7d);
+  border:none; border-radius:50px; padding:20px 46px; cursor:pointer;
+  box-shadow:0 10px 26px -8px rgba(17,202,160,0.6);
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+#dasibom-onboarding .dob-btn:active{ transform:translateY(2px) scale(.98); }
+/* 호칭 선택 버튼 2개 */
+#dasibom-onboarding .dob-choices{
+  display:flex; gap:16px; margin-top:24px; width:100%; max-width:440px;
+}
+#dasibom-onboarding .dob-choice{
+  flex:1; font-family:inherit; cursor:pointer;
+  background:#fff; border:none; border-radius:28px;
+  padding:32px 12px; font-size:clamp(20px,5vw,26px); font-weight:800; color:#5a4a3a;
+  box-shadow:0 14px 30px -12px rgba(120,60,20,0.45);
+  transition:transform .18s ease, box-shadow .18s ease, background .18s ease, color .18s ease;
+}
+#dasibom-onboarding .dob-choice:active{ transform:scale(.97); }
+#dasibom-onboarding .dob-choice.sel{
+  background:linear-gradient(145deg,#13d3a6,#0e9d7d); color:#fff;
+  box-shadow:0 16px 34px -10px rgba(14,157,125,0.7);
+  transform:translateY(-2px);
+}
+#dasibom-onboarding .dob-choice .dob-ico{ display:block; font-size:1.5em; margin-bottom:8px; }
+/* 출생년도 휠 */
+#dasibom-onboarding .dob-year-wrap{
+  margin-top:22px; display:flex; align-items:center; gap:14px;
+}
+#dasibom-onboarding .dob-year-btn{
+  width:62px; height:62px; border-radius:50%; border:none; cursor:pointer;
+  background:#fff; box-shadow:0 6px 18px -8px rgba(150,90,50,0.5);
+  font-size:30px; font-weight:800; color:#0e9d7d; line-height:1;
+}
+#dasibom-onboarding .dob-year-btn:active{ transform:scale(.94); }
+#dasibom-onboarding .dob-year-val{
+  font-size:clamp(40px,11vw,58px); font-weight:800; color:#3a352f;
+  min-width:160px; font-variant-numeric:tabular-nums;
+}
+#dasibom-onboarding .dob-year-unit{ font-size:.5em; color:#9a8a7a; margin-left:6px; }
+#dasibom-onboarding .dob-hint{
+  margin-top:14px; font-size:clamp(14px,3.4vw,16px); color:#9a8a7a;
+}
+</style>
+
+</head>
+<body>
+<!-- ════════ 다시봄 신규 방문자 인트로 (v2) — 시작 ════════ -->
+<div id="dasibom-intro" aria-hidden="true">
+  <div id="di-sunglow"></div>
+  <div id="di-vignette"></div>
+  <div id="di-stage">
+    <div class="di-phase" id="di-p1">
+      <p class="di-line">어제의 나, 오늘의 나,<br><span class="di-hl-green">내일의 나</span> 역시 소중합니다.</p>
+    </div>
+    <div class="di-phase" id="di-p2">
+      <p class="di-line">희미해진 기억의 한 조각을, 조용히<br><span class="di-hl-gold">다시 들여다봅니다.</span></p>
+      <p class="di-line" style="margin-top:0.6em;">내가 기억하는 나의 작은 추억이<br>누군가에게는 가장 <span class="di-hl-bold">소중한 기억</span>이 되기에.</p>
+    </div>
+    <div class="di-phase" id="di-p3">
+      <p class="di-line">당신의 찬란했던 그 시절, 그리하여 오늘,</p>
+      <p class="di-finale" style="margin-top:0.5em;">당신의 인생에 다시, 봄.</p>
+    </div>
+  </div>
+  <div id="di-enter-wrap">
+    <button id="di-enter-btn">나의 봄날로 입장하기</button>
+  </div>
+  <div id="di-whiteout"></div>
+  <div id="di-mist"></div>
+  <button id="di-skip">건너뛰기</button>
+</div>
+<!-- ════════ 다시봄 신규 방문자 인트로 (v2) — 끝 ════════ -->
+<!-- ════════ 재방문자 인트로 (v1 벚꽃) — 시작 ════════ -->
+<div id="dasibom-intro-return" aria-hidden="true">
+  <div id="dr-sunglow"></div>
+  <div id="dr-vignette"></div>
+  <div id="dr-rays"></div>
+  <div id="dr-mist"></div>
+  <div id="dr-ui">
+    <div id="dr-sub">DASIBOM · 인생의 두 번째 봄</div>
+    <div id="dr-main">다시봄라이프</div>
+    <div id="dr-tag">인생의 두 번째 봄, 지금 여기서 다시 시작됩니다</div>
+  </div>
+</div>
+<style>
+/* ════ 재방문 인트로 스타일 (스코핑: #dasibom-intro-return) ════ */
+#dasibom-intro-return{
+  display:none;   /* 평소 숨김 — startReturnIntro()가 켜줄 때만 표시(안전장치) */
+  position:fixed; inset:0; z-index:99997; overflow:hidden;
+  background:linear-gradient(170deg,#7cc9e0 0%,#a3dbee 20%,#cdeaf5 40%,#fbe0e8 62%,#ffc9d8 82%,#ffb3c8 100%);
+  opacity:1; transition:opacity .8s ease;
+}
+#dasibom-intro-return.dr-hide{ opacity:0; pointer-events:none; }
+#dasibom-intro-return canvas{ position:absolute; inset:0; z-index:2; pointer-events:none; background:transparent !important; }
+#dr-sunglow{
+  position:absolute; top:-30%; left:50%; width:120%; height:80%; transform:translateX(-50%);
+  z-index:1; pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(255,250,235,0.85) 0%,rgba(255,245,225,0.45) 25%,rgba(255,240,225,0.15) 50%,rgba(255,255,255,0) 70%);
+  opacity:0; animation:drGlowIn 4s ease forwards 2.5s;
+}
+@keyframes drGlowIn{ to{ opacity:1; } }
+#dr-ui{ position:absolute; inset:0; z-index:10; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+#dr-sub,#dr-main,#dr-tag{ opacity:0; filter:blur(8px); transform:translateY(14px);
+  transition:opacity 2.4s ease, filter 2.4s ease, transform 2.4s cubic-bezier(0.16,1,0.3,1); }
+#dr-sub{ font-family:'Noto Serif KR',serif; font-weight:300; font-size:clamp(10px,2.4vw,16px); letter-spacing:0.6em; text-transform:uppercase; color:#7a3550; margin-bottom:14px; }
+#dr-main{ font-family:'Noto Serif KR',serif; font-weight:700; font-size:clamp(42px,9vw,96px); letter-spacing:0.10em; color:#7a1838;
+  text-shadow:0 0 30px rgba(255,255,255,0.95),0 0 60px rgba(255,210,225,0.8),0 0 100px rgba(255,180,205,0.5),0 2px 6px rgba(90,10,35,0.18);
+  transition:opacity 3.0s ease, filter 3.0s ease, transform 3.0s cubic-bezier(0.16,1,0.3,1); }
+#dr-tag{ font-family:'Noto Serif KR',serif; font-weight:300; font-size:clamp(11px,1.8vw,15px); letter-spacing:0.15em; color:#864056; margin-top:18px; }
+#dasibom-intro-return .dr-show{ opacity:1 !important; filter:blur(0) !important; transform:translateY(0) !important; }
+#dr-vignette{ position:absolute; inset:0; z-index:3; pointer-events:none; background:radial-gradient(ellipse at 50% 42%,transparent 50%,rgba(120,40,70,0.10) 100%); }
+#dr-rays{ position:absolute; inset:0; z-index:4; pointer-events:none; overflow:hidden; }
+#dasibom-intro-return .dr-ray{ position:absolute; top:-10%; left:50%; height:130%; transform-origin:top center;
+  background:linear-gradient(to bottom,rgba(255,252,230,0) 0%,rgba(255,250,215,0.16) 38%,rgba(255,248,210,0) 100%);
+  animation:drRayShine 6s ease-in-out infinite; }
+@keyframes drRayShine{ 0%,100%{opacity:.35;transform:rotate(var(--ra)) scaleX(1);} 50%{opacity:.85;transform:rotate(var(--rb)) scaleX(1.5);} }
+#dr-mist{ position:absolute; inset:0; z-index:50; pointer-events:none;
+  background:radial-gradient(ellipse 130% 100% at 50% 45%,rgba(255,255,255,0.82) 0%,rgba(255,252,254,0.92) 45%,rgba(252,248,252,0.98) 100%);
+  opacity:1; animation:drMistClear 5s cubic-bezier(0.4,0,0.2,1) forwards 0.6s; }
+@keyframes drMistClear{ 0%{opacity:1;} 100%{opacity:0;} }
+</style>
+<!-- ════════ 재방문자 인트로 (v1 벚꽃) — 끝 ════════ -->
+
+<!-- ════════ 봄이 온보딩 — 시작 ════════ -->
+<div id="dasibom-onboarding" aria-hidden="true">
+  <!-- 화면 1: 봄이 등장 -->
+  <div class="dob-screen" id="dob-s1">
+    <img class="dob-bom" src="img/bom_smile.png" alt="봄이">
+    <div class="dob-bubble">
+      안녕하세요! 저는 어르신을 도와드릴 <span class="dob-em">봄이</span>예요.<br>
+      함께 추억을 기록하기 전에, 몇 가지만 여쭤볼게요!
+    </div>
+    <button class="dob-btn" id="dob-go1">좋아요, 시작할까요</button>
+  </div>
+  <!-- 화면 2: 호칭 -->
+  <div class="dob-screen" id="dob-s2">
+    <img class="dob-bom" src="img/bom_sparkle.png" alt="봄이">
+    <div class="dob-bubble">
+      저를 어떻게 부르면 좋을까요?<br>
+      <span style="font-size:.86em;color:#9a8a7a">제가 어떻게 불러드리면 될까요?</span>
+    </div>
+    <div class="dob-choices">
+      <button class="dob-choice" data-h="할아버지"><span class="dob-ico">👴</span>할아버지</button>
+      <button class="dob-choice" data-h="할머니"><span class="dob-ico">👵</span>할머니</button>
+    </div>
+  </div>
+  <!-- 화면 3: 출생년도 -->
+  <div class="dob-screen" id="dob-s3">
+    <img class="dob-bom" src="img/bom_sparkle.png" alt="봄이">
+    <div class="dob-bubble">
+      <span id="dob-call1" class="dob-em">어르신</span>, 언제 태어나셨어요?<br>
+      <span style="font-size:.86em;color:#9a8a7a">그 시절 이야기를 더 잘 떠올리게 도와드릴게요!</span>
+    </div>
+    <div class="dob-year-wrap">
+      <button class="dob-year-btn" id="dob-yminus" aria-label="이전 연도">−</button>
+      <div class="dob-year-val"><span id="dob-yval">1960</span><span class="dob-year-unit">년생</span></div>
+      <button class="dob-year-btn" id="dob-yplus" aria-label="다음 연도">+</button>
+    </div>
+    <div class="dob-hint">버튼을 눌러 태어난 해를 맞춰주세요</div>
+    <button class="dob-btn" id="dob-go3">다음</button>
+  </div>
+  <!-- 화면 4: 마무리 -->
+  <div class="dob-screen" id="dob-s4">
+    <img class="dob-bom" src="img/bom_wink.png" alt="봄이">
+    <div class="dob-bubble">
+      <span id="dob-call2" class="dob-em">어르신</span>, 반가워요! 이제 준비됐어요.<br>
+      천천히, 편하게 둘러보세요. 제가 옆에서 도와드릴게요!
+    </div>
+    <button class="dob-btn" id="dob-finish">시작하기</button>
+  </div>
+</div>
+<!-- ════════ 봄이 온보딩 — 끝 ════════ -->
+
+
+<script>
+/* ════════ 다시봄 신규 방문자 인트로 제어 (v2) ════════
+   - 신규 방문자(localStorage 'dasibom_visited' 없음)에게만 표시
+   - 끝나면 onIntroComplete() → 인트로 페이드아웃 + 방문기록
+   - (다음 단계) onIntroComplete 안에서 봄이 온보딩 연결 예정
+   ════════════════════════════════════════════════ */
+(function(){
+  var introEl=document.getElementById('dasibom-intro');
+  // 재방문자거나 인트로 요소 없으면 즉시 제거하고 끝
+  if(!introEl){ return; }
+  var isNewVisitor = !localStorage.getItem('dasibom_visited');
+  if(!isNewVisitor){
+    // 재방문 — 신규용 v2 인트로 제거하고, 재방문용 v1 벚꽃 인트로 재생
+    introEl.parentNode && introEl.parentNode.removeChild(introEl);
+    /* startReturnIntro 정의는 이 스크립트보다 아래에 있어, 지금 부르면 아직 없음.
+       문서를 다 읽은 뒤(DOMContentLoaded) 부르도록 미뤄서 정상 호출되게 함. */
+    var __startRet=function(){ if(window.startReturnIntro){ window.startReturnIntro(); } };
+    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',__startRet); }
+    else { __startRet(); }
+    return;
+  }
+  // 신규 방문자 — 본문 스크롤 잠깐 잠금
+  document.documentElement.style.overflow='hidden';
+  document.body.style.overflow='hidden';
+
+  // 인트로 종료 콜백
+  window.onIntroComplete = function(){
+    introEl.classList.add('di-hide');
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+    localStorage.setItem('dasibom_visited','1');
+    setTimeout(function(){
+      introEl.parentNode && introEl.parentNode.removeChild(introEl);
+      if(window.startBomOnboarding){ window.startBomOnboarding(); }
+    },900);
+  };
+
+  // Three.js 동적 로드 후 인트로 실행
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
+  s.onload=runIntro;
+  s.onerror=function(){ // three 로드 실패 시 인트로 스킵(홈 보호)
+    window.onIntroComplete();
+  };
+  document.head.appendChild(s);
+
+  function runIntro(){
+    var CFG={AMBIENT:340,SMIN:.10,SMAX:.52,FMIN:.004,FMAX:.017,WIND:.0008,SWAY:.013,SX:20,SY:17};
+    function makeTex(l,m,v,hi){
+      var S=160,cv=document.createElement('canvas'); cv.width=cv.height=S;
+      var c=cv.getContext('2d'),cx=S/2;
+      var g=c.createRadialGradient(cx-S*.06,S*.34,1,cx,S*.50,S*.52);
+      g.addColorStop(0,l); g.addColorStop(.5,m); g.addColorStop(.85,m); g.addColorStop(1,'rgba(255,255,255,0)');
+      function path(){ c.beginPath(); c.moveTo(cx,S*.06);
+        c.bezierCurveTo(cx+S*.40,S*.12,cx+S*.46,S*.50,cx+S*.10,S*.92);
+        c.quadraticCurveTo(cx,S*.86,cx-S*.10,S*.92);
+        c.bezierCurveTo(cx-S*.46,S*.50,cx-S*.40,S*.12,cx,S*.06); c.closePath(); }
+      c.clearRect(0,0,S,S); path(); c.fillStyle=g; c.fill();
+      var hg=c.createRadialGradient(cx-S*.05,S*.30,1,cx-S*.05,S*.30,S*.22);
+      hg.addColorStop(0,hi); hg.addColorStop(1,'rgba(255,255,255,0)');
+      path(); c.fillStyle=hg; c.fill();
+      c.beginPath(); c.moveTo(cx,S*.12); c.quadraticCurveTo(cx+1,S*.5,cx+S*.02,S*.86);
+      c.strokeStyle=v; c.lineWidth=1; c.globalAlpha=.18; c.stroke(); c.globalAlpha=1;
+      var t=new THREE.CanvasTexture(cv); t.minFilter=THREE.LinearFilter; return t;
+    }
+    var TX=[
+      makeTex('rgba(255,212,224,.97)','rgba(255,150,178,.90)','#bf5272','rgba(255,255,255,.9)'),
+      makeTex('rgba(255,236,242,.96)','rgba(255,190,208,.86)','#d17a8a','rgba(255,255,255,.85)'),
+      makeTex('rgba(255,170,194,.95)','rgba(240,114,148,.88)','#b03a62','rgba(255,240,245,.8)'),
+      makeTex('rgba(255,249,253,.94)','rgba(255,220,230,.80)','#c27a8a','rgba(255,255,255,.95)'),
+      makeTex('rgba(255,224,234,.95)','rgba(255,178,198,.88)','#c25a72','rgba(255,255,255,.88)')
+    ];
+    var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setSize(innerWidth,innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setClearColor(0,0);
+    introEl.appendChild(renderer.domElement);   // ★ body 대신 인트로 컨테이너에 부착
+    var scene=new THREE.Scene(); scene.fog=new THREE.Fog(0xf2e8ee,14,34);
+    var cam=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.05,150);
+    function rnd(a,b){return a+Math.random()*(b-a);}
+    var ambient=[];
+    for(var i=0;i<CFG.AMBIENT;i++){
+      var front=(i<CFG.AMBIENT*0.22);
+      var sz=front?rnd(.32,CFG.SMAX):rnd(CFG.SMIN,.36);
+      var geo=new THREE.PlaneBufferGeometry(sz,sz*1.28);
+      var mat=new THREE.MeshBasicMaterial({map:TX[Math.floor(Math.random()*TX.length)],
+        transparent:true,opacity:front?rnd(.78,.95):rnd(.45,.8),side:THREE.DoubleSide,alphaTest:.01,depthWrite:false});
+      var m=new THREE.Mesh(geo,mat);
+      var zMin=front?2.5:-14,zMax=front?6:-0.5;
+      m.position.set(rnd(-CFG.SX,CFG.SX),rnd(-CFG.SY*.3,CFG.SY),rnd(zMin,zMax));
+      m.rotation.set(rnd(0,Math.PI*2),rnd(0,Math.PI*2),rnd(0,Math.PI*2));
+      m.userData={fs:rnd(CFG.FMIN,CFG.FMAX),ss:rnd(.28,1.05),so:rnd(0,Math.PI*2),
+        rx:rnd(-.012,.012),ry:rnd(-.02,.02),rz:rnd(-.009,.009),wp:rnd(0,Math.PI*2),zMin:zMin,zMax:zMax};
+      scene.add(m); ambient.push(m);
+    }
+    var bcv=document.createElement('canvas'); bcv.width=bcv.height=64;
+    var bc=bcv.getContext('2d');
+    var bgr=bc.createRadialGradient(32,32,0,32,32,32);
+    bgr.addColorStop(0,'rgba(255,250,235,0.9)'); bgr.addColorStop(0.3,'rgba(255,245,220,0.4)'); bgr.addColorStop(1,'rgba(255,245,220,0)');
+    bc.fillStyle=bgr; bc.fillRect(0,0,64,64);
+    var bGeo=new THREE.BufferGeometry(),bpos=[];
+    for(var i=0;i<55;i++) bpos.push(rnd(-18,18),rnd(-14,16),rnd(-8,5));
+    bGeo.setAttribute('position',new THREE.Float32BufferAttribute(bpos,3));
+    var bokeh=new THREE.Points(bGeo,new THREE.PointsMaterial({map:new THREE.CanvasTexture(bcv),size:1.1,transparent:true,opacity:0.5,depthWrite:false,blending:THREE.AdditiveBlending}));
+    scene.add(bokeh);
+    var CASCADE_N=420;
+    var cascadeGeo=new THREE.PlaneBufferGeometry(0.5,0.64);
+    var cascadeMat=new THREE.MeshBasicMaterial({map:TX[0],transparent:true,opacity:0.95,side:THREE.DoubleSide,alphaTest:.01,depthWrite:false});
+    var cascade=new THREE.InstancedMesh(cascadeGeo,cascadeMat,CASCADE_N);
+    cascade.visible=false;
+    var cData=[],dummy=new THREE.Object3D();
+    for(var i=0;i<CASCADE_N;i++){
+      cData.push({x:rnd(-13,13),y:rnd(-9,9),z:rnd(-42,-14),vx:rnd(-0.05,0.05),vy:rnd(-0.04,0.04),vz:rnd(0.40,0.80),
+        rx:rnd(0,6.28),ry:rnd(0,6.28),rz:rnd(0,6.28),rsx:rnd(-0.22,0.22),rsy:rnd(-0.26,0.26),rsz:rnd(-0.2,0.2),s:rnd(0.6,1.5)});
+    }
+    scene.add(cascade);
+    var camY0=2.0; cam.position.set(0.5,camY0,11);
+    var p1=document.getElementById('di-p1'),p2=document.getElementById('di-p2'),p3=document.getElementById('di-p3'),enterWrap=document.getElementById('di-enter-wrap');
+    var T=[];
+    function show(el){el.classList.add('show');} function hide(el){el.classList.remove('show');}
+    T.push(setTimeout(function(){show(p1);},2000));
+    T.push(setTimeout(function(){hide(p1);},6500));
+    T.push(setTimeout(function(){show(p2);},8200));
+    T.push(setTimeout(function(){hide(p2);},15700));
+    T.push(setTimeout(function(){show(p3);},16400));
+    T.push(setTimeout(function(){hide(p3);},21900));
+    T.push(setTimeout(function(){enterWrap.classList.add('show');},23000));
+    var cascadeActive=false,cascadeStart=0,whiteoutEl=document.getElementById('di-whiteout');
+    var done=false;
+    document.getElementById('di-enter-btn').addEventListener('click',function(){
+      enterWrap.style.pointerEvents='none'; enterWrap.classList.remove('show');
+      cascade.visible=true; cascadeActive=true; cascadeStart=clock.getElapsedTime();
+    });
+    // 건너뛰기
+    document.getElementById('di-skip').addEventListener('click',function(){
+      T.forEach(clearTimeout); if(done)return; done=true;
+      whiteoutEl.style.transition='opacity 0.4s'; whiteoutEl.style.opacity=1;
+      setTimeout(function(){ window.onIntroComplete(); },400);
+    });
+    var clock=new THREE.Clock();
+    (function loop(){
+      if(done) return;
+      requestAnimationFrame(loop);
+      var el=clock.getElapsedTime();
+      cam.position.y=camY0+Math.sin(el*0.4)*0.12;
+      cam.position.x=0.5+Math.sin(el*0.55)*0.18;
+      cam.lookAt(0,0.4,0);
+      bokeh.rotation.y=el*0.02; bokeh.position.y=Math.sin(el*0.3)*0.5;
+      var wind=Math.sin(el*.42)*CFG.WIND;
+      for(var i=0;i<ambient.length;i++){
+        var p=ambient[i],d=p.userData;
+        p.position.y-=d.fs; p.position.x+=wind+Math.sin(el*d.ss+d.so)*CFG.SWAY; p.position.z+=Math.cos(el*d.ss*.55+d.wp)*.003;
+        p.rotation.x+=d.rx;p.rotation.y+=d.ry;p.rotation.z+=d.rz;
+        if(p.position.y<-CFG.SY-2){ p.position.y=CFG.SY+rnd(0,4); p.position.x=rnd(-CFG.SX,CFG.SX); p.position.z=rnd(d.zMin,d.zMax); }
+      }
+      if(cascadeActive){
+        var ct=el-cascadeStart, DUR_C=5.0, prog=Math.min(ct/DUR_C,1), ease=prog*prog;
+        var activeCount=Math.floor(CASCADE_N*(0.12+0.88*ease)), speedMul=0.35+2.05*ease;
+        for(var i=0;i<CASCADE_N;i++){
+          var d=cData[i];
+          if(i<activeCount){
+            d.x+=d.vx*speedMul; d.y+=d.vy*speedMul; d.z+=d.vz*speedMul;
+            d.rx+=d.rsx*(0.5+speedMul*0.4); d.ry+=d.rsy*(0.5+speedMul*0.4); d.rz+=d.rsz*(0.5+speedMul*0.4);
+            if(d.z>12){ d.z=rnd(-42,-20); d.x=rnd(-13,13); d.y=rnd(-9,9); }
+            dummy.position.set(d.x,d.y,d.z); dummy.rotation.set(d.rx,d.ry,d.rz); dummy.scale.set(d.s,d.s,d.s);
+          } else { dummy.position.set(0,0,200); dummy.scale.set(0.001,0.001,0.001); }
+          dummy.updateMatrix(); cascade.setMatrixAt(i,dummy.matrix);
+        }
+        cascade.instanceMatrix.needsUpdate=true;
+        if(ct>3.4){ whiteoutEl.style.opacity=Math.min((ct-3.4)/1.2,1); }
+        if(ct>DUR_C && !done){ done=true; cascadeActive=false; window.onIntroComplete(); }
+      }
+      renderer.render(scene,cam);
+    })();
+    window.addEventListener('resize',function(){
+      renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix();
+    });
+  }
+})();
+</script>
+
+
+
+<!-- NAV -->
+<nav class="nav" id="nav">
+  <div class="wrap row">
+    <a class="logo" href="#top" style="display:flex;align-items:center;gap:10px;text-decoration:none">
+      <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+      <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
+      <circle cx="22" cy="13" r="5" fill="#A5C87A"/>
+      <line x1="22" y1="5" x2="22" y2="3" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="23" x2="22" y2="21" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="14" y1="13" x2="12" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="32" y1="13" x2="30" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="38" x2="22" y2="26" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M22 32 C18 30 15 27 17 24 C19 21 22 26 22 28" fill="#81C784"/>
+      <path d="M22 30 C26 28 29 25 27 22 C25 19 22 24 22 26" fill="#A5D6A7"/>
+    </svg>
+      <div>
+        <div style="font-family:'Nanum Myeongjo',serif;font-size:17px;font-weight:800;color:#1F2A1A;line-height:1.1">다시봄</div>
+        <div style="font-size:9px;letter-spacing:2px;color:#8AAA7A;font-weight:700">DASIBOM</div>
+      </div>
+    </a>
+    <ul>
+      <li><a href="#story">이야기</a></li>
+      <li><a href="#contents">콘텐츠</a></li>
+      <li><a href="#manifesto">철학</a></li>
+    </ul>
+    <div id="nav-auth">
+      <a class="cta" href="#" onclick="openLogin(event)">시작하기</a>
+    </div>
+  </div>
+</nav>
+
+<!-- CINEMATIC HERO -->
+<header class="cine-hero" id="top">
+  <div class="ch-g1"></div>
+  <div class="ch-g2"></div>
+  <div class="ch-g3"></div>
+  <canvas class="ch-canvas" id="chCanvas"></canvas>
+  <div class="ch-inner">
+    <div class="ch-pre" id="ch-greet">DASIBOM · 다시봄 · 再春</div>
+    <h1 class="ch-title">다시봄</h1>
+    <div class="ch-meanings">
+      <div class="ch-meaning">
+        <div class="m-num">첫 번째 의미</div>
+        <div class="m-ko">다시 오는 봄 (春)</div>
+        <div class="m-en">Spring Returns Again</div>
+      </div>
+      <div class="ch-vline"></div>
+      <div class="ch-meaning">
+        <div class="m-num">두 번째 의미</div>
+        <div class="m-ko">다시 보는 인생 (見)</div>
+        <div class="m-en">Look At Life Anew</div>
+      </div>
+    </div>
+    <div class="ch-cta-wrap">
+      <a class="ch-cta-a" href="#wisdom-section">
+        오늘의 이야기 만나기
+        <span class="ch-cta-arrow">↓</span>
+      </a>
+    </div>
+  </div>
+  <div class="ch-scroll">
+    <div class="ch-scroll-bar"></div>
+    <span class="ch-scroll-txt">scroll</span>
+  </div>
+</header>
+
+<!-- 오늘의 지혜 -->
+<section id="wisdom-section">
+  <div class="wrap">
+    <div class="wisdom-card-news" id="wisdom-card">
+      <div class="wc-bg" id="wc-bg"></div>
+      <div class="wc-overlay"></div>
+      <div class="wc-inner">
+        <div class="wc-body">
+          <div class="wc-hdr">
+            <span class="wc-badge">✦ 오늘의 지혜</span>
+            <span class="wc-topic" id="wc-topic"></span>
+            <span class="wc-date" id="wc-date"></span>
+          </div>
+          <blockquote class="wc-quote" id="w-quote">"가장 수익률이 높은 투자는 바로 '자기 자신'에게 투자하는 것입니다."</blockquote>
+          <div class="wc-author-row">
+            <span class="wc-author" id="w-author">워런 버핏</span>
+            <span class="wc-sep">·</span>
+            <span class="wc-bio" id="w-bio">세계적인 투자자, 버크셔 해서웨이 회장</span>
+          </div>
+          <p class="wc-interp" id="w-interp">물질적인 자산보다 내 몸과 마음의 건강, 그리고 새로운 배움이 인생에서 가장 귀한 재산이라는 뜻입니다.</p>
+        </div>
+        <div class="wc-actions">
+          <button class="wca-btn wca-web"   onclick="shareWisdom('web')"  >↗ 공유하기</button>
+          <button class="wca-btn wca-kakao" onclick="shareWisdom('kakao')">💬 카카오톡</button>
+          <button class="wca-btn wca-email" onclick="shareWisdom('email')">✉ 이메일</button>
+          <button class="wca-btn wca-img"   onclick="shareWisdom('image')">🖼 이미지 저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 그때 그 시절 미리보기 -->
+<section class="ns-prev" id="ns-prev-section">
+  <div class="wrap">
+    <div class="ns-prev-head">
+      <div class="ns-title-wrap">
+        <div class="nt-badge">📽️&nbsp; 다시보는 그때 그 시절</div>
+        <div class="nt-sub">오늘의 추억 — 매일 하나씩 새로운 이야기</div>
+      </div>
+      <div class="ns-ctrl-wrap">
+        <button class="ns-ctrl-btn" id="ns-ybtn" onclick="toggleYesterday()">어제 내용 보기</button>
+        <a class="ns-more-link" href="/nostalgia">전체 보기 →</a>
+      </div>
+    </div>
+    <div class="ns-mini" id="ns-today-wrap">
+      <div class="ns-loading">📽️ 불러오는 중…</div>
+    </div>
+    <div id="ns-yest-wrap" style="display:none;margin-top:20px"></div>
+  </div>
+</section>
+
+<!-- 오늘의 두뇌 게임 3선 -->
+<section class="gp-section">
+  <div class="wrap">
+    <div class="gp-head">
+      <div class="ns-title-wrap">
+        <div class="nt-badge">🎮&nbsp; 오늘의 두뇌 운동</div>
+        <div class="nt-sub">매일 달라지는 3가지 두뇌 게임 — 인지력 강화 &amp; 치매 예방</div>
+      </div>
+      <a class="ns-more-link" href="/game">전체 게임 보기 →</a>
+    </div>
+    <div class="gp-cards" id="gp-cards">
+      <div class="ns-loading">🎮 불러오는 중…</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>다시 보는 인생&nbsp;<span class="dot"></span>&nbsp;다시 오는 봄&nbsp;<span class="dot"></span>&nbsp;나의 자서전&nbsp;<span class="dot"></span>&nbsp;건강한 식탁&nbsp;<span class="dot"></span>&nbsp;그때 그 시절&nbsp;<span class="dot"></span>&nbsp;마음놀이터&nbsp;<span class="dot"></span></span>
+    <span>다시 보는 인생&nbsp;<span class="dot"></span>&nbsp;다시 오는 봄&nbsp;<span class="dot"></span>&nbsp;나의 자서전&nbsp;<span class="dot"></span>&nbsp;건강한 식탁&nbsp;<span class="dot"></span>&nbsp;그때 그 시절&nbsp;<span class="dot"></span>&nbsp;마음놀이터&nbsp;<span class="dot"></span></span>
+  </div>
+</div>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title" data-reveal="">다시 <em>봄</em>,<br>두 가지 의미.</h2>
+      <p class="sec-sub" data-reveal="">
+        다시봄은 두 마음을 담은 이름입니다. 계절이 다시 돌아오듯, 인생도 다시 펼쳐집니다.
+      </p>
+    </div>
+    <div class="story-grid">
+      <div class="story-img" data-reveal="">
+        <img src="/img/story.jpg" alt="봄 정원을 걷는 노부부">
+        <div class="caption">DASIBOM · 인생의 두 번째 봄</div>
+      </div>
+      <div class="story-text" data-reveal="">
+        <h2>인생의 두 번째 <em>봄</em>을<br>맞이하는 일.</h2>
+        <div class="meaning">
+          <div class="meaning-row">
+            <div class="num">i.</div>
+            <div>
+              <div class="label">다시 봄(春)이 오다</div>
+              <p>겨울 같던 시간을 지나, 또 한 번 따뜻한 계절이 찾아옵니다.
+              은퇴는 끝이 아니라, 새로운 봄의 첫 날입니다.</p>
+            </div>
+          </div>
+          <div class="meaning-row">
+            <div class="num">ii.</div>
+            <div>
+              <div class="label">다시 봄(見), 인생을 돌아보다</div>
+              <p>걸어온 길을 천천히 다시 봅니다. 기억과 이야기,
+              그 안에 깃든 의미를 발견하는 시간입니다.</p>
+            </div>
+          </div>
+          <div class="meaning-row">
+            <div class="num">iii.</div>
+            <div>
+              <div class="label">다시, 봄처럼 살다</div>
+              <p>매일을 새 것처럼. 배움과 놀이, 건강과 추억.
+              실버세대의 일상에 봄빛을 더합니다.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENTS -->
+<section class="contents svc-section" id="contents">
+<span id="svc-cards"></span>
+  <div class="wrap">
+    <div class="sec-head">
+      <h2 class="sec-title" data-reveal="">네 가지 <em>콘텐츠</em>로<br>채워가는 하루.</h2>
+      <p class="sec-sub" data-reveal="">
+        기억을 기록하고, 몸을 돌보고, 추억을 나누고, 마음을 돌보는 — 다시봄의 네 가지 방식.
+      </p>
+    </div>
+    <div class="cards">
+      <a class="card card-1" href="/memoir" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">— 01 / RECORD</span>
+            <span class="tag">AI 자서전 서비스</span>
+          </div>
+          <h3 class="title">나의 추억,<br>너의 기억</h3>
+          <p class="desc">먼지 쌓인 기억 속 보물 같은 이야기를 한 권의 책으로 엮어드립니다.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/card1.jpg" alt="손글씨가 적힌 오래된 노트" loading="lazy">
+          <div class="ph">나의 이야기 시작하기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+
+      <a class="card card-2" href="/health" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">— 02 / NOURISH</span>
+            <span class="tag">맞춤형 건강 가이드</span>
+          </div>
+          <h3 class="title">건강<br>돋보기</h3>
+          <p class="desc">내 몸에 꼭 맞는 영양 한 알, 매일 아침 전해드리는 건강 비결.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/card2.jpg" alt="건강보조식품 영양제" loading="lazy">
+          <div class="ph">건강 정보 확인하기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+
+      <a class="card card-3" href="/nostalgia" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">— 03 / REMEMBER</span>
+            <span class="tag">옛 추억과 현재의 비교</span>
+          </div>
+          <h3 class="title">다시보는<br>그때 그 시절</h3>
+          <p class="desc">그리운 골목길부터 찬란했던 청춘의 풍경까지, 멈춰있던 기억을 오늘의 일상으로 소환합니다.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/card3.jpg" alt="오래된 사진첩과 흑백사진" loading="lazy">
+          <div class="ph">추억 여행 떠나기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+
+      <a class="card card-4" href="/game" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">— 04 / PLAY</span>
+            <span class="tag">치매 예방 두뇌 게임</span>
+          </div>
+          <h3 class="title">오늘의<br>뇌 건강</h3>
+          <p class="desc">카드 뒤집기, 모양 찾기, 숫자 터치 — 5단계 게임으로 매일 뇌를 깨워보세요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/card4.jpg" alt="퍼즐과 두뇌 게임" loading="lazy">
+          <div class="ph">게임 시작하기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+
+      <a class="card" href="/library" data-reveal="" style="--c1:#7E57C2;--c2:#4527A0">
+        <div>
+          <div class="top">
+            <span class="idx">— 05 / READ</span>
+            <span class="tag">공개 자서전 열람</span>
+          </div>
+          <h3 class="title">다시봄<br>서재</h3>
+          <p class="desc">이웃이 직접 쓴 따뜻한 삶의 이야기들을 책처럼 읽어드립니다.</p>
+        </div>
+        <div class="visual" style="background:linear-gradient(135deg,#7E57C2,#4527A0)">
+          <div class="ph" style="color:#fff">서재 들어가기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="manifesto">
+  <div class="wrap">
+    <blockquote data-reveal="">
+      "나이 듦은 <em>잃는 일</em>이 아니라,<br>
+      자신을 더 깊이 <em>알아가는 일</em>입니다."
+    </blockquote>
+    <div class="sig" data-reveal="">
+      <span class="dot"></span>
+      <span>다시봄 / 브랜드 메니페스토</span>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="ft">
+      <div class="brand">
+        <a class="logo" href="#top" style="display:flex;align-items:center;gap:8px;text-decoration:none">
+          <svg width="28" height="28" viewBox="0 0 44 44" fill="none">
+            <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
+            <circle cx="22" cy="13" r="5" fill="#A5C87A"/>
+            <line x1="22" y1="5" x2="22" y2="3" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+            <line x1="22" y1="23" x2="22" y2="21" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+            <line x1="14" y1="13" x2="12" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+            <line x1="32" y1="13" x2="30" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+            <line x1="22" y1="38" x2="22" y2="26" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M22 32 C18 30 15 27 17 24 C19 21 22 26 22 28" fill="#81C784"/>
+            <path d="M22 30 C26 28 29 25 27 22 C25 19 22 24 22 26" fill="#A5D6A7"/>
+          </svg>
+          <div>
+            <div style="font-family:'Nanum Myeongjo',serif;font-size:15px;font-weight:800;color:#1F2A1A;line-height:1.1">다시봄</div>
+            <div style="font-size:9px;letter-spacing:2px;color:#8AAA7A;font-weight:700">DASIBOM</div>
+          </div>
+        </a>
+        <p>은퇴 이후의 시간을 가장 나답게 — 실버세대를 위한 콘텐츠 브랜드.</p>
+      </div>
+      <div>
+        <h5>콘텐츠</h5>
+        <ul>
+          <li><a href="/memoir">나의 추억, 너의 기억</a></li>
+          <li><a href="/health">건강 돋보기</a></li>
+          <li><a href="/nostalgia">다시보는 그때 그 시절</a></li>
+          <li><a href="/game">오늘의 뇌 건강</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>다시봄</h5>
+        <ul>
+          <li><a href="#story">브랜드 이야기</a></li>
+          <li><a href="#manifesto">메니페스토</a></li>
+          <li><a href="mailto:hello@dasibomlife.com">제휴 문의</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>연락</h5>
+        <ul>
+          <li><a href="mailto:hello@dasibomlife.com">hello@dasibomlife.com</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div>© 2026 다시봄 / Dasibom Life. All rights reserved.</div>
+      <div>이용약관 · 개인정보처리방침</div>
+    </div>
+  </div>
+</footer>
+
+<!-- 로그인 모달 -->
+<div class="modal-overlay" id="login-modal" onclick="closeLoginOutside(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLogin()">✕</button>
+    <h2>다시봄 시작하기</h2>
+    <p>소셜 계정으로 간편하게 로그인하고<br>나만의 이야기를 시작하세요.</p>
+
+    <button class="social-btn btn-kakao" onclick="loginKakao()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3C7.03 3 3 6.14 3 10.06c0 2.52 1.67 4.74 4.19 6.02l-.85 3.1a.3.3 0 0 0 .45.33l3.64-2.43c.5.07 1.02.11 1.57.11 4.97 0 9-3.14 9-7.06C21 6.14 16.97 3 12 3z"/></svg>
+      카카오로 시작하기
+    </button>
+    <button class="social-btn btn-naver" onclick="loginNaver()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M16.27 12.65L7.6 3H3v18h7.73V11.35L19.4 21H24V3h-7.73z"/></svg>
+      네이버로 시작하기
+    </button>
+    <button class="social-btn btn-google" onclick="loginGoogle()">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Google로 시작하기
+    </button>
+  </div>
+</div>
+
+<!-- 접근성 툴바 (시니어용) -->
+<div class="a11y-bar" aria-label="접근성 설정">
+  <button class="a11y-btn" id="btn-text" title="글자 크기" onclick="toggleText()">가</button>
+  <button class="a11y-btn" id="btn-dark" title="다크 모드" onclick="toggleDark()">◑</button>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+    authDomain: "mylife-650f0.firebaseapp.com",
+    projectId: "mylife-650f0",
+    storageBucket: "mylife-650f0.firebasestorage.app",
+    messagingSenderId: "512010655611",
+    appId: "1:512010655611:web:32b153b836b23ae96a8fde",
+    databaseURL: "https://mylife-650f0-default-rtdb.firebaseio.com"
+  });
+  Kakao.init('870c36c36fea1421ed701cefe6fc6562');
+
+  function openLogin(e) { if(e) e.preventDefault(); document.getElementById('login-modal').classList.add('open'); }
+  function closeLogin() { document.getElementById('login-modal').classList.remove('open'); }
+  function closeLoginOutside(e) { if(e.target === document.getElementById('login-modal')) closeLogin(); }
+
+  function loginGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider)
+      .then(() => { closeLogin(); window.location.href = '/memoir'; })
+      .catch(err => { if(err.code !== 'auth/popup-closed-by-user') alert('로그인 오류: ' + err.message); });
+  }
+
+  function loginKakao() {
+    Kakao.Auth.authorize({ redirectUri: 'https://dasibomlife.com/auth/kakao/callback.html' });
+  }
+
+  function loginNaver() {
+    const state = Math.random().toString(36).slice(2);
+    sessionStorage.setItem('naver_state', state);
+    location.href = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=bgI3PFJTzufz_2aWDfvF&redirect_uri='
+      + encodeURIComponent('https://dasibomlife.com/auth/naver/callback.html')
+      + '&state=' + encodeURIComponent(state);
+  }
+
+  function logout() {
+    firebase.auth().signOut().then(() => { lsClear(); location.reload(); });
+  }
+
+  // memoir_v8.html과 동일한 localStorage 키 사용 (memoir_ 접두사 + JSON)
+  function lsGet(key) {
+    try { const v = localStorage.getItem('memoir_' + key); return v ? JSON.parse(v) : null; } catch(e) { return null; }
+  }
+  function lsClear() {
+    ['socialProvider','userName','answers','pkg','maxQ','curQ','bookTitle','preview','coverPhoto']
+      .forEach(k => localStorage.removeItem('memoir_' + k));
+  }
+
+  const PROVIDER_LABELS = {
+    'google.com': { label: 'Google', cls: 'badge-google' },
+    'kakao':      { label: '카카오',  cls: 'badge-kakao' },
+    'naver':      { label: '네이버',  cls: 'badge-naver' },
+  };
+
+  function getProviderBadge(user) {
+    const stored = lsGet('socialProvider');
+    if (stored === 'kakao' || stored === 'naver') return PROVIDER_LABELS[stored];
+    if (user && user.providerData && user.providerData.length > 0) {
+      const pid = user.providerData[0].providerId;
+      if (PROVIDER_LABELS[pid]) return PROVIDER_LABELS[pid];
+    }
+    return { label: '소셜', cls: 'badge-google' };
+  }
+
+  function renderLoggedIn(user) {
+    const el = document.getElementById('nav-auth');
+    const name = lsGet('userName') || (user && user.displayName) || (user && user.email) || '회원';
+    const initial = name.charAt(0);
+    const prov = getProviderBadge(user);
+    const pts = parseInt(localStorage.getItem('pts_total') || '0');
+    el.innerHTML = `
+      <div class="nav-user">
+        <div class="nav-avatar">${initial}</div>
+        <div class="nav-user-info">
+          <span class="nav-name">${name}</span>
+          <span class="nav-provider"><span class="nav-provider-badge ${prov.cls}">${prov.label}</span> 로그인</span>
+        </div>
+      </div>
+      <div class="nav-pts" id="nav-pts-badge" title="보유 포인트">
+        ⭐ <span class="np-num" id="nav-pts-num">${pts.toLocaleString()}</span>P
+      </div>
+      <a class="cta" href="/memoir">내 자서전</a>
+      <button class="nav-logout" onclick="logout()">로그아웃</button>
+    `;
+    syncNavPoints(user);
+  }
+
+  function syncNavPoints(user) {
+    if (!user) return;
+    try {
+      const db = firebase.firestore();
+      db.collection('users').doc(user.uid).get().then(doc => {
+        if (doc.exists && doc.data().totalPoints != null) {
+          const total = doc.data().totalPoints;
+          localStorage.setItem('pts_total', total);
+          const el = document.getElementById('nav-pts-num');
+          if (el) el.textContent = total.toLocaleString();
+        }
+      }).catch(() => {});
+    } catch(e) {}
+  }
+
+  function renderLoggedOut() {
+    document.getElementById('nav-auth').innerHTML =
+      `<a class="cta" href="#" onclick="openLogin(event)">로그인</a>`;
+  }
+
+  // 페이지 로드 즉시 localStorage로 먼저 판단 (Firebase 응답 전 깜빡임 방지)
+  (function initNavFromStorage() {
+    const sp = lsGet('socialProvider');
+    const uname = lsGet('userName');
+    if (sp && uname) renderLoggedIn(null);
+  })();
+
+  firebase.auth().onAuthStateChanged(user => {
+    if (user && !user.isAnonymous) {
+      renderLoggedIn(user);
+    } else {
+      // Firebase에 사용자 없어도 localStorage에 소셜 로그인 흔적 있으면 로그인 상태 유지
+      const sp = lsGet('socialProvider');
+      if (sp) { renderLoggedIn(null); }
+      else { renderLoggedOut(); }
+    }
+  });
+</script>
+
+<script>
+  // Nav scrolled
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 24), {passive:true});
+
+  // Reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
+  document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
+
+  // Accessibility
+  function toggleText() {
+    document.body.classList.toggle('large');
+    localStorage.setItem('dasibom-large', document.body.classList.contains('large'));
+  }
+  function toggleDark() {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('dasibom-dark', document.body.classList.contains('dark'));
+  }
+  if(localStorage.getItem('dasibom-large') === 'true') document.body.classList.add('large');
+  if(localStorage.getItem('dasibom-dark') === 'true') document.body.classList.add('dark');
+
+  // Join form
+  function handleJoin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('join-btn');
+    btn.textContent = '소식 신청 완료 ✿';
+    btn.disabled = true;
+  }
+</script>
+
+<!-- 오늘의 지혜 + 그때 그 시절 미리보기 + 포인트 -->
+<script>
+(function(){
+
+  /* ── 토픽별 카드 배경 테마 ── */
+  var TOPIC_THEME = {
+    '건강과 활력':    'linear-gradient(135deg,#1B5E20,#43A047)',
+    '가족과 사랑':    'linear-gradient(135deg,#2E5E4A,#66A880)',
+    '지혜와 배움':    'linear-gradient(135deg,#1A3A5C,#3A7AAA)',
+    '희망과 긍정':    'linear-gradient(135deg,#3A6A2A,#C9A961)',
+    '인생의 의미':    'linear-gradient(135deg,#2A3A5A,#4A6A8A)',
+    '감사와 나눔':    'linear-gradient(135deg,#004D40,#26A69A)',
+    '도전과 용기':    'linear-gradient(135deg,#1F3A1A,#4A7A3A)',
+    '자연과 계절':    'linear-gradient(135deg,#1B5E20,#66BB6A)',
+    '우정과 인연':    'linear-gradient(135deg,#2A4A5A,#4A8A8A)',
+    '노년의 아름다움':'linear-gradient(135deg,#3A5A3A,#7AAA6A)',
+    '작은 행복':      'linear-gradient(135deg,#5C7A2A,#A5C87A)',
+    '마음의 평화':    'linear-gradient(135deg,#006064,#00BCD4)',
+    '삶의 지혜':      'linear-gradient(135deg,#33691E,#7AAD5A)',
+    '건강과 웰빙':    'linear-gradient(135deg,#00695C,#4DB6AC)',
+  };
+  var DEFAULT_THEME = 'linear-gradient(135deg,#2E5E3A,#C9A961)';
+
+  var FALLBACK = [
+    {quote:"가장 수익률이 높은 투자는 바로 '자기 자신'에게 투자하는 것입니다.",author:"워런 버핏",bio:"세계적인 투자자, 버크셔 해서웨이 회장",interpretation:"물질적인 자산보다 내 몸과 마음의 건강, 그리고 새로운 배움이 인생에서 가장 귀한 재산이라는 뜻입니다."},
+    {quote:"배우고 때때로 익히면, 또한 기쁘지 아니한가.",author:"공자",bio:"고대 중국의 철학자, 유교의 창시자",interpretation:"배움은 나이와 상관없이 언제나 우리 마음에 기쁨과 활력을 가져다줍니다."},
+    {quote:"사랑은 집에서 시작됩니다.",author:"마더 테레사",bio:"노벨 평화상 수상, 인류애의 상징 (1910~1997)",interpretation:"가장 작은 사랑의 실천, 가족을 향한 따뜻한 마음이 세상을 바꾸는 시작입니다."},
+    {quote:"가장 위대한 영광은 실패할 때마다 다시 일어서는 데 있습니다.",author:"넬슨 만델라",bio:"남아프리카공화국 최초 흑인 대통령, 노벨 평화상 수상",interpretation:"넘어질 때마다 일어서는 그 용기가 진정한 삶의 힘입니다. 오늘 다시 시작해도 늦지 않습니다."},
+    {quote:"상상력은 지식보다 중요합니다.",author:"알베르트 아인슈타인",bio:"20세기 가장 위대한 물리학자, 노벨 물리학상 수상",interpretation:"알고 있는 것보다 꿈꾸고 그려보는 힘이 새로운 세상을 만듭니다. 나이 들어서도 꿈을 품으세요."},
+    {quote:"낙관주의는 성취의 믿음입니다. 희망과 자신감 없이는 아무것도 이룰 수 없습니다.",author:"헬렌 켈러",bio:"시청각 장애를 극복한 작가·사회운동가 (1880~1968)",interpretation:"어떤 상황에서도 밝은 내일을 믿는 마음이 우리를 앞으로 나아가게 합니다."},
+    {quote:"가장 훌륭한 준비는 무엇이든 할 수 있도록 스스로를 준비시키는 것입니다.",author:"에이브러햄 링컨",bio:"미국 제16대 대통령, 노예 해방의 아버지 (1809~1865)",interpretation:"작은 준비와 꾸준한 노력이 쌓여 큰 성취가 됩니다. 오늘 하루도 내일을 위한 준비입니다."},
+    {quote:"나이는 마음가짐의 문제입니다. 마음이 늙지 않으면 나이도 없습니다.",author:"마크 트웨인",bio:"미국의 위대한 소설가, 유머작가 (1835~1910)",interpretation:"몸의 나이보다 마음의 젊음이 삶을 더욱 풍요롭게 합니다. 오늘도 설레는 마음으로 시작해봐요."},
+    {quote:"무지를 아는 것이 곧 지식의 시작입니다.",author:"소크라테스",bio:"고대 그리스 철학자, 서양 철학의 아버지",interpretation:"'모른다'고 인정하는 순간 진짜 배움이 시작됩니다. 겸손한 마음이 지혜의 씨앗입니다."},
+    {quote:"지금 이 순간을 즐겨라. 오늘이 가장 좋은 날이다.",author:"요한 볼프강 폰 괴테",bio:"독일의 대문호, 『파우스트』 저자 (1749~1832)",interpretation:"지나간 날을 아쉬워하기보다, 지금 이 순간의 소중함을 깊이 느껴보세요."},
+    {quote:"인생은 짧다, 그러므로 아름다운 것들을 놓치지 마라.",author:"루키우스 안나이우스 세네카",bio:"로마의 철학자·정치가 (기원전 4~서기 65)",interpretation:"바쁘게 달리는 것보다 지금 이 순간을 깊이 누리는 것이 더 풍요로운 삶입니다."},
+    {quote:"건강은 첫 번째 부(富)이다.",author:"벤자민 프랭클린",bio:"미국 건국의 아버지, 발명가·외교관 (1706~1790)",interpretation:"어떤 재물보다 건강이 먼저입니다. 오늘 몸을 위한 작은 실천 하나를 해보세요."},
+    {quote:"작은 일에도 최선을 다하라. 그것이 큰 일로 이어지는 길이다.",author:"반기문",bio:"전 유엔 사무총장, 대한민국이 배출한 최고의 외교관",interpretation:"매일의 소소한 실천들이 쌓여 인생의 가장 빛나는 성취가 됩니다."},
+    {quote:"천 리 길도 한 걸음부터.",author:"노자",bio:"고대 중국 철학자, 도교의 창시자",interpretation:"거창한 계획보다 오늘 내딛는 작은 한 걸음이 먼 여정의 시작입니다."},
+    {quote:"흘러간 시간을 슬퍼하지 말고, 지금 남아있는 시간을 사랑하라.",author:"파블로 카잘스",bio:"20세기 최고의 첼리스트, 지휘자 (1876~1973)",interpretation:"지나간 것에 집착하지 말고, 지금 이 순간과 앞으로의 날들을 소중히 여기세요."},
+    {quote:"배우되 생각하지 않으면 허망하고, 생각하되 배우지 않으면 위태롭다.",author:"공자",bio:"고대 중국의 철학자, 유교의 창시자",interpretation:"새로운 것을 배우고, 그것을 마음속 깊이 생각하며 내 것으로 만드는 것이 진짜 지혜입니다."},
+    {quote:"진정한 사랑은 나이가 들수록 더욱 깊어집니다.",author:"빅토르 위고",bio:"프랑스의 대문호, 『레 미제라블』 저자 (1802~1885)",interpretation:"오랜 시간 함께한 사람들과의 관계는 세월이 지날수록 더욱 귀해집니다."},
+    {quote:"감사하는 마음은 모든 덕의 어머니입니다.",author:"키케로",bio:"고대 로마의 철학자이자 정치가 (기원전 106~43)",interpretation:"작은 것에 감사하는 습관이 삶 전체를 더 풍요롭고 따뜻하게 만들어줍니다."},
+    {quote:"웃음은 마음의 태양이다. 웃음 없이는 어떤 집도 살 수 없다.",author:"윌리엄 새커리",bio:"영국의 소설가, 『허영의 시장』 저자 (1811~1863)",interpretation:"웃음은 최고의 명약입니다. 오늘도 밝은 미소로 하루를 시작해보세요."},
+    {quote:"젊음은 나이가 아니라 마음의 상태입니다.",author:"더글라스 맥아더",bio:"미국의 군인, 태평양 전쟁 최고사령관 (1880~1964)",interpretation:"몸이 나이 들어도 호기심과 열정이 살아있다면, 우리는 언제나 젊습니다."},
+    {quote:"인생은 자전거 타기와 같다. 균형을 잡으려면 계속 움직여야 한다.",author:"알베르트 아인슈타인",bio:"20세기 가장 위대한 물리학자 (1879~1955)",interpretation:"멈추지 않고 조금씩 나아가는 것이 인생의 균형을 지키는 방법입니다."},
+    {quote:"인생에서 가장 중요한 것은 경험이다.",author:"마르쿠스 아우렐리우스",bio:"로마 황제이자 스토아 철학자 (121~180)",interpretation:"지금껏 살아온 시간의 모든 경험이 당신의 가장 큰 자산입니다."},
+    {quote:"오늘 할 수 있는 일을 내일로 미루지 마라.",author:"벤자민 프랭클린",bio:"미국 건국의 아버지, 발명가·외교관 (1706~1790)",interpretation:"작은 실천을 오늘 바로 시작하세요. 그 첫걸음이 내일의 당신을 만듭니다."},
+    {quote:"사람에게는 무한한 가능성이 있다. 단지 모르고 있을 뿐이다.",author:"헨리 포드",bio:"포드 자동차 창업자, 대량생산 혁명의 주역 (1863~1947)",interpretation:"나이와 상관없이 우리 안에는 아직 피어나지 않은 잠재력이 있습니다."},
+    {quote:"당신이 심은 씨앗이 언젠가는 꽃을 피웁니다.",author:"지혜로운 선구자",bio:"",interpretation:"오늘의 작은 수고와 사랑이 먼 훗날 아름다운 결실이 됩니다. 포기하지 마세요."},
+    {quote:"덕 있는 사람은 외롭지 않다. 반드시 이웃이 있다.",author:"공자",bio:"고대 중국의 철학자, 유교의 창시자",interpretation:"따뜻한 마음으로 사람을 대하면, 주변에 귀한 인연이 자연스럽게 모입니다."},
+    {quote:"인생의 가장 큰 영광은 넘어지지 않는 것이 아니라, 넘어질 때마다 일어서는 데 있다.",author:"올리버 골드스미스",bio:"아일랜드 출신 작가·시인 (1728~1774)",interpretation:"실패는 끝이 아닙니다. 다시 일어서는 그 용기가 인생을 빛나게 합니다."},
+    {quote:"책 한 권은 천 명의 친구와 같다.",author:"압둘 칼람",bio:"인도 전 대통령, 과학자·교육자 (1931~2015)",interpretation:"독서는 언제 시작해도 늦지 않습니다. 오늘 읽고 싶었던 책 한 페이지를 펼쳐보세요."},
+    {quote:"건강한 마음에 건강한 몸이 깃든다.",author:"유베날리스",bio:"고대 로마의 시인 (서기 60~130 추정)",interpretation:"마음의 평안과 긍정적인 생각이 몸의 건강으로 이어집니다. 오늘도 마음부터 돌보세요."},
+    {quote:"나는 내 삶의 주인공이다.",author:"지혜로운 선구자",bio:"",interpretation:"당신의 인생 이야기는 오직 당신만이 쓸 수 있습니다. 오늘도 그 이야기를 아름답게 채워가세요."}
+  ];
+
+  function getDayIndex(list) {
+    var d = new Date();
+    var start = new Date(2026, 0, 1);
+    var idx = Math.floor((d - start) / 86400000);
+    return Math.abs(idx) % list.length;
+  }
+
+  function renderWisdom(w) {
+    document.getElementById('w-quote').textContent = '“' + w.quote + '”';
+    document.getElementById('w-author').textContent = w.author;
+    var bioEl = document.getElementById('w-bio');
+    bioEl.textContent = w.bio || '';
+    bioEl.previousElementSibling.style.display = w.bio ? '' : 'none';
+    document.getElementById('w-interp').textContent = w.interpretation;
+
+    /* 토픽 배지 */
+    var topicEl = document.getElementById('wc-topic');
+    if(topicEl){ topicEl.textContent = w.topic || ''; topicEl.style.display = w.topic ? '' : 'none'; }
+
+    /* 날짜 */
+    var dateEl = document.getElementById('wc-date');
+    if(dateEl){ var d=new Date(); dateEl.textContent = d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate(); }
+
+    /* 배경 그라데이션 */
+    var bg = document.getElementById('wc-bg');
+    if(bg){ bg.style.background = TOPIC_THEME[w.topic] || DEFAULT_THEME; }
+  }
+
+  function loadWisdom() {
+    // 날짜 인덱스로 즉시 표시 (30개 순환, 매일 바뀜)
+    renderWisdom(FALLBACK[getDayIndex(FALLBACK)]);
+    // Firebase에 오늘 날짜로 등록된 커스텀 명언이 있으면 덮어쓰기
+    try {
+      var d=new Date();
+      var todayKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+      firebase.database().ref('wisdoms/'+todayKey).once('value')
+        .then(function(snap){ if(snap.val()) renderWisdom(snap.val()); })
+        .catch(function(){});
+    } catch(e) {}
+  }
+
+  /* ── 공유 포인트 (일 최대 3회 × 20P) ── */
+  function _awardSharePoint() {
+    try {
+      var today = (function(){ var d=new Date(); return d.getFullYear()+'-'
+        +String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); })();
+      var sk = 'share_cnt_' + today.replace(/-/g,'');
+      var cnt = parseInt(localStorage.getItem(sk) || '0');
+      if (cnt >= 3) return;
+      cnt++;
+      localStorage.setItem(sk, cnt);
+      var grand = parseInt(localStorage.getItem('pts_total') || '0') + 20;
+      localStorage.setItem('pts_total', grand);
+      var ptEl = document.getElementById('nav-pts-num');
+      if (ptEl) ptEl.textContent = grand.toLocaleString();
+      /* 토스트 */
+      var t = document.createElement('div');
+      t.textContent = '+20P 공유 포인트!';
+      t.style.cssText =
+        'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:9999;' +
+        'background:linear-gradient(135deg,#FFD54F,#FFCA28);color:#4E342E;' +
+        'font-size:16px;font-weight:800;padding:12px 28px;border-radius:50px;' +
+        'box-shadow:0 6px 22px rgba(255,213,79,.5);white-space:nowrap;' +
+        'animation:ptRise .95s forwards;pointer-events:none';
+      document.body.appendChild(t);
+      setTimeout(function(){ t.remove(); }, 1000);
+    } catch(e) {}
+  }
+  /* ptRise 키프레임 (없으면 추가) */
+  if (!document.getElementById('pt-rise-kf')) {
+    var st = document.createElement('style');
+    st.id = 'pt-rise-kf';
+    st.textContent = '@keyframes ptRise{0%{opacity:0;transform:translateX(-50%) translateY(0)}18%{opacity:1;transform:translateX(-50%) translateY(-22px)}72%{opacity:1;transform:translateX(-50%) translateY(-22px)}100%{opacity:0;transform:translateX(-50%) translateY(-46px)}}';
+    document.head.appendChild(st);
+  }
+
+  window.shareWisdom = function(type) {
+    var quote   = document.getElementById('w-quote').textContent;
+    var author  = document.getElementById('w-author').textContent;
+    var bio     = document.getElementById('w-bio').textContent;
+    var interp  = document.getElementById('w-interp').textContent;
+    var shareText = quote + '\n— ' + author + (bio ? ' (' + bio + ')' : '') +
+                    '\n\n' + interp + '\n\n다시봄에서 매일 새로운 지혜를 만나보세요.\nhttps://dasibomlife.com';
+
+    if (type === 'web') {
+      if (navigator.share) {
+        navigator.share({ title: '오늘의 지혜 — 다시봄', text: shareText, url: 'https://dasibomlife.com' })
+          .then(function(){ _awardSharePoint(); })
+          .catch(function(){});
+      } else {
+        navigator.clipboard
+          ? navigator.clipboard.writeText(shareText).then(function(){ alert('클립보드에 복사되었습니다!'); _awardSharePoint(); })
+          : alert(shareText);
+      }
+    } else if (type === 'kakao') {
+      try {
+        Kakao.Share.sendDefault({
+          objectType: 'text',
+          text: shareText,
+          link: { mobileWebUrl: 'https://dasibomlife.com', webUrl: 'https://dasibomlife.com' }
+        });
+        _awardSharePoint();
+      } catch(e) {
+        alert('카카오 공유는 카카오 앱이 설치된 기기에서 이용하실 수 있습니다.');
+      }
+    } else if (type === 'email') {
+      location.href = 'mailto:?subject=' + encodeURIComponent('오늘의 지혜 — 다시봄') +
+                      '&body=' + encodeURIComponent(shareText);
+      _awardSharePoint();
+    } else if (type === 'image') {
+      _saveImage();
+      _awardSharePoint();
+    }
+  };
+
+  function _saveImage() {
+    if (typeof html2canvas !== 'undefined') { _doCapture(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://html2canvas.hertzen.com/dist/html2canvas.min.js';
+    s.onload = _doCapture;
+    s.onerror = function() { alert('이미지 저장 기능을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'); };
+    document.head.appendChild(s);
+  }
+
+  function _doCapture() {
+    var card = document.getElementById('wisdom-card');
+    html2canvas(card, { scale:2, backgroundColor:'#FFFDE7', useCORS:true, logging:false })
+      .then(function(canvas) {
+        var d = new Date();
+        var dateStr = d.getFullYear() + ('0'+(d.getMonth()+1)).slice(-2) + ('0'+d.getDate()).slice(-2);
+        var a = document.createElement('a');
+        a.download = '오늘의지혜_다시봄_' + dateStr + '.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+      })
+      .catch(function() { alert('이미지 저장 중 오류가 발생했습니다.'); });
+  }
+
+  // Firebase 로드 후 실행
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ loadWisdom(); loadNsPreview(); });
+  } else {
+    loadWisdom();
+    loadNsPreview();
+  }
+
+  /* ════════════════════════════════════
+   * 그때 그 시절 미리보기
+   * ════════════════════════════════════ */
+  var _nsItems = [];
+  var _nsShowYest = false;
+
+  function _nsDayIndex(items) {
+    var d=new Date(), start=new Date(2025,0,1);
+    var idx=Math.floor((d-start)/86400000);
+    return((idx%items.length)+items.length)%items.length;
+  }
+  function _nsEsc(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function _nsMiniImg(src, alt) {
+    if (!src) return '';
+    return '<div class="ns-mini-img"><img src="'+_nsEsc(src)+'" alt="'+_nsEsc(alt)+'" loading="lazy" onload="this.classList.add(\'loaded\')" onerror="this.closest(\'.ns-mini-img\').style.display=\'none\'"></div>';
+  }
+
+  function buildNsMini(item) {
+    var d = document.createElement('div');
+    d.className = 'ns-mini';
+    d.innerHTML =
+      '<div class="ns-mini-pair">' +
+        '<div class="ns-past-h">' +
+          _nsMiniImg(item.past_img, '과거 이미지') +
+          '<span class="ns-era-badge">📜 과거</span>' +
+          '<div class="ns-mini-topic">'+_nsEsc(item.topic)+'</div>' +
+          '<p class="ns-mini-desc">'+_nsEsc(item.past_desc)+'</p>' +
+        '</div>' +
+        '<div class="ns-mid-col">' +
+          '<div class="ns-mid-icon">'+_nsEsc(item.icon||'📌')+'</div>' +
+        '</div>' +
+        '<div class="ns-present-h">' +
+          _nsMiniImg(item.present_img, '현재 이미지') +
+          '<span class="ns-era-badge">✨ 현재</span>' +
+          '<div class="ns-mini-topic">'+_nsEsc(item.topic)+'</div>' +
+          '<p class="ns-mini-desc">'+_nsEsc(item.present_desc)+'</p>' +
+        '</div>' +
+      '</div>' +
+      (item.comparison_text
+        ? '<div class="ns-cmp"><span class="ns-cmp-icon">💬</span>'+_nsEsc(item.comparison_text)+'</div>'
+        : '');
+    return d;
+  }
+
+  async function loadNsPreview() {
+    try {
+      var r = await fetch('/nostalgia_data.json');
+      if (!r.ok) throw new Error(r.status);
+      var d = await r.json();
+      _nsItems = d.items || [];
+      if (!_nsItems.length) return;
+      var todayWrap = document.getElementById('ns-today-wrap');
+      if (todayWrap) {
+        todayWrap.innerHTML = '';
+        todayWrap.appendChild(buildNsMini(_nsItems[_nsDayIndex(_nsItems)]));
+      }
+    } catch(e) {
+      var w = document.getElementById('ns-today-wrap');
+      if (w) w.innerHTML = '';
+    }
+  }
+
+  window.toggleYesterday = function() {
+    if (!_nsItems.length) return;
+    var btn   = document.getElementById('ns-ybtn');
+    var wrap  = document.getElementById('ns-yest-wrap');
+    if (!wrap) return;
+    _nsShowYest = !_nsShowYest;
+    btn.classList.toggle('on', _nsShowYest);
+    btn.textContent = _nsShowYest ? '오늘 내용 보기' : '어제 내용 보기';
+    wrap.style.display = _nsShowYest ? '' : 'none';
+    if (_nsShowYest && !wrap.children.length) {
+      var yIdx = (_nsDayIndex(_nsItems) - 1 + _nsItems.length) % _nsItems.length;
+      wrap.appendChild(buildNsMini(_nsItems[yIdx]));
+    }
+  };
+
+})();
+</script>
+
+<!-- 오늘의 게임 3선 -->
+<script>
+(function(){
+  var ALL_GAMES=[
+    {name:'기억의 짝꿍',   cat:'기억력',  icon:'🧩'},
+    {name:'위치 기억하기',  cat:'기억력',  icon:'🧩'},
+    {name:'다른 그림 찾기', cat:'주의력',  icon:'👁'},
+    {name:'같은 것 찾기',   cat:'주의력',  icon:'👁'},
+    {name:'숫자 순서 터치', cat:'작업기억',icon:'🔢'},
+    {name:'거꾸로 숫자',    cat:'작업기억',icon:'🔢'},
+    {name:'단어 빙고',      cat:'언어력',  icon:'💬'},
+    {name:'글자 조합',      cat:'언어력',  icon:'💬'},
+    {name:'좌우 분류',      cat:'실행력',  icon:'⚡'},
+    {name:'타이밍 맞추기',  cat:'실행력',  icon:'⚡'},
+    {name:'암산 챌린지',    cat:'계산력',  icon:'🧮'},
+    {name:'숫자 패턴',      cat:'계산력',  icon:'🧮'}
+  ];
+  var d=new Date(),start=new Date(2025,0,1);
+  var di=Math.floor((d-start)/86400000);
+  var games=[ALL_GAMES[di%12],ALL_GAMES[(di+4)%12],ALL_GAMES[(di+8)%12]];
+  var el=document.getElementById('gp-cards');
+  if(!el)return;
+  el.innerHTML=games.map(function(g){
+    return '<a class="gp-card" href="/game">'+
+      '<div class="gp-cat-icon">'+g.icon+'</div>'+
+      '<div class="gp-cat-badge">'+g.cat+'</div>'+
+      '<div class="gp-name">'+g.name+'</div>'+
+      '<div class="gp-play">지금 플레이 →</div>'+
+    '</a>';
+  }).join('');
+})();
+</script>
+
+<!-- Cinematic Hero Particles -->
+<script>
+(function(){
+  var canvas=document.getElementById('chCanvas');
+  if(!canvas)return;
+  var ctx=canvas.getContext('2d');
+  var pts=[];
+  var W,H;
+
+  function resize(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+  }
+  window.addEventListener('resize',resize);
+  resize();
+
+  function rnd(a,b){return a+Math.random()*(b-a);}
+
+  for(var i=0;i<55;i++){
+    pts.push({
+      x:rnd(0,1),y:rnd(0,1),
+      r:rnd(1.2,3.4),
+      a:rnd(0,Math.PI*2),
+      sp:rnd(0.00012,0.00034),
+      opa:rnd(0.08,0.38),
+      pulse:rnd(0,Math.PI*2),
+      pulseS:rnd(0.012,0.028)
+    });
+  }
+
+  var raf;
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var now=performance.now();
+    pts.forEach(function(p){
+      p.a+=p.sp;
+      p.pulse+=p.pulseS;
+      var ox=Math.cos(p.a)*0.07;
+      var oy=Math.sin(p.a*1.3)*0.05;
+      var px=(p.x+ox)*W;
+      var py=(p.y+oy)*H;
+      var alpha=p.opa*(0.7+0.3*Math.sin(p.pulse));
+      var grad=ctx.createRadialGradient(px,py,0,px,py,p.r*3.5);
+      grad.addColorStop(0,'rgba(201,169,97,'+alpha+')');
+      grad.addColorStop(1,'rgba(201,169,97,0)');
+      ctx.beginPath();
+      ctx.arc(px,py,p.r*3.5,0,Math.PI*2);
+      ctx.fillStyle=grad;
+      ctx.fill();
+    });
+    raf=requestAnimationFrame(draw);
+  }
+  draw();
+
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){cancelAnimationFrame(raf);}
+    else{draw();}
+  });
+})();
+</script>
+
+<!-- Service Worker -->
+<script>
+  if('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+  }
+</script>
+
+<script>
+/* ════════ 봄이 온보딩 제어 ════════
+   - window.startBomOnboarding() : 인트로 종료 후 호출 (신규 방문자)
+   - 호칭·출생년도를 localStorage에 저장 (홈·자서전이 읽음)
+     · dasibom_honorific : "할아버지" | "할머니"
+     · dasibom_birthyear : 예) "1960"
+     · dasibom_onboarded : "1" (완료 표시)
+   - 로그인 사용자는 이후 firebase 동기화 가능(다음 단계)
+   ════════════════════════════════════════════════ */
+(function(){
+  var ob = document.getElementById('dasibom-onboarding');
+  if(!ob) return;
+  var screens = ['dob-s1','dob-s2','dob-s3','dob-s4'];
+  var state = { honorific:null, year:1960 };
+  var YEAR_MIN=1930, YEAR_MAX=2005;
+
+  function showScreen(id){
+    screens.forEach(function(s){
+      var el=document.getElementById(s);
+      if(s===id){ el.classList.add('show'); } else { el.classList.remove('show'); }
+    });
+  }
+  function applyHonorific(){
+    var h = state.honorific || '어르신';
+    var c1=document.getElementById('dob-call1'), c2=document.getElementById('dob-call2');
+    if(c1) c1.textContent=h;
+    if(c2) c2.textContent=h;
+  }
+
+  // 시작 함수 (인트로 onIntroComplete에서 호출)
+  window.startBomOnboarding = function(){
+    // 이미 온보딩 마친 사람은 건너뛰고 홈
+    if(localStorage.getItem('dasibom_onboarded')){
+      finishToHome(true); return;
+    }
+    ob.classList.add('dob-on');
+    document.documentElement.style.overflow='hidden';
+    document.body.style.overflow='hidden';
+    setTimeout(function(){ showScreen('dob-s1'); }, 60);
+  };
+
+  function finishToHome(skipSave){
+    if(!skipSave){
+      localStorage.setItem('dasibom_honorific', state.honorific || '어르신');
+      localStorage.setItem('dasibom_birthyear', String(state.year));
+      localStorage.setItem('dasibom_onboarded', '1');
+    }
+    ob.classList.add('dob-fade');
+    ob.style.transition='opacity .6s ease';
+    ob.style.opacity='0';
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+    setTimeout(function(){
+      ob.classList.remove('dob-on');
+      ob.parentNode && ob.parentNode.removeChild(ob);
+      /* === [다음 단계] 홈에서 호칭 반영 / 봄이 챗봇 등장 연결 지점 === */
+    }, 620);
+  }
+
+  // 화면 1 → 2
+  document.getElementById('dob-go1').addEventListener('click', function(){ showScreen('dob-s2'); });
+
+  // 화면 2: 호칭 선택 → 3
+  Array.prototype.forEach.call(ob.querySelectorAll('.dob-choice'), function(btn){
+    btn.addEventListener('click', function(){
+      state.honorific = btn.getAttribute('data-h');
+      ob.querySelectorAll('.dob-choice').forEach(function(b){ b.classList.remove('sel'); });
+      btn.classList.add('sel');
+      applyHonorific();
+      setTimeout(function(){ showScreen('dob-s3'); }, 260);
+    });
+  });
+
+  // 화면 3: 출생년도 +/−
+  var yval=document.getElementById('dob-yval');
+  function renderYear(){ yval.textContent=state.year; }
+  document.getElementById('dob-yminus').addEventListener('click', function(){
+    if(state.year>YEAR_MIN){ state.year--; renderYear(); }
+  });
+  document.getElementById('dob-yplus').addEventListener('click', function(){
+    if(state.year<YEAR_MAX){ state.year++; renderYear(); }
+  });
+  document.getElementById('dob-go3').addEventListener('click', function(){
+    applyHonorific(); showScreen('dob-s4');
+  });
+
+  // 화면 4: 완료
+  document.getElementById('dob-finish').addEventListener('click', function(){ finishToHome(false); });
+})();
+</script>
+
+<script>
+/* ════════ 홈 호칭 인사 (온보딩 결과 반영) ════════
+   저장된 dasibom_honorific 읽어 히어로 라벨을 개인 인사로
+   (Headspace "Good Evening, Alex" 패턴) ════════ */
+(function(){
+  try{
+    var h = localStorage.getItem('dasibom_honorific');
+    if(!h) return; // 온보딩 안 한 사람은 기존 라벨 유지
+    var el = document.getElementById('ch-greet');
+    if(!el) return;
+    var hr = new Date().getHours();
+    var part = (hr<11?'좋은 아침이에요':hr<17?'좋은 오후예요':hr<21?'좋은 저녁이에요':'편안한 밤이에요');
+    el.textContent = h + ', ' + part;
+  }catch(e){}
+})();
+</script>
+
+<script>
+/* ════════ 재방문자 v1 벚꽃 인트로 제어 ════════
+   - window.startReturnIntro() : 재방문자에게 호출
+   - 12초 벚꽃 연출 후 자동으로 홈
+   ════════════════════════════════════════════ */
+(function(){
+  var rEl=document.getElementById('dasibom-intro-return');
+  if(!rEl) return;
+
+  window.startReturnIntro = function(){
+    rEl.style.display='block';
+    document.documentElement.style.overflow='hidden';
+    document.body.style.overflow='hidden';
+    /* 안전장치: 무슨 일이 생겨도 14초 뒤엔 무조건 홈으로(정상 종료는 12초). */
+    setTimeout(function(){ endReturn(); }, 14000);
+    var s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
+    s.onload=runReturn;
+    s.onerror=function(){ endReturn(); };
+    document.head.appendChild(s);
+  };
+
+  function endReturn(){
+    rEl.classList.add('dr-hide');
+    document.documentElement.style.overflow='';
+    document.body.style.overflow='';
+    setTimeout(function(){ rEl.parentNode && rEl.parentNode.removeChild(rEl); }, 850);
+  }
+
+  function runReturn(){
+    var CFG={TOTAL:620,SMIN:.10,SMAX:.58,FMIN:.004,FMAX:.019,WIND:.0009,SWAY:.014,SX:20,SY:17};
+    function makeTex(l,m,v,hi){
+      var S=160,cv=document.createElement('canvas'); cv.width=cv.height=S;
+      var c=cv.getContext('2d'),cx=S/2;
+      var g=c.createRadialGradient(cx-S*.06,S*.34,1,cx,S*.50,S*.52);
+      g.addColorStop(0,l); g.addColorStop(.5,m); g.addColorStop(.85,m); g.addColorStop(1,'rgba(255,255,255,0)');
+      function petalPath(){ c.beginPath(); c.moveTo(cx,S*.06);
+        c.bezierCurveTo(cx+S*.40,S*.12,cx+S*.46,S*.50,cx+S*.10,S*.92);
+        c.quadraticCurveTo(cx,S*.86,cx-S*.10,S*.92);
+        c.bezierCurveTo(cx-S*.46,S*.50,cx-S*.40,S*.12,cx,S*.06); c.closePath(); }
+      c.clearRect(0,0,S,S); petalPath(); c.fillStyle=g; c.fill();
+      var hg=c.createRadialGradient(cx-S*.05,S*.30,1,cx-S*.05,S*.30,S*.22);
+      hg.addColorStop(0,hi); hg.addColorStop(1,'rgba(255,255,255,0)');
+      petalPath(); c.fillStyle=hg; c.fill();
+      c.beginPath(); c.moveTo(cx,S*.12); c.quadraticCurveTo(cx+1,S*.5,cx+S*.02,S*.86);
+      c.strokeStyle=v; c.lineWidth=1; c.globalAlpha=.18; c.stroke(); c.globalAlpha=1;
+      var t=new THREE.CanvasTexture(cv); t.minFilter=THREE.LinearFilter; return t;
+    }
+    var TX=[
+      makeTex('rgba(255,212,224,.97)','rgba(255,150,178,.90)','#bf5272','rgba(255,255,255,.9)'),
+      makeTex('rgba(255,236,242,.96)','rgba(255,190,208,.86)','#d17a8a','rgba(255,255,255,.85)'),
+      makeTex('rgba(255,170,194,.95)','rgba(240,114,148,.88)','#b03a62','rgba(255,240,245,.8)'),
+      makeTex('rgba(255,249,253,.94)','rgba(255,220,230,.80)','#c27a8a','rgba(255,255,255,.95)'),
+      makeTex('rgba(255,224,234,.95)','rgba(255,178,198,.88)','#c25a72','rgba(255,255,255,.88)')
+    ];
+    var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+    renderer.setSize(innerWidth,innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+    renderer.setClearColor(0,0);
+    rEl.appendChild(renderer.domElement);  // ★ 컨테이너에 부착
+    var scene=new THREE.Scene(); scene.fog=new THREE.Fog(0xdfeef5,14,34);
+    var cam=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.05,150);
+    function rnd(a,b){return a+Math.random()*(b-a);}
+    var petals=[];
+    for(var i=0;i<CFG.TOTAL;i++){
+      var front=(i<CFG.TOTAL*0.25);
+      var sz=front?rnd(.34,CFG.SMAX):rnd(CFG.SMIN,.40);
+      var geo=new THREE.PlaneBufferGeometry(sz,sz*1.28);
+      var mat=new THREE.MeshBasicMaterial({map:TX[Math.floor(Math.random()*TX.length)],transparent:true,
+        opacity:front?rnd(.82,.98):rnd(.5,.85),side:THREE.DoubleSide,alphaTest:.01,depthWrite:false});
+      var m=new THREE.Mesh(geo,mat);
+      var zMin=front?2.5:-14,zMax=front?6:-0.5;
+      m.position.set(rnd(-CFG.SX,CFG.SX),rnd(-CFG.SY*.3,CFG.SY),rnd(zMin,zMax));
+      m.rotation.set(rnd(0,Math.PI*2),rnd(0,Math.PI*2),rnd(0,Math.PI*2));
+      m.userData={fs:rnd(CFG.FMIN,CFG.FMAX),ss:rnd(.28,1.05),so:rnd(0,Math.PI*2),
+        rx:rnd(-.013,.013),ry:rnd(-.022,.022),rz:rnd(-.010,.010),wp:rnd(0,Math.PI*2),zMin:zMin,zMax:zMax};
+      scene.add(m); petals.push(m);
+    }
+    var bokehGeo=new THREE.BufferGeometry(),bpos=[];
+    for(var i=0;i<60;i++){ bpos.push(rnd(-18,18),rnd(-14,16),rnd(-8,5)); }
+    bokehGeo.setAttribute('position',new THREE.Float32BufferAttribute(bpos,3));
+    var bcv=document.createElement('canvas'); bcv.width=bcv.height=64;
+    var bc=bcv.getContext('2d');
+    var bg=bc.createRadialGradient(32,32,0,32,32,32);
+    bg.addColorStop(0,'rgba(255,250,235,0.9)'); bg.addColorStop(0.3,'rgba(255,245,220,0.4)'); bg.addColorStop(1,'rgba(255,245,220,0)');
+    bc.fillStyle=bg; bc.fillRect(0,0,64,64);
+    var bokeh=new THREE.Points(bokehGeo,new THREE.PointsMaterial({map:new THREE.CanvasTexture(bcv),size:1.1,transparent:true,opacity:0.55,depthWrite:false,blending:THREE.AdditiveBlending}));
+    scene.add(bokeh);
+    var csP=new THREE.Vector3(1.8,3.5,13),ceP=new THREE.Vector3(-1.0,.6,8.5),lsP=new THREE.Vector3(0,1.0,0),leP=new THREE.Vector3(.3,-.2,0);
+    cam.position.copy(csP);
+    var raysEl=document.getElementById('dr-rays');
+    [-58,-34,-17,-4,9,23,41,63].forEach(function(a,i){
+      var dv=document.createElement('div'); dv.className='dr-ray';
+      dv.style.setProperty('--ra',a+'deg'); dv.style.setProperty('--rb',(a+5)+'deg');
+      dv.style.marginLeft=rnd(-200,200)+'px'; dv.style.width=rnd(1,5)+'px';
+      dv.style.animationDelay=(i*.5)+'s'; dv.style.animationDuration=(5+i*.4)+'s';
+      raysEl.appendChild(dv);
+    });
+    setTimeout(function(){var e=document.getElementById('dr-sub'); if(e)e.classList.add('dr-show');},3000);
+    setTimeout(function(){var e=document.getElementById('dr-main'); if(e)e.classList.add('dr-show');},4200);
+    setTimeout(function(){var e=document.getElementById('dr-tag'); if(e)e.classList.add('dr-show');},6000);
+    var clock=new THREE.Clock(),DUR=12,ended=false;
+    function eio(t){return t<.5?2*t*t:-1+(4-2*t)*t;}
+    var lkV=new THREE.Vector3();
+    (function loop(){
+      if(ended) return;
+      requestAnimationFrame(loop);
+      var el=clock.getElapsedTime(),et=eio(Math.min(el/DUR,1));
+      cam.position.lerpVectors(csP,ceP,et); lkV.lerpVectors(lsP,leP,et); cam.lookAt(lkV);
+      cam.position.y+=Math.sin(el*.55)*.05; cam.position.x+=Math.sin(el*1.15)*.006;
+      bokeh.rotation.y=el*0.02; bokeh.position.y=Math.sin(el*0.3)*0.5;
+      var wind=Math.sin(el*.42)*CFG.WIND;
+      for(var i=0;i<petals.length;i++){
+        var p=petals[i],d=p.userData;
+        p.position.y-=d.fs; p.position.x+=wind+Math.sin(el*d.ss+d.so)*CFG.SWAY; p.position.z+=Math.cos(el*d.ss*.55+d.wp)*.003;
+        p.rotation.x+=d.rx;p.rotation.y+=d.ry;p.rotation.z+=d.rz;
+        if(p.position.y<-CFG.SY-2){ p.position.y=CFG.SY+rnd(0,4); p.position.x=rnd(-CFG.SX,CFG.SX); p.position.z=rnd(d.zMin,d.zMax); }
+      }
+      renderer.render(scene,cam);
+      // 12초 후 종료 → 홈
+      if(el>DUR && !ended){ ended=true; endReturn(); }
+    })();
+    window.addEventListener('resize',function(){ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
+  }
+})();
+</script>
+
+</body>
+</html>

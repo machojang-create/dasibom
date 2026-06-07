@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="다시봄 서재 — 회원들이 직접 쓴 자서전을 열람하세요">
+<meta property="og:title" content="다시봄 서재 — 다시봄">
+<meta property="og:description" content="이웃들의 따뜻한 삶의 이야기가 책처럼 펼쳐집니다">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#795548">
+<title>다시봄 서재 — 다시봄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Nanum+Square:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* ═══ RESET ═══ */
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+html,body{width:100%;overflow-x:hidden}
+body{
+  font-family:'Nanum Square','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  background:#FFF9F0;color:#424242;
+  font-size:var(--fs,18px);transition:font-size .2s;
+}
+:root{--fs:18px}
+
+/* ═══ GNB ═══ */
+#gnb{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;
+  background:rgba(255,249,240,.96);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 1px 0 rgba(121,85,72,.1);
+}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
+.logo-text{font-size:20px;font-weight:800;color:#795548;letter-spacing:-.5px}
+.back-btn{
+  display:flex;align-items:center;gap:6px;
+  background:none;border:1.5px solid rgba(121,85,72,.25);color:#795548;
+  font-family:inherit;font-size:14px;font-weight:700;
+  padding:9px 18px;border-radius:50px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.back-btn:hover{background:#FFF3E0;border-color:#795548}
+
+/* ═══ HERO ═══ */
+.hero{
+  padding:100px 24px 52px;
+  display:flex;flex-direction:column;align-items:center;
+  text-align:center;
+  background:linear-gradient(160deg,#3E2723 0%,#5D4037 40%,#795548 75%,#A1887F 100%);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.06;
+}
+.hero::after{
+  content:'';position:absolute;left:0;right:0;bottom:0;height:6px;
+  background:repeating-linear-gradient(90deg,#FFD54F 0,#FFD54F 30px,transparent 30px,transparent 40px);
+  opacity:.4;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,213,79,.15);border:1px solid rgba(255,213,79,.35);
+  color:#FFD54F;font-size:13px;font-weight:700;letter-spacing:2px;
+  padding:7px 20px;border-radius:50px;margin-bottom:22px;
+  position:relative;z-index:1;
+}
+.hero h1{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:clamp(28px,7vw,52px);font-weight:800;color:#fff;
+  letter-spacing:-.5px;line-height:1.25;margin-bottom:14px;
+  text-shadow:0 3px 24px rgba(0,0,0,.35);
+  position:relative;z-index:1;
+}
+.hero p{
+  font-size:clamp(14px,3.5vw,17px);color:rgba(255,255,255,.72);
+  max-width:420px;line-height:1.8;margin-bottom:32px;
+  position:relative;z-index:1;
+}
+.hero-count{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.85);font-size:14px;font-weight:700;
+  padding:8px 20px;border-radius:50px;
+  position:relative;z-index:1;
+}
+.hero-count strong{color:#FFD54F;font-size:18px;font-weight:800}
+
+/* ═══ TOOLBAR ═══ */
+.toolbar{
+  position:sticky;top:57px;z-index:200;
+  background:rgba(255,249,240,.97);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(121,85,72,.1);
+  padding:10px 20px;
+  display:flex;align-items:center;gap:10px;
+}
+.search-wrap{
+  flex:1;display:flex;align-items:center;
+  background:#fff;border:1.5px solid rgba(121,85,72,.18);
+  border-radius:50px;padding:0 16px;
+  transition:border-color .2s;
+}
+.search-wrap:focus-within{border-color:#C8A882}
+.search-icon{font-size:16px;color:#BCAAA4;flex-shrink:0}
+.search-input{
+  flex:1;border:none;background:none;outline:none;
+  font-family:inherit;font-size:15px;color:#424242;
+  padding:10px 10px;
+}
+.search-input::placeholder{color:#D4B896}
+.sort-btn{
+  flex-shrink:0;
+  background:none;border:1.5px solid rgba(121,85,72,.2);
+  color:#795548;font-family:inherit;font-size:13px;font-weight:700;
+  padding:10px 16px;border-radius:50px;cursor:pointer;
+  transition:all .2s;white-space:nowrap;
+}
+.sort-btn:hover{background:#FFF3E0;border-color:#C8A882}
+.sort-btn.active{
+  background:linear-gradient(135deg,#FFD54F,#FFCA28);
+  border-color:transparent;color:#4E342E;
+  box-shadow:0 2px 10px rgba(255,213,79,.35);
+}
+
+/* ═══ MEMOIR GRID ═══ */
+.lib-wrap{
+  max-width:1100px;margin:0 auto;
+  padding:36px 20px 100px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+  gap:24px;
+}
+
+/* ── Card ── */
+.memoir-card{
+  background:#fff;border-radius:24px;
+  overflow:hidden;cursor:pointer;
+  box-shadow:0 4px 22px rgba(0,0,0,.07);
+  transition:transform .28s,box-shadow .28s;
+  border:1px solid rgba(200,168,130,.12);
+  opacity:0;transform:translateY(22px);
+  transition:opacity .45s ease,transform .45s ease,box-shadow .28s;
+}
+.memoir-card.show{opacity:1;transform:translateY(0)}
+.memoir-card:hover{box-shadow:0 10px 36px rgba(0,0,0,.13);}
+.memoir-card:active{transform:scale(.98)}
+
+.card-cover{
+  height:130px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.cover-emoji{
+  font-size:52px;
+  filter:drop-shadow(0 3px 8px rgba(0,0,0,.15));
+  position:relative;z-index:1;
+}
+.cover-initial{
+  position:absolute;bottom:8px;right:12px;
+  font-family:'Nanum Myeongjo',serif;
+  font-size:56px;font-weight:800;
+  color:rgba(255,255,255,.15);line-height:1;
+  pointer-events:none;
+}
+
+.card-body{padding:20px 22px 24px}
+.card-author{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:800;color:#A1887F;
+  letter-spacing:.5px;margin-bottom:8px;
+}
+.card-author .author-dot{
+  width:6px;height:6px;border-radius:50%;background:#C8A882;
+}
+.card-title{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:19px;font-weight:800;color:#3E2723;
+  margin-bottom:10px;line-height:1.4;
+}
+.card-summary{
+  font-size:13px;color:#757575;line-height:1.8;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
+  overflow:hidden;
+}
+.card-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:16px;padding-top:14px;
+  border-top:1px solid rgba(200,168,130,.15);
+}
+.card-date{font-size:11px;color:#D4B896;font-weight:700;letter-spacing:.5px}
+.card-read-btn{
+  display:flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:800;color:#795548;
+  background:#FFF3E0;padding:5px 12px;border-radius:20px;
+}
+
+/* ═══ LOADING / EMPTY ═══ */
+.state-full{
+  grid-column:1/-1;
+  text-align:center;padding:80px 20px;color:#BCAAA4;
+}
+.state-full .s-icon{font-size:56px;display:block;margin-bottom:16px}
+.state-full p{font-size:16px;line-height:1.7}
+.state-full .s-sub{font-size:13px;margin-top:8px;color:#D4B896}
+
+/* ═══ READER OVERLAY ═══ */
+.reader-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(62,39,35,.55);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:60px 16px 20px;
+  animation:rdFadeIn .25s;
+  overflow-y:auto;
+}
+.reader-overlay.hidden{display:none}
+@keyframes rdFadeIn{from{opacity:0}to{opacity:1}}
+
+.reader-box{
+  background:#FEFCF8;border-radius:28px;
+  width:100%;max-width:680px;
+  box-shadow:0 24px 64px rgba(62,39,35,.25);
+  animation:rdSlideUp .3s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+@keyframes rdSlideUp{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.reader-header{
+  padding:28px 28px 20px;
+  border-bottom:1px solid rgba(200,168,130,.18);
+  position:relative;
+}
+.reader-close{
+  position:absolute;top:22px;right:22px;
+  width:40px;height:40px;border-radius:50%;border:none;
+  background:rgba(121,85,72,.1);color:#795548;
+  font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
+}
+.reader-close:hover{background:rgba(121,85,72,.18)}
+.reader-author-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-weight:800;color:#A1887F;letter-spacing:.5px;
+  margin-bottom:10px;
+}
+.reader-title{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:clamp(22px,5vw,30px);font-weight:800;color:#3E2723;
+  line-height:1.3;padding-right:52px;
+}
+.reader-meta{
+  margin-top:12px;font-size:12px;color:#BCAAA4;font-weight:700;
+}
+
+.reader-body{
+  padding:28px 28px 36px;
+  max-height:65vh;overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.reader-body::-webkit-scrollbar{width:5px}
+.reader-body::-webkit-scrollbar-track{background:transparent}
+.reader-body::-webkit-scrollbar-thumb{background:rgba(200,168,130,.4);border-radius:3px}
+
+.reader-chapter{margin-bottom:32px}
+.chapter-title{
+  font-family:'Nanum Myeongjo',serif;
+  font-size:18px;font-weight:800;color:#4E342E;
+  margin-bottom:14px;padding-bottom:10px;
+  border-bottom:2px solid rgba(200,168,130,.25);
+}
+.chapter-content,.reader-plain{
+  font-size:16px;color:#424242;line-height:2;
+  white-space:pre-line;
+}
+.reader-empty-ch{font-size:14px;color:#BCAAA4;text-align:center;padding:40px 0}
+
+/* ═══ FONT CONTROL ═══ */
+.font-ctrl{
+  position:fixed;bottom:28px;right:20px;z-index:500;
+  display:flex;flex-direction:column;gap:6px;
+}
+.fc-btn{
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid rgba(121,85,72,.22);
+  background:#fff;color:#795548;
+  font-family:inherit;font-weight:800;font-size:15px;
+  cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.1);
+  transition:all .2s;
+}
+.fc-btn:hover{background:#FFF3E0;border-color:#C8A882;transform:scale(1.08)}
+.fc-btn:active{transform:scale(.95)}
+.fc-reset{font-size:11px;letter-spacing:.5px}
+
+/* ═══ SCROLL TO TOP ═══ */
+.to-top{
+  position:fixed;bottom:28px;left:20px;z-index:500;
+  width:46px;height:46px;border-radius:50%;
+  border:1.5px solid rgba(121,85,72,.22);
+  background:#fff;color:#795548;font-size:20px;cursor:pointer;
+  box-shadow:0 4px 14px rgba(0,0,0,.1);
+  transition:all .2s,opacity .3s;
+  opacity:0;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.to-top.show{opacity:1;pointer-events:auto}
+.to-top:hover{background:#FFF3E0;border-color:#C8A882}
+
+/* ═══ MOBILE ═══ */
+@media(max-width:600px){
+  #gnb{padding:12px 16px}
+  .logo-text{font-size:18px}
+  .back-btn{padding:8px 14px;font-size:13px}
+  .hero{padding:90px 16px 44px}
+  .lib-wrap{padding:24px 14px 80px;grid-template-columns:1fr;gap:16px}
+  .reader-overlay{padding:48px 10px 16px}
+  .reader-header,.reader-body{padding:20px}
+  .reader-body{max-height:70vh}
+}
+</style>
+</head>
+<body>
+
+<!-- GNB -->
+<header id="gnb">
+  <a href="/" class="logo">
+    <svg width="30" height="30" viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="17" fill="#FFD54F"/>
+      <ellipse cx="18" cy="26" rx="6" ry="2.5" fill="rgba(0,0,0,.08)"/>
+      <path d="M18 28 C18 28 18 18 18 18" stroke="#2E7D32" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M18 22 C18 22 12 19 10 13 C14 13 18 18 18 18" fill="#66BB6A"/>
+      <path d="M18 20 C18 20 24 17 26 11 C22 11 18 16 18 18" fill="#81C784"/>
+      <circle cx="10" cy="13" r="2" fill="#FFD54F" opacity=".6"/>
+      <circle cx="26" cy="11" r="2" fill="#FFD54F" opacity=".6"/>
+    </svg>
+    <div class="logo-text">다시봄</div>
+  </a>
+  <button class="back-btn" onclick="history.back()">← 돌아가기</button>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">📚 &nbsp;다시봄 서재</div>
+  <h1>이웃의 이야기를<br>책처럼 읽어드립니다</h1>
+  <p>회원들이 직접 쓴 자서전을 만나보세요<br>따뜻한 삶의 흔적이 이곳에 모입니다</p>
+  <div class="hero-count">
+    총 <strong id="totalCount">—</strong> 편의 자서전이 있습니다
+  </div>
+</section>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="searchInput" type="text"
+      placeholder="제목 또는 저자명으로 검색" oninput="onSearch()">
+  </div>
+  <button class="sort-btn active" id="sortNew" onclick="setSort('new')">최신순</button>
+  <button class="sort-btn" id="sortAz" onclick="setSort('az')">가나다순</button>
+</div>
+
+<!-- MEMOIR GRID -->
+<div class="lib-wrap" id="libWrap">
+  <div class="state-full">
+    <span class="s-icon">📖</span>
+    <p>자서전을 불러오는 중입니다…</p>
+  </div>
+</div>
+
+<!-- READER OVERLAY -->
+<div class="reader-overlay hidden" id="readerOverlay" onclick="closeReader(event)">
+  <div class="reader-box" id="readerBox">
+    <div class="reader-header">
+      <button class="reader-close" onclick="closeReaderBtn()">✕</button>
+      <div class="reader-author-badge" id="rdAuthor"></div>
+      <div class="reader-title" id="rdTitle"></div>
+      <div class="reader-meta" id="rdMeta"></div>
+    </div>
+    <div class="reader-body" id="rdBody"></div>
+  </div>
+</div>
+
+<!-- FONT SIZE CONTROL -->
+<div class="font-ctrl">
+  <button class="fc-btn" onclick="changeFs(2)" title="글자 크게">A+</button>
+  <button class="fc-btn fc-reset" onclick="changeFs(0)" title="기본 크기">기본</button>
+  <button class="fc-btn" onclick="changeFs(-2)" title="글자 작게">A-</button>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button class="to-top" id="toTop" onclick="scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+
+<script>
+(function(){
+'use strict';
+
+/* ── Firebase config ── */
+const FB_CFG = {
+  apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+  authDomain:"mylife-650f0.firebaseapp.com",
+  projectId:"mylife-650f0",
+  storageBucket:"mylife-650f0.firebasestorage.app",
+  messagingSenderId:"512010655611",
+  appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+};
+
+/* ── State ── */
+let _db = null;
+let ALL_MEMOIRS  = [];  // full list from Firestore
+let DISP_MEMOIRS = [];  // filtered + sorted
+let _sort = 'new';
+let _query = '';
+let _fsStep = parseInt(localStorage.getItem('libFs') || '0');
+
+const COVER_COLORS = [
+  ['#8D6E63','#6D4C41'],['#7986CB','#5C6BC0'],['#66BB6A','#43A047'],
+  ['#EF5350','#E53935'],['#FF7043','#F4511E'],['#26C6DA','#00ACC1'],
+  ['#AB47BC','#8E24AA'],['#FFA726','#FB8C00'],['#78909C','#546E7A']
+];
+
+/* ── Boot ── */
+applyFs();
+loadFirebase();
+
+function loadFirebase(){
+  const srcs = [
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'
+  ];
+  let loaded = 0;
+  srcs.forEach(src => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = () => { if(++loaded === srcs.length) initFirebase(); };
+    s.onerror = () => { if(++loaded === srcs.length) showError('Firebase 로드 실패'); };
+    document.head.appendChild(s);
+  });
+}
+
+function initFirebase(){
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+    _db = firebase.firestore();
+    fetchMemoirs();
+  }catch(e){ showError('초기화 오류: '+e.message); }
+}
+
+/* ── Firestore fetch ── */
+async function fetchMemoirs(){
+  try{
+    const snap = await _db.collection('memoirs')
+      .where('isPublic','==',true)
+      .orderBy('createdAt','desc')
+      .limit(100)
+      .get();
+    ALL_MEMOIRS = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    document.getElementById('totalCount').textContent = ALL_MEMOIRS.length;
+    applyFilter();
+  }catch(e){
+    showError('자서전을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.');
+  }
+}
+
+/* ── Filter / Sort ── */
+function applyFilter(){
+  const q = _query.trim().toLowerCase();
+  DISP_MEMOIRS = ALL_MEMOIRS.filter(m => {
+    if(!q) return true;
+    return (m.title||'').toLowerCase().includes(q) ||
+           (m.authorName||'').toLowerCase().includes(q);
+  });
+  if(_sort === 'az'){
+    DISP_MEMOIRS.sort((a,b) => (a.title||'').localeCompare(b.title||'','ko'));
+  }
+  renderGrid();
+}
+
+window.onSearch = function(){
+  _query = document.getElementById('searchInput').value;
+  applyFilter();
+};
+
+window.setSort = function(mode){
+  _sort = mode;
+  document.getElementById('sortNew').classList.toggle('active', mode === 'new');
+  document.getElementById('sortAz').classList.toggle('active', mode === 'az');
+  applyFilter();
+};
+
+/* ── Render ── */
+function renderGrid(){
+  const wrap = document.getElementById('libWrap');
+  wrap.innerHTML = '';
+
+  if(!DISP_MEMOIRS.length){
+    wrap.innerHTML =
+      '<div class="state-full">' +
+        '<span class="s-icon">' + (_query ? '🔍' : '📗') + '</span>' +
+        '<p>' + (_query ? '검색 결과가 없습니다.' : '아직 공개된 자서전이 없습니다.') + '</p>' +
+        '<p class="s-sub">' + (_query ? '다른 키워드로 검색해 보세요.' : '첫 번째 저자가 되어보세요 :)') + '</p>' +
+      '</div>';
+    return;
+  }
+
+  DISP_MEMOIRS.forEach((m, idx) => {
+    const card = buildCard(m, idx);
+    wrap.appendChild(card);
+  });
+  setupObserver();
+}
+
+function buildCard(m, idx){
+  const el = document.createElement('div');
+  el.className = 'memoir-card';
+  el.onclick = () => openReader(m);
+
+  const ci = (m.coverColorIndex !== undefined ? m.coverColorIndex : idx) % COVER_COLORS.length;
+  const [c1, c2] = COVER_COLORS[ci];
+  const emoji = m.coverEmoji || '📖';
+  const initial = (m.authorName||'ㅇ').charAt(0);
+  const dateStr = m.createdAt
+    ? new Date(m.createdAt.toDate ? m.createdAt.toDate() : m.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})
+    : '';
+
+  el.innerHTML =
+    `<div class="card-cover" style="background:linear-gradient(135deg,${c1},${c2})">
+      <span class="cover-emoji">${esc(emoji)}</span>
+      <span class="cover-initial">${esc(initial)}</span>
+    </div>
+    <div class="card-body">
+      <div class="card-author">
+        <span class="author-dot"></span>
+        ${esc(m.authorName || '익명')} 님의 자서전
+      </div>
+      <div class="card-title">${esc(m.title || '제목 없음')}</div>
+      <div class="card-summary">${esc(m.summary || '내용을 불러오는 중입니다…')}</div>
+      <div class="card-footer">
+        <span class="card-date">${dateStr}</span>
+        <span class="card-read-btn">📖 읽어보기 ›</span>
+      </div>
+    </div>`;
+
+  return el;
+}
+
+/* ── Reader ── */
+function openReader(m){
+  const overlay = document.getElementById('readerOverlay');
+  document.getElementById('rdAuthor').textContent = '✍️ ' + (m.authorName || '익명') + ' 님';
+  document.getElementById('rdTitle').textContent  = m.title || '제목 없음';
+  const dateStr = m.createdAt
+    ? new Date(m.createdAt.toDate ? m.createdAt.toDate() : m.createdAt).toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'})
+    : '';
+  document.getElementById('rdMeta').textContent = dateStr ? dateStr + ' 등록' : '';
+
+  const body = document.getElementById('rdBody');
+  body.innerHTML = '';
+
+  // Chapter-based content
+  if(Array.isArray(m.chapters) && m.chapters.length){
+    m.chapters.forEach(ch => {
+      const sec = document.createElement('div');
+      sec.className = 'reader-chapter';
+      if(ch.title){
+        const h = document.createElement('div');
+        h.className = 'chapter-title';
+        h.textContent = ch.title;
+        sec.appendChild(h);
+      }
+      const p = document.createElement('div');
+      p.className = 'chapter-content';
+      p.textContent = ch.content || '';
+      sec.appendChild(p);
+      body.appendChild(sec);
+    });
+  } else if(m.content){
+    // Plain text
+    const p = document.createElement('div');
+    p.className = 'reader-plain';
+    p.textContent = m.content;
+    body.appendChild(p);
+  } else {
+    body.innerHTML = '<div class="reader-empty-ch">내용이 없습니다.</div>';
+  }
+
+  overlay.classList.remove('hidden');
+  overlay.scrollTop = 0;
+  body.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+}
+
+window.closeReaderBtn = function(){
+  document.getElementById('readerOverlay').classList.add('hidden');
+  document.body.style.overflow = '';
+};
+
+window.closeReader = function(e){
+  if(e.target === document.getElementById('readerOverlay')) closeReaderBtn();
+};
+
+/* ── IntersectionObserver ── */
+function setupObserver(){
+  const targets = document.querySelectorAll('.memoir-card:not(.show)');
+  if(!targets.length) return;
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        setTimeout(() => e.target.classList.add('show'), 60);
+        obs.unobserve(e.target);
+      }
+    });
+  }, {threshold:.1});
+  targets.forEach(t => obs.observe(t));
+}
+
+/* ── Error state ── */
+function showError(msg){
+  document.getElementById('libWrap').innerHTML =
+    '<div class="state-full"><span class="s-icon">😢</span><p>'+msg+'</p></div>';
+}
+
+/* ── Font size ── */
+window.changeFs = function(delta){
+  if(delta === 0){ _fsStep = 0; }
+  else{ _fsStep = Math.max(-4, Math.min(6, _fsStep + delta)); }
+  localStorage.setItem('libFs', _fsStep);
+  applyFs();
+};
+function applyFs(){
+  document.documentElement.style.setProperty('--fs', (18 + _fsStep) + 'px');
+}
+
+/* ── Scroll to top ── */
+const toTop = document.getElementById('toTop');
+window.addEventListener('scroll', () => {
+  toTop.classList.toggle('show', window.scrollY > 600);
+}, {passive:true});
+
+/* ── Escape helper ── */
+function esc(s){
+  return String(s||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+})();
+</script>
+</body>
+</html>

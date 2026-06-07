@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>다시봄 관리자</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#0f1117;color:#e0e0e0;min-height:100vh}
+
+/* ── 로그인 ── */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.login-box{background:#1a1d27;border:1px solid #2a2d3a;border-radius:16px;padding:48px 40px;text-align:center;width:320px}
+.login-logo{font-size:32px;margin-bottom:8px}
+.login-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.login-sub{font-size:13px;color:#888;margin-bottom:32px}
+.btn-google{width:100%;padding:14px;background:#fff;color:#333;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .2s}
+.btn-google:hover{background:#f0f0f0}
+.login-err{margin-top:16px;font-size:13px;color:#ff6b6b;min-height:18px}
+
+/* ── 헤더 ── */
+.admin-header{background:#1a1d27;border-bottom:1px solid #2a2d3a;padding:16px 24px;display:flex;align-items:center;gap:16px}
+.admin-brand{font-size:18px;font-weight:800;color:#fff;flex:1}
+.admin-user{font-size:13px;color:#888}
+.btn-logout{padding:7px 16px;background:transparent;border:1px solid #444;border-radius:8px;color:#aaa;font-size:13px;cursor:pointer}
+.btn-logout:hover{border-color:#888;color:#fff}
+
+/* ── 바디 ── */
+.admin-body{padding:24px;max-width:1400px;margin:0 auto}
+
+/* ── 스탯 카드 ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:20px 24px}
+.stat-num{font-size:32px;font-weight:800;color:#7c9cff;margin-bottom:4px}
+.stat-lbl{font-size:12px;color:#888;letter-spacing:.5px}
+.stat-card.green .stat-num{color:#6fcf97}
+.stat-card.yellow .stat-num{color:#f2c94c}
+.stat-card.orange .stat-num{color:#f2994a}
+
+/* ── 필터 바 ── */
+.filter-bar{display:flex;gap:12px;margin-bottom:20px;align-items:center}
+.search-input{flex:1;padding:10px 16px;background:#1a1d27;border:1px solid #2a2d3a;border-radius:8px;color:#e0e0e0;font-size:14px;outline:none}
+.search-input:focus{border-color:#7c9cff}
+.pkg-select{padding:10px 14px;background:#1a1d27;border:1px solid #2a2d3a;border-radius:8px;color:#e0e0e0;font-size:14px;outline:none;cursor:pointer}
+.btn-refresh{padding:10px 18px;background:#7c9cff;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+.btn-refresh:hover{background:#6b8de8}
+.result-count{font-size:13px;color:#666;white-space:nowrap}
+
+/* ── 테이블 ── */
+.table-wrap{background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#12151f}
+th{padding:14px 16px;font-size:12px;color:#888;font-weight:600;letter-spacing:.5px;text-align:left;white-space:nowrap}
+tbody tr{border-top:1px solid #22253a;cursor:pointer;transition:background .15s}
+tbody tr:hover{background:#20233a}
+td{padding:14px 16px;font-size:13px;vertical-align:middle}
+.td-no{color:#555;width:40px}
+.td-name{font-weight:600;color:#fff}
+.td-email{font-size:11px;color:#666;margin-top:2px}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-kakao{background:#3a2e00;color:#f2c94c}
+.badge-naver{background:#0a2e1a;color:#6fcf97}
+.badge-google{background:#1a2a40;color:#7c9cff}
+.pkg-free{color:#888}
+.pkg-basic{color:#7c9cff}
+.pkg-premium{color:#f2c94c;font-weight:700}
+.ai-yes{color:#6fcf97;font-weight:600}
+.ai-no{color:#444}
+.td-date{font-size:12px;color:#666}
+.empty-row td{text-align:center;padding:48px;color:#555}
+
+/* ── 디테일 패널 ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;display:none}
+.overlay.show{display:block}
+.detail-panel{position:fixed;right:0;top:0;bottom:0;width:520px;background:#1a1d27;border-left:1px solid #2a2d3a;z-index:101;transform:translateX(100%);transition:transform .3s ease;display:flex;flex-direction:column}
+.detail-panel.show{transform:translateX(0)}
+.detail-header{padding:20px 24px;border-bottom:1px solid #2a2d3a;display:flex;align-items:flex-start;justify-content:space-between;flex-shrink:0}
+.detail-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.detail-meta{font-size:12px;color:#888;line-height:1.8}
+.detail-close{background:transparent;border:1px solid #444;border-radius:8px;color:#aaa;font-size:16px;width:36px;height:36px;cursor:pointer;flex-shrink:0}
+.detail-close:hover{border-color:#888;color:#fff}
+.detail-body{overflow-y:auto;padding:20px 24px;flex:1}
+.detail-chapter{margin-bottom:28px}
+.ch-title{font-size:11px;color:#7c9cff;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #22253a}
+.qa-item{margin-bottom:14px}
+.qa-q{font-size:12px;color:#888;margin-bottom:4px;line-height:1.6}
+.qa-a{font-size:14px;color:#e0e0e0;line-height:1.7;background:#12151f;border-radius:8px;padding:10px 12px;white-space:pre-wrap}
+.qa-empty{font-size:12px;color:#444;font-style:italic;padding:6px 12px}
+
+/* ── 로딩 ── */
+.loading-wrap{display:flex;align-items:center;justify-content:center;padding:80px;flex-direction:column;gap:16px}
+.spinner{width:36px;height:36px;border:3px solid #2a2d3a;border-top-color:#7c9cff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:14px;color:#666}
+
+@media(max-width:768px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .detail-panel{width:100%;left:0;top:auto;height:80vh;border-left:none;border-top:1px solid #2a2d3a;transform:translateY(100%)}
+  .detail-panel.show{transform:translateY(0)}
+  th:nth-child(n+7),td:nth-child(n+7){display:none}
+}
+
+/* ── 탭 네비게이션 ── */
+.admin-tabs{display:flex;gap:0;border-bottom:1px solid #2a2d3a;background:#1a1d27;padding:0 24px}
+.admin-tab{padding:14px 22px;font-size:14px;font-weight:600;color:#666;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+.admin-tab.active{color:#7c9cff;border-bottom-color:#7c9cff}
+
+/* ── 오늘의 지혜 관리 ── */
+.wisdom-section{padding:24px;max-width:1100px;margin:0 auto}
+.wisdom-toolbar{display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap}
+.btn-gen-wisdom{display:flex;align-items:center;gap:8px;padding:12px 20px;background:#6fcf97;border:none;border-radius:8px;color:#12151f;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+.btn-gen-wisdom:hover{background:#5dbf87}
+.btn-gen-wisdom:disabled{background:#2a3a2a;color:#555;cursor:not-allowed}
+.gen-msg{font-size:13px;min-height:18px}
+.gen-msg.ok{color:#6fcf97}
+.gen-msg.err{color:#ff6b6b}
+.gen-msg.loading{color:#f2c94c}
+.wisdom-guide{font-size:12px;color:#555;background:#1a1d27;border:1px solid #2a2d3a;border-radius:8px;padding:12px 16px;line-height:1.8}
+.wisdom-list-box{background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;overflow:hidden}
+.wl-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #2a2d3a}
+.wl-title{font-size:15px;font-weight:700;color:#fff}
+.wl-count{font-size:12px;color:#666}
+.wl-empty{padding:48px;text-align:center;color:#555;font-size:14px}
+.wisdom-item{display:flex;align-items:flex-start;gap:14px;padding:16px 20px;border-bottom:1px solid #22253a;transition:background .15s}
+.wisdom-item:last-child{border-bottom:0}
+.wisdom-item:hover{background:#20233a}
+.wi-idx{font-size:11px;color:#555;width:20px;flex-shrink:0;padding-top:2px;font-family:monospace}
+.wi-body{flex:1;min-width:0}
+.wi-quote{font-size:14px;color:#e0e0e0;line-height:1.6;margin-bottom:4px;font-weight:500}
+.wi-author{font-size:12px;color:#7c9cff;margin-bottom:2px}
+.wi-bio{font-size:11px;color:#666}
+.wi-interp{font-size:12px;color:#888;margin-top:5px;line-height:1.5;border-left:2px solid #2a2d3a;padding-left:8px}
+.wi-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.btn-edit-wisdom{padding:6px 12px;background:transparent;border:1px solid #2a3a5a;border-radius:6px;color:#7c9cff;font-size:12px;cursor:pointer;transition:background .2s}
+.btn-edit-wisdom:hover{background:#1a253a}
+.btn-del-wisdom{padding:6px 12px;background:transparent;border:1px solid #3a2d2d;border-radius:6px;color:#ff6b6b;font-size:12px;cursor:pointer;transition:background .2s}
+.btn-del-wisdom:hover{background:#2a1a1a}
+/* 편집 모달 */
+.wem-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center}
+.wem-overlay.open{display:flex}
+.wem-box{background:#1a1d27;border:1px solid #2a2d3a;border-radius:16px;padding:28px 32px;width:540px;max-width:94vw;max-height:90vh;overflow-y:auto}
+.wem-title{font-size:16px;font-weight:700;color:#fff;margin-bottom:20px}
+.wem-label{font-size:12px;color:#888;font-weight:600;letter-spacing:.5px;margin-bottom:6px;display:block}
+.wem-input{width:100%;padding:10px 14px;background:#12151f;border:1px solid #2a2d3a;border-radius:8px;color:#e0e0e0;font-size:14px;outline:none;transition:border-color .2s;margin-bottom:14px;font-family:inherit}
+.wem-input:focus{border-color:#7c9cff}
+textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
+.wem-foot{display:flex;gap:10px;margin-top:4px}
+.wem-save{flex:1;padding:11px;background:#7c9cff;border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;transition:background .2s}
+.wem-save:hover{background:#6b8de8}
+.wem-save:disabled{background:#3a3f5a;cursor:not-allowed}
+.wem-cancel{padding:11px 20px;background:transparent;border:1px solid #2a2d3a;border-radius:8px;color:#888;font-size:14px;cursor:pointer}
+.wem-cancel:hover{border-color:#888;color:#fff}
+.wem-msg{font-size:12px;color:#ff6b6b;min-height:16px;margin-top:6px}
+</style>
+</head>
+<body>
+
+<!-- ── 로그인 화면 ── -->
+<div id="loginScreen" class="login-wrap">
+  <div class="login-box">
+    <div class="login-logo">🌱</div>
+    <div class="login-title">다시봄 관리자</div>
+    <div class="login-sub">관리자 계정으로 로그인하세요</div>
+    <button class="btn-google" id="btnLogin">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.16C6.51 42.62 14.62 48 24 48z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.16C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.16C12.43 13.72 17.74 9.5 24 9.5z"/></svg>
+      Google로 로그인
+    </button>
+    <div id="loginErr" class="login-err"></div>
+  </div>
+</div>
+
+<!-- ── 관리자 대시보드 ── -->
+<div id="adminWrap" style="display:none">
+  <header class="admin-header">
+    <span class="admin-brand">🌱 다시봄 관리자</span>
+    <span class="admin-user" id="adminEmail"></span>
+    <button class="btn-logout" id="btnLogout">로그아웃</button>
+  </header>
+
+  <!-- 탭 네비게이션 -->
+  <nav class="admin-tabs">
+    <button class="admin-tab active" onclick="switchTab('members')">👥 회원 관리</button>
+    <button class="admin-tab" onclick="switchTab('wisdom')">✦ 오늘의 지혜</button>
+  </nav>
+
+  <!-- 회원 관리 탭 -->
+  <div id="tabMembers" class="admin-body">
+    <!-- 스탯 -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="statTotal">-</div><div class="stat-lbl">전체 회원</div></div>
+      <div class="stat-card green"><div class="stat-num" id="statAnswered">-</div><div class="stat-lbl">자서전 작성 중</div></div>
+      <div class="stat-card yellow"><div class="stat-num" id="statGenerated">-</div><div class="stat-lbl">AI 생성 완료</div></div>
+      <div class="stat-card orange"><div class="stat-num" id="statPremium">-</div><div class="stat-lbl">프리미엄 회원</div></div>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="이름 또는 이메일 검색...">
+      <select id="pkgFilter" class="pkg-select">
+        <option value="">전체 패키지</option>
+        <option value="free">무료</option>
+        <option value="basic">베이직</option>
+        <option value="premium">프리미엄</option>
+      </select>
+      <span class="result-count" id="resultCount"></span>
+      <button class="btn-refresh" id="btnRefresh">↻ 새로고침</button>
+    </div>
+
+    <!-- 테이블 -->
+    <div class="table-wrap" id="tableWrap">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-txt">데이터 불러오는 중...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 오늘의 지혜 탭 -->
+  <div id="tabWisdom" class="wisdom-section" style="display:none">
+
+    <!-- 툴바 -->
+    <div class="wisdom-toolbar">
+      <button class="btn-gen-wisdom" id="btnGenWisdom" onclick="generateWisdom()">
+        ✦ AI 지혜 1개 생성
+      </button>
+      <span class="gen-msg" id="gen-msg"></span>
+      <div class="wisdom-guide" style="margin-left:auto">
+        매일 오전 6시 자동 생성 · 버튼으로 즉시 생성 가능 · 수정/삭제 자유
+      </div>
+    </div>
+
+    <!-- 명언 목록 -->
+    <div class="wisdom-list-box">
+      <div class="wl-header">
+        <span class="wl-title">✦ 저장된 지혜 목록</span>
+        <span class="wl-count" id="wl-count">—</span>
+      </div>
+      <div id="wisdomList"><div class="wl-empty">불러오는 중...</div></div>
+    </div>
+  </div>
+
+  <!-- 편집 모달 -->
+  <div class="wem-overlay" id="wemOverlay" onclick="closeWisdomEdit(event)">
+    <div class="wem-box">
+      <div class="wem-title">✦ 지혜 수정</div>
+      <input type="hidden" id="wem-key">
+      <label class="wem-label">명언 / 조언</label>
+      <textarea class="wem-input" id="wem-quote" rows="3"></textarea>
+      <label class="wem-label">작성자</label>
+      <input class="wem-input" id="wem-author" type="text">
+      <label class="wem-label">작성자 연혁 (선택)</label>
+      <input class="wem-input" id="wem-bio" type="text">
+      <label class="wem-label">의미 해석</label>
+      <textarea class="wem-input" id="wem-interp" rows="3"></textarea>
+      <div class="wem-msg" id="wem-msg"></div>
+      <div class="wem-foot">
+        <button class="wem-save" id="wemSaveBtn" onclick="saveWisdomEdit()">저장</button>
+        <button class="wem-cancel" onclick="closeWisdomEdit()">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 디테일 패널 -->
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-header">
+    <div>
+      <div class="detail-name" id="detailName"></div>
+      <div class="detail-meta" id="detailMeta"></div>
+    </div>
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+  </div>
+  <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- Firebase SDKs -->
+<script>
+(function(){
+  var s=['app','auth','firestore','database','functions'].map(function(m){
+    var el=document.createElement('script');
+    el.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-'+m+'-compat.js';
+    return el;
+  });
+  var head=document.head;
+  s[0].onload=function(){ head.appendChild(s[1]); };
+  s[1].onload=function(){ head.appendChild(s[2]); };
+  s[2].onload=function(){ head.appendChild(s[3]); };
+  s[3].onload=function(){ head.appendChild(s[4]); };
+  s[4].onload=init;
+  head.appendChild(s[0]);
+})();
+
+// ★ 관리자 이메일 목록 — 실제 관리자 이메일로 변경하세요
+var ADMIN_EMAILS = ['machojang@gmail.com', 'machojang@naver.com'];
+
+var FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+  authDomain:        "mylife-650f0.firebaseapp.com",
+  projectId:         "mylife-650f0",
+  storageBucket:     "mylife-650f0.firebasestorage.app",
+  messagingSenderId: "512010655611",
+  appId:             "1:512010655611:web:32b153b836b23ae96a8fde"
+};
+
+var PKG_LABEL = {free:'무료', basic:'베이직', standard:'스탠다드', premium:'프리미엄'};
+var PROVIDER_LABEL = {google:'Google', kakao:'카카오', naver:'네이버'};
+
+var QS_MAP = [
+  {q:"태어나고 자란 곳은 어디인가요?",ch:0},{q:"어린 시절 집은 어떤 분위기였나요?",ch:0},
+  {q:"부모님은 어떤 분들이었나요?",ch:0},{q:"형제자매와의 기억이 있다면?",ch:0},
+  {q:"기억에 남는 친구가 있나요?",ch:0},{q:"학교에서 어떤 아이였나요?",ch:0},
+  {q:"어린 시절 가장 행복했던 순간은?",ch:0},{q:"혼났던 기억이 있다면?",ch:0},
+  {q:"어린 시절 가장 좋아했던 음식은?",ch:0},{q:"어린 시절의 나를 한마디로 표현한다면?",ch:0},
+  {q:"어른이 되고 싶었던 이유가 있었나요?",ch:1},{q:"어린 시절 꿈은 무엇이었나요?",ch:1},
+  {q:"그 꿈을 이루었나요?",ch:1},{q:"가장 큰 도전이 있었다면?",ch:1},
+  {q:"인생을 바꾼 결정적 순간이 있나요?",ch:1},{q:"가장 열정적이었던 시기는?",ch:1},
+  {q:"포기했던 것이 있다면?",ch:1},{q:"당신을 성장시킨 계기는?",ch:1},
+  {q:"지금도 후회되는 선택이 있다면?",ch:1},{q:"이 시기의 나를 한마디로 표현한다면?",ch:1},
+  {q:"소중한 사람을 처음 만난 순간을 기억하나요?",ch:2},{q:"사랑하게 된 이유는 무엇인가요?",ch:2},
+  {q:"함께하기로 결심하게 된 계기는?",ch:2},{q:"함께한 가장 행복한 순간은?",ch:2},
+  {q:"함께한 가장 힘든 순간은?",ch:2},{q:"새 생명이 태어난 순간을 기억한다면?",ch:2},
+  {q:"가장 뿌듯했던 순간은?",ch:2},{q:"미안했던 기억이 있다면?",ch:2},
+  {q:"가장 크게 희생했던 것은?",ch:2},{q:"당신에게 인연이란 어떤 의미인가요?",ch:2},
+  {q:"인생에서 가장 힘들었던 순간은?",ch:3},{q:"그 힘든 시간을 어떻게 버텼나요?",ch:3},
+  {q:"포기하고 싶었던 순간이 있었나요?",ch:3},{q:"다시 일어날 수 있었던 이유는?",ch:3},
+  {q:"인생에서 가장 자랑스러운 순간은?",ch:3},{q:"가장 큰 실패의 경험은?",ch:3},
+  {q:"돈보다 더 중요하게 선택했던 순간은?",ch:3},{q:"인생에 가장 큰 영향을 준 사람은?",ch:3},
+  {q:"당신 삶의 결정적 사건이 있다면?",ch:3},{q:"그 모든 순간들을 지금 돌아보면?",ch:3},
+  {q:"당신에게 가장 중요한 것은?",ch:4},{q:"지금 가장 감사한 것이 있다면?",ch:4},
+  {q:"당신의 삶을 한 문장으로 표현한다면?",ch:4},{q:"인생에서 가장 잘한 선택은?",ch:4},
+  {q:"다시 한번 살 수 있다면?",ch:4},{q:"아직 이루지 못한 바람이 있다면?",ch:4},
+  {q:"누군가에게 꼭 전하고 싶은 한마디는?",ch:4},{q:"곁에 있는 누군가에게 남기고 싶은 말은?",ch:4},
+  {q:"어떻게 기억되길 바라나요?",ch:4},{q:"당신의 삶은 어떤 이야기였나요?",ch:4},
+  {q:"가장 영향을 받은 책이나 영화가 있나요?",ch:5},{q:"가장 외로웠던 순간은?",ch:5},
+  {q:"가장 크게 웃었던 날은?",ch:5},{q:"당신의 인생 철학이 있다면?",ch:5},
+  {q:"후회 없는 삶이었다고 할 수 있나요?",ch:5},{q:"지금의 당신에게 한마디 한다면?",ch:5},
+  {q:"젊은 시절의 당신에게 조언을 준다면?",ch:5},{q:"평생 지키고 싶었던 것은?",ch:5},
+  {q:"평생 사랑했던 것들을 말해주세요",ch:5},{q:"마지막으로, 한마디 남겨주세요.",ch:5}
+];
+
+var STORY_NAMES = ["어린 시절","청년 시절","사랑과 인연","인생의 고비","남기고 싶은 말","기억의 조각들","나만의 취향","과거의 나에게"];
+
+var _db, _auth, _rtdb, _fn, _allRows = [], _filtered = [];
+
+function init(){
+  firebase.initializeApp({
+    ...FIREBASE_CONFIG,
+    databaseURL: 'https://mylife-650f0-default-rtdb.firebaseio.com'
+  });
+  _auth = firebase.auth();
+  _db   = firebase.firestore();
+  _rtdb = firebase.database();
+  _fn   = firebase.app().functions('asia-northeast3');
+
+  _auth.onAuthStateChanged(function(user){
+    if(!user){
+      show('loginScreen'); hide('adminWrap'); return;
+    }
+    var email = user.email || '';
+    if(!ADMIN_EMAILS.includes(email)){
+      _auth.signOut();
+      document.getElementById('loginErr').textContent = '관리자 권한이 없습니다: ' + email;
+      show('loginScreen'); hide('adminWrap'); return;
+    }
+    hide('loginScreen'); show('adminWrap');
+    document.getElementById('adminEmail').textContent = email;
+    loadData();
+  });
+
+  document.getElementById('btnLogin').onclick = function(){
+    document.getElementById('loginErr').textContent = '';
+    _auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(function(e){ document.getElementById('loginErr').textContent = e.message; });
+  };
+  document.getElementById('btnLogout').onclick = function(){ _auth.signOut(); };
+  document.getElementById('btnRefresh').onclick = loadData;
+  document.getElementById('searchInput').addEventListener('input', applyFilter);
+  document.getElementById('pkgFilter').addEventListener('change', applyFilter);
+}
+
+async function loadData(){
+  document.getElementById('tableWrap').innerHTML =
+    '<div class="loading-wrap"><div class="spinner"></div><div class="loading-txt">데이터 불러오는 중...</div></div>';
+
+  try{
+    var [memoirSnap, userSnap] = await Promise.all([
+      _db.collection('memoirs').get(),
+      _db.collection('users').get()
+    ]);
+
+    var userMap = {};
+    userSnap.forEach(function(d){ userMap[d.id] = d.data(); });
+
+    _allRows = [];
+    memoirSnap.forEach(function(d){
+      var m = d.data();
+      var u = userMap[d.id] || {};
+      _allRows.push({
+        uid:       d.id,
+        name:      u.name || m.bookTitle || '(이름 없음)',
+        email:     u.email || '',
+        provider:  u.provider || m.provider || '-',
+        pkg:       m.pkg || 'free',
+        maxQ:      m.maxQ || 15,
+        answerCount:    m.answerCount || Object.keys(m.answers||{}).length,
+        estimatedPages: m.estimatedPages || Math.ceil(Object.keys(m.answers||{}).length * 0.7),
+        bookTitle: m.bookTitle || '',
+        answers:   m.answers || {},
+        generatedAt: m.generatedAt || null,
+        createdAt:   m.createdAt  || u.joinedAt || null,
+        updatedAt:   m.updatedAt  || null
+      });
+    });
+
+    // 최신순 정렬
+    _allRows.sort(function(a,b){
+      var ta = a.updatedAt ? a.updatedAt.seconds : 0;
+      var tb = b.updatedAt ? b.updatedAt.seconds : 0;
+      return tb - ta;
+    });
+
+    updateStats();
+    applyFilter();
+  }catch(e){
+    document.getElementById('tableWrap').innerHTML =
+      '<div class="loading-wrap"><div class="loading-txt" style="color:#ff6b6b">로드 실패: '+e.message+'</div></div>';
+  }
+}
+
+function updateStats(){
+  var total = _allRows.length;
+  var answered  = _allRows.filter(function(r){ return r.answerCount > 0; }).length;
+  var generated = _allRows.filter(function(r){ return r.generatedAt; }).length;
+  var premium   = _allRows.filter(function(r){ return r.pkg === 'premium'; }).length;
+  document.getElementById('statTotal').textContent     = total;
+  document.getElementById('statAnswered').textContent  = answered;
+  document.getElementById('statGenerated').textContent = generated;
+  document.getElementById('statPremium').textContent   = premium;
+}
+
+function applyFilter(){
+  var q   = document.getElementById('searchInput').value.trim().toLowerCase();
+  var pkg = document.getElementById('pkgFilter').value;
+  _filtered = _allRows.filter(function(r){
+    var matchQ   = !q || r.name.toLowerCase().includes(q) || r.email.toLowerCase().includes(q);
+    var matchPkg = !pkg || r.pkg === pkg;
+    return matchQ && matchPkg;
+  });
+  document.getElementById('resultCount').textContent = _filtered.length + '명';
+  renderTable();
+}
+
+function renderTable(){
+  if(!_filtered.length){
+    document.getElementById('tableWrap').innerHTML =
+      '<table><thead><tr>'+theadHtml()+'</tr></thead><tbody><tr class="empty-row"><td colspan="9">데이터가 없습니다</td></tr></tbody></table>';
+    return;
+  }
+  var rows = _filtered.map(function(r, i){
+    var pkgCls = 'pkg-' + r.pkg;
+    var prov = PROVIDER_LABEL[r.provider] || r.provider;
+    var provCls = 'badge-' + r.provider;
+    var ai  = r.generatedAt ? '<span class="ai-yes">✓ 완료</span>' : '<span class="ai-no">—</span>';
+    return '<tr onclick="openDetail(\''+r.uid+'\')">'+
+      '<td class="td-no">'+(i+1)+'</td>'+
+      '<td><div class="td-name">'+esc(r.name)+'</div><div class="td-email">'+esc(r.email)+'</div></td>'+
+      '<td><span class="badge '+provCls+'">'+prov+'</span></td>'+
+      '<td class="'+pkgCls+'">'+(PKG_LABEL[r.pkg]||r.pkg)+'</td>'+
+      '<td>'+r.answerCount+'문항</td>'+
+      '<td>'+r.estimatedPages+'p</td>'+
+      '<td>'+ai+'</td>'+
+      '<td class="td-date">'+fmtDate(r.createdAt)+'</td>'+
+      '<td class="td-date">'+fmtDate(r.updatedAt)+'</td>'+
+    '</tr>';
+  }).join('');
+  document.getElementById('tableWrap').innerHTML =
+    '<table><thead><tr>'+theadHtml()+'</tr></thead><tbody>'+rows+'</tbody></table>';
+}
+
+function theadHtml(){
+  return ['#','이름 / 이메일','가입','패키지','답변수','예상페이지','AI생성','최초작성','최종수정']
+    .map(function(t){ return '<th>'+t+'</th>'; }).join('');
+}
+
+function openDetail(uid){
+  var r = _allRows.find(function(x){ return x.uid === uid; });
+  if(!r) return;
+
+  document.getElementById('detailName').textContent =
+    r.name + (r.bookTitle ? ' · 『'+r.bookTitle+'』' : '');
+
+  document.getElementById('detailMeta').innerHTML =
+    (PKG_LABEL[r.pkg]||r.pkg) + ' · ' + r.answerCount + '문항 · ' + r.estimatedPages + '페이지 예상' +
+    (r.generatedAt ? ' · AI생성완료' : '') + '<br>' +
+    '최초작성: ' + fmtDateFull(r.createdAt) + '<br>' +
+    '최종수정: ' + fmtDateFull(r.updatedAt);
+
+  // 챕터별 Q&A 렌더링
+  var chData = {};
+  QS_MAP.forEach(function(qs, i){
+    if(!chData[qs.ch]) chData[qs.ch] = [];
+    chData[qs.ch].push({q: qs.q, a: r.answers[i] || null, idx: i});
+  });
+
+  var html = '';
+  Object.keys(chData).sort().forEach(function(ch){
+    var items = chData[ch];
+    var answered = items.filter(function(x){ return x.a; });
+    if(!answered.length) return;
+    html += '<div class="detail-chapter">';
+    html += '<div class="ch-title">'+(STORY_NAMES[ch]||'챕터 '+ch)+'</div>';
+    answered.forEach(function(x){
+      html += '<div class="qa-item">';
+      html += '<div class="qa-q">Q'+(x.idx+1)+'. '+esc(x.q)+'</div>';
+      html += '<div class="qa-a">'+esc(x.a)+'</div>';
+      html += '</div>';
+    });
+    html += '</div>';
+  });
+
+  if(!html) html = '<div style="color:#555;padding:32px;text-align:center">작성된 답변이 없습니다</div>';
+  document.getElementById('detailBody').innerHTML = html;
+
+  document.getElementById('overlay').classList.add('show');
+  document.getElementById('detailPanel').classList.add('show');
+}
+
+function closeDetail(){
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('detailPanel').classList.remove('show');
+}
+
+function fmtDate(ts){
+  if(!ts) return '—';
+  var d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+  return d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0');
+}
+
+function fmtDateFull(ts){
+  if(!ts) return '—';
+  var d = ts.toDate ? ts.toDate() : new Date(ts.seconds * 1000);
+  return d.getFullYear()+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getDate().toString().padStart(2,'0')
+    +' '+d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+}
+
+function esc(str){
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function show(id){ document.getElementById(id).style.display=''; }
+function hide(id){ document.getElementById(id).style.display='none'; }
+
+/* ── 탭 전환 ── */
+function switchTab(tab) {
+  document.querySelectorAll('.admin-tab').forEach(function(el, i) {
+    el.classList.toggle('active', (i===0 && tab==='members') || (i===1 && tab==='wisdom'));
+  });
+  if (tab === 'members') {
+    show('tabMembers'); hide('tabWisdom');
+  } else {
+    hide('tabMembers'); show('tabWisdom');
+    loadWisdomList();
+  }
+}
+
+/* ── 오늘의 지혜 CRUD ── */
+function loadWisdomList() {
+  document.getElementById('wisdomList').innerHTML = '<div class="wl-empty">불러오는 중...</div>';
+  _rtdb.ref('wisdoms').orderByChild('createdAt').once('value')
+    .then(function(snap) {
+      var data = snap.val();
+      var items = [];
+      if (data && typeof data === 'object') {
+        items = Object.entries(data)
+          .map(function(e) { return { key: e[0], val: e[1] }; })
+          .reverse(); // 최신 순
+      }
+      document.getElementById('wl-count').textContent = items.length + '개';
+      if (!items.length) {
+        document.getElementById('wisdomList').innerHTML =
+          '<div class="wl-empty">아직 저장된 지혜가 없습니다.<br>위 버튼으로 AI 생성을 시작하세요!</div>';
+        return;
+      }
+      var html = items.map(function(item, i) {
+        var v = item.val;
+        var dateStr = v.createdAt ? new Date(v.createdAt).toLocaleDateString('ko-KR') : '';
+        return '<div class="wisdom-item">' +
+          '<div class="wi-idx">' + (i+1) + '</div>' +
+          '<div class="wi-body">' +
+            '<div class="wi-quote">"' + esc(v.quote) + '"</div>' +
+            '<div class="wi-author">' + esc(v.author) +
+              (v.bio ? ' <span class="wi-bio">· ' + esc(v.bio) + '</span>' : '') +
+              (dateStr ? ' <span class="wi-bio">· ' + dateStr + '</span>' : '') +
+            '</div>' +
+            '<div class="wi-interp">' + esc(v.interpretation) + '</div>' +
+          '</div>' +
+          '<div class="wi-actions">' +
+            '<button class="btn-edit-wisdom" onclick="editWisdom(\'' + item.key + '\')">수정</button>' +
+            '<button class="btn-del-wisdom"  onclick="deleteWisdom(\'' + item.key + '\')">삭제</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      document.getElementById('wisdomList').innerHTML = html;
+    })
+    .catch(function(e) {
+      document.getElementById('wisdomList').innerHTML =
+        '<div class="wl-empty" style="color:#ff6b6b">불러오기 실패: ' + e.message + '</div>';
+    });
+}
+
+function editWisdom(key) {
+  _rtdb.ref('wisdoms/' + key).once('value').then(function(snap) {
+    var v = snap.val();
+    if (!v) return;
+    document.getElementById('wem-key').value   = key;
+    document.getElementById('wem-quote').value  = v.quote || '';
+    document.getElementById('wem-author').value = v.author || '';
+    document.getElementById('wem-bio').value    = v.bio || '';
+    document.getElementById('wem-interp').value = v.interpretation || '';
+    document.getElementById('wem-msg').textContent = '';
+    document.getElementById('wemOverlay').classList.add('open');
+  });
+}
+
+function saveWisdomEdit() {
+  var key    = document.getElementById('wem-key').value;
+  var quote  = document.getElementById('wem-quote').value.trim();
+  var author = document.getElementById('wem-author').value.trim();
+  var bio    = document.getElementById('wem-bio').value.trim();
+  var interp = document.getElementById('wem-interp').value.trim();
+  var msg    = document.getElementById('wem-msg');
+
+  if (!quote || !author || !interp) {
+    msg.textContent = '명언, 작성자, 의미 해석은 필수입니다.';
+    return;
+  }
+
+  var btn = document.getElementById('wemSaveBtn');
+  btn.disabled = true;
+
+  _rtdb.ref('wisdoms/' + key).update({ quote: quote, author: author, bio: bio, interpretation: interp })
+    .then(function() {
+      closeWisdomEdit();
+      loadWisdomList();
+    })
+    .catch(function(e) {
+      msg.textContent = '저장 실패: ' + e.message;
+    })
+    .finally(function() { btn.disabled = false; });
+}
+
+function closeWisdomEdit(e) {
+  if (e && e.target !== document.getElementById('wemOverlay')) return;
+  document.getElementById('wemOverlay').classList.remove('open');
+}
+
+function generateWisdom() {
+  var btn = document.getElementById('btnGenWisdom');
+  var msg = document.getElementById('gen-msg');
+  btn.disabled = true;
+  msg.className = 'gen-msg loading';
+  msg.textContent = '✦ AI가 생성 중입니다...';
+
+  _fn.httpsCallable('generateWisdomOnDemand')({})
+    .then(function(result) {
+      msg.className = 'gen-msg ok';
+      msg.textContent = '✓ "' + result.data.wisdom.author + '" 명언이 추가되었습니다!';
+      loadWisdomList();
+      setTimeout(function() { msg.textContent = ''; }, 4000);
+    })
+    .catch(function(e) {
+      msg.className = 'gen-msg err';
+      msg.textContent = '생성 실패: ' + (e.message || String(e));
+    })
+    .finally(function() { btn.disabled = false; });
+}
+
+function deleteWisdom(key) {
+  if (!confirm('이 명언을 삭제하시겠습니까?')) return;
+  _rtdb.ref('wisdoms/' + key).remove()
+    .then(function() { loadWisdomList(); })
+    .catch(function(e) { alert('삭제 실패: ' + e.message); });
+}
+</script>
+</body>
+</html>
