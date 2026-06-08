@@ -1357,6 +1357,17 @@ function buildQuestionList(){
   return QS;
 }
 buildQuestionList();
+// 같은 카테고리의 예비/다음순위 질문으로 교체 (패스 시). 성공하면 true
+function swapReserve(i){
+  var cur=QS[i]; if(!cur || !window.QPOOL) return false;
+  var used={}; QS.forEach(function(q){ used[q.id]=1; });
+  var cand=window.QPOOL.filter(function(q){ return q.cat===cur.cat && !used[q.id]; });
+  if(!cand.length) return false;
+  cand.sort(function(a,b){ var ra=a.reserve?1:0, rb=b.reserve?1:0; if(ra!==rb) return rb-ra; return (b.pri||0)-(a.pri||0); });
+  var r=cand[0];
+  QS[i]={ id:r.id, cat:r.cat, ch:cur.ch, q:resolveBom(r), h:r.gist||'', gist:r.gist||'', ex:r.ex||'', sensitive:!!r.sensitive, hint:!!r.hint };
+  return true;
+}
 
 // ── 인트로 3페이지 ──
 var curPage=0, pageTimers=[];
@@ -1574,7 +1585,7 @@ function renderQ(i){
   el('qNum').textContent=String(i+1).padStart(3,'0')+' 번째 질문';
   el('qTxt').textContent=q.q;
   el('qHint').textContent=q.h;
-  el('qEx').textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게 적어주세요. 짧아도 괜찮아요.';
+  var _ex=el('qEx'); if(_ex){ if(q.hint){ _ex.style.display='none'; } else { _ex.style.display=''; _ex.textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게 적어주세요. 짧아도 괜찮아요.'; } }
   var _bf=el('bomFace'); if(_bf){ _bf.src='img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
   var _qp=el('qPrivate');
   if(_qp){ if(q.sensitive){ _qp.style.display='';
@@ -1660,6 +1671,8 @@ function goPrev(){
   go('s-q');
 }
 function goSkip(){
+  // 미답변 질문이면 같은 카테고리 예비/다음순위로 교체(있으면 교체만 하고 머무름)
+  if(!APP.answers[APP.curQ] && swapReserve(APP.curQ)){ saveState(); renderQ(APP.curQ); go('s-q'); return; }
   if(PASS_COUNTS) recordConsumed(APP.curQ);
   var maxQ=APP.maxQ; var next=APP.curQ+1;
   // 건너뛰기도 동일하게 무료 15 로그인 게이트 적용
