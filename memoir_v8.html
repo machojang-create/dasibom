@@ -842,6 +842,8 @@ async function loadFromFirestore(uid){
     var doc = await _db.collection('memoirs').doc(uid).get();
     if(!doc.exists) return;
     var data = doc.data();
+    // 온보딩 호칭·출생년도 복원(기기 연속성): 클라우드에 있으면 로컬에 반영
+    try{ if(data.honorific) localStorage.setItem('dasibom_honorific', data.honorific); if(data.birthYear) localStorage.setItem('dasibom_birthyear', data.birthYear); }catch(e){}
     var localCnt = Object.keys(APP.answers).length;
     var cloudCnt = data.answers ? Object.keys(data.answers).length : 0;
     // 클라우드 데이터가 더 많거나 같으면 클라우드 우선 복원
@@ -1136,6 +1138,8 @@ async function saveToFirestoreForce(answers, pkg, bookTitle){
     maxQ:           APP.maxQ,
     qDates:         APP.qDates||{},
     qPrivate:       APP.qPrivate||{},
+    honorific:      (function(){try{return localStorage.getItem('dasibom_honorific')||'';}catch(e){return '';}})(),
+    birthYear:      (function(){try{return localStorage.getItem('dasibom_birthyear')||'';}catch(e){return '';}})(),
     bookTitle:      bookTitle || '',
     answerCount:    answerCount,
     estimatedPages: estimatedPages,
