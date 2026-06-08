@@ -258,7 +258,13 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .q-progress-txt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);margin-bottom:14px;opacity:.8}
 .q-num{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--sepiaL);letter-spacing:2px;margin-bottom:12px;opacity:.5}
 .q-txt{font-size:clamp(19px,5vw,25px);font-weight:700;color:var(--ink);line-height:1.6;margin-bottom:10px;letter-spacing:-.3px}
-.q-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;color:var(--sepia);opacity:.65;margin-bottom:24px;line-height:1.7}
+.q-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:14px;color:var(--sepia);opacity:.65;margin-bottom:14px;line-height:1.7}
+/* C-3a 화면 3층: 봄이 말풍선 + 예시가이드 */
+.bom-row{display:flex;align-items:flex-end;gap:10px;margin-bottom:14px}
+.bom-face{width:60px;height:auto;flex-shrink:0;filter:drop-shadow(0 6px 12px rgba(150,110,70,.18))}
+.bom-bubble{position:relative;flex:1;background:#fff;border:1px solid var(--sepiaP,#e7ddcf);border-radius:18px 18px 18px 4px;padding:14px 16px;box-shadow:0 4px 14px rgba(120,90,60,.08)}
+.bom-bubble .q-txt{margin-bottom:0}
+.q-ex{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13.5px;color:var(--sepia,#9a8a7a);background:rgba(201,169,97,.10);border-left:3px solid var(--gold,#C9A961);border-radius:8px;padding:10px 12px;margin-bottom:20px;line-height:1.6}
 .mode-row{display:flex;gap:8px;margin-bottom:16px}
 .mode-btn{flex:1;padding:9px 0;cursor:pointer;transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;border:1px solid var(--sepiaP)}
 .mode-btn.on{background:var(--sepiaP);border-color:var(--sepiaL);color:var(--inkL)}
@@ -596,8 +602,12 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
     <div class="q-progress-txt" id="qProgressTxt"></div>
     <div id="qSched" style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;font-weight:700;color:#0e9d7d;margin-bottom:10px;display:none"></div>
     <div class="q-num" id="qNum"></div>
-    <div class="q-txt" id="qTxt"></div>
+    <div class="bom-row">
+      <img class="bom-face" id="bomFace" src="img/bom_think.png" alt="봄이" onerror="this.style.display='none'">
+      <div class="bom-bubble"><div class="q-txt" id="qTxt"></div></div>
+    </div>
     <div class="q-hint" id="qHint"></div>
+    <div class="q-ex" id="qEx"></div>
     <div class="mode-row">
       <button class="mode-btn on" id="mTxt">✏️ 글로 쓰기</button>
       <button class="mode-btn" id="mVoice">🎤 말로 하기</button>
@@ -1549,6 +1559,8 @@ function renderQ(i){
   el('qNum').textContent=String(i+1).padStart(3,'0')+' 번째 질문';
   el('qTxt').textContent=q.q;
   el('qHint').textContent=q.h;
+  el('qEx').textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게 적어주세요. 짧아도 괜찮아요.';
+  var _bf=el('bomFace'); if(_bf){ _bf.src='img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
   // 이전 답변 복원 (이전/다음 이동 시 데이터 유지)
   el('tArea').value=APP.answers[i]||'';
   el('vArea').value=APP.answers[i]||'';
