@@ -8,8 +8,19 @@ service cloud.firestore {
     }
 
     // 자서전 데이터: 인증된 사용자만 접근
+    // ⚠️ '본인(uid)만'으로 조이기 보류: 카카오/네이버 로그인이 익명 uid + socialId 매핑 구조라
+    //   client가 users를 provider/socialId로 교차조회하고 다른 uid의 memoir를 병합함(handleSocialLogin).
+    //   또 공개 서재(library)가 남의 isPublic 자서전을 읽음. 지금 조이면 로그인·서재 깨짐.
+    //   → 로그인 병합을 Cloud Function(admin)으로 옮긴 뒤 조일 것 (release_blockers #2).
     match /memoirs/{userId} {
       allow read, write: if request.auth != null;
+    }
+
+    // 공유 자서전(공유링크 D-2): 링크 가진 사람은 읽기 / 생성·수정은 소유자만
+    match /shared/{shareId} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.ownerUid == request.auth.uid;
     }
   }
 }
