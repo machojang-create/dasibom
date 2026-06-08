@@ -265,6 +265,11 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .bom-bubble{position:relative;flex:1;background:#fff;border:1px solid var(--sepiaP,#e7ddcf);border-radius:18px 18px 18px 4px;padding:14px 16px;box-shadow:0 4px 14px rgba(120,90,60,.08)}
 .bom-bubble .q-txt{margin-bottom:0}
 .q-ex{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13.5px;color:var(--sepia,#9a8a7a);background:rgba(201,169,97,.10);border-left:3px solid var(--gold,#C9A961);border-radius:8px;padding:10px 12px;margin-bottom:20px;line-height:1.6}
+/* C-3b 민감질문 공개여부 토글 */
+.q-private{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-6px 0 18px;padding:10px 12px;background:rgba(92,122,74,.07);border-radius:10px}
+.q-private-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia,#9a8a7a)}
+.q-private-btn{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;font-weight:600;padding:7px 14px;border-radius:50px;border:1.5px solid var(--sepiaP,#e7ddcf);background:#fff;color:var(--sepia,#9a8a7a);cursor:pointer}
+.q-private-btn.on{background:var(--green,#0e9d7d);color:#fff;border-color:transparent}
 .mode-row{display:flex;gap:8px;margin-bottom:16px}
 .mode-btn{flex:1;padding:9px 0;cursor:pointer;transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;border:1px solid var(--sepiaP)}
 .mode-btn.on{background:var(--sepiaP);border-color:var(--sepiaL);color:var(--inkL)}
@@ -608,6 +613,11 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
     </div>
     <div class="q-hint" id="qHint"></div>
     <div class="q-ex" id="qEx"></div>
+    <div class="q-private" id="qPrivate" style="display:none">
+      <span class="q-private-lbl">🔒 이 이야기는</span>
+      <button type="button" class="q-private-btn" id="qpPrivate">나만 보기</button>
+      <button type="button" class="q-private-btn" id="qpPublic">책에 공개</button>
+    </div>
     <div class="mode-row">
       <button class="mode-btn on" id="mTxt">✏️ 글로 쓰기</button>
       <button class="mode-btn" id="mVoice">🎤 말로 하기</button>
@@ -832,6 +842,7 @@ async function loadFromFirestore(uid){
       APP.pkg       = data.pkg       || APP.pkg;
       APP.maxQ      = data.maxQ      || APP.maxQ;
       if(data.qDates) APP.qDates = data.qDates;
+      if(data.qPrivate) APP.qPrivate = data.qPrivate;
       APP.bookTitle = data.bookTitle || APP.bookTitle;
       if(data.preview) APP.preview = data.preview;
       LS.save('answers',   APP.answers);
@@ -839,6 +850,7 @@ async function loadFromFirestore(uid){
       LS.save('maxQ',      APP.maxQ);
       LS.save('bookTitle', APP.bookTitle);
       LS.save('qDates',    APP.qDates||{});
+      LS.save('qPrivate',  APP.qPrivate||{});
       buildQuestionList();
       if(APP.preview) LS.save('preview', APP.preview);
       popToast('이전에 작성하신 내용을 불러왔습니다 ✓', 4000);
@@ -1115,6 +1127,7 @@ async function saveToFirestoreForce(answers, pkg, bookTitle){
     pkg:            pkg || 'free',
     maxQ:           APP.maxQ,
     qDates:         APP.qDates||{},
+    qPrivate:       APP.qPrivate||{},
     bookTitle:      bookTitle || '',
     answerCount:    answerCount,
     estimatedPages: estimatedPages,
@@ -1276,6 +1289,7 @@ var APP={
   bookTitle:LS.load('bookTitle',''),
   printSet:null, coverPhoto:LS.load('coverPhoto',null),
   qDates:  LS.load('qDates',{}),   // {질문index:'YYYY-MM-DD'} 처음 답변/패스한 날 (하루 캡·일차 계산용)
+  qPrivate:LS.load('qPrivate',{}),  // {질문index: true=나만보기 / false=공개} (민감질문)
   selProd: 'book', mode:'text',
   recording:false, rec:null, chTimer:null, genIv:null
 };
@@ -1284,6 +1298,7 @@ function saveState(){
   LS.save('pkg',APP.pkg); LS.save('maxQ',APP.maxQ);
   LS.save('curQ',APP.curQ); LS.save('answers',APP.answers);
   LS.save('qDates',APP.qDates||{});
+  LS.save('qPrivate',APP.qPrivate||{});
   LS.save('bookTitle',APP.bookTitle);
   if(APP.preview) LS.save('preview',APP.preview);
   if(APP.coverPhoto) LS.save('coverPhoto',APP.coverPhoto);
@@ -1513,7 +1528,7 @@ function confirmReset(){
   }
 }
 function startNew(){
-  APP.curQ=0;APP.answers={};APP.preview=null;APP.bookTitle='';APP.qDates={};buildQuestionList();saveState();
+  APP.curQ=0;APP.answers={};APP.preview=null;APP.bookTitle='';APP.qDates={};APP.qPrivate={};buildQuestionList();saveState();
   showStory(QS[0].ch,function(){renderQ(0);go('s-q');});
 }
 function resumeJourney(){
@@ -1561,6 +1576,11 @@ function renderQ(i){
   el('qHint').textContent=q.h;
   el('qEx').textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게 적어주세요. 짧아도 괜찮아요.';
   var _bf=el('bomFace'); if(_bf){ _bf.src='img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
+  var _qp=el('qPrivate');
+  if(_qp){ if(q.sensitive){ _qp.style.display='';
+      var _priv=(APP.qPrivate&&APP.qPrivate[i]!==undefined)?APP.qPrivate[i]:true; // 기본 나만보기
+      el('qpPrivate').classList.toggle('on',_priv); el('qpPublic').classList.toggle('on',!_priv);
+    } else { _qp.style.display='none'; } }
   // 이전 답변 복원 (이전/다음 이동 시 데이터 유지)
   el('tArea').value=APP.answers[i]||'';
   el('vArea').value=APP.answers[i]||'';
@@ -1889,6 +1909,8 @@ document.addEventListener('DOMContentLoaded',function(){
   el('btnStart').addEventListener('click',function(){go('s-package');});
   el('btnContinue').addEventListener('click',function(){renderDash();go('s-dash');});
   el('btnDayDone').addEventListener('click',function(){renderDash();go('s-dash');});
+  el('qpPrivate').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=true; el('qpPrivate').classList.add('on'); el('qpPublic').classList.remove('on'); saveState(); });
+  el('qpPublic').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=false; el('qpPublic').classList.add('on'); el('qpPrivate').classList.remove('on'); saveState(); });
 
   initPkgCards();
   el('btnPkgSelect').addEventListener('click',function(){
@@ -1897,7 +1919,7 @@ document.addEventListener('DOMContentLoaded',function(){
     APP.pkg=card.dataset.pkg;
     APP.maxQ=Number(card.dataset.q);
     APP.printSet=selPrintSet;
-    APP.answers={};APP.curQ=0;APP.preview=null;APP.bookTitle='';APP.qDates={};
+    APP.answers={};APP.curQ=0;APP.preview=null;APP.bookTitle='';APP.qDates={};APP.qPrivate={};
     buildQuestionList();
     saveState();renderDash();go('s-dash');
   });
