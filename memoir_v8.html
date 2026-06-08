@@ -708,6 +708,14 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
     <div class="pv-orn">❧</div>
   </div>
   <div class="pv-body" id="pvBody"></div>
+  <div id="pvShare" style="display:none;text-align:center;padding:18px 20px">
+    <button id="btnMakeShare" style="padding:14px 22px;border:none;border-radius:50px;background:#0e9d7d;color:#fff;font-size:15px;font-weight:700;cursor:pointer">🔗 공유 링크 만들기 (3일간 유효)</button>
+    <div id="shareResult" style="display:none;margin-top:12px">
+      <input id="shareUrl" readonly style="width:100%;max-width:440px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box" onclick="this.select()">
+      <div style="margin-top:8px"><button id="btnCopyShare" style="padding:8px 18px;border:none;border-radius:8px;background:#1F2A1A;color:#fff;cursor:pointer">링크 복사</button></div>
+      <div style="font-size:12px;color:#999;margin-top:8px">이 링크는 3일간 유효합니다. ('나만 보기'로 표시한 이야기는 빠집니다)</div>
+    </div>
+  </div>
   <div class="cta" id="pvCta" style="display:none">
     <div class="cta-ey">소중한 선물</div>
     <div class="cta-h">"이 이야기를<br>기억으로 남겨보세요"</div>
@@ -1782,9 +1790,9 @@ async function startGen(title){
 
     try{
       var para=await expandAnswer(QS[i].q, APP.answers[i], STORIES[QS[i].ch].name, paraPerQ);
-      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:para});
+      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:para, private:!!(APP.qPrivate&&APP.qPrivate[i])});
     }catch(e){
-      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:APP.answers[i]});
+      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:APP.answers[i], private:!!(APP.qPrivate&&APP.qPrivate[i])});
     }
   }
 
@@ -1792,6 +1800,7 @@ async function startGen(title){
   el('genProgressTxt').textContent='완성되었습니다!';
 
   APP.preview={title:title, chapters:groupByChapter(generated)};
+  APP.sharedChapters=groupByChapter(generated.filter(function(g){return !g.private;})); // 공유본(나만보기 제외)
   saveState();
   setTimeout(showPreview, 800);
 }
@@ -1814,7 +1823,7 @@ function groupByChapter(items){
 }
 
 // ── 미리보기 ──
-function showPreview(){
+function showPreview(shared){
   var p=APP.preview;
   el('pvTitle').textContent=p.title||'나의 이야기';
   el('pvSub').textContent=new Date().getFullYear()+'년 · 나의 자서전';
@@ -1831,7 +1840,7 @@ function showPreview(){
 
   var body=el('pvBody'); body.innerHTML='';
   var chs=Object.keys(p.chapters).map(Number).sort(function(a,b){return a-b;});
-  var isFree=APP.pkg==='free';
+  var isFree=!shared && APP.pkg==='free';
 
   chs.forEach(function(ci,idx){
     var chData=p.chapters[ci];
@@ -1849,7 +1858,7 @@ function showPreview(){
 
     var lbl=document.createElement('div');
     lbl.className='pv-story-lbl';
-    lbl.textContent=STORIES[ci].badge+' · '+chData.storyName;
+    lbl.textContent=(STORIES[ci]?STORIES[ci].badge:'🌸')+' · '+chData.storyName;
     div.appendChild(lbl);
 
     var content=document.createElement('div');
@@ -1876,9 +1885,11 @@ function showPreview(){
     body.appendChild(div);
   });
 
-  // CTA
-  el('pvCta').style.display='block';
-  renderProds();
+  // CTA / 공유 (공유 보기 모드면 숨김)
+  el('pvCta').style.display = shared ? 'none' : 'block';
+  var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = (shared||isFree) ? 'none' : '';
+  var _back=el('btnPvBack'); if(_back) _back.style.display = shared ? 'none' : '';
+  if(!shared) renderProds();
   go('s-preview');
 
   // 복사 방지
@@ -1887,6 +1898,44 @@ function showPreview(){
 }
 
 function scrollToCta(){document.getElementById('pvCta').scrollIntoView({behavior:'smooth'});}
+
+// ── D-2 공유링크 ──
+async function makeShareLink(){
+  try{
+    await initFirebase();
+    if(!_auth || !_auth.currentUser){ popToast('로그인 후 공유할 수 있어요'); return; }
+    var chapters = APP.sharedChapters || (APP.preview && APP.preview.chapters) || {};
+    if(!Object.keys(chapters).length){ popToast('공유할 내용이 없어요'); return; }
+    var ref = _db.collection('shared').doc(); // 추측 불가 자동 ID
+    await ref.set({
+      ownerUid: _auth.currentUser.uid,
+      title: (APP.bookTitle || (APP.preview && APP.preview.title) || '나의 이야기'),
+      chapters: chapters,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    var url = location.origin + location.pathname + '?share=' + ref.id;
+    el('shareUrl').value = url; el('shareResult').style.display='block';
+    popToast('공유 링크가 만들어졌어요 (3일간 유효) ✓', 4000);
+  }catch(e){ console.warn('공유 생성 실패:', e.message); popToast('공유 링크 생성에 실패했어요'); }
+}
+function copyShare(){
+  var i=el('shareUrl'); if(!i) return; i.select();
+  if(navigator.clipboard){ navigator.clipboard.writeText(i.value).catch(function(){}); }
+  else { try{ document.execCommand('copy'); }catch(e){} }
+  popToast('링크를 복사했어요 ✓');
+}
+async function loadShared(id){
+  try{
+    await initFirebase();
+    var doc = await _db.collection('shared').doc(id).get();
+    if(!doc.exists){ alert('존재하지 않는 공유 링크입니다.'); return; }
+    var d = doc.data();
+    var created = (d.createdAt && d.createdAt.toMillis) ? d.createdAt.toMillis() : 0;
+    if(created && (Date.now()-created > 3*24*60*60*1000)){ alert('이 공유 링크는 기간(3일)이 지나 만료되었습니다.'); return; }
+    APP.preview = { title: d.title||'나의 이야기', chapters: d.chapters||{} };
+    showPreview(true);
+  }catch(e){ console.warn('공유 불러오기 실패:', e.message); alert('공유 자서전을 불러오지 못했습니다.'); }
+}
 
 function renderProds(){
   var e=el('prodCards'); if(!e)return;
@@ -1901,6 +1950,8 @@ function completePurchase(){closeModal();popToast('결제 페이지로 이동합
 
 // ── 이벤트 바인딩 ──
 document.addEventListener('DOMContentLoaded',function(){
+  var _shareId=new URLSearchParams(location.search).get('share');
+  if(_shareId){ loadShared(_shareId); return; } // 공유 보기 모드: 일반 초기화 건너뜀
   // Firebase 초기화 + 익명 로그인 + 이전 내용 복원 (백그라운드)
   autoSignIn();
 
@@ -1924,6 +1975,8 @@ document.addEventListener('DOMContentLoaded',function(){
   el('btnDayDone').addEventListener('click',function(){renderDash();go('s-dash');});
   el('qpPrivate').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=true; el('qpPrivate').classList.add('on'); el('qpPublic').classList.remove('on'); saveState(); });
   el('qpPublic').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=false; el('qpPublic').classList.add('on'); el('qpPrivate').classList.remove('on'); saveState(); });
+  el('btnMakeShare').addEventListener('click',makeShareLink);
+  el('btnCopyShare').addEventListener('click',copyShare);
 
   initPkgCards();
   el('btnPkgSelect').addEventListener('click',function(){
