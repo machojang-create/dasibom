@@ -1151,6 +1151,14 @@
     },900);
   };
 
+  // 안전장치: 30초 안에 '입장' 버튼이 안 뜨면(연출이 막힌 것) 강제로 홈 진입. 정상 입장 대기는 건드리지 않음.
+  setTimeout(function(){
+    if(!introEl || !document.body.contains(introEl) || introEl.classList.contains('di-hide')) return;
+    var ew=document.getElementById('di-enter-wrap');
+    if(ew && ew.classList.contains('show')) return; // 정상적으로 입장 버튼 떠서 대기중
+    if(window.onIntroComplete) window.onIntroComplete();
+  }, 30000);
+
   // Three.js 동적 로드 후 인트로 실행
   var s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
