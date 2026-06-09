@@ -274,6 +274,16 @@ body.ts-3{--ts:1.4}
 .ts-btn.b2{font-size:17px}
 .ts-btn.b3{font-size:21px}
 .ts-btn.on{background:var(--green,#0e9d7d);color:#fff}
+/* ── 고대비 모드 (시니어 저시력 가독성) ── */
+.ts-bar-div{width:1px;height:20px;background:var(--sepiaP,#e7ddcf);margin:0 3px;flex:0 0 auto}
+.hc-btn{font-size:17px;color:var(--inkL,#3D3228)}
+body.hc{--ink:#000;--inkL:#1A1A1A;--sepia:#574531;--sepiaL:#6F583F}
+body.hc .q-hint{opacity:1;color:#3A2E20}
+body.hc .q-ex{color:#2A2018;background:rgba(201,169,97,.20);border-left-width:4px}
+body.hc .q-ta,body.hc .title-input,body.hc .v-ta{background:#fff;border-color:#000;color:#000}
+body.hc .pv-p{color:#111}
+body.hc .story-st{opacity:1}
+body.hc .ts-bar{border-color:#000;background:#fff}
 .q-ex{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:calc(13.5px * var(--ts,1));color:var(--sepia,#9a8a7a);background:rgba(201,169,97,.10);border-left:3px solid var(--gold,#C9A961);border-radius:8px;padding:10px 12px;margin-bottom:20px;line-height:1.6}
 /* C-3b 민감질문 공개여부 토글 */
 .q-private{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:-6px 0 18px;padding:10px 12px;background:rgba(92,122,74,.07);border-radius:10px}
@@ -438,6 +448,8 @@ body.ts-3{--ts:1.4}
   <button type="button" class="ts-btn b1" data-ts="1" aria-label="보통 글씨" title="보통">가</button>
   <button type="button" class="ts-btn b2" data-ts="2" aria-label="크게" title="크게">가</button>
   <button type="button" class="ts-btn b3" data-ts="3" aria-label="아주 크게" title="아주 크게">가</button>
+  <span class="ts-bar-div" aria-hidden="true"></span>
+  <button type="button" class="ts-btn hc-btn" id="hcBtn" aria-label="고대비 모드" aria-pressed="false" title="고대비">◑</button>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1933,6 +1945,23 @@ function setTextSize(n){
     var bar=document.getElementById('tsBar');
     if(bar){ var btns=bar.querySelectorAll('.ts-btn'); for(var i=0;i<btns.length;i++){ btns[i].addEventListener('click', function(){ setTextSize(this.getAttribute('data-ts')); }); } }
     setTextSize(saved);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
+})();
+
+// 고대비 모드 (시니어 저시력 가독성)
+function setHighContrast(on){
+  document.body.classList.toggle('hc', !!on);
+  try{ localStorage.setItem('memoir_hc', on?'1':'0'); }catch(e){}
+  var b=document.getElementById('hcBtn');
+  if(b){ b.classList.toggle('on', !!on); b.setAttribute('aria-pressed', on?'true':'false'); }
+}
+(function initHC(){
+  function bind(){
+    var on=false; try{ on=localStorage.getItem('memoir_hc')==='1'; }catch(e){}
+    var b=document.getElementById('hcBtn');
+    if(b){ b.addEventListener('click', function(){ setHighContrast(!document.body.classList.contains('hc')); }); }
+    setHighContrast(on);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
 })();
