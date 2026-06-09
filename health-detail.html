@@ -12,18 +12,18 @@ html,body{width:100%;min-height:100vh;overflow-x:hidden}
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#F5F8F0;color:#424242}
 
 /* ── GNB ── */
-header{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(121,85,72,.12);background:rgba(255,253,231,.95);backdrop-filter:blur(12px)}
+header{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(12,124,98,.12);background:rgba(246,251,249,.95);backdrop-filter:blur(12px)}
 .logo{display:flex;align-items:center;gap:8px;text-decoration:none}
-.logo-text{font-size:20px;font-weight:800;color:#4A7A3A}
-.logo-sub{font-size:10px;color:rgba(121,85,72,.4);letter-spacing:2px}
-.back-btn{background:none;border:1.5px solid rgba(121,85,72,.22);color:#4A7A3A;font-family:inherit;font-size:14px;font-weight:600;padding:9px 16px;border-radius:50px;cursor:pointer;display:flex;align-items:center;gap:5px}
+.logo-text{font-size:20px;font-weight:800;color:#0C7C62}
+.logo-sub{font-size:10px;color:rgba(12,124,98,.4);letter-spacing:2px}
+.back-btn{background:none;border:1.5px solid rgba(12,124,98,.22);color:#0C7C62;font-family:inherit;font-size:14px;font-weight:600;padding:9px 16px;border-radius:50px;cursor:pointer;display:flex;align-items:center;gap:5px}
 .back-btn:active{opacity:.7}
 
 /* ── 카테고리 탭 ── */
-.cat-tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 20px 14px;scrollbar-width:none;position:sticky;top:116px;z-index:100;background:rgba(255,253,231,.96);backdrop-filter:blur(8px);border-bottom:1px solid rgba(121,85,72,.07)}
+.cat-tabs{display:flex;gap:8px;overflow-x:auto;padding:16px 20px 14px;scrollbar-width:none;position:sticky;top:116px;z-index:100;background:rgba(246,251,249,.96);backdrop-filter:blur(8px);border-bottom:1px solid rgba(12,124,98,.07)}
 .cat-tabs::-webkit-scrollbar{display:none}
-.cat-tab{flex-shrink:0;padding:10px 18px;border-radius:50px;border:1.5px solid rgba(121,85,72,.18);background:#fff;color:#4A7A3A;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
-.cat-tab.active{background:linear-gradient(135deg,#A5C87A,#8FBC5A);border-color:transparent;color:#1F2A1A;box-shadow:0 3px 10px rgba(255,213,79,.4)}
+.cat-tab{flex-shrink:0;padding:10px 18px;border-radius:50px;border:1.5px solid rgba(12,124,98,.18);background:#fff;color:#0C7C62;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap}
+.cat-tab.active{background:linear-gradient(135deg,#83CBB2,#8FBC5A);border-color:transparent;color:#1F2A1A;box-shadow:0 3px 10px rgba(131,203,178,.4)}
 .cat-tab:active{opacity:.8}
 
 /* ════════════════════════════════
@@ -31,14 +31,14 @@ header{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify
    ════════════════════════════════ */
 .report-wrap{max-width:600px;margin:0 auto;padding:28px 20px 0}
 
-.report-header{background:#fff;border-radius:22px;padding:28px 24px 24px;margin-bottom:20px;border:1.5px solid rgba(129,199,132,.25);box-shadow:0 3px 18px rgba(121,85,72,.07)}
+.report-header{background:#fff;border-radius:22px;padding:28px 24px 24px;margin-bottom:20px;border:1.5px solid rgba(129,199,132,.25);box-shadow:0 3px 18px rgba(12,124,98,.07)}
 .report-label{display:inline-flex;align-items:center;gap:6px;font-size:10px;font-weight:700;letter-spacing:2.5px;color:#388E3C;background:rgba(129,199,132,.13);padding:5px 14px;border-radius:50px;margin-bottom:16px}
 .report-title{font-size:clamp(1.25rem,5.5vw,1.625rem);font-weight:800;color:#1F2A1A;line-height:1.35;letter-spacing:-.5px;margin-bottom:6px}
 .report-cat-name{font-size:clamp(0.875rem,3.5vw,1rem);color:#388E3C;font-weight:700;margin-bottom:20px}
 
 /* AI 총평 블록 */
-.ai-summary{background:linear-gradient(135deg,rgba(255,253,231,.8),rgba(255,249,196,.6));border:1.5px solid rgba(255,213,79,.35);border-radius:16px;padding:20px 20px 18px;margin-bottom:18px}
-.ai-summary-label{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(121,85,72,.5);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.ai-summary{background:linear-gradient(135deg,rgba(246,251,249,.8),rgba(214,240,231,.6));border:1.5px solid rgba(131,203,178,.35);border-radius:16px;padding:20px 20px 18px;margin-bottom:18px}
+.ai-summary-label{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(12,124,98,.5);margin-bottom:12px;display:flex;align-items:center;gap:7px}
 .ai-chip{display:inline-flex;align-items:center;gap:4px;background:#fff;border:1px solid rgba(129,199,132,.4);border-radius:50px;padding:3px 10px 3px 6px;font-size:10px;font-weight:700;color:#388E3C}
 .ai-chip-dot{width:6px;height:6px;border-radius:50%;background:#81C784;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
@@ -46,31 +46,31 @@ header{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify
 .ai-text strong{color:#388E3C;font-weight:700}
 
 /* 핵심 성분 태그 */
-.key-ingr-title{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(121,85,72,.5);margin-bottom:10px}
+.key-ingr-title{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(12,124,98,.5);margin-bottom:10px}
 .key-ingr-tags{display:flex;flex-wrap:wrap;gap:8px}
-.key-ingr-tag{font-size:13px;color:#4A7A3A;background:rgba(255,213,79,.15);padding:7px 16px;border-radius:50px;border:1.5px solid rgba(255,213,79,.35);font-weight:600;line-height:1}
+.key-ingr-tag{font-size:13px;color:#0C7C62;background:rgba(131,203,178,.15);padding:7px 16px;border-radius:50px;border:1.5px solid rgba(131,203,178,.35);font-weight:600;line-height:1}
 
 /* ════════════════════════════════
    추천 상품 리스트 (텍스트 중심)
    ════════════════════════════════ */
-.recommend-label{font-size:11px;font-weight:700;letter-spacing:2.5px;color:rgba(121,85,72,.45);text-align:center;margin-bottom:18px;display:flex;align-items:center;gap:10px}
-.recommend-label::before,.recommend-label::after{content:'';flex:1;height:1px;background:rgba(121,85,72,.12)}
+.recommend-label{font-size:11px;font-weight:700;letter-spacing:2.5px;color:rgba(12,124,98,.45);text-align:center;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.recommend-label::before,.recommend-label::after{content:'';flex:1;height:1px;background:rgba(12,124,98,.12)}
 
 .product-list{display:flex;flex-direction:column;gap:14px;padding-bottom:100px}
 
-.product-row{background:#fff;border-radius:20px;border:1.5px solid rgba(121,85,72,.1);padding:22px 22px 20px;cursor:pointer;transition:box-shadow .2s,transform .15s;position:relative}
-.product-row:active{transform:scale(.985);box-shadow:0 6px 24px rgba(121,85,72,.12)}
+.product-row{background:#fff;border-radius:20px;border:1.5px solid rgba(12,124,98,.1);padding:22px 22px 20px;cursor:pointer;transition:box-shadow .2s,transform .15s;position:relative}
+.product-row:active{transform:scale(.985);box-shadow:0 6px 24px rgba(12,124,98,.12)}
 
 /* 순위 뱃지 */
-.rank-badge{position:absolute;top:-1px;left:20px;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;font-size:11px;font-weight:800;padding:4px 14px;border-radius:0 0 10px 10px;letter-spacing:.5px}
+.rank-badge{position:absolute;top:-1px;left:20px;background:linear-gradient(135deg,#83CBB2,#8FBC5A);color:#1F2A1A;font-size:11px;font-weight:800;padding:4px 14px;border-radius:0 0 10px 10px;letter-spacing:.5px}
 .rank-badge.rank-2{background:linear-gradient(135deg,#E0E0E0,#BDBDBD);color:#555}
 .rank-badge.rank-3{background:linear-gradient(135deg,#D7B899,#C8A87A);color:#1B3A12}
 
 .product-row-top{display:flex;align-items:flex-start;gap:14px;margin-top:12px}
-.product-row-thumb{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#F5F8F0,#FFF9C4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1.5px solid rgba(255,213,79,.25)}
+.product-row-thumb{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#F5F8F0,#FFF9C4);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:1.5px solid rgba(131,203,178,.25)}
 .product-row-info{flex:1;min-width:0}
 .product-row-name{font-size:clamp(1rem,4.2vw,1.1875rem);font-weight:800;color:#1F2A1A;line-height:1.35;margin-bottom:6px;letter-spacing:-.3px}
-.product-row-summary{font-size:clamp(0.8125rem,3.3vw,0.9375rem);color:#4A7A3A;line-height:1.8;margin-bottom:10px}
+.product-row-summary{font-size:clamp(0.8125rem,3.3vw,0.9375rem);color:#0C7C62;line-height:1.8;margin-bottom:10px}
 
 /* 핵심 효능 하이라이트 */
 .effect-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
@@ -80,67 +80,67 @@ header{position:sticky;top:0;z-index:200;display:flex;align-items:center;justify
 .product-row-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .price-block{}
 .price-main{font-size:clamp(1.1875rem,4.8vw,1.375rem);font-weight:800;color:#1F2A1A;line-height:1}
-.price-orig{font-size:12px;color:rgba(121,85,72,.4);text-decoration:line-through;margin-right:5px}
+.price-orig{font-size:12px;color:rgba(12,124,98,.4);text-decoration:line-through;margin-right:5px}
 .price-discount{font-size:12px;font-weight:700;color:#E53935}
-.btn-read{flex-shrink:0;padding:12px 20px;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;font-size:14px;font-weight:800;border:none;border-radius:50px;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 3px 10px rgba(255,213,79,.4)}
+.btn-read{flex-shrink:0;padding:12px 20px;background:linear-gradient(135deg,#83CBB2,#8FBC5A);color:#1F2A1A;font-size:14px;font-weight:800;border:none;border-radius:50px;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 3px 10px rgba(131,203,178,.4)}
 .btn-read:active{opacity:.85}
 
 /* ════════════════════════════════
    상세 패널 (Slide-up) — 텍스트 최우선
    ════════════════════════════════ */
-.detail-overlay{position:fixed;inset:0;background:rgba(78,52,46,.52);z-index:500;opacity:0;pointer-events:none;transition:opacity .28s}
+.detail-overlay{position:fixed;inset:0;background:rgba(10,92,73,.52);z-index:500;opacity:0;pointer-events:none;transition:opacity .28s}
 .detail-overlay.open{opacity:1;pointer-events:auto}
 .detail-panel{position:fixed;bottom:0;left:0;right:0;max-height:94vh;background:#F5F8F0;border-radius:28px 28px 0 0;z-index:501;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,.72,0,1);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .detail-overlay.open .detail-panel{transform:translateY(0)}
-.detail-handle{width:40px;height:4px;background:rgba(121,85,72,.18);border-radius:2px;margin:14px auto 0}
-.detail-close{position:absolute;top:14px;right:18px;background:rgba(121,85,72,.1);border:none;color:#4A7A3A;cursor:pointer;width:36px;height:36px;border-radius:50%;font-size:20px;display:flex;align-items:center;justify-content:center}
+.detail-handle{width:40px;height:4px;background:rgba(12,124,98,.18);border-radius:2px;margin:14px auto 0}
+.detail-close{position:absolute;top:14px;right:18px;background:rgba(12,124,98,.1);border:none;color:#0C7C62;cursor:pointer;width:36px;height:36px;border-radius:50%;font-size:20px;display:flex;align-items:center;justify-content:center}
 
 .detail-body{padding:22px 22px 40px}
 
 /* 상세: 성분 분석 최우선 */
-.detail-report-title{font-size:11px;font-weight:700;letter-spacing:2.5px;color:rgba(121,85,72,.45);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.detail-report-title::after{content:'';flex:1;height:1px;background:rgba(121,85,72,.1)}
+.detail-report-title{font-size:11px;font-weight:700;letter-spacing:2.5px;color:rgba(12,124,98,.45);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.detail-report-title::after{content:'';flex:1;height:1px;background:rgba(12,124,98,.1)}
 
 .detail-name{font-size:clamp(1.25rem,5.5vw,1.625rem);font-weight:800;color:#1F2A1A;line-height:1.3;letter-spacing:-.5px;margin-bottom:18px}
 
 /* 분석 카드 */
-.analysis-card{background:#fff;border-radius:18px;padding:22px;margin-bottom:14px;border:1.5px solid rgba(255,213,79,.28)}
-.analysis-card-title{font-size:12px;font-weight:700;letter-spacing:1.5px;color:rgba(121,85,72,.5);margin-bottom:12px;display:flex;align-items:center;gap:7px}
+.analysis-card{background:#fff;border-radius:18px;padding:22px;margin-bottom:14px;border:1.5px solid rgba(131,203,178,.28)}
+.analysis-card-title{font-size:12px;font-weight:700;letter-spacing:1.5px;color:rgba(12,124,98,.5);margin-bottom:12px;display:flex;align-items:center;gap:7px}
 .analysis-card-title svg{flex-shrink:0}
 .analysis-text{font-size:clamp(1rem,4.2vw,1.125rem);color:#1F2A1A;line-height:2;font-weight:400}
 .analysis-text br+br{display:block;content:'';margin-top:4px}
 
-.caution-card{background:rgba(255,248,225,.8);border:1.5px solid rgba(255,213,79,.4);border-radius:16px;padding:18px 20px;margin-bottom:14px}
-.caution-title{font-size:12px;font-weight:700;letter-spacing:1px;color:#4A7A3A;margin-bottom:8px}
-.caution-text{font-size:clamp(0.875rem,3.5vw,1rem);color:#4A7A3A;line-height:1.9}
+.caution-card{background:rgba(255,248,225,.8);border:1.5px solid rgba(131,203,178,.4);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.caution-title{font-size:12px;font-weight:700;letter-spacing:1px;color:#0C7C62;margin-bottom:8px}
+.caution-text{font-size:clamp(0.875rem,3.5vw,1rem);color:#0C7C62;line-height:1.9}
 
 /* 성분 태그 */
-.detail-ingr-title{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(121,85,72,.45);margin-bottom:10px}
+.detail-ingr-title{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(12,124,98,.45);margin-bottom:10px}
 .detail-ingr-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
-.detail-ingr-tag{font-size:13px;color:#4A7A3A;background:rgba(255,213,79,.15);padding:6px 14px;border-radius:50px;border:1.5px solid rgba(255,213,79,.3);font-weight:600}
+.detail-ingr-tag{font-size:13px;color:#0C7C62;background:rgba(131,203,178,.15);padding:6px 14px;border-radius:50px;border:1.5px solid rgba(131,203,178,.3);font-weight:600}
 
 /* 가격 요약 */
-.detail-price-box{background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:20px;border:1.5px solid rgba(121,85,72,.1);display:flex;align-items:center;justify-content:space-between}
-.detail-price-label{font-size:13px;color:rgba(121,85,72,.55);font-weight:600}
+.detail-price-box{background:#fff;border-radius:16px;padding:18px 20px;margin-bottom:20px;border:1.5px solid rgba(12,124,98,.1);display:flex;align-items:center;justify-content:space-between}
+.detail-price-label{font-size:13px;color:rgba(12,124,98,.55);font-weight:600}
 .detail-price-right{text-align:right}
 .detail-price{font-size:clamp(1.375rem,5.5vw,1.75rem);font-weight:800;color:#1F2A1A;line-height:1}
-.detail-price-orig{font-size:13px;color:rgba(121,85,72,.38);text-decoration:line-through}
+.detail-price-orig{font-size:13px;color:rgba(12,124,98,.38);text-decoration:line-through}
 .detail-discount{font-size:13px;font-weight:700;color:#E53935;margin-left:5px}
 
 /* 구매 버튼 */
 .buy-group{display:flex;flex-direction:column;gap:10px}
-.btn-buy{width:100%;padding:20px 0;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;font-size:clamp(1.0625rem,4.5vw,1.25rem);font-weight:800;border:none;border-radius:16px;cursor:pointer;font-family:inherit;box-shadow:0 6px 20px rgba(255,213,79,.45);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .18s}
+.btn-buy{width:100%;padding:20px 0;background:linear-gradient(135deg,#83CBB2,#8FBC5A);color:#1F2A1A;font-size:clamp(1.0625rem,4.5vw,1.25rem);font-weight:800;border:none;border-radius:16px;cursor:pointer;font-family:inherit;box-shadow:0 6px 20px rgba(131,203,178,.45);display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .18s}
 .btn-buy:active{transform:scale(.97)}
 .btn-buy-note{font-size:12px;font-weight:400;opacity:.65}
-.btn-source{width:100%;padding:15px 0;background:transparent;color:#4A7A3A;font-size:15px;font-weight:600;border:1.5px solid rgba(121,85,72,.18);border-radius:14px;cursor:pointer;font-family:inherit}
+.btn-source{width:100%;padding:15px 0;background:transparent;color:#0C7C62;font-size:15px;font-weight:600;border:1.5px solid rgba(12,124,98,.18);border-radius:14px;cursor:pointer;font-family:inherit}
 
 /* ── 글자 크기 조절 위젯 ── */
 .font-ctrl{position:fixed;bottom:88px;right:16px;display:flex;flex-direction:column;gap:6px;z-index:800}
-.font-ctrl-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(78,52,46,.18);transition:transform .15s,box-shadow .15s}
+.font-ctrl-btn{width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;font-family:inherit;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 10px rgba(10,92,73,.18);transition:transform .15s,box-shadow .15s}
 .font-ctrl-btn:active{transform:scale(.91)}
-.font-ctrl-up{background:#A5C87A;color:#1F2A1A;font-size:18px}
-.font-ctrl-down{background:#fff;color:#4A7A3A;font-size:14px;border:1.5px solid rgba(121,85,72,.2)}
-.font-ctrl-reset{background:rgba(121,85,72,.08);color:#4A7A3A;font-size:11px;font-weight:700;border:1.5px solid rgba(121,85,72,.15)}
+.font-ctrl-up{background:#83CBB2;color:#1F2A1A;font-size:18px}
+.font-ctrl-down{background:#fff;color:#0C7C62;font-size:14px;border:1.5px solid rgba(12,124,98,.2)}
+.font-ctrl-reset{background:rgba(12,124,98,.08);color:#0C7C62;font-size:11px;font-weight:700;border:1.5px solid rgba(12,124,98,.15)}
 
 /* ── 고대비 모드 ── */
 body.high-contrast{background:#fff !important;color:#000 !important}
@@ -151,24 +151,24 @@ body.high-contrast .product-row-summary{color:#000 !important}
 body.high-contrast .product-row{border:2px solid #000 !important}
 body.high-contrast .btn-buy{background:#000 !important;color:#fff !important;box-shadow:none !important}
 body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !important}
-.hc-btn{position:fixed;bottom:88px;left:16px;background:#fff;border:2px solid rgba(121,85,72,.3);color:#4A7A3A;font-family:inherit;font-size:12px;font-weight:700;padding:10px 14px;border-radius:50px;cursor:pointer;z-index:800;box-shadow:0 2px 10px rgba(78,52,46,.12);transition:all .18s;white-space:nowrap}
+.hc-btn{position:fixed;bottom:88px;left:16px;background:#fff;border:2px solid rgba(12,124,98,.3);color:#0C7C62;font-family:inherit;font-size:12px;font-weight:700;padding:10px 14px;border-radius:50px;cursor:pointer;z-index:800;box-shadow:0 2px 10px rgba(10,92,73,.12);transition:all .18s;white-space:nowrap}
 .hc-btn.active{background:#1F2A1A;color:#fff;border-color:#1F2A1A}
 
 /* ── 토스트 ── */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1F2A1A;color:#F5F8F0;padding:14px 28px;font-size:14px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(78,52,46,.25);border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;font-family:inherit}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1F2A1A;color:#F5F8F0;padding:14px 28px;font-size:14px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(10,92,73,.25);border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;font-family:inherit}
 .toast.show{opacity:1}
 
 /* ── 로딩 ── */
-.loading{text-align:center;padding:60px 20px;color:rgba(121,85,72,.45);font-size:15px;line-height:2}
-.loading-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#A5C87A;animation:blink 1.2s infinite;margin:0 3px}
+.loading{text-align:center;padding:60px 20px;color:rgba(12,124,98,.45);font-size:15px;line-height:2}
+.loading-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#83CBB2;animation:blink 1.2s infinite;margin:0 3px}
 .loading-dot:nth-child(2){animation-delay:.4s}
 .loading-dot:nth-child(3){animation-delay:.8s}
 @keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
 
 /* ── 모드 탭 (건강 큐레이션 | 안전 체크) ── */
-.mode-tabs{display:flex;background:rgba(255,253,231,.97);border-bottom:2px solid rgba(121,85,72,.1);position:sticky;top:68px;z-index:190;backdrop-filter:blur(8px)}
-.mode-tab{flex:1;padding:13px 0;font-size:15px;font-weight:700;color:rgba(121,85,72,.45);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
-.mode-tab.active{color:#1F2A1A;border-bottom-color:#A5C87A}
+.mode-tabs{display:flex;background:rgba(246,251,249,.97);border-bottom:2px solid rgba(12,124,98,.1);position:sticky;top:68px;z-index:190;backdrop-filter:blur(8px)}
+.mode-tab{flex:1;padding:13px 0;font-size:15px;font-weight:700;color:rgba(12,124,98,.45);background:transparent;border:none;border-bottom:3px solid transparent;cursor:pointer;font-family:inherit;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.mode-tab.active{color:#1F2A1A;border-bottom-color:#83CBB2}
 .mode-tab:active{opacity:.75}
 
 /* ── 안전 체크 모드 컨테이너 ── */
@@ -188,33 +188,33 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 #pb-steps{display:flex;justify-content:space-between;padding:8px 2px 10px}
 .pstep{display:flex;flex-direction:column;align-items:center;gap:3px}
 .pdot{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.6);transition:all .3s}
-.pdot.done{background:#A5C87A;border-color:#A5C87A;color:#1F2A1A}
-.pdot.active{background:white;border-color:white;color:#4A7A3A}
+.pdot.done{background:#83CBB2;border-color:#83CBB2;color:#1F2A1A}
+.pdot.active{background:white;border-color:white;color:#0C7C62}
 .plabel{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;transition:color .3s}
 .plabel.active{color:white;font-weight:700}
 .pline{flex:1;display:flex;align-items:center;padding:0 4px;margin-bottom:14px}
 .pline-inner{flex:1;height:1px;background:rgba(255,255,255,.25)}
 #wiz-body{padding:16px 16px 0}
 #wiz-footer{position:sticky;bottom:0;background:#F5F8F0;border-top:1px solid #E8E4DC;padding:12px 16px 16px;z-index:150}
-#btn-next{width:100%;background:#4A7A3A;color:white;border:none;padding:18px;border-radius:16px;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(121,85,72,.3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
+#btn-next{width:100%;background:#0C7C62;color:white;border:none;padding:18px;border-radius:16px;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(12,124,98,.3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px}
 #btn-next:disabled{background:#D4E8C8;box-shadow:none;cursor:not-allowed}
 #btn-guide{width:100%;background:transparent;border:none;color:#6C757D;font-size:13px;cursor:pointer;padding:7px 0 0;text-align:center;display:none}
 .ibtn{background:white;border:1.5px solid #dee2e6;border-radius:14px;padding:12px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;position:relative;transition:transform .18s,box-shadow .18s,border-color .18s}
 .ibtn:active{transform:scale(.96)}
-.ibtn.on{background:#FFF9E6;border:2.5px solid #A5C87A;box-shadow:0 4px 14px rgba(121,85,72,.2);transform:scale(1.05)}
-.ibtn .chk{display:none;position:absolute;top:4px;right:4px;background:#4A7A3A;color:white;border-radius:50%;width:16px;height:16px;font-size:9px;align-items:center;justify-content:center;font-weight:700}
+.ibtn.on{background:#E9F6F0;border:2.5px solid #83CBB2;box-shadow:0 4px 14px rgba(12,124,98,.2);transform:scale(1.05)}
+.ibtn .chk{display:none;position:absolute;top:4px;right:4px;background:#0C7C62;color:white;border-radius:50%;width:16px;height:16px;font-size:9px;align-items:center;justify-content:center;font-weight:700}
 .ibtn.on .chk{display:flex}
 .ibtn-e{font-size:24px;line-height:1;transition:transform .18s}
 .ibtn.on .ibtn-e{transform:scale(1.2)}
 .ibtn-n{font-size:11px;font-weight:600;text-align:center;line-height:1.25;transition:color .18s}
-.ibtn.on .ibtn-n{color:#4A7A3A}
+.ibtn.on .ibtn-n{color:#0C7C62}
 .cat-scroll{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .cat-scroll::-webkit-scrollbar{display:none}
 .cbtn{padding:7px 13px;border-radius:50px;font-size:12px;cursor:pointer;border:1.5px solid #dee2e6;background:white;color:#6C757D;white-space:nowrap;font-weight:500;transition:all .15s;flex-shrink:0}
-.cbtn.on{background:#4A7A3A;border-color:#4A7A3A;color:white;font-weight:700}
-.sel-tag{background:#FFF9E6;color:#4A7A3A;font-size:12px;font-weight:600;padding:5px 11px;border-radius:50px;border:1px solid #A5C87A;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
+.cbtn.on{background:#0C7C62;border-color:#0C7C62;color:white;font-weight:700}
+.sel-tag{background:#E9F6F0;color:#0C7C62;font-size:12px;font-weight:600;padding:5px 11px;border-radius:50px;border:1px solid #83CBB2;cursor:pointer;display:inline-flex;align-items:center;gap:5px}
 .sinput{width:100%;padding:11px 14px;font-size:14px;border:1.5px solid #dee2e6;border-radius:13px;background:white;color:#212529;margin-bottom:9px;box-sizing:border-box;outline:none;transition:border-color .15s}
-.sinput:focus{border-color:#4A7A3A}
+.sinput:focus{border-color:#0C7C62}
 .dc{background:white;border-radius:16px;padding:16px;margin-bottom:9px;border-left:5px solid;box-shadow:0 4px 10px rgba(0,0,0,.03)}
 .dc.safe{border-left-color:#81C784} .dc.caution{border-left-color:#FF9F1C} .dc.danger{border-left-color:#E63946}
 .sch-card{background:white;border-radius:16px;padding:14px 15px;box-shadow:0 4px 10px rgba(0,0,0,.04);border:1px solid #eee;overflow:hidden;position:relative;margin-bottom:9px}
@@ -229,37 +229,37 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 .modal-close{position:absolute;top:13px;right:13px;background:#F0F0F0;border:none;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer}
 #global-nav{display:none;position:sticky;top:0;z-index:180;background:white;border-bottom:1px solid #E8E4DC;box-shadow:0 1px 6px rgba(0,0,0,.06)}
 .gnav-btn{flex:1;padding:10px 0 8px;font-size:11px;font-weight:600;color:#6C757D;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-.gnav-btn.on{color:#4A7A3A;border-bottom-color:#4A7A3A;font-weight:700}
+.gnav-btn.on{color:#0C7C62;border-bottom-color:#0C7C62;font-weight:700}
 .gnav-icon{font-size:16px;line-height:1}
 .apptab-header-inner{background:#1F2A1A;padding:16px 18px 20px;border-radius:0 0 20px 20px;box-shadow:0 3px 10px rgba(0,0,0,.1)}
-#eff-panel{display:none;margin:12px 14px 0;background:white;border-radius:18px;border:2px solid #4A7A3A;box-shadow:0 6px 24px rgba(121,85,72,.12);overflow:hidden}
+#eff-panel{display:none;margin:12px 14px 0;background:white;border-radius:18px;border:2px solid #0C7C62;box-shadow:0 6px 24px rgba(12,124,98,.12);overflow:hidden}
 .eff-panel-head{background:#1F2A1A;padding:14px 16px 12px}
-.eff-panel-hl{background:#FFF9E6;border-radius:12px;padding:14px 15px;border-left:4px solid #4A7A3A;margin-bottom:12px}
+.eff-panel-hl{background:#E9F6F0;border-radius:12px;padding:14px 15px;border-left:4px solid #0C7C62;margin-bottom:12px}
 
 /* ══════════════════════════════
    내 정보 탭
 ══════════════════════════════ */
 .my-section{margin-bottom:18px}
-.my-section-title{font-size:13px;font-weight:700;color:#4A7A3A;letter-spacing:.04em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.my-section-title{font-size:13px;font-weight:700;color:#0C7C62;letter-spacing:.04em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
 .my-item-card{background:white;border-radius:14px;padding:13px 14px;margin-bottom:8px;box-shadow:0 1px 6px rgba(0,0,0,.06);display:flex;align-items:center;gap:10px}
 .my-item-icon{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
 .my-item-icon.drug{background:#FFE0E0}
 .my-item-icon.supplement{background:#E8F5E9}
-.my-item-icon.vitamin{background:#FFF9E6}
+.my-item-icon.vitamin{background:#E9F6F0}
 .my-item-info{flex:1;min-width:0}
 .my-item-name{font-size:14px;font-weight:700;color:#212529;margin:0 0 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .my-item-times{font-size:11px;color:#6C757D;margin:0}
 .my-item-actions{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .my-alarm-btn{background:none;border:none;font-size:18px;cursor:pointer;padding:2px}
 .my-del-btn{background:none;border:none;font-size:14px;color:#aaa;cursor:pointer;padding:2px}
-.my-add-btn{width:100%;background:#FFF9E6;border:1.5px dashed #A5C87A;border-radius:14px;padding:13px;font-size:14px;font-weight:600;color:#4A7A3A;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.my-add-btn{width:100%;background:#E9F6F0;border:1.5px dashed #83CBB2;border-radius:14px;padding:13px;font-size:14px;font-weight:600;color:#0C7C62;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
 .my-add-btn:active{opacity:.7}
 .schedule-row{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:white;border-radius:12px;margin-bottom:7px}
-.schedule-time-label{font-size:12px;font-weight:700;color:#4A7A3A;white-space:nowrap;min-width:44px;margin-top:1px}
+.schedule-time-label{font-size:12px;font-weight:700;color:#0C7C62;white-space:nowrap;min-width:44px;margin-top:1px}
 .schedule-items{display:flex;flex-wrap:wrap;gap:5px;flex:1}
 .schedule-chip{font-size:11px;padding:3px 9px;border-radius:50px;border:none;cursor:pointer;font-family:inherit;font-weight:600;transition:all .15s}
 .schedule-chip.done{background:#81C784;color:white;text-decoration:line-through;opacity:.7}
-.schedule-chip.pending{background:#FFF9E6;color:#4A7A3A;border:1px solid #A5C87A}
+.schedule-chip.pending{background:#E9F6F0;color:#0C7C62;border:1px solid #83CBB2}
 .wish-card{background:white;border-radius:13px;padding:11px 13px;margin-bottom:7px;display:flex;align-items:center;gap:10px;box-shadow:0 1px 5px rgba(0,0,0,.05)}
 .wish-card-info{flex:1;min-width:0}
 .wish-card-name{font-size:13px;font-weight:700;color:#212529;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -274,10 +274,10 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 .my-modal-title{font-size:17px;font-weight:700;color:#212529;margin:0 0 18px;text-align:center}
 .my-form-label{font-size:13px;font-weight:700;color:#495057;margin-bottom:6px;display:block}
 .my-form-input{width:100%;border:1.5px solid #dee2e6;border-radius:12px;padding:12px 14px;font-size:15px;font-family:inherit;color:#212529;outline:none;margin-bottom:14px}
-.my-form-input:focus{border-color:#A5C87A}
+.my-form-input:focus{border-color:#83CBB2}
 .my-type-btns{display:flex;gap:8px;margin-bottom:14px}
 .my-type-btn{flex:1;padding:10px;border-radius:10px;border:1.5px solid #dee2e6;background:white;font-size:13px;font-weight:600;color:#495057;cursor:pointer;font-family:inherit}
-.my-type-btn.on{border-color:#A5C87A;background:#FFF9E6;color:#4A7A3A}
+.my-type-btn.on{border-color:#83CBB2;background:#E9F6F0;color:#0C7C62}
 .my-time-btns{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .my-time-btn{padding:9px 14px;border-radius:50px;border:1.5px solid #dee2e6;background:white;font-size:13px;font-weight:600;color:#495057;cursor:pointer;font-family:inherit}
 .my-time-btn.on{border-color:#81C784;background:#E8F5E9;color:#2E7D32}
@@ -286,8 +286,8 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 .my-alarm-time-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .my-alarm-time-label{font-size:13px;color:#495057;min-width:40px}
 .my-alarm-time-input{border:1.5px solid #dee2e6;border-radius:8px;padding:6px 10px;font-size:14px;font-family:inherit;color:#212529;outline:none}
-.my-alarm-time-input:focus{border-color:#A5C87A}
-.my-save-btn{width:100%;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
+.my-alarm-time-input:focus{border-color:#83CBB2}
+.my-save-btn{width:100%;background:linear-gradient(135deg,#83CBB2,#8FBC5A);color:#1F2A1A;border:none;border-radius:14px;padding:15px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit}
 .my-cancel-btn{width:100%;background:none;border:none;color:#6C757D;font-size:14px;cursor:pointer;margin-top:10px;font-family:inherit}
 /* 토글 스위치 */
 .toggle{position:relative;display:inline-block;width:44px;height:24px}
@@ -319,11 +319,11 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
   <a class="logo" href="/">
     <svg width="40" height="40" viewBox="0 0 44 44" fill="none">
       <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
-      <circle cx="22" cy="13" r="5" fill="#A5C87A"/>
-      <line x1="22" y1="5" x2="22" y2="3" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
-      <line x1="22" y1="23" x2="22" y2="21" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
-      <line x1="14" y1="13" x2="12" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
-      <line x1="32" y1="13" x2="30" y2="13" stroke="#A5C87A" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="22" cy="13" r="5" fill="#83CBB2"/>
+      <line x1="22" y1="5" x2="22" y2="3" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
+      <line x1="22" y1="23" x2="22" y2="21" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
+      <line x1="14" y1="13" x2="12" y2="13" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
+      <line x1="32" y1="13" x2="30" y2="13" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
       <line x1="22" y1="38" x2="22" y2="26" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
       <path d="M22 32 C18 30 15 27 17 24 C19 21 22 26 22 28" fill="#81C784"/>
       <path d="M22 30 C26 28 29 25 27 22 C25 19 22 24 22 26" fill="#A5D6A7"/>
@@ -334,7 +334,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
     </div>
   </a>
   <button class="back-btn" onclick="history.back()">
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M9.5 12L5.5 7.5 9.5 3" stroke="#4A7A3A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M9.5 12L5.5 7.5 9.5 3" stroke="#0C7C62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     돌아가기
   </button>
 </header>
@@ -407,7 +407,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
         <div id="drug-cat-btns" class="cat-scroll"></div>
         <div id="drug-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
         <div id="drug-sel-box" style="display:none;background:white;border:1px solid #dee2e6;border-radius:13px;padding:11px;margin-top:12px">
-          <p style="font-size:11px;color:#6C757D;margin:0 0 7px;font-weight:600">선택된 약물 <span id="drug-sel-cnt" style="color:#4A7A3A"></span></p>
+          <p style="font-size:11px;color:#6C757D;margin:0 0 7px;font-weight:600">선택된 약물 <span id="drug-sel-cnt" style="color:#0C7C62"></span></p>
           <div id="drug-sel-tags" style="display:flex;flex-wrap:wrap;gap:5px"></div>
         </div>
         <p style="font-size:12px;color:#6C757D;text-align:center;padding:14px 0 4px">복용 중인 약이 없으시면 바로 다음 단계로 넘어가세요</p>
@@ -417,7 +417,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
         <div id="cat-btns" class="cat-scroll"></div>
         <div id="ing-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div>
         <div id="sel-box" style="display:none;background:white;border:1px solid #dee2e6;border-radius:13px;padding:11px;margin-top:12px">
-          <p style="font-size:11px;color:#6C757D;margin:0 0 7px;font-weight:600">선택된 성분 <span id="sel-cnt" style="color:#4A7A3A"></span></p>
+          <p style="font-size:11px;color:#6C757D;margin:0 0 7px;font-weight:600">선택된 성분 <span id="sel-cnt" style="color:#0C7C62"></span></p>
           <div id="sel-tags" style="display:flex;flex-wrap:wrap;gap:5px"></div>
         </div>
       </div>
@@ -466,7 +466,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
       <h1 id="apptab-header-title" style="color:white;font-size:18px;font-weight:700;margin:0;line-height:1.3">홈</h1>
     </div>
     <div id="apptab-home" style="padding:14px">
-      <div style="background:white;border-radius:16px;padding:16px;margin-bottom:11px;border-left:5px solid #4A7A3A"><p style="font-size:14px;color:#4A7A3A;font-weight:700;margin:0 0 5px">🔍 안전 체크란?</p><p style="font-size:13px;color:#6C757D;line-height:1.7;margin:0 0 10px">50가지 성분의 효능과 약물 상호작용, 최적 복용 시간표를 식약처 데이터 기반으로 알기 쉽게 알려드려요.</p><button onclick="showWiz()" style="width:100%;background:#4A7A3A;color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">🔍 지금 바로 안전 체크하기</button></div>
+      <div style="background:white;border-radius:16px;padding:16px;margin-bottom:11px;border-left:5px solid #0C7C62"><p style="font-size:14px;color:#0C7C62;font-weight:700;margin:0 0 5px">🔍 안전 체크란?</p><p style="font-size:13px;color:#6C757D;line-height:1.7;margin:0 0 10px">50가지 성분의 효능과 약물 상호작용, 최적 복용 시간표를 식약처 데이터 기반으로 알기 쉽게 알려드려요.</p><button onclick="showWiz()" style="width:100%;background:#0C7C62;color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer">🔍 지금 바로 안전 체크하기</button></div>
       <p style="font-size:14px;font-weight:700;color:#212529;margin:0 0 8px">자주 찾는 성분</p>
       <div id="pop-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:11px"></div>
       <div style="background:white;border-radius:16px;padding:14px;border-left:5px solid #E63946"><p style="font-size:13px;font-weight:700;color:#E63946;margin:0 0 7px">⚠️ 주의가 필요한 조합 TOP 3</p><div style="display:flex;flex-direction:column;gap:5px"><div style="font-size:12px;color:#7A5000;padding:7px 10px;background:#FFF5E0;border-radius:8px">🚨 비타민K + 와파린 → 혈전 위험</div><div style="font-size:12px;color:#7A5000;padding:7px 10px;background:#FFF5E0;border-radius:8px">🚨 철분 + 갑상선약 → 흡수 차단</div><div style="font-size:12px;color:#7A5000;padding:7px 10px;background:#FFF5E0;border-radius:8px">⚠️ 홍삼 + 와파린 → 출혈 위험</div></div></div>
@@ -494,10 +494,10 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
         </div>
         <div style="padding:16px">
           <div class="eff-panel-hl">
-            <p style="font-size:11px;font-weight:700;color:#4A7A3A;margin:0 0 5px;letter-spacing:.04em">💡 주요 효능</p>
+            <p style="font-size:11px;font-weight:700;color:#0C7C62;margin:0 0 5px;letter-spacing:.04em">💡 주요 효능</p>
             <p id="eff-panel-eff" style="font-size:15px;color:#1F2A1A;line-height:1.75;margin:0;font-weight:500"></p>
           </div>
-          <button id="eff-panel-check-btn" style="width:100%;background:#4A7A3A;color:white;border:none;padding:14px;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer">✅ 이 성분 안전체크 하러 가기</button>
+          <button id="eff-panel-check-btn" style="width:100%;background:#0C7C62;color:white;border:none;padding:14px;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer">✅ 이 성분 안전체크 하러 가기</button>
         </div>
       </div>
       <div style="height:16px"></div>
@@ -506,7 +506,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
   </div>
 
   <!-- 가이드 모달 -->
-  <div id="guide-modal"><div class="modal-inner" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeGuide()">✕</button><h2 id="guide-title" style="color:#4A7A3A;margin:0 0 12px;font-size:17px"></h2><div id="guide-schedule" style="margin-bottom:12px"></div><p id="guide-text" style="line-height:1.75;color:#212529;font-size:14px;margin:0 0 12px"></p><div style="background:#F8F9FA;padding:10px 12px;border-radius:10px;font-size:11px;color:#6C757D">※ 본 가이드는 식약처 및 약학정보원 데이터를 기반으로 작성되었습니다.</div></div></div>
+  <div id="guide-modal"><div class="modal-inner" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeGuide()">✕</button><h2 id="guide-title" style="color:#0C7C62;margin:0 0 12px;font-size:17px"></h2><div id="guide-schedule" style="margin-bottom:12px"></div><p id="guide-text" style="line-height:1.75;color:#212529;font-size:14px;margin:0 0 12px"></p><div style="background:#F8F9FA;padding:10px 12px;border-radius:10px;font-size:11px;color:#6C757D">※ 본 가이드는 식약처 및 약학정보원 데이터를 기반으로 작성되었습니다.</div></div></div>
 
   <!-- 결제 모달 -->
   <div id="pay-modal" onclick="closePayModal()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:9500;align-items:flex-end;justify-content:center">
@@ -516,8 +516,8 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
         <h2 id="pm-title" style="font-size:18px;font-weight:700;color:#212529;margin:0"></h2>
         <button onclick="closePayModal()" style="background:#F0F0F0;border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer">✕</button>
       </div>
-      <div style="background:#FFF9E6;border:1px solid #A5C87A;border-radius:14px;padding:16px;text-align:center;margin-bottom:18px">
-        <p style="font-size:13px;color:#4A7A3A;font-weight:600;margin:0 0 4px">건강 돋보기 자체 구매가</p>
+      <div style="background:#E9F6F0;border:1px solid #83CBB2;border-radius:14px;padding:16px;text-align:center;margin-bottom:18px">
+        <p style="font-size:13px;color:#0C7C62;font-weight:600;margin:0 0 4px">건강 돋보기 자체 구매가</p>
         <p id="pm-price" style="font-size:28px;font-weight:700;color:#1F2A1A;margin:0"></p>
       </div>
       <p style="font-size:13px;font-weight:700;color:#212529;margin:0 0 10px">결제 수단 선택</p>
@@ -767,7 +767,7 @@ function openDetail(productId){
       + (senior.how_to_take
           ? '<div class="analysis-card">'
             + '<div class="analysis-card-title">'
-              + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#4A7A3A" stroke-opacity=".4"/><path d="M8 5v3l2 2" stroke="#4A7A3A" stroke-width="1.5" stroke-linecap="round"/></svg>'
+              + '<svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7.5" stroke="#0C7C62" stroke-opacity=".4"/><path d="M8 5v3l2 2" stroke="#0C7C62" stroke-width="1.5" stroke-linecap="round"/></svg>'
               + '복용 방법'
             + '</div>'
             + '<div class="analysis-text">'+esc(senior.how_to_take)+'</div>'
@@ -904,7 +904,7 @@ var INGS=[{id:"astaxanthin",n:"아스타잔틴",e:"🦞",cat:"눈/뇌",eff:"눈�
 var DRUGS=[{id:"bp",l:"혈압약",e:"🩸",cat:"심혈관"},{id:"statin",l:"콜레스테롤약",e:"🫀",cat:"심혈관"},{id:"diabetes",l:"당뇨약",e:"🍬",cat:"대사"},{id:"insulin",l:"인슐린",e:"💉",cat:"대사"},{id:"warfarin",l:"와파린",e:"💊",cat:"항응고"},{id:"aspirin",l:"아스피린",e:"🔴",cat:"항응고"},{id:"thyroid",l:"갑상선약",e:"🦋",cat:"호르몬"},{id:"hormone",l:"호르몬제",e:"⚗️",cat:"호르몬"},{id:"sleep",l:"수면제",e:"💤",cat:"신경계"},{id:"antidep",l:"항우울제",e:"🧠",cat:"신경계"},{id:"antibiotic",l:"항생제",e:"🦠",cat:"항균"}];
 var DRUG_CATS=["전체","심혈관","대사","항응고","호르몬","신경계","항균"];
 var SCHED_GROUPS=[
-  {key:"empty_fasting",label:"아침 공복",icon:"🌿",time:"기상 직후",bg:"#F5F8F0",tc:"#4A7A3A",clockColor:"#22C55E",clockHand:"#4A7A3A",clockText:"6",items:["probiotics","prebiotics","psyllium"],reason:"위산이 적은 아침 공복에 물 한 잔과 함께 드셔야 장까지 도달률이 높습니다.",tip:"뜨거운 물보다는 미지근하거나 시원한 물과 함께 드시는 것이 유산균 보호에 좋습니다."},
+  {key:"empty_fasting",label:"아침 공복",icon:"🌿",time:"기상 직후",bg:"#F5F8F0",tc:"#0C7C62",clockColor:"#22C55E",clockHand:"#0C7C62",clockText:"6",items:["probiotics","prebiotics","psyllium"],reason:"위산이 적은 아침 공복에 물 한 잔과 함께 드셔야 장까지 도달률이 높습니다.",tip:"뜨거운 물보다는 미지근하거나 시원한 물과 함께 드시는 것이 유산균 보호에 좋습니다."},
   {key:"morning",label:"아침 식후",icon:"☀️",time:"아침 식사 후",bg:"#FFFBEB",tc:"#92400E",clockColor:"#FF9F1C",clockHand:"#92400E",clockText:"8",items:["vitB","pantothenic","biotin","octacosanol","vitC","propolis","redginseng","ginseng","curcumin","chlorella","spirulina","iron"],reason:"에너지 대사를 활성화하여 하루의 활력을 돕습니다.",tip:"수용성 비타민은 아침에 드셔야 밤 사이 수면에 방해를 주지 않습니다."},
   {key:"before_meal",label:"식전 30분",icon:"🍽",time:"식사 30분 전",bg:"#FFF1F2",tc:"#991B1B",clockColor:"#EF4444",clockHand:"#991B1B",clockText:"12",items:["garcinia","catechin","cissus","cla"],reason:"탄수화물이 지방으로 합성되는 것을 미리 차단하기 위함입니다.",tip:"식사 직전에 깜빡하셨다면 식사 도중에라도 드시는 것이 도움이 됩니다."},
   {key:"lunch",label:"점심 식후",icon:"🌤",time:"점심 식사 후",bg:"#EFF6FF",tc:"#1E40AF",clockColor:"#4299E1",clockHand:"#1E40AF",clockText:"13",items:["omega3","lutein","zeaxanthin","vitA","vitD","vitE","vitK","coq10","krill","astaxanthin"],reason:"지용성 성분은 식사 중의 지방분과 함께 흡수될 때 효율이 2~3배 높아집니다.",tip:"기름진 식사를 하신 직후에 드시는 것이 가장 좋습니다."},
@@ -912,7 +912,7 @@ var SCHED_GROUPS=[
 ];
 var CLASHES=[{a:"calcium",b:"iron",msg:"칼슘과 철분은 서로 흡수를 방해합니다. 아침/저녁으로 나누어 드세요.",aSched:"evening",bSched:"morning"},{a:"vitE",b:"vitK",msg:"비타민E와 비타민K는 항응고 작용이 상충될 수 있습니다. 다른 시간대에 복용하세요.",aSched:"lunch",bSched:"evening"}];
 var MECHS=[{key:"blood_thinning",tag:"혈액 응고 저해",icon:"🩸",ings:["omega3","ginkgo","redginseng","ginseng","vitE","curcumin","krill","gamma"],drugs:["warfarin","aspirin"],lv:"danger",m:"항응고제와 해당 성분은 모두 피를 묽게 만듭니다.",d:"병용 시 혈액이 너무 응고되지 않아 상처 지혈이 안 되거나, 위장관 출혈 및 뇌출혈 위험이 실질적으로 높아집니다.",a:"수술 전후에는 반드시 복용을 중단하고 전문의와 상의하세요."},{key:"hypoglycemia",tag:"혈당 강하 중첩",icon:"🍬",ings:["milkthistle","garcinia","berberine","cissus","psyllium","fiber"],drugs:["diabetes","insulin"],lv:"caution",m:"영양 성분이 인슐린 감수성을 높여 혈당을 추가로 낮춥니다.",d:"당뇨약과 함께 드시면 혈당이 정상치 이하로 떨어져 저혈당 쇼크가 올 수 있습니다.",a:"혈당 수치를 수시로 체크하시고, 이상 증상 시 즉시 당분을 섭취하세요."},{key:"metabolism",tag:"약물 대사 방해",icon:"⚗️",ings:["milkthistle"],drugs:["bp","statin"],lv:"caution",m:"간의 약물 대사 효소(CYP3A4) 활성에 간섭합니다.",d:"간이 약을 분해하는 속도를 늦춰 혈중 약물 농도가 비정상적으로 높아질 수 있습니다.",a:"평소보다 어지러움이나 근육통이 심해진다면 즉시 복용을 중단하세요."},{key:"absorption",tag:"약물 흡수 차단",icon:"🚫",ings:["calcium","magnesium","iron","zinc"],drugs:["thyroid","antibiotic"],lv:"danger",m:"미네랄 이온이 약물 성분을 감싸서 장 흡수를 차단합니다.",d:"약 성분이 몸에 흡수되지 못하고 그대로 배출되어 약효가 거의 사라집니다.",a:"반드시 약 복용 4시간 전후에 영양제를 드세요."},{key:"vitK",tag:"비타민K 길항",icon:"🧬",ings:["vitK","multivit","chlorella"],drugs:["warfarin"],lv:"danger",m:"비타민K가 와파린의 항응고 작용을 정면으로 방해합니다.",d:"와파린 약효가 사라져 혈전(피떡)이 생길 위험이 커집니다.",a:"와파린 복용 중에는 비타민K 함유 영양제를 피하고 식단도 일정하게 유지해야 합니다."}];
-var TV={safe:{bg:"#FFF9E6",bd:"#A5C87A",ac:"#81C784",ic:"✅",lbl:"SAFE · 안심"},caution:{bg:"#FFF8EC",bd:"#FFCC7A",ac:"#D4800A",ic:"⚠️",lbl:"CAUTION · 주의"},danger:{bg:"#FDECEA",bd:"#F5A8A4",ac:"#E63946",ic:"🚨",lbl:"DANGER · 위험"},info:{bg:"#EEF2FF",bd:"#B0BFFF",ac:"#3D4FB5",ic:"📋",lbl:"INFO · 단독 정보"}};
+var TV={safe:{bg:"#E9F6F0",bd:"#83CBB2",ac:"#81C784",ic:"✅",lbl:"SAFE · 안심"},caution:{bg:"#FFF8EC",bd:"#FFCC7A",ac:"#D4800A",ic:"⚠️",lbl:"CAUTION · 주의"},danger:{bg:"#FDECEA",bd:"#F5A8A4",ac:"#E63946",ic:"🚨",lbl:"DANGER · 위험"},info:{bg:"#EEF2FF",bd:"#B0BFFF",ac:"#3D4FB5",ic:"📋",lbl:"INFO · 단독 정보"}};
 var CATS=["전체","기초","장","면역","눈/뇌","뷰티","특화"];
 var POPULAR=["omega3","lutein","vitD","redginseng","magnesium","probiotics"];
 
@@ -946,19 +946,19 @@ function renderMypageTab(){
     var initial = name ? name.charAt(0) : '나';
     el.innerHTML =
       '<div style="text-align:center;padding:22px 0 18px">'
-      +'<div style="width:64px;height:64px;border-radius:50%;background:#A5C87A;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:26px;font-weight:700;color:#1F2A1A;border:2px solid #A5C87A">'+initial+'</div>'
+      +'<div style="width:64px;height:64px;border-radius:50%;background:#83CBB2;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:26px;font-weight:700;color:#1F2A1A;border:2px solid #83CBB2">'+initial+'</div>'
       +'<p style="font-size:17px;font-weight:700;color:#212529;margin:0 0 4px">'+escH(name)+'</p>'
       +(email?'<p style="font-size:12px;color:#6C757D;margin:0 0 4px">'+escH(email)+'</p>':'')
       +'<p style="font-size:12px;color:#81C784;font-weight:600;margin:0 0 18px">'+providerLabel+' 로그인 중</p>'
-      +'<button onclick="location.href=\'/\'" style="background:#4A7A3A;color:white;border:none;border-radius:50px;padding:10px 26px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">← 메인으로 돌아가기</button>'
+      +'<button onclick="location.href=\'/\'" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 26px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">← 메인으로 돌아가기</button>'
       +'</div>';
   } else {
     el.innerHTML =
       '<div style="text-align:center;padding:22px 0 14px">'
-      +'<div style="width:56px;height:56px;border-radius:50%;background:#FFF9E6;display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:24px;border:2px solid #A5C87A">👤</div>'
+      +'<div style="width:56px;height:56px;border-radius:50%;background:#E9F6F0;display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:24px;border:2px solid #83CBB2">👤</div>'
       +'<p style="font-size:15px;font-weight:700;color:#212529;margin:0 0 4px">게스트 이용 중</p>'
       +'<p style="font-size:12px;color:#6C757D;margin:0 0 13px">로그인하면 더 많은 기능을 이용할 수 있어요</p>'
-      +'<button onclick="location.href=\'/\'" style="background:#4A7A3A;color:white;border:none;border-radius:50px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer">로그인하러 가기 →</button>'
+      +'<button onclick="location.href=\'/\'" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer">로그인하러 가기 →</button>'
       +'</div>';
   }
 }
@@ -1111,18 +1111,18 @@ function filterD(q){drugSearchQ=q;renderDrugGrid();}
 function getDrugFiltered(){var list=DRUGS.slice();if(curDrugCat!=="전체")list=list.filter(function(d){return d.cat===curDrugCat;});if(drugSearchQ){var q=drugSearchQ.toLowerCase();list=list.filter(function(d){return d.l.toLowerCase().indexOf(q)>=0;});}return list;}
 function renderDrugCatBtns(){var g=document.getElementById("drug-cat-btns");g.innerHTML="";for(var i=0;i<DRUG_CATS.length;i++){var b=document.createElement("button");b.className="cbtn"+(curDrugCat===DRUG_CATS[i]?" on":"");b.textContent=DRUG_CATS[i];(function(cat){b.onclick=function(){curDrugCat=cat;renderDrugGrid();};})(DRUG_CATS[i]);g.appendChild(b);}}
 function renderDrugSelBox(){var box=document.getElementById("drug-sel-box"),tags=document.getElementById("drug-sel-tags"),cnt=document.getElementById("drug-sel-cnt");if(selDrugs.length>0){box.style.display="block";tags.innerHTML="";cnt.textContent="("+selDrugs.length+"개)";for(var i=0;i<selDrugs.length;i++){var d=fD(selDrugs[i]);if(!d)continue;var sp=document.createElement("span");sp.className="sel-tag";sp.innerHTML=d.e+" "+d.l+' <span style="font-size:11px;opacity:.6">✕</span>';(function(did){sp.onclick=function(){var idx=selDrugs.indexOf(did);if(idx>=0)selDrugs.splice(idx,1);renderDrugGrid();renderDrugSelBox();updateWiz();};})(selDrugs[i]);tags.appendChild(sp);}}else box.style.display="none";}
-function renderDrugGrid(){var g=document.getElementById("drug-grid");g.innerHTML="";var list=getDrugFiltered();if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:12px 0">검색 결과가 없습니다</p>';renderDrugCatBtns();return;}for(var i=0;i<list.length;i++){var d=list[i];var on=selDrugs.indexOf(d.id)>=0;var b=document.createElement("button");b.className="ibtn"+(on?" on":"");b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+d.e+'</span><span class="ibtn-n" style="color:'+(on?"#4A7A3A":"#212529")+'">'+d.l+'</span>';(function(did){b.onclick=function(){var idx=selDrugs.indexOf(did);if(idx>=0)selDrugs.splice(idx,1);else selDrugs.push(did);renderDrugGrid();renderDrugSelBox();updateWiz();};})(d.id);g.appendChild(b);}renderDrugCatBtns();}
+function renderDrugGrid(){var g=document.getElementById("drug-grid");g.innerHTML="";var list=getDrugFiltered();if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:12px 0">검색 결과가 없습니다</p>';renderDrugCatBtns();return;}for(var i=0;i<list.length;i++){var d=list[i];var on=selDrugs.indexOf(d.id)>=0;var b=document.createElement("button");b.className="ibtn"+(on?" on":"");b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+d.e+'</span><span class="ibtn-n" style="color:'+(on?"#0C7C62":"#212529")+'">'+d.l+'</span>';(function(did){b.onclick=function(){var idx=selDrugs.indexOf(did);if(idx>=0)selDrugs.splice(idx,1);else selDrugs.push(did);renderDrugGrid();renderDrugSelBox();updateWiz();};})(d.id);g.appendChild(b);}renderDrugCatBtns();}
 
 // ── 성분 그리드 ──
 function filterI(q){searchQ=q;renderIngGrid();}
 function getFiltered(){var list=INGS.slice();if(curCat!=="전체")list=list.filter(function(x){return x.cat===curCat;});if(searchQ){var q=searchQ.toLowerCase();list=list.filter(function(x){return x.n.toLowerCase().indexOf(q)>=0;});}return list.sort(function(a,b){return a.n.localeCompare(b.n,"ko");});}
 function renderCatBtns(){var g=document.getElementById("cat-btns");g.innerHTML="";for(var i=0;i<CATS.length;i++){var b=document.createElement("button");b.className="cbtn"+(curCat===CATS[i]?" on":"");b.textContent=CATS[i];(function(cat){b.onclick=function(){curCat=cat;renderIngGrid();};})(CATS[i]);g.appendChild(b);}}
 function renderSelBox(){var box=document.getElementById("sel-box"),tags=document.getElementById("sel-tags"),cnt=document.getElementById("sel-cnt");if(selIngs.length>0){box.style.display="block";tags.innerHTML="";cnt.textContent="("+selIngs.length+"개)";for(var i=0;i<selIngs.length;i++){var ing=fI(selIngs[i]);if(!ing)continue;var sp=document.createElement("span");sp.className="sel-tag";sp.innerHTML=ing.e+" "+ing.n+' <span style="font-size:11px;opacity:.6">✕</span>';(function(id){sp.onclick=function(){var idx=selIngs.indexOf(id);if(idx>=0)selIngs.splice(idx,1);renderIngGrid();renderSelBox();updateWiz();};})(selIngs[i]);tags.appendChild(sp);}}else box.style.display="none";}
-function renderIngGrid(){var g=document.getElementById("ing-grid");g.innerHTML="";var list=getFiltered();if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:12px 0">검색 결과가 없습니다</p>';renderCatBtns();return;}for(var i=0;i<list.length;i++){var ing=list[i];var on=selIngs.indexOf(ing.id)>=0;var b=document.createElement("button");b.className="ibtn"+(on?" on":"");b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+ing.e+'</span><span class="ibtn-n" style="color:'+(on?"#4A7A3A":"#212529")+'">'+ing.n+'</span>';(function(id){b.onclick=function(){var idx=selIngs.indexOf(id);if(idx>=0)selIngs.splice(idx,1);else selIngs.push(id);renderIngGrid();renderSelBox();updateWiz();};})(ing.id);g.appendChild(b);}renderCatBtns();}
+function renderIngGrid(){var g=document.getElementById("ing-grid");g.innerHTML="";var list=getFiltered();if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:12px 0">검색 결과가 없습니다</p>';renderCatBtns();return;}for(var i=0;i<list.length;i++){var ing=list[i];var on=selIngs.indexOf(ing.id)>=0;var b=document.createElement("button");b.className="ibtn"+(on?" on":"");b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+ing.e+'</span><span class="ibtn-n" style="color:'+(on?"#0C7C62":"#212529")+'">'+ing.n+'</span>';(function(id){b.onclick=function(){var idx=selIngs.indexOf(id);if(idx>=0)selIngs.splice(idx,1);else selIngs.push(id);renderIngGrid();renderSelBox();updateWiz();};})(ing.id);g.appendChild(b);}renderCatBtns();}
 
 // ── 효능 검색 ──
 function renderEffCatBtns(){var g=document.getElementById("eff-cat-btns");if(!g)return;g.innerHTML="";for(var i=0;i<CATS.length;i++){var b=document.createElement("button");b.className="cbtn"+(effCurCat===CATS[i]?" on":"");b.textContent=CATS[i];(function(cat){b.onclick=function(){effCurCat=cat;renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");};})(CATS[i]);g.appendChild(b);}}
-function renderEffGrid(q){var list=INGS.slice().sort(function(a,b){return a.n.localeCompare(b.n,"ko");});if(effCurCat!=="전체")list=list.filter(function(x){return x.cat===effCurCat;});if(q){var lq=q.toLowerCase();list=list.filter(function(x){return x.n.toLowerCase().indexOf(lq)>=0;});}var g=document.getElementById("eff-grid");if(!g)return;g.innerHTML="";if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:14px 0">검색 결과가 없습니다</p>';renderEffCatBtns();return;}for(var i=0;i<list.length;i++){var ing=list[i];var on=effSelId===ing.id;var b=document.createElement("button");b.className="ibtn"+(on?" on":"");b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+ing.e+'</span><span class="ibtn-n" style="color:'+(on?"#4A7A3A":"#212529")+'">'+ing.n+'</span>';(function(ingObj){b.onclick=function(){if(effSelId===ingObj.id){effSelId=null;closeEffPanel();}else{effSelId=ingObj.id;openEffPanel(ingObj);}renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");};})(ing);g.appendChild(b);}renderEffCatBtns();}
+function renderEffGrid(q){var list=INGS.slice().sort(function(a,b){return a.n.localeCompare(b.n,"ko");});if(effCurCat!=="전체")list=list.filter(function(x){return x.cat===effCurCat;});if(q){var lq=q.toLowerCase();list=list.filter(function(x){return x.n.toLowerCase().indexOf(lq)>=0;});}var g=document.getElementById("eff-grid");if(!g)return;g.innerHTML="";if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:14px 0">검색 결과가 없습니다</p>';renderEffCatBtns();return;}for(var i=0;i<list.length;i++){var ing=list[i];var on=effSelId===ing.id;var b=document.createElement("button");b.className="ibtn"+(on?" on":"");b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+ing.e+'</span><span class="ibtn-n" style="color:'+(on?"#0C7C62":"#212529")+'">'+ing.n+'</span>';(function(ingObj){b.onclick=function(){if(effSelId===ingObj.id){effSelId=null;closeEffPanel();}else{effSelId=ingObj.id;openEffPanel(ingObj);}renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");};})(ing);g.appendChild(b);}renderEffCatBtns();}
 function openEffPanel(ing){var panel=document.getElementById("eff-panel");if(!panel)return;document.getElementById("eff-panel-icon").textContent=ing.e;document.getElementById("eff-panel-name").textContent=ing.n;document.getElementById("eff-panel-cat").textContent=ing.cat+" 계열";document.getElementById("eff-panel-eff").textContent=ing.eff||"효능 정보를 준비 중입니다.";var checkBtn=document.getElementById("eff-panel-check-btn");if(checkBtn){checkBtn.onclick=function(){gnavGo("check");setTimeout(function(){curWizStep=2;updateWiz();selIngs=[ing.id];renderIngGrid();renderCatBtns();renderSelBox();updateWiz();var p2=document.getElementById("eff-panel");if(p2)p2.style.display="none";effSelId=null;},50);};}panel.style.display="block";setTimeout(function(){panel.scrollIntoView({behavior:"smooth",block:"nearest"});},80);}
 function closeEffPanel(){var panel=document.getElementById("eff-panel");if(panel)panel.style.display="none";effSelId=null;renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");}
 
@@ -1146,8 +1146,8 @@ function updateWiz(){
   document.getElementById("step3").style.display=s===3?"block":"none";
   var btnN=document.getElementById("btn-next");var btnG=document.getElementById("btn-guide");
   btnN.style.display=(s===3)?"none":"flex";btnG.style.display=(s===3)?"block":"none";
-  if(s===1){btnN.disabled=false;btnN.textContent=selDrugs.length>0?selDrugs.length+"개 약 선택 · 다음으로 →":"복용 중인 약 없음 · 다음으로 →";btnN.style.background="#4A7A3A";}
-  else if(s===2){btnN.disabled=selIngs.length===0;btnN.textContent=selIngs.length>0?selIngs.length+"가지 성분 결과 확인하기 🔍":"성분을 1개 이상 선택해 주세요";btnN.style.background=selIngs.length>0?"#4A7A3A":"";}
+  if(s===1){btnN.disabled=false;btnN.textContent=selDrugs.length>0?selDrugs.length+"개 약 선택 · 다음으로 →":"복용 중인 약 없음 · 다음으로 →";btnN.style.background="#0C7C62";}
+  else if(s===2){btnN.disabled=selIngs.length===0;btnN.textContent=selIngs.length>0?selIngs.length+"가지 성분 결과 확인하기 🔍":"성분을 1개 이상 선택해 주세요";btnN.style.background=selIngs.length>0?"#0C7C62":"";}
   document.getElementById("wiz-body").scrollTop=0;
 }
 function wizNext(){
@@ -1260,7 +1260,7 @@ function renderSmartCommerce(ingId,ingName){
 
   // 메인 버튼: 제품 추천 탭으로 이동
   var b1=document.createElement("button");
-  b1.style.cssText="width:100%;background:linear-gradient(135deg,#A5C87A,#8FBC5A);color:#1F2A1A;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(255,213,79,.4)";
+  b1.style.cssText="width:100%;background:linear-gradient(135deg,#83CBB2,#8FBC5A);color:#1F2A1A;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 14px rgba(131,203,178,.4)";
   var catName = ING_TO_CAT[ingId] ? ING_TO_CAT[ingId]+' 관련' : '';
   b1.innerHTML="🛒 "+catName+" 추천 제품 보기";
   (function(id,n){b1.onclick=function(){goToProductCat(id,n);};})(ingId,ingName);
