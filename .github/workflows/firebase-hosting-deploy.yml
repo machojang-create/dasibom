@@ -1,0 +1,30 @@
+# GitHub에 코드가 올라오면(main 브랜치) 자동으로 Firebase "호스팅(화면)"만 배포.
+# ★ functions(서버)는 절대 배포하지 않음 — 이 액션은 hosting 전용이라 비용 위험 없음.
+# 수동으로도 돌릴 수 있음: GitHub → Actions 탭 → 이 워크플로 → "Run workflow".
+
+name: Firebase Hosting 자동 배포
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # GitHub 화면에서 수동 실행 버튼
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 코드 가져오기
+        uses: actions/checkout@v4
+
+      - name: Firebase Hosting 배포 (호스팅만)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: mylife-650f0
+          channelId: live
