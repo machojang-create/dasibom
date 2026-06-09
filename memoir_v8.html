@@ -1302,10 +1302,10 @@ var QS=[ /* 폴백용 구 데이터 — 정상 시 questions_v3.js + buildQuesti
   {q:"당신 인생에서 가장 되돌리고 싶은 순간은?",h:"그 순간이 달라졌다면 지금은 어떨까요?",ch:7}
 ];
 
+// 미리보기 CTA 업셀 — 패키지 BM(PKG_CONFIG)과 일치. (구식 낱개 PDF/인쇄/영상 배열 폐기 2026-06)
 var PRODUCTS=[
-  {id:"pdf",  icon:"📄",name:"PDF 자서전",   desc:"바로 받아보실 수 있어요",   price:"12,900원",badge:null},
-  {id:"book", icon:"📖",name:"인쇄 책",      desc:"제본해서 배송 (약 7일)",    price:"59,000원",badge:"인기"},
-  {id:"video",icon:"🎬",name:"영상 자서전",  desc:"목소리로 들려드립니다",     price:"129,000원",badge:null}
+  {id:"basic",  icon:"📖",name:"나의 자서전",   desc:"45가지 질문 · 35~45페이지 전자책",  price:"49,000원", badge:null},
+  {id:"premium",icon:"📚",name:"나의 인생 전집", desc:"75가지 질문 · 65~80페이지 전자책", price:"129,000원",badge:"추천"}
 ];
 
 // 패키지 설정 (model 필드는 참고용 — 실제 사용 모델은 서버 functions/index.js가 pkg로 최종 결정)
@@ -1331,7 +1331,7 @@ var APP={
   printSet:null, coverPhoto:LS.load('coverPhoto',null),
   qDates:  LS.load('qDates',{}),   // {질문index:'YYYY-MM-DD'} 처음 답변/패스한 날 (하루 캡·일차 계산용)
   qPrivate:LS.load('qPrivate',{}),  // {질문index: true=나만보기 / false=공개} (민감질문)
-  selProd: 'book', mode:'text',
+  selProd: 'basic', mode:'text',
   recording:false, rec:null, chTimer:null, genIv:null
 };
 
