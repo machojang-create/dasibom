@@ -7,7 +7,11 @@
       "functions/**",
       "node_modules/**",
       "*.md",
-      "*.py"
+      "*.py",
+      "extracted_html.html",
+      "extracted_template.html",
+      "game_recovered.html",
+      "health_magnifier (1).html"
     ],
     "rewrites": [
       { "source": "/auth/naver/callback.html", "destination": "/auth/naver/callback.html" },
