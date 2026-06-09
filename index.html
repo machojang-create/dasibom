@@ -85,7 +85,7 @@
   .logo .name{font-family:"Nanum Myeongjo",serif;font-size:22px;font-weight:800;letter-spacing:0.02em;white-space:nowrap}
   .logo .name em{font-style:normal;color:var(--sage-deep)}
   .nav ul{display:flex;gap:34px;list-style:none;flex-shrink:0}
-  .nav ul a{font-size:14.5px;color:var(--ink-2);opacity:.78;transition:opacity .2s;white-space:nowrap}
+  .nav ul a{font-size:calc(14.5px * var(--ts,1));color:var(--ink-2);opacity:.78;transition:opacity .2s;white-space:nowrap}
   .nav ul a:hover{opacity:1}
   .nav .cta{
     padding:11px 20px;border-radius:999px;background:var(--ink-2);color:var(--paper);
@@ -159,7 +159,7 @@
   h1.headline .accent{color:var(--sage-deep);font-style:italic;font-weight:400}
   h1.headline .gold{color:var(--gold);}
   .lead{
-    margin-top:32px;font-size:clamp(17px,1.4vw,20px);
+    margin-top:32px;font-size:calc(clamp(17px,1.4vw,20px) * var(--ts,1));
     color:var(--ink-2);max-width:46ch;line-height:1.7;opacity:.85;
   }
   .hero-actions{display:flex;gap:14px;margin-top:42px;flex-wrap:wrap}
@@ -235,7 +235,7 @@
   .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:40px;margin-bottom:80px;flex-wrap:wrap}
   .sec-title{font-family:"Nanum Myeongjo",serif;font-size:clamp(40px,5vw,72px);line-height:1.05;letter-spacing:-0.02em;font-weight:800;color:var(--ink);max-width:18ch}
   .sec-title em{font-style:italic;font-weight:400;color:var(--sage-deep)}
-  .sec-sub{color:var(--muted);font-size:16px;max-width:38ch;line-height:1.7}
+  .sec-sub{color:var(--muted);font-size:calc(16px * var(--ts,1));max-width:38ch;line-height:1.7}
 
   /* Story */
   .story{background:var(--paper);position:relative;}
@@ -292,8 +292,8 @@
     font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-deep);
     background:rgba(92,122,74,0.1);padding:6px 12px;border-radius:999px;
   }
-  .card .title{font-family:"Nanum Myeongjo",serif;font-size:34px;line-height:1.15;font-weight:800;letter-spacing:-0.01em;color:var(--ink);margin-bottom:14px}
-  .card .desc{color:var(--ink-2);opacity:.78;font-size:15.5px;line-height:1.7;max-width:32ch}
+  .card .title{font-family:"Nanum Myeongjo",serif;font-size:calc(34px * var(--ts,1));line-height:1.15;font-weight:800;letter-spacing:-0.01em;color:var(--ink);margin-bottom:14px}
+  .card .desc{color:var(--ink-2);opacity:.78;font-size:calc(15.5px * var(--ts,1));line-height:1.7;max-width:32ch}
   .card .visual{
     margin-top:30px;height:180px;border-radius:18px;
     position:relative;overflow:hidden;
@@ -429,7 +429,7 @@
   .wisdom-badge::before{content:"✦";font-size:10px}
   .wisdom-quote{
     font-family:"Nanum Myeongjo",serif;
-    font-size:clamp(18px,2vw,22px);
+    font-size:calc(clamp(18px,2vw,22px) * var(--ts,1));
     font-weight:700;color:var(--ink);line-height:1.55;
     margin-bottom:14px;word-break:keep-all;
   }
@@ -471,7 +471,7 @@
   }
   @media(max-width:760px){
     .wisdom-outer{padding-top:84px}
-    .wisdom-quote{font-size:18px}
+    .wisdom-quote{font-size:calc(18px * var(--ts,1))}
   }
 
   /* ── GNB 포인트 배지 ── */
@@ -522,7 +522,7 @@
   }
   .wc-quote{
     font-family:"Nanum Myeongjo",serif;
-    font-size:clamp(20px,2.5vw,28px);font-weight:700;line-height:1.65;
+    font-size:calc(clamp(20px,2.5vw,28px) * var(--ts,1));font-weight:700;line-height:1.65;
     color:#fff;margin-bottom:14px;word-break:keep-all;
     text-shadow:0 2px 12px rgba(0,0,0,.3);
   }
@@ -555,7 +555,7 @@
   }
   @media(max-width:760px){
     .wisdom-outer{padding-top:82px}
-    .wc-quote{font-size:19px}
+    .wc-quote{font-size:calc(19px * var(--ts,1))}
   }
 
   /* ── 그때 그 시절 미리보기 ── */
@@ -666,10 +666,9 @@
   .svc-section{padding:80px 0}
 
   /* Accessibility: large text */
-  body.large{font-size:18px}
-  body.large .lead{font-size:21px}
-  body.large .card .desc{font-size:17.5px}
-  body.large .nav ul a{font-size:16px}
+  /* 시니어 글씨 크기 3단계 (보통/크게/아주크게) — 핵심 텍스트 비례 확대 */
+  body.ts-2{--ts:1.15}
+  body.ts-3{--ts:1.3}
 
   /* Dark mode */
   body.dark{
@@ -1830,14 +1829,17 @@
 
   // Accessibility
   function toggleText() {
-    document.body.classList.toggle('large');
-    localStorage.setItem('dasibom-large', document.body.classList.contains('large'));
+    var cur = document.body.classList.contains('ts-3') ? 3 : document.body.classList.contains('ts-2') ? 2 : 1;
+    var next = cur >= 3 ? 1 : cur + 1;
+    document.body.classList.remove('ts-1','ts-2','ts-3');
+    document.body.classList.add('ts-' + next);
+    localStorage.setItem('dasibom-ts', String(next));
   }
   function toggleDark() {
     document.body.classList.toggle('dark');
     localStorage.setItem('dasibom-dark', document.body.classList.contains('dark'));
   }
-  if(localStorage.getItem('dasibom-large') === 'true') document.body.classList.add('large');
+  document.body.classList.add('ts-' + (localStorage.getItem('dasibom-ts') || '1'));
   if(localStorage.getItem('dasibom-dark') === 'true') document.body.classList.add('dark');
 
   // Join form
