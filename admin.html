@@ -104,6 +104,34 @@ td{padding:14px 16px;font-size:13px;vertical-align:middle}
 .admin-tabs{display:flex;gap:0;border-bottom:1px solid #2a2d3a;background:#1a1d27;padding:0 24px}
 .admin-tab{padding:14px 22px;font-size:14px;font-weight:600;color:#666;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
 .admin-tab.active{color:#7c9cff;border-bottom-color:#7c9cff}
+/* ── 안부 안전망 (B2G 골격) ── */
+.care-demo-banner{background:#2a2410;border:1px solid #5a4d1a;color:#d9b94a;font-size:12.5px;padding:10px 16px;border-radius:10px;margin-bottom:16px;line-height:1.6}
+.care-settings{display:flex;gap:14px;align-items:center;background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:12px 18px;margin-bottom:16px;flex-wrap:wrap}
+.care-set-item{display:flex;align-items:center;gap:6px;font-size:13px;color:#888}
+.care-set-item input{width:52px;padding:6px 8px;background:#12151f;border:1px solid #2a2d3a;border-radius:6px;color:#e0e0e0;font-size:13px;text-align:center;outline:none}
+.care-row{border-bottom:1px solid #22252f}
+.care-row-main{display:flex;align-items:center;gap:14px;padding:13px 18px;cursor:pointer}
+.care-row-main:hover{background:#1d2030}
+.care-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.care-dot.green{background:#4ade80}
+.care-dot.yellow{background:#facc15}
+.care-dot.red{background:#f87171}
+.care-dot.emergency{background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,.9);animation:carePulse 1.2s infinite}
+@keyframes carePulse{50%{opacity:.4}}
+.care-name{font-size:14px;font-weight:700;color:#e0e0e0;min-width:110px}
+.care-name span{font-size:12px;color:#777;font-weight:400}
+.care-org{font-size:12px;color:#7c9cff;min-width:90px}
+.care-last{font-size:12.5px;min-width:110px}
+.care-last.green{color:#4ade80}.care-last.yellow{color:#facc15}.care-last.red,.care-last.emergency{color:#f87171}
+.care-mgr{font-size:12px;color:#888;min-width:70px}
+.care-recent{font-size:11.5px;color:#666;flex:1;text-align:right}
+.care-log-box{display:none;background:#171a24;padding:12px 18px 14px 46px}
+.care-row.open .care-log-box{display:block}
+.care-log-btn{padding:7px 14px;background:#222636;border:1px solid #2f3447;border-radius:8px;color:#bbb;font-size:12px;cursor:pointer;margin-right:6px}
+.care-log-btn.sel{background:#7c9cff;color:#fff;border-color:#7c9cff}
+.care-log-memo{width:240px;max-width:50%;padding:7px 10px;background:#12151f;border:1px solid #2a2d3a;border-radius:8px;color:#e0e0e0;font-size:12px;outline:none;margin-right:6px}
+.care-log-save{padding:7px 16px;background:#34d399;border:none;border-radius:8px;color:#0a2018;font-size:12px;font-weight:700;cursor:pointer}
+.care-log-hist{font-size:11.5px;color:#777;margin-top:9px;line-height:1.8}
 
 /* ── 오늘의 지혜 관리 ── */
 .wisdom-section{padding:24px;max-width:1100px;margin:0 auto}
@@ -179,8 +207,9 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
 
   <!-- 탭 네비게이션 -->
   <nav class="admin-tabs">
-    <button class="admin-tab active" onclick="switchTab('members')">👥 회원 관리</button>
-    <button class="admin-tab" onclick="switchTab('wisdom')">✦ 오늘의 지혜</button>
+    <button class="admin-tab active" data-tab="members" onclick="switchTab('members')">👥 회원 관리</button>
+    <button class="admin-tab" data-tab="wisdom" onclick="switchTab('wisdom')">✦ 오늘의 지혜</button>
+    <button class="admin-tab" data-tab="care" onclick="switchTab('care')">💚 안부 안전망</button>
   </nav>
 
   <!-- 회원 관리 탭 -->
@@ -237,6 +266,29 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       </div>
       <div id="wisdomList"><div class="wl-empty">불러오는 중...</div></div>
     </div>
+  </div>
+
+  <!-- 안부 안전망 탭 (B2G 골격 · 더미 데이터) -->
+  <div id="tabCare" class="admin-body" style="display:none">
+    <div class="care-demo-banner">🧪 <b>시연용 골격</b> — 더미 데이터로 동작합니다. 실데이터(안부대상 회원·접속 신호) 연동과 기관별 데이터 격리는 지자체 계약·배포 단계에서 적용됩니다. 신호등 일수 기준은 지자체별로 조정 가능합니다.</div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="careTotal">-</div><div class="stat-lbl">관리 대상</div></div>
+      <div class="stat-card green"><div class="stat-num" id="careGreen">-</div><div class="stat-lbl">🟢 정상</div></div>
+      <div class="stat-card yellow"><div class="stat-num" id="careYellow">-</div><div class="stat-lbl">🟡 주의</div></div>
+      <div class="stat-card orange"><div class="stat-num" id="careRed">-</div><div class="stat-lbl">🔴 위험·긴급</div></div>
+    </div>
+
+    <div class="care-settings">
+      <span style="font-size:13px;color:#aaa;font-weight:700">신호등 기준 (미접속 일수)</span>
+      <label class="care-set-item">🟡 주의 <input type="number" id="cfgY" min="1"> 일</label>
+      <label class="care-set-item">🔴 위험 <input type="number" id="cfgR" min="1"> 일</label>
+      <label class="care-set-item">🚨 긴급 <input type="number" id="cfgE" min="1"> 일</label>
+      <button class="btn-refresh" onclick="careApplyCfg()">적용</button>
+      <span style="font-size:11px;color:#555">접속·활동 = 그날 출석(안부 신호)</span>
+    </div>
+
+    <div class="table-wrap" id="careList"></div>
   </div>
 
   <!-- 편집 모달 -->
@@ -599,15 +651,102 @@ function hide(id){ document.getElementById(id).style.display='none'; }
 
 /* ── 탭 전환 ── */
 function switchTab(tab) {
-  document.querySelectorAll('.admin-tab').forEach(function(el, i) {
-    el.classList.toggle('active', (i===0 && tab==='members') || (i===1 && tab==='wisdom'));
+  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare' };
+  document.querySelectorAll('.admin-tab').forEach(function(el) {
+    el.classList.toggle('active', el.getAttribute('data-tab') === tab);
   });
-  if (tab === 'members') {
-    show('tabMembers'); hide('tabWisdom');
-  } else {
-    hide('tabMembers'); show('tabWisdom');
-    loadWisdomList();
-  }
+  Object.keys(map).forEach(function(k){ if(k===tab){ show(map[k]); } else { hide(map[k]); } });
+  if (tab === 'wisdom') loadWisdomList();
+  if (tab === 'care') renderCare();
+}
+
+/* ── 안부 안전망 (B2G 골격 · 더미 데이터) ──
+   ★시연용: 실데이터(careTarget 회원·접속신호)·기관 격리·역할(1·2등급) 적용은 배포+인증리팩터 후.
+   접속 활동 = 그날 출석(안부 신호). 빨강은 위로 정렬. 조치기록은 책임소재+지자체 실적보고용. */
+var CARE_CFG = (function(){ try{ return JSON.parse(localStorage.getItem('care_cfg_demo')) || {y:2,r:4,e:7}; }catch(e){ return {y:2,r:4,e:7}; } })();
+var CARE_LOGS = (function(){ try{ return JSON.parse(localStorage.getItem('care_logs_demo')) || {}; }catch(e){ return {}; } })();
+var CARE_DEMO = [
+  {name:'김순자', age:79, org:'상계복지관', mgr:'박민지', last:12},
+  {name:'이병철', age:84, org:'노원구청',   mgr:'정해철', last:9},
+  {name:'박영길', age:81, org:'중계복지관', mgr:'이수현', last:7},
+  {name:'최금례', age:77, org:'상계복지관', mgr:'박민지', last:5},
+  {name:'정말순', age:82, org:'노원구청',   mgr:'정해철', last:4},
+  {name:'강대호', age:76, org:'중계복지관', mgr:'이수현', last:4},
+  {name:'윤점숙', age:80, org:'상계복지관', mgr:'박민지', last:3},
+  {name:'한범수', age:75, org:'노원구청',   mgr:'정해철', last:2},
+  {name:'서옥자', age:83, org:'중계복지관', mgr:'이수현', last:2},
+  {name:'문재선', age:78, org:'상계복지관', mgr:'박민지', last:1},
+  {name:'양순애', age:85, org:'노원구청',   mgr:'정해철', last:1},
+  {name:'배동춘', age:74, org:'중계복지관', mgr:'이수현', last:0},
+  {name:'홍말자', age:79, org:'상계복지관', mgr:'박민지', last:0},
+  {name:'임기택', age:81, org:'노원구청',   mgr:'정해철', last:0}
+];
+function careStatus(d){ if(d>=CARE_CFG.e) return 'emergency'; if(d>=CARE_CFG.r) return 'red'; if(d>=CARE_CFG.y) return 'yellow'; return 'green'; }
+function careLastTxt(d){ return d===0 ? '오늘 활동 ✓' : ('마지막 활동 '+d+'일 전'); }
+function careApplyCfg(){
+  var y=parseInt(document.getElementById('cfgY').value,10), r=parseInt(document.getElementById('cfgR').value,10), e=parseInt(document.getElementById('cfgE').value,10);
+  if(!(y>=1)||!(r>y)||!(e>r)){ alert('기준은 주의 < 위험 < 긴급 순으로 커야 합니다.'); return; }
+  CARE_CFG={y:y,r:r,e:e};
+  try{ localStorage.setItem('care_cfg_demo', JSON.stringify(CARE_CFG)); }catch(ex){}
+  renderCare();
+}
+function renderCare(){
+  document.getElementById('cfgY').value=CARE_CFG.y;
+  document.getElementById('cfgR').value=CARE_CFG.r;
+  document.getElementById('cfgE').value=CARE_CFG.e;
+  var rank={emergency:0,red:1,yellow:2,green:3};
+  var rows=CARE_DEMO.slice().sort(function(a,b){ var s=rank[careStatus(a.last)]-rank[careStatus(b.last)]; return s!==0?s:(b.last-a.last); });
+  var cnt={green:0,yellow:0,red:0,emergency:0};
+  rows.forEach(function(p){ cnt[careStatus(p.last)]++; });
+  document.getElementById('careTotal').textContent=rows.length;
+  document.getElementById('careGreen').textContent=cnt.green;
+  document.getElementById('careYellow').textContent=cnt.yellow;
+  document.getElementById('careRed').textContent=cnt.red+cnt.emergency;
+  var html=rows.map(function(p){
+    var st=careStatus(p.last);
+    var logs=CARE_LOGS[p.name]||[];
+    var recent=logs.length? (logs[logs.length-1].date+' '+logs[logs.length-1].type+(logs[logs.length-1].memo?' · '+logs[logs.length-1].memo:'')) : '조치 기록 없음';
+    var hist=logs.slice(-3).reverse().map(function(l){ return l.date+' <b>'+l.type+'</b>'+(l.memo?' — '+esc(l.memo):''); }).join('<br>') || '아직 기록이 없습니다';
+    return '<div class="care-row" data-name="'+esc(p.name)+'">'
+      + '<div class="care-row-main" onclick="this.parentNode.classList.toggle(\'open\')">'
+      +   '<span class="care-dot '+st+'"></span>'
+      +   '<span class="care-name">'+esc(p.name)+' <span>('+p.age+'세)</span></span>'
+      +   '<span class="care-org">'+esc(p.org)+'</span>'
+      +   '<span class="care-last '+st+'">'+careLastTxt(p.last)+'</span>'
+      +   '<span class="care-mgr">담당 '+esc(p.mgr)+'</span>'
+      +   '<span class="care-recent">'+esc(recent)+'</span>'
+      + '</div>'
+      + '<div class="care-log-box">'
+      +   '<div style="font-size:12px;color:#999;margin-bottom:8px">조치 기록 입력 (전화·방문 결과 — 책임소재·실적보고 자료)</div>'
+      +   '<button type="button" class="care-log-btn" onclick="careSelType(this)">📞 전화</button>'
+      +   '<button type="button" class="care-log-btn" onclick="careSelType(this)">🚶 방문</button>'
+      +   '<button type="button" class="care-log-btn" onclick="careSelType(this)">✅ 이상없음</button>'
+      +   '<input type="text" class="care-log-memo" placeholder="메모 (예: 통화됨, 건강 양호)" maxlength="60">'
+      +   '<button type="button" class="care-log-save" onclick="careSaveLog(this)">저장</button>'
+      +   '<div class="care-log-hist">'+hist+'</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+  document.getElementById('careList').innerHTML=html;
+}
+function careSelType(btn){
+  var box=btn.parentNode;
+  box.querySelectorAll('.care-log-btn').forEach(function(b){ b.classList.toggle('sel', b===btn); });
+}
+function careSaveLog(btn){
+  var box=btn.parentNode, row=box.parentNode;
+  var name=row.getAttribute('data-name');
+  var typeBtn=box.querySelector('.care-log-btn.sel');
+  if(!typeBtn){ alert('조치 유형(전화/방문/이상없음)을 선택해주세요.'); return; }
+  var memo=box.querySelector('.care-log-memo').value.trim();
+  var d=new Date();
+  var entry={ date:(d.getMonth()+1)+'.'+d.getDate(), type:typeBtn.textContent.trim(), memo:memo };
+  if(!CARE_LOGS[name]) CARE_LOGS[name]=[];
+  CARE_LOGS[name].push(entry);
+  try{ localStorage.setItem('care_logs_demo', JSON.stringify(CARE_LOGS)); }catch(ex){}
+  renderCare();
+  var reopened=document.querySelector('.care-row[data-name="'+name+'"]');
+  if(reopened) reopened.classList.add('open');
 }
 
 /* ── 오늘의 지혜 CRUD ── */
