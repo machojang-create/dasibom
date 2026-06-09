@@ -14,7 +14,7 @@ const querystring = require('querystring');
 const ANTHROPIC_KEY =
   process.env.ANTHROPIC_KEY ||
   ((() => { try { return functions.config().anthropic.key; } catch(e){ return null; } })()) ||
-  'sk-ant-api03-여기에_실제_키_입력';   // ← 크레딧 충전 후 새 키로 교체
+  null; // 키 미설정 시 callAnthropic가 명확한 에러를 던짐 (자리표시자를 헤더에 넣으면 header 오류 발생)
 
 // 무료/기본 모델: claude-haiku-4-5 (저렴 + 빠름)
 const MODEL = 'claude-haiku-4-5-20251001';
@@ -22,6 +22,9 @@ const MODEL = 'claude-haiku-4-5-20251001';
 const MODEL_PAID = 'claude-opus-4-8';
 
 function callAnthropic(payload) {
+  if (!ANTHROPIC_KEY) {
+    return Promise.reject(new Error('AI 키가 설정되지 않았습니다 (firebase functions:config:set anthropic.key="...")'));
+  }
   const body = JSON.stringify(payload);
   return new Promise((resolve, reject) => {
     const req = https.request({
@@ -262,14 +265,35 @@ exports.generateSection = functions
   .runWith({ timeoutSeconds: 120, memory: '256MB' })
   .https.onCall(async (data, context) => {
 
+    // 비로그인 외부 호출 차단 (앱은 시작 시 익명 로그인하므로 정상 사용자는 통과)
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    }
+
     const { question, answer, chapterName, paraCount, pkg } = data;
-    // 유료 등급(자서전·전집)만 Opus, 그 외(무료)는 Haiku.
-    // ★★ TODO(출시 전 필수): 결제 검증 미구현. 지금은 클라가 보낸 pkg를 그대로 신뢰함 →
-    //    조작 시 무료로 Opus 사용 가능(비용 누수). 출시 전 서버에서 결제기록(Firestore) 확인 후에만
-    //    MODEL_PAID 허용 + 의심 요청(결제 없는 premium 등) 로깅하도록 보강할 것. (절대 잊지 말 것)
-    const useModel = (pkg === 'basic' || pkg === 'premium') ? MODEL_PAID : MODEL;
+    // ★★ TODO(출시 전 필수): 결제 검증 미구현 → 결제 시스템 도입 전까지 Opus(MODEL_PAID) 봉인, 전원 Haiku.
+    //    결제(PortOne) 붙으면: 서버에서 Firestore 결제기록 확인 후에만 MODEL_PAID 허용
+    //    + 의심 요청(결제 없는 premium 등) 로깅. (절대 잊지 말 것 — release_blockers #1)
+    //    원래 로직: (pkg === 'basic' || pkg === 'premium') ? MODEL_PAID : MODEL
+    const useModel = MODEL;
     if (!question || !answer) {
       throw new functions.https.HttpsError('invalid-argument', '질문과 답변이 필요합니다.');
+    }
+
+    // 남용 방지: uid당 하루 생성 상한 (익명가입 봇이 키 크레딧 소진하는 것 차단)
+    const DAILY_GEN_CAP = 60;
+    const _uid = context.auth.uid;
+    const _day = new Date().toISOString().slice(0, 10);
+    const usageRef = admin.firestore().collection('usage_daily').doc(_uid + '_' + _day);
+    const allowed = await admin.firestore().runTransaction(async (tx) => {
+      const snap = await tx.get(usageRef);
+      const n = (snap.exists ? (snap.data().n || 0) : 0) + 1;
+      if (n > DAILY_GEN_CAP) return false;
+      tx.set(usageRef, { n, uid: _uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      return true;
+    });
+    if (!allowed) {
+      throw new functions.https.HttpsError('resource-exhausted', '오늘 생성 한도를 초과했습니다. 내일 다시 이용해주세요.');
     }
 
     // [윤문 지침] — Haiku에서도 고품질 수필이 나오도록 구체적으로 명령
@@ -333,6 +357,11 @@ exports.generateTitles = functions
   .region('asia-northeast3')
   .runWith({ timeoutSeconds: 60, memory: '256MB' })
   .https.onCall(async (data, context) => {
+
+    // 비로그인 외부 호출 차단 (앱은 익명 로그인 상태로 호출)
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    }
 
     const { answers } = data; // [{ q, a }, ...]
     if (!answers || !answers.length) {
