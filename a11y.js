@@ -60,7 +60,9 @@
       'body.dark .dsb-a11y button{color:#cfc8b8}',
       'body.dark .dsb-a11y button.on{background:#0e9d7d;color:#fff}'
     ];
-    if (!tsNative) css.push('body.ts-2{zoom:1.15}body.ts-3{zoom:1.3}');
+    // 페이지 전체 확대(줌) — 모든 글자·요소가 실제로 커짐.
+    // --ts는 !important로 1 고정: 페이지에 남은 구버전 부분확대 CSS(calc(...*var(--ts)))와의 이중 확대 차단.
+    if (!tsNative) css.push('body.ts-2{zoom:1.15;--ts:1 !important}body.ts-3{zoom:1.3;--ts:1 !important}');
     if (!darkNative) {
       css.push('html.dsb-dark{filter:invert(1) hue-rotate(180deg);background:#111}');
       css.push('html.dsb-dark img,html.dsb-dark video,html.dsb-dark canvas,html.dsb-dark iframe{filter:invert(1) hue-rotate(180deg)}');
