@@ -440,17 +440,11 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .lm-teaser-text::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,var(--warm))}
 .lm-teaser-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia);margin-top:10px;opacity:.7}
 </style>
+<script src="a11y.js" defer></script>
 </head>
-<body>
+<body data-ts-native>
 <!-- 시니어 글씨 크기 조절 -->
-<div class="ts-bar" id="tsBar" role="group" aria-label="글씨 크기 조절">
-  <span class="ts-bar-lbl">글씨</span>
-  <button type="button" class="ts-btn b1" data-ts="1" aria-label="보통 글씨" title="보통">가</button>
-  <button type="button" class="ts-btn b2" data-ts="2" aria-label="크게" title="크게">가</button>
-  <button type="button" class="ts-btn b3" data-ts="3" aria-label="아주 크게" title="아주 크게">가</button>
-  <span class="ts-bar-div" aria-hidden="true"></span>
-  <button type="button" class="ts-btn hc-btn" id="hcBtn" aria-label="고대비 모드" aria-pressed="false" title="고대비">◑</button>
-</div>
+<!-- 글씨 크기·다크 모드 컨트롤: 공용 a11y.js가 우측 하단에 표시 (전 페이지 통일) -->
 <div class="toast" id="toast"></div>
 
 <!-- ════ 인트로 ════ -->
@@ -1932,39 +1926,7 @@ function showPreview(shared){
 
 function scrollToCta(){document.getElementById('pvCta').scrollIntoView({behavior:'smooth'});}
 
-// 시니어 글씨 크기 조절 (보통/크게/아주크게)
-function setTextSize(n){
-  n=String(n||'1'); document.body.classList.remove('ts-1','ts-2','ts-3'); document.body.classList.add('ts-'+n);
-  try{ localStorage.setItem('memoir_ts', n); }catch(e){}
-  var btns=document.querySelectorAll('#tsBar .ts-btn');
-  for(var i=0;i<btns.length;i++){ btns[i].classList.toggle('on', btns[i].getAttribute('data-ts')===n); }
-}
-(function initTextSize(){
-  function bind(){
-    var saved='1'; try{ saved=localStorage.getItem('memoir_ts')||'1'; }catch(e){}
-    var bar=document.getElementById('tsBar');
-    if(bar){ var btns=bar.querySelectorAll('.ts-btn'); for(var i=0;i<btns.length;i++){ btns[i].addEventListener('click', function(){ setTextSize(this.getAttribute('data-ts')); }); } }
-    setTextSize(saved);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
-})();
-
-// 고대비 모드 (시니어 저시력 가독성)
-function setHighContrast(on){
-  document.body.classList.toggle('hc', !!on);
-  try{ localStorage.setItem('memoir_hc', on?'1':'0'); }catch(e){}
-  var b=document.getElementById('hcBtn');
-  if(b){ b.classList.toggle('on', !!on); b.setAttribute('aria-pressed', on?'true':'false'); }
-}
-(function initHC(){
-  function bind(){
-    var on=false; try{ on=localStorage.getItem('memoir_hc')==='1'; }catch(e){}
-    var b=document.getElementById('hcBtn');
-    if(b){ b.addEventListener('click', function(){ setHighContrast(!document.body.classList.contains('hc')); }); }
-    setHighContrast(on);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind); else bind();
-})();
+// 글씨 크기(body.ts-N → --ts)·다크 모드: 공용 a11y.js가 담당 (전 페이지 통일, 구버전 컨트롤 제거)
 
 // ── D-2 공유링크 ──
 async function makeShareLink(){

@@ -300,6 +300,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 .alarm-active{color:#81C784}
 .alarm-off{color:#ddd}
 </style>
+<script src="a11y.js" defer></script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -1039,72 +1040,12 @@ function initCheckMode(){
 // ════════════════════════════════
 // 글자 크기 조절 (시니어 접근성)
 // ════════════════════════════════
-(function(){
-  var STEP = 2;   // 한 번 클릭 시 px 변화량
-  var MIN  = 14;
-  var MAX  = 24;
-  var BASE = 16;
-  var current = parseInt(localStorage.getItem('dasibom_font_size') || BASE, 10);
-
-  function applySize(sz){
-    current = Math.min(MAX, Math.max(MIN, sz));
-    // 제품 추천 탭: rem 기반 → root font-size 변경으로 스케일
-    document.documentElement.style.fontSize = current + 'px';
-    var s = current / BASE;
-    // 안전 체크 탭: px 고정값 → !important CSS 인젝션으로 강제 스케일
-    var sid = 'mc-scale-css';
-    var st = document.getElementById(sid);
-    if(!st){ st = document.createElement('style'); st.id = sid; document.head.appendChild(st); }
-    st.textContent = [
-      '#mc-inner .ibtn-n{font-size:'+(11*s).toFixed(1)+'px!important}',
-      '#mc-inner .ibtn-e{font-size:'+(24*s).toFixed(1)+'px!important}',
-      '#mc-inner .cbtn{font-size:'+(12*s).toFixed(1)+'px!important}',
-      '#mc-inner .sel-tag{font-size:'+(12*s).toFixed(1)+'px!important}',
-      '#mc-inner .sinput{font-size:'+(14*s).toFixed(1)+'px!important}',
-      '#mc-inner .clash-warn{font-size:'+(12*s).toFixed(1)+'px!important}',
-      '#mc-inner .btn-kakao-hm{font-size:'+(17*s).toFixed(1)+'px!important}',
-      '#mc-inner .btn-naver-hm{font-size:'+(17*s).toFixed(1)+'px!important}',
-      '#mc-inner #wiz-step-title{font-size:'+(17*s).toFixed(1)+'px!important}',
-      '#mc-inner #wiz-step-sub{font-size:'+(12*s).toFixed(1)+'px!important}',
-      '#mc-inner #btn-next{font-size:'+(17*s).toFixed(1)+'px!important}',
-      '#mc-inner #r-msg{font-size:'+(19*s).toFixed(1)+'px!important}',
-      '#mc-inner #r-rec{font-size:'+(14*s).toFixed(1)+'px!important}',
-      '#mc-inner #r-lv{font-size:'+(13*s).toFixed(1)+'px!important}',
-      '#mc-inner #apptab-header-title{font-size:'+(18*s).toFixed(1)+'px!important}',
-      '#mc-inner .gnav-btn{font-size:'+(11*s).toFixed(1)+'px!important}',
-      '#mc-inner .gnav-icon{font-size:'+(16*s).toFixed(1)+'px!important}',
-    ].join('');
-    localStorage.setItem('dasibom_font_size', current);
-  }
-
-  // 저장된 크기 복원
-  applySize(current);
-
-  document.getElementById('fcUp').addEventListener('click', function(){ applySize(current + STEP); popToast('글자를 크게 했습니다 (' + current + 'px)', 1500); });
-  document.getElementById('fcDown').addEventListener('click', function(){ applySize(current - STEP); popToast('글자를 작게 했습니다 (' + current + 'px)', 1500); });
-  document.getElementById('fcReset').addEventListener('click', function(){ applySize(BASE); popToast('기본 크기로 돌아왔습니다', 1500); });
-})();
+// 글자 크기: 공용 a11y.js(우측 하단 바)가 담당 — 구버전 px 조절 제거 (전 페이지 통일)
 
 // ════════════════════════════════
 // 고대비 모드
 // ════════════════════════════════
-(function(){
-  var btn = document.getElementById('hcBtn');
-  var hcKey = 'dasibom_high_contrast';
-  var active = localStorage.getItem(hcKey) === '1';
-
-  function applyHC(on){
-    active = on;
-    document.body.classList.toggle('high-contrast', on);
-    btn.classList.toggle('active', on);
-    btn.setAttribute('aria-pressed', String(on));
-    btn.textContent = on ? '고대비 해제' : '고대비 모드';
-    localStorage.setItem(hcKey, on ? '1' : '0');
-  }
-
-  applyHC(active);
-  btn.addEventListener('click', function(){ applyHC(!active); });
-})();
+// 고대비/다크: 공용 a11y.js의 다크 모드(🌙)가 담당 — 구버전 고대비 버튼 제거 (전 페이지 통일)
 
 // ── 약 그리드 ──
 function filterD(q){drugSearchQ=q;renderDrugGrid();}
