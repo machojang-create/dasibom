@@ -132,6 +132,18 @@ td{padding:14px 16px;font-size:13px;vertical-align:middle}
 .care-log-memo{width:240px;max-width:50%;padding:7px 10px;background:#12151f;border:1px solid #2a2d3a;border-radius:8px;color:#e0e0e0;font-size:12px;outline:none;margin-right:6px}
 .care-log-save{padding:7px 16px;background:#34d399;border:none;border-radius:8px;color:#0a2018;font-size:12px;font-weight:700;cursor:pointer}
 .care-log-hist{font-size:11.5px;color:#777;margin-top:9px;line-height:1.8}
+/* 회원관리 — 안부대상(careTarget) 플래그 UI */
+.care-flag{display:inline-block;background:rgba(74,222,128,.12);color:#4ade80;border:1px solid rgba(74,222,128,.35);font-size:11px;font-weight:700;padding:3px 9px;border-radius:50px;white-space:nowrap}
+.care-box{background:#16241c;border:1px solid #234534;border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.care-box-title{font-size:12px;font-weight:700;color:#4ade80;margin-bottom:10px;letter-spacing:.5px}
+.care-box-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.care-toggle{padding:8px 14px;background:#222636;border:1px solid #2f3447;border-radius:8px;color:#999;font-size:12px;font-weight:700;cursor:pointer}
+.care-toggle.on{background:rgba(74,222,128,.15);border-color:#4ade80;color:#4ade80}
+.care-org-input{width:200px;padding:8px 10px;background:#12151f;border:1px solid #2a2d3a;border-radius:8px;color:#e0e0e0;font-size:12px;outline:none}
+.care-org-input:focus{border-color:#4ade80}
+.care-save{padding:8px 16px;background:#34d399;border:none;border-radius:8px;color:#0a2018;font-size:12px;font-weight:700;cursor:pointer}
+.care-msg{font-size:11.5px;color:#4ade80;min-width:60px}
+.care-box-hint{font-size:11px;color:#5a6a5f;margin-top:9px;line-height:1.6}
 
 /* ── 오늘의 지혜 관리 ── */
 .wisdom-section{padding:24px;max-width:1100px;margin:0 auto}
@@ -504,7 +516,10 @@ async function loadData(){
         answers:   m.answers || {},
         generatedAt: m.generatedAt || null,
         createdAt:   m.createdAt  || u.joinedAt || null,
-        updatedAt:   m.updatedAt  || null
+        updatedAt:   m.updatedAt  || null,
+        careTarget:  !!u.careTarget,
+        careOrg:     u.careOrg || '',
+        lastActiveDay: u.lastActiveDay || null
       });
     });
 
@@ -549,7 +564,7 @@ function applyFilter(){
 function renderTable(){
   if(!_filtered.length){
     document.getElementById('tableWrap').innerHTML =
-      '<table><thead><tr>'+theadHtml()+'</tr></thead><tbody><tr class="empty-row"><td colspan="9">데이터가 없습니다</td></tr></tbody></table>';
+      '<table><thead><tr>'+theadHtml()+'</tr></thead><tbody><tr class="empty-row"><td colspan="10">데이터가 없습니다</td></tr></tbody></table>';
     return;
   }
   var rows = _filtered.map(function(r, i){
@@ -562,6 +577,7 @@ function renderTable(){
       '<td><div class="td-name">'+esc(r.name)+'</div><div class="td-email">'+esc(r.email)+'</div></td>'+
       '<td><span class="badge '+provCls+'">'+prov+'</span></td>'+
       '<td class="'+pkgCls+'">'+(PKG_LABEL[r.pkg]||r.pkg)+'</td>'+
+      '<td>'+(r.careTarget?'<span class="care-flag">💚 '+(esc(r.careOrg)||'대상')+'</span>':'<span style="color:#444">—</span>')+'</td>'+
       '<td>'+r.answerCount+'문항</td>'+
       '<td>'+r.estimatedPages+'p</td>'+
       '<td>'+ai+'</td>'+
@@ -574,7 +590,7 @@ function renderTable(){
 }
 
 function theadHtml(){
-  return ['#','이름 / 이메일','가입','패키지','답변수','예상페이지','AI생성','최초작성','최종수정']
+  return ['#','이름 / 이메일','가입','패키지','안부','답변수','예상페이지','AI생성','최초작성','최종수정']
     .map(function(t){ return '<th>'+t+'</th>'; }).join('');
 }
 
@@ -618,7 +634,25 @@ function openDetail(uid){
   });
 
   if(!html) html = '<div style="color:#555;padding:32px;text-align:center">작성된 답변이 없습니다</div>';
-  document.getElementById('detailBody').innerHTML = html;
+
+  // 안부 안전망(B2G) — 안부대상 플래그 설정 박스 (회원·기관 연결의 시작점)
+  var careBox = '<div class="care-box">'
+    + '<div class="care-box-title">💚 안부 안전망 (B2G)</div>'
+    + '<div class="care-box-row">'
+    + '<button type="button" class="care-toggle'+(r.careTarget?' on':'')+'" id="careToggle">'+(r.careTarget?'안부대상 ✓':'안부대상 아님')+'</button>'
+    + '<input type="text" id="careOrgInput" class="care-org-input" placeholder="관리 기관 (예: 노원구청)" value="'+esc(r.careOrg)+'" maxlength="30">'
+    + '<button type="button" class="care-save" id="careSave">저장</button>'
+    + '<span class="care-msg" id="careMsg"></span>'
+    + '</div>'
+    + '<div class="care-box-hint">안부대상 = 지자체 돌봄 명단 회원 (일반 회원과 구분). 접속 활동이 출석(안부 신호)으로 기록됩니다.'
+    + ' · 최근 활동: <b>'+(r.lastActiveDay || '기록 없음')+'</b></div>'
+    + '</div>';
+  document.getElementById('detailBody').innerHTML = careBox + html;
+  document.getElementById('careToggle').addEventListener('click', function(){
+    this.classList.toggle('on');
+    this.textContent = this.classList.contains('on') ? '안부대상 ✓' : '안부대상 아님';
+  });
+  document.getElementById('careSave').addEventListener('click', function(){ saveCareFlag(uid); });
 
   document.getElementById('overlay').classList.add('show');
   document.getElementById('detailPanel').classList.add('show');
@@ -627,6 +661,23 @@ function openDetail(uid){
 function closeDetail(){
   document.getElementById('overlay').classList.remove('show');
   document.getElementById('detailPanel').classList.remove('show');
+}
+
+// 안부대상 플래그 저장 — users/{uid}.careTarget/careOrg (안부 안전망이 이 플래그로 대상 식별)
+function saveCareFlag(uid){
+  var on  = document.getElementById('careToggle').classList.contains('on');
+  var org = document.getElementById('careOrgInput').value.trim();
+  var msg = document.getElementById('careMsg');
+  msg.textContent = '저장 중...';
+  _db.collection('users').doc(uid).set({ careTarget: on, careOrg: org }, { merge: true })
+    .then(function(){
+      msg.textContent = '✓ 저장됨';
+      setTimeout(function(){ if(msg) msg.textContent=''; }, 2000);
+      var r = _allRows.find(function(x){ return x.uid === uid; });
+      if(r){ r.careTarget = on; r.careOrg = org; }
+      applyFilter(); // 목록 배지 갱신
+    })
+    .catch(function(e){ msg.textContent = '실패: ' + e.message; });
 }
 
 function fmtDate(ts){

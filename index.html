@@ -986,6 +986,7 @@
 </style>
 
 <script src="a11y.js" defer></script>
+<script src="attend.js" defer></script>
 </head>
 <body data-ts-native data-dark-native>
 <!-- ════════ 다시봄 신규 방문자 인트로 (v2) — 시작 ════════ -->
@@ -1704,19 +1705,7 @@
   });
   Kakao.init('870c36c36fea1421ed701cefe6fc6562');
 
-  // ── 안부 신호 (B2G 출석): 로그인 사용자의 오늘 첫 활동을 기록 ──
-  // 접속·활동 = 그날 출석. 관리자 안부 안전망이 lastActiveDay로 신호등 판정(실데이터 연동 시).
-  (function(){
-    function markAttendance(u){
-      var day = new Date().toISOString().slice(0,10);
-      try{ if(localStorage.getItem('dasibom_attend_day') === day) return; }catch(e){}
-      firebase.firestore().collection('users').doc(u.uid)
-        .set({ lastActiveAt: firebase.firestore.FieldValue.serverTimestamp(), lastActiveDay: day }, { merge:true })
-        .then(function(){ try{ localStorage.setItem('dasibom_attend_day', day); }catch(e){} })
-        .catch(function(){ /* 오프라인·규칙 거부 시 조용히 통과 (다음 방문에 재시도) */ });
-    }
-    firebase.auth().onAuthStateChanged(function(u){ if(u) markAttendance(u); });
-  })();
+  // 안부 신호(B2G 출석)는 공용 attend.js가 기록 (전 페이지 공통)
 
   function openLogin(e) { if(e) e.preventDefault(); document.getElementById('login-modal').classList.add('open'); }
   function closeLogin() { document.getElementById('login-modal').classList.remove('open'); }
