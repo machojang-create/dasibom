@@ -647,7 +647,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       <button class="mode-btn" id="mVoice">🎤 말로 하기</button>
     </div>
     <div id="iText">
-      <textarea class="q-ta" id="tArea" placeholder="자유롭게 적어주세요...&#10;짧아도 괜찮습니다."></textarea>
+      <textarea class="q-ta" id="tArea" placeholder="한 줄만 적으셔도 괜찮아요.&#10;나머지는 봄이가 멋진 글로 풀어드려요 🌱"></textarea>
     </div>
     <div id="iVoice" style="display:none">
       <div class="v-wrap">
@@ -1621,7 +1621,7 @@ function renderQ(i){
   el('qNum').textContent=String(i+1).padStart(3,'0')+' 번째 질문';
   el('qTxt').textContent=q.q;
   el('qHint').textContent=q.h;
-  var _ex=el('qEx'); if(_ex){ if(q.hint){ _ex.style.display='none'; } else { _ex.style.display=''; _ex.textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게 적어주세요. 짧아도 괜찮아요.'; } }
+  var _ex=el('qEx'); if(_ex){ if(q.hint){ _ex.style.display='none'; } else { _ex.style.display=''; _ex.textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게. 한 줄만 적어도 봄이가 풀어드려요.'; } }
   var _bf=el('bomFace'); if(_bf){ _bf.src='img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
   var _qp=el('qPrivate');
   if(_qp){ if(q.sensitive){ _qp.style.display='';
@@ -1677,7 +1677,7 @@ function showDayDone(){
 
 function goNext(){
   var v=getVal();
-  if(!validAnswer(v)){ popToast('조금만 더 들려주세요 — 최소 '+MIN_CHARS+'자로 적어주시거나, 아래 「이 질문 건너뛰기」를 눌러주세요'); return; }
+  if(!validAnswer(v)){ popToast('조금만 더 들려주세요('+MIN_CHARS+'자 이상). 한 줄이면 충분해요 — 나머지는 봄이가 풀어써요. 어려우면 「이 질문 건너뛰기」'); return; }
   commit();
   recordConsumed(APP.curQ);
   var maxQ=APP.maxQ; var next=APP.curQ+1;
@@ -1982,6 +1982,10 @@ function completePurchase(){closeModal();popToast('결제 페이지로 이동합
 document.addEventListener('DOMContentLoaded',function(){
   var _shareId=new URLSearchParams(location.search).get('share');
   if(_shareId){ loadShared(_shareId); return; } // 공유 보기 모드: 일반 초기화 건너뜀
+  // 홈 "봄이의 오늘 질문" 직진입(?continue=1): 기존 답변이 있으면 인트로 없이 바로 이어서 작성
+  if(new URLSearchParams(location.search).get('continue')==='1'){
+    setTimeout(function(){ try{ if(Object.keys(APP.answers||{}).length){ resumeJourney(); } }catch(e){} }, 450);
+  }
   // Firebase 초기화 + 익명 로그인 + 이전 내용 복원 (백그라운드)
   autoSignIn();
 

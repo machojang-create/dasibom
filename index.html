@@ -295,6 +295,8 @@
   }
   .card .title{font-family:"Nanum Myeongjo",serif;font-size:calc(34px * var(--ts,1));line-height:1.15;font-weight:800;letter-spacing:-0.01em;color:var(--ink);margin-bottom:14px}
   .card .desc{color:var(--ink-2);opacity:.78;font-size:calc(15.5px * var(--ts,1));line-height:1.7;max-width:32ch}
+  .bom-today{margin-top:12px;font-size:14px;color:#0e9d7d;font-weight:600;line-height:1.6}
+  .bom-today b{font-weight:800}
   .card .visual{
     margin-top:30px;height:180px;border-radius:18px;
     position:relative;overflow:hidden;
@@ -996,6 +998,7 @@
 
 <script src="a11y.js?v=2" defer></script>
 <script src="attend.js?v=2" defer></script>
+<script src="questions_v3.js?v=1" defer></script><!-- 봄이의 오늘 질문 계산용 -->
 </head>
 <body data-dark-native>
 <!-- ════════ 다시봄 신규 방문자 인트로 (v2) — 시작 ════════ -->
@@ -1524,6 +1527,7 @@
           </div>
           <h3 class="title">나의 추억,<br>너의 기억</h3>
           <p class="desc">먼지 쌓인 기억 속 보물 같은 이야기를 한 권의 책으로 엮어드립니다.</p>
+          <div class="bom-today" id="bomTodayQ" style="display:none"></div>
         </div>
         <div class="visual">
           <img src="/img/card1.jpg" alt="손글씨가 적힌 오래된 노트" loading="lazy">
@@ -1715,6 +1719,37 @@
   Kakao.init('870c36c36fea1421ed701cefe6fc6562');
 
   // 안부 신호(B2G 출석)는 공용 attend.js가 기록 (전 페이지 공통)
+
+  // ── 봄이의 오늘 질문 (홈 카드 노출) ──
+  // 자서전(memoir_*) localStorage 상태로 다음 질문·오늘 몫을 계산해 자서전 카드에 표시.
+  // 답변이 있으면 카드 링크가 ?continue=1로 바뀌어 클릭 시 바로 이어서 작성.
+  (function(){
+    function ls(k,d){ try{ var v=localStorage.getItem('memoir_'+k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+    function render(){
+      var box=document.getElementById('bomTodayQ'); if(!box) return;
+      var pool=window.QPOOL||[]; if(!pool.length) return;
+      var pkg=ls('pkg','free'), answers=ls('answers',{}), qDates=ls('qDates',{});
+      function sel(tier,n){ var p=pool.filter(function(q){return q.tier===tier&&!q.reserve;}); var sh=p.filter(function(q){return q.show;}); var rest=p.filter(function(q){return !q.show;}).sort(function(a,b){return (b.pri||0)-(a.pri||0);}); return sh.concat(rest).slice(0,n); }
+      var list=pool.filter(function(q){return q.tier==='free'&&!q.reserve;});
+      if(pkg==='basic'||pkg==='premium') list=list.concat(sel('paid1',30));
+      if(pkg==='premium') list=list.concat(sel('paid2',30));
+      var today=new Date().toISOString().slice(0,10), doneToday=0;
+      Object.keys(qDates).forEach(function(k){ if(qDates[k]===today) doneToday++; });
+      var answered=0, next=-1;
+      for(var i=0;i<list.length;i++){ var a=answers[i]; if(a!=null&&String(a).trim()!==''){ answered++; } else if(next<0){ next=i; } }
+      var capped=(pkg==='free')&&doneToday>=3;
+      var card=document.querySelector('.card.card-1');
+      if(next<0){ box.innerHTML='✦ 모든 이야기 완료 — 내 자서전을 만나보세요'; }
+      else if(capped){ box.innerHTML='🌸 오늘 이야기 완료! 내일 봄이가 새 질문을 드릴게요'; }
+      else{
+        var remain=(pkg==='free')?(' · 오늘 '+(3-doneToday)+'개 남음'):'';
+        box.innerHTML='💬 <b>봄이의 오늘 질문</b> — “'+(list[next].gist||'')+'”'+remain;
+        if(answered>0 && card) card.setAttribute('href','/memoir?continue=1');
+      }
+      box.style.display='';
+    }
+    var n=0;(function poll(){ if(window.QPOOL){ if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',render); } else { render(); } return; } if(++n<20) setTimeout(poll,300); })();
+  })();
 
   function openLogin(e) { if(e) e.preventDefault(); document.getElementById('login-modal').classList.add('open'); }
   function closeLogin() { document.getElementById('login-modal').classList.remove('open'); }
