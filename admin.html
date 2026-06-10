@@ -117,12 +117,13 @@ td{padding:14px 16px;font-size:13px;vertical-align:middle}
 .care-dot.yellow{background:#facc15}
 .care-dot.red{background:#f87171}
 .care-dot.emergency{background:#ef4444;box-shadow:0 0 10px rgba(239,68,68,.9);animation:carePulse 1.2s infinite}
+.care-dot.nodata{background:#8a8f9a;box-shadow:0 0 8px rgba(248,113,113,.45)}
 @keyframes carePulse{50%{opacity:.4}}
 .care-name{font-size:14px;font-weight:700;color:#e0e0e0;min-width:110px}
 .care-name span{font-size:12px;color:#777;font-weight:400}
 .care-org{font-size:12px;color:#7c9cff;min-width:90px}
 .care-last{font-size:12.5px;min-width:110px}
-.care-last.green{color:#4ade80}.care-last.yellow{color:#facc15}.care-last.red,.care-last.emergency{color:#f87171}
+.care-last.green{color:#4ade80}.care-last.yellow{color:#facc15}.care-last.red,.care-last.emergency{color:#f87171}.care-last.nodata{color:#f87171;opacity:.85}
 .care-mgr{font-size:12px;color:#888;min-width:70px}
 .care-recent{font-size:11.5px;color:#666;flex:1;text-align:right}
 .care-log-box{display:none;background:#171a24;padding:12px 18px 14px 46px}
@@ -282,7 +283,7 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
 
   <!-- 안부 안전망 탭 (B2G 골격 · 더미 데이터) -->
   <div id="tabCare" class="admin-body" style="display:none">
-    <div class="care-demo-banner">🧪 <b>시연용 골격</b> — 더미 데이터로 동작합니다. 실데이터(안부대상 회원·접속 신호) 연동과 기관별 데이터 격리는 지자체 계약·배포 단계에서 적용됩니다. 신호등 일수 기준은 지자체별로 조정 가능합니다.</div>
+    <div class="care-demo-banner" id="careBanner">안부 데이터 불러오는 중...</div>
 
     <div class="stats-row">
       <div class="stat-card"><div class="stat-num" id="careTotal">-</div><div class="stat-lbl">관리 대상</div></div>
@@ -297,6 +298,8 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       <label class="care-set-item">🔴 위험 <input type="number" id="cfgR" min="1"> 일</label>
       <label class="care-set-item">🚨 긴급 <input type="number" id="cfgE" min="1"> 일</label>
       <button class="btn-refresh" onclick="careApplyCfg()">적용</button>
+      <button class="btn-refresh" id="careModeBtn" onclick="careToggleMode()" style="margin-left:auto">모드 전환</button>
+      <button class="btn-refresh" onclick="careReload()" title="실데이터 새로고침">↻</button>
       <span style="font-size:11px;color:#555">접속·활동 = 그날 출석(안부 신호)</span>
     </div>
 
@@ -711,11 +714,15 @@ function switchTab(tab) {
   if (tab === 'care') renderCare();
 }
 
-/* ── 안부 안전망 (B2G 골격 · 더미 데이터) ──
-   ★시연용: 실데이터(careTarget 회원·접속신호)·기관 격리·역할(1·2등급) 적용은 배포+인증리팩터 후.
-   접속 활동 = 그날 출석(안부 신호). 빨강은 위로 정렬. 조치기록은 책임소재+지자체 실적보고용. */
+/* ── 안부 안전망 (B2G) — 실데이터 + 시연(더미) 겸용 ──
+   실데이터: users에서 careTarget==true 회원 + attend.js가 기록한 lastActiveDay로 신호등 판정.
+   시연: CARE_DEMO 더미(모두의창업 발표용). 안부대상 회원이 없으면 자동 시연 모드.
+   조치기록: 실데이터=users/{uid}.careLogs(arrayUnion) / 시연=localStorage.
+   기관 격리·역할(1·2등급) 강제는 배포+인증리팩터 후. */
 var CARE_CFG = (function(){ try{ return JSON.parse(localStorage.getItem('care_cfg_demo')) || {y:2,r:4,e:7}; }catch(e){ return {y:2,r:4,e:7}; } })();
 var CARE_LOGS = (function(){ try{ return JSON.parse(localStorage.getItem('care_logs_demo')) || {}; }catch(e){ return {}; } })();
+var CARE_MODE = null;   // 'real' | 'demo' — 최초 로드 시 자동 결정(실데이터 있으면 real)
+var _careReal = null;   // 실데이터 캐시
 var CARE_DEMO = [
   {name:'김순자', age:79, org:'상계복지관', mgr:'박민지', last:12},
   {name:'이병철', age:84, org:'노원구청',   mgr:'정해철', last:9},
@@ -732,8 +739,14 @@ var CARE_DEMO = [
   {name:'홍말자', age:79, org:'상계복지관', mgr:'박민지', last:0},
   {name:'임기택', age:81, org:'노원구청',   mgr:'정해철', last:0}
 ];
-function careStatus(d){ if(d>=CARE_CFG.e) return 'emergency'; if(d>=CARE_CFG.r) return 'red'; if(d>=CARE_CFG.y) return 'yellow'; return 'green'; }
-function careLastTxt(d){ return d===0 ? '오늘 활동 ✓' : ('마지막 활동 '+d+'일 전'); }
+function careStatus(d){ if(d===null) return 'nodata'; if(d>=CARE_CFG.e) return 'emergency'; if(d>=CARE_CFG.r) return 'red'; if(d>=CARE_CFG.y) return 'yellow'; return 'green'; }
+function careLastTxt(d){ if(d===null) return '활동 기록 없음'; return d===0 ? '오늘 활동 ✓' : ('마지막 활동 '+d+'일 전'); }
+function daysSince(dayStr){
+  if(!dayStr) return null;
+  var t=new Date(dayStr+'T00:00:00'); if(isNaN(t)) return null;
+  var now=new Date(); now.setHours(0,0,0,0);
+  var d=Math.round((now-t)/86400000); return d<0?0:d;
+}
 function careApplyCfg(){
   var y=parseInt(document.getElementById('cfgY').value,10), r=parseInt(document.getElementById('cfgR').value,10), e=parseInt(document.getElementById('cfgE').value,10);
   if(!(y>=1)||!(r>y)||!(e>r)){ alert('기준은 주의 < 위험 < 긴급 순으로 커야 합니다.'); return; }
@@ -741,30 +754,72 @@ function careApplyCfg(){
   try{ localStorage.setItem('care_cfg_demo', JSON.stringify(CARE_CFG)); }catch(ex){}
   renderCare();
 }
+// 현재 모드의 행 목록 — 공통 형태 {key, name, sub, org, mgr, days, logs}
+function careRows(){
+  if(CARE_MODE==='real') return _careReal || [];
+  return CARE_DEMO.map(function(p){ return { key:p.name, name:p.name, sub:p.age+'세', org:p.org, mgr:p.mgr, days:p.last, logs:(CARE_LOGS[p.name]||[]) }; });
+}
+function careToggleMode(){ CARE_MODE=(CARE_MODE==='real')?'demo':'real'; renderCare(); }
+function careReload(){ _careReal=null; CARE_MODE=(CARE_MODE==='demo')?'demo':null; renderCare(); }
 function renderCare(){
   document.getElementById('cfgY').value=CARE_CFG.y;
   document.getElementById('cfgR').value=CARE_CFG.r;
   document.getElementById('cfgE').value=CARE_CFG.e;
-  var rank={emergency:0,red:1,yellow:2,green:3};
-  var rows=CARE_DEMO.slice().sort(function(a,b){ var s=rank[careStatus(a.last)]-rank[careStatus(b.last)]; return s!==0?s:(b.last-a.last); });
-  var cnt={green:0,yellow:0,red:0,emergency:0};
-  rows.forEach(function(p){ cnt[careStatus(p.last)]++; });
+  // 실데이터 1회 로드(careTarget 회원 + 출석신호) → 끝나면 재호출
+  if(_careReal===null){
+    document.getElementById('careList').innerHTML='<div class="loading-wrap"><div class="spinner"></div><div class="loading-txt">안부 데이터 불러오는 중...</div></div>';
+    _careReal=[]; // 재진입 방지
+    _db.collection('users').where('careTarget','==',true).get().then(function(snap){
+      var rows=[];
+      snap.forEach(function(d){ var u=d.data();
+        rows.push({ key:d.id, name:u.name||'(이름 없음)', sub:(u.email||'').slice(0,22), org:u.careOrg||'미지정', mgr:null, days:daysSince(u.lastActiveDay||null), logs:(u.careLogs||[]).slice() });
+      });
+      _careReal=rows;
+      if(CARE_MODE===null) CARE_MODE=rows.length?'real':'demo';
+      renderCare();
+    }).catch(function(e){
+      _careReal=[]; if(CARE_MODE===null) CARE_MODE='demo';
+      renderCare();
+    });
+    return;
+  }
+  if(CARE_MODE===null) CARE_MODE=_careReal.length?'real':'demo';
+  // 모드 버튼·배너 갱신
+  var modeBtn=document.getElementById('careModeBtn');
+  if(modeBtn) modeBtn.textContent=(CARE_MODE==='real')?'🧪 시연 데이터로 전환':'👥 실데이터로 전환';
+  var banner=document.getElementById('careBanner');
+  if(banner){
+    banner.innerHTML=(CARE_MODE==='real')
+      ? '👥 <b>실데이터 모드</b> — 안부대상(careTarget) 회원 '+_careReal.length+'명. 회원 관리에서 💚 지정한 회원이 표시되며, 어르신의 접속 활동이 출석(안부 신호)으로 판정됩니다. 신호등 일수 기준은 지자체별 조정 가능.'
+      : '🧪 <b>시연 모드(더미)</b> — 발표·시연용 가상 데이터입니다. 실제 운영은 회원 관리에서 💚 안부대상 지정 후 "실데이터로 전환"을 누르세요.';
+  }
+  var rank={nodata:0,emergency:1,red:2,yellow:3,green:4};
+  var rows=careRows().slice().sort(function(a,b){
+    var s=rank[careStatus(a.days)]-rank[careStatus(b.days)]; if(s!==0) return s;
+    var da=(a.days===null)?99999:a.days, db2=(b.days===null)?99999:b.days; return db2-da;
+  });
+  var cnt={green:0,yellow:0,red:0,emergency:0,nodata:0};
+  rows.forEach(function(p){ cnt[careStatus(p.days)]++; });
   document.getElementById('careTotal').textContent=rows.length;
   document.getElementById('careGreen').textContent=cnt.green;
   document.getElementById('careYellow').textContent=cnt.yellow;
-  document.getElementById('careRed').textContent=cnt.red+cnt.emergency;
+  document.getElementById('careRed').textContent=cnt.red+cnt.emergency+cnt.nodata;
+  if(!rows.length){
+    document.getElementById('careList').innerHTML='<div style="padding:44px 20px;text-align:center;color:#666;font-size:13px;line-height:2">안부대상 회원이 아직 없습니다.<br>👥 회원 관리 탭 → 회원 클릭 → <b style="color:#4ade80">💚 안부대상</b>으로 지정하세요.</div>';
+    return;
+  }
   var html=rows.map(function(p){
-    var st=careStatus(p.last);
-    var logs=CARE_LOGS[p.name]||[];
+    var st=careStatus(p.days);
+    var logs=p.logs||[];
     var recent=logs.length? (logs[logs.length-1].date+' '+logs[logs.length-1].type+(logs[logs.length-1].memo?' · '+logs[logs.length-1].memo:'')) : '조치 기록 없음';
     var hist=logs.slice(-3).reverse().map(function(l){ return l.date+' <b>'+l.type+'</b>'+(l.memo?' — '+esc(l.memo):''); }).join('<br>') || '아직 기록이 없습니다';
-    return '<div class="care-row" data-name="'+esc(p.name)+'">'
+    return '<div class="care-row" data-key="'+esc(p.key)+'">'
       + '<div class="care-row-main" onclick="this.parentNode.classList.toggle(\'open\')">'
       +   '<span class="care-dot '+st+'"></span>'
-      +   '<span class="care-name">'+esc(p.name)+' <span>('+p.age+'세)</span></span>'
+      +   '<span class="care-name">'+esc(p.name)+(p.sub?' <span>('+esc(p.sub)+')</span>':'')+'</span>'
       +   '<span class="care-org">'+esc(p.org)+'</span>'
-      +   '<span class="care-last '+st+'">'+careLastTxt(p.last)+'</span>'
-      +   '<span class="care-mgr">담당 '+esc(p.mgr)+'</span>'
+      +   '<span class="care-last '+st+'">'+careLastTxt(p.days)+'</span>'
+      +   '<span class="care-mgr">'+(p.mgr?('담당 '+esc(p.mgr)):'')+'</span>'
       +   '<span class="care-recent">'+esc(recent)+'</span>'
       + '</div>'
       + '<div class="care-log-box">'
@@ -784,20 +839,33 @@ function careSelType(btn){
   var box=btn.parentNode;
   box.querySelectorAll('.care-log-btn').forEach(function(b){ b.classList.toggle('sel', b===btn); });
 }
+function _careReopen(key){
+  var el=document.querySelector('.care-row[data-key="'+key+'"]');
+  if(el) el.classList.add('open');
+}
 function careSaveLog(btn){
   var box=btn.parentNode, row=box.parentNode;
-  var name=row.getAttribute('data-name');
+  var key=row.getAttribute('data-key');
   var typeBtn=box.querySelector('.care-log-btn.sel');
   if(!typeBtn){ alert('조치 유형(전화/방문/이상없음)을 선택해주세요.'); return; }
   var memo=box.querySelector('.care-log-memo').value.trim();
   var d=new Date();
-  var entry={ date:(d.getMonth()+1)+'.'+d.getDate(), type:typeBtn.textContent.trim(), memo:memo };
-  if(!CARE_LOGS[name]) CARE_LOGS[name]=[];
-  CARE_LOGS[name].push(entry);
-  try{ localStorage.setItem('care_logs_demo', JSON.stringify(CARE_LOGS)); }catch(ex){}
-  renderCare();
-  var reopened=document.querySelector('.care-row[data-name="'+name+'"]');
-  if(reopened) reopened.classList.add('open');
+  var entry={ date:(d.getMonth()+1)+'.'+d.getDate(), type:typeBtn.textContent.trim(), memo:memo, ts:Date.now() };
+  if(CARE_MODE==='real'){
+    // 실데이터: users/{uid}.careLogs 배열에 추가 (책임소재·실적보고 기록)
+    _db.collection('users').doc(key).update({ careLogs: firebase.firestore.FieldValue.arrayUnion(entry) })
+      .then(function(){
+        var r=(_careReal||[]).find(function(x){ return x.key===key; });
+        if(r) r.logs.push(entry);
+        renderCare(); _careReopen(key);
+      })
+      .catch(function(e){ alert('조치 기록 저장 실패: '+e.message); });
+  } else {
+    if(!CARE_LOGS[key]) CARE_LOGS[key]=[];
+    CARE_LOGS[key].push(entry);
+    try{ localStorage.setItem('care_logs_demo', JSON.stringify(CARE_LOGS)); }catch(ex){}
+    renderCare(); _careReopen(key);
+  }
 }
 
 /* ── 오늘의 지혜 CRUD ── */
