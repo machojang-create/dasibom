@@ -440,6 +440,43 @@ body{
   .cmp-bubble{font-size:13px}
 }
 </style>
+<style>
+/* ── 오늘의 추억 퀴즈 (도장판·추억첩) ── */
+.nsq{margin-top:26px;background:#fff;border:2px solid #E8D9A8;border-radius:22px;padding:22px 18px;box-shadow:0 6px 24px rgba(120,90,40,.08)}
+.nsq-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+.nsq-title{font-size:18px;font-weight:800;color:#6B4F1D}
+.nsq-chips{display:flex;gap:6px;flex-wrap:wrap}
+.nsq-chip{font-size:12.5px;font-weight:800;background:#FFF4D6;color:#8A6200;border:1px solid #E8D9A8;border-radius:50px;padding:5px 12px;cursor:default;font-family:inherit}
+.nsq-chip.btn{cursor:pointer;background:#F0E7FF;color:#5B3FA8;border-color:#D5C5F5}
+.nsq-q{font-size:18px;font-weight:700;color:#3A2E18;line-height:1.7;margin-bottom:16px}
+.nsq-choices{display:grid;gap:10px}
+.nsq-c{padding:15px 16px;border:2px solid #E8DCC0;border-radius:14px;background:#FFFDF6;font-size:16.5px;font-weight:600;color:#3A2E18;cursor:pointer;text-align:left;font-family:inherit;transition:all .15s}
+.nsq-c:active{transform:scale(.98)}
+.nsq-c.ok{background:#E8F5E9;border-color:#66BB6A;color:#1B5E20}
+.nsq-c.no{background:#FDECEA;border-color:#F5A8A4;color:#B03020}
+.nsq-c.dim{opacity:.45}
+.nsq-c:disabled{cursor:default}
+.nsq-res{display:none;margin-top:16px;background:#FFF8E8;border:1.5px solid #E8D9A8;border-radius:14px;padding:15px 16px;font-size:15px;color:#5A4516;line-height:1.8}
+.nsq-res.show{display:block}
+.nsq-res b{color:#8A6200}
+.nsq-stamps{margin-top:16px}
+.nsq-st-title{font-size:13px;font-weight:800;color:#8A6200;margin-bottom:8px}
+.nsq-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.nsq-d{aspect-ratio:1;border-radius:9px;background:#FBF4E2;border:1px solid #EFE3C2;display:flex;align-items:center;justify-content:center;font-size:14px;color:#C9B88A}
+.nsq-d.on{background:#FFE9A8;border-color:#E2C24A;font-size:18px}
+.nsq-d.today{outline:2px solid #E2914A}
+.nsq-album-bg{display:none;position:fixed;inset:0;background:rgba(40,30,10,.55);z-index:800;align-items:center;justify-content:center;padding:18px}
+.nsq-album-bg.open{display:flex}
+.nsq-album{background:#FFFDF6;border-radius:20px;max-width:520px;width:100%;max-height:84vh;overflow-y:auto;padding:22px 18px}
+.nsq-album h3{font-size:18px;color:#6B4F1D;margin-bottom:6px}
+.nsq-album-sub{font-size:13px;color:#9A8456;margin-bottom:14px}
+.nsq-al-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.nsq-al-card{border:1.5px solid #EFE3C2;border-radius:14px;overflow:hidden;background:#fff}
+.nsq-al-img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#F5EDD8}
+.nsq-al-t{font-size:13px;font-weight:700;color:#5A4516;padding:8px 10px;line-height:1.5}
+.nsq-al-empty{grid-column:1/-1;text-align:center;color:#9A8456;font-size:14px;padding:26px 0;line-height:1.9}
+.nsq-al-close{width:100%;margin-top:14px;padding:13px 0;border:none;border-radius:50px;background:#6B4F1D;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+</style>
 <script src="a11y.js?v=3" defer></script>
 <script src="attend.js?v=2" defer></script>
 </head>
@@ -592,6 +629,13 @@ body{
 
     if(!alreadySeen) localStorage.setItem(seenKey, '1');
 
+    /* 오늘의 추억 퀴즈 (quiz 필드 생성 후 표시 · ?quiztest=1로 미리보기) */
+    const quizEl = buildQuiz(item);
+    if(quizEl){
+      wrap.appendChild(quizEl);
+      if(location.hash === '#quiz') setTimeout(()=>quizEl.scrollIntoView({behavior:'smooth', block:'start'}), 350);
+    }
+
     const tmr = new Date();
     tmr.setDate(tmr.getDate() + 1);
     const tmrStr = tmr.getFullYear()+'년 '+(tmr.getMonth()+1)+'월 '+tmr.getDate()+'일';
@@ -733,6 +777,105 @@ body{
       (item.talk ? `<div style="margin-top:10px;background:#FFF8E8;border:1.5px solid #E8D9A8;border-radius:14px;padding:13px 16px;font-size:14.5px;color:#6B5320;line-height:1.7;text-align:center">🗣️ <b>말벗 한마디</b> — ${esc(item.talk)}</div>` : '');
 
     return el;
+  }
+
+  /* ── 오늘의 추억 퀴즈: 정답=도장(🌸)+연속기록+추억첩 수집, 오답도 해설(배움) ── */
+  const QLS='ns_quiz_v1';
+  function qload(){ try{ return JSON.parse(localStorage.getItem(QLS))||{answers:{},collected:[]}; }catch(e){ return {answers:{},collected:[]}; } }
+  function qsave(s){ try{ localStorage.setItem(QLS, JSON.stringify(s)); }catch(e){} }
+  function ymdStr(d){ return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
+  function streakOf(s){ let n=0; const d=new Date(); for(;;){ const a=s.answers[ymdStr(d)]; if(a&&a.correct){ n++; d.setDate(d.getDate()-1); } else break; } return n; }
+
+  function buildQuiz(item){
+    let quiz=item.quiz;
+    if(!quiz && new URLSearchParams(location.search).get('quiztest')==='1'){
+      quiz={q:'(미리보기) 1960~70년대 봄, 쌀이 떨어지면 끼니를 잇게 해준 것은?',choices:['쑥과 나물','컵라면','식빵','피자'],answer:0,explain:'보릿고개 시절에는 들에서 캔 쑥과 나물로 죽을 끓여 봄을 견뎠습니다. 흰 쌀밥 한 그릇이 가장 큰 선물이던 시절이었지요.'};
+    }
+    if(!quiz) return null;
+    const st=qload(), prev=st.answers[ymdStr(new Date())];
+    const box=document.createElement('div'); box.className='nsq'; box.id='quiz';
+    box.innerHTML=
+      '<div class="nsq-head"><div class="nsq-title">🧠 오늘의 추억 퀴즈</div>'
+      +'<div class="nsq-chips"><span class="nsq-chip">🔥 연속 <b id="nsqStreak">0</b>일</span>'
+      +'<button type="button" class="nsq-chip btn" id="nsqAlbumBtn">📖 추억첩 <b id="nsqColN">0</b>장</button></div></div>'
+      +'<div class="nsq-q">'+esc(quiz.q)+'</div>'
+      +'<div class="nsq-choices" id="nsqC"></div>'
+      +'<div class="nsq-res" id="nsqRes"></div>'
+      +'<div class="nsq-stamps"><div class="nsq-st-title" id="nsqStTitle"></div><div class="nsq-grid" id="nsqGrid"></div></div>';
+    const cWrap=box.querySelector('#nsqC');
+    quiz.choices.forEach((c,i)=>{
+      const b=document.createElement('button'); b.type='button'; b.className='nsq-c'; b.textContent=(i+1)+'. '+c;
+      b.addEventListener('click',()=>answerQuiz(item,quiz,i,box));
+      cWrap.appendChild(b);
+    });
+    box.querySelector('#nsqAlbumBtn').addEventListener('click',openAlbum);
+    refreshQuizMeta(box);
+    if(prev) showQuizResult(box,quiz,prev.choice,true);
+    renderStamps(box);
+    return box;
+  }
+  function refreshQuizMeta(box){ const st=qload(); box.querySelector('#nsqStreak').textContent=streakOf(st); box.querySelector('#nsqColN').textContent=st.collected.length; }
+  function answerQuiz(item,quiz,i,box){
+    const st=qload(), today=ymdStr(new Date());
+    if(st.answers[today]) return; // 하루 1회
+    const correct=(i===quiz.answer);
+    st.answers[today]={id:item.id,choice:i,correct:correct};
+    if(correct && st.collected.indexOf(item.id)<0) st.collected.push(item.id);
+    qsave(st);
+    showQuizResult(box,quiz,i,false);
+    refreshQuizMeta(box); renderStamps(box);
+  }
+  function showQuizResult(box,quiz,choice,restored){
+    const correct=(choice===quiz.answer);
+    box.querySelectorAll('.nsq-c').forEach((b,idx)=>{
+      b.classList.add(idx===quiz.answer?'ok':(idx===choice?'no':'dim'));
+      b.disabled=true;
+    });
+    const r=box.querySelector('#nsqRes');
+    r.innerHTML=(correct
+      ? '<b>🌸 정답이에요! 도장 쾅!</b> 오늘의 추억을 추억첩에 보관했습니다.'
+      : '<b>아쉬워요!</b> 정답은 「'+esc(quiz.choices[quiz.answer])+'」 — 내일 또 도전해요.')
+      +'<br>'+esc(quiz.explain)
+      +(restored?'':'<br><span style="font-size:13px;color:#9A8456">내일 아침, 새 퀴즈가 찾아옵니다 🌅</span>');
+    r.classList.add('show');
+  }
+  function renderStamps(box){
+    const st=qload(), now=new Date(), y=now.getFullYear(), m=now.getMonth();
+    box.querySelector('#nsqStTitle').textContent=(m+1)+'월 도장판';
+    const g=box.querySelector('#nsqGrid'); g.innerHTML='';
+    const days=new Date(y,m+1,0).getDate(), todayD=now.getDate();
+    for(let d=1; d<=days; d++){
+      const a=st.answers[y+String(m+1).padStart(2,'0')+String(d).padStart(2,'0')];
+      const cell=document.createElement('div');
+      cell.className='nsq-d'+(a&&a.correct?' on':'')+(d===todayD?' today':'');
+      cell.textContent=(a&&a.correct)?'🌸':d;
+      g.appendChild(cell);
+    }
+  }
+  function openAlbum(){
+    let bg=document.getElementById('nsqAlbumBg');
+    if(!bg){
+      bg=document.createElement('div'); bg.className='nsq-album-bg'; bg.id='nsqAlbumBg';
+      bg.innerHTML='<div class="nsq-album"><h3>📖 나의 추억첩</h3><div class="nsq-album-sub" id="nsqAlSub"></div><div class="nsq-al-grid" id="nsqAlGrid"></div><button type="button" class="nsq-al-close">닫기</button></div>';
+      bg.querySelector('.nsq-al-close').addEventListener('click',()=>bg.classList.remove('open'));
+      bg.addEventListener('click',e=>{ if(e.target===bg) bg.classList.remove('open'); });
+      document.body.appendChild(bg);
+    }
+    const st=qload(), g=bg.querySelector('#nsqAlGrid');
+    bg.querySelector('#nsqAlSub').textContent='퀴즈 정답으로 모은 추억 '+st.collected.length+'장 / '+ALL_ITEMS.length+'장';
+    g.innerHTML='';
+    if(!st.collected.length){
+      g.innerHTML='<div class="nsq-al-empty">아직 모은 추억이 없어요.<br>오늘의 퀴즈를 맞히면 한 장씩 모입니다 🌸</div>';
+    } else {
+      st.collected.slice().reverse().forEach(id=>{
+        const it=ALL_ITEMS.find(x=>x.id===id); if(!it) return;
+        const c=document.createElement('div'); c.className='nsq-al-card';
+        c.innerHTML=(it.past_img?'<img class="nsq-al-img" src="'+esc(it.past_img)+'" loading="lazy" onerror="this.style.display=\'none\'">':'')
+          +'<div class="nsq-al-t">No.'+String(it.id).padStart(3,'0')+' '+esc(it.topic)+'</div>';
+        g.appendChild(c);
+      });
+    }
+    bg.classList.add('open');
   }
 
   function imgBlock(src, era, icon, prompt){
