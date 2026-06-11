@@ -52,6 +52,15 @@ async function callGemini(model, body, tries = 4) {
 const data = JSON.parse(fs.readFileSync(DATA, 'utf8'));
 const items = data.items.filter(it => it.id >= FROM && it.id <= TO);
 
+// 일일 한도(429) 연속 감지 시 헛돌지 않고 자동 중단
+let quotaFails = 0;
+function quotaHit(e) {
+  if (String(e.message).includes('재시도 한도')) {
+    if (++quotaFails >= 3) { console.log('\n🛑 오늘 한도가 소진된 것 같아요 — 저장하고 중단합니다. 내일 같은 명령으로 이어가세요.'); return true; }
+  } else quotaFails = 0;
+  return false;
+}
+
 if (mode === 'images') {
   fs.mkdirSync(IMG_DIR, { recursive: true });
   let done = 0, skip = 0, fail = 0;
@@ -69,9 +78,10 @@ if (mode === 'images') {
         if (!part) throw new Error('이미지 응답 없음: ' + JSON.stringify(j).slice(0, 200));
         fs.writeFileSync(file, Buffer.from(part.inlineData.data, 'base64'));
         done++; console.log(`✅ item ${it.id} ${side} (${Math.round(fs.statSync(file).size / 1024)}KB) · 누적 ${done}`);
-      } catch (e) { fail++; console.log(`❌ item ${it.id} ${side}: ${e.message}`); }
+      } catch (e) { fail++; console.log(`❌ item ${it.id} ${side}: ${e.message}`); if (quotaHit(e)) { it._stop = 1; break; } }
       await sleep(6500); // 무료 한도 보호
     }
+    if (it._stop) { delete it._stop; break; }
   }
   console.log(`\n끝! 생성 ${done} · 건너뜀 ${skip} · 실패 ${fail}\n→ 생성물 확인 후: git add -A && git commit && git push (자동배포)`);
 
@@ -96,7 +106,7 @@ JSON으로만 답하라: {"past":"...","present":"...","talk":"..."}`;
       it.descV = 2; done++;
       console.log(`✅ item ${it.id} 설명 보강 · 누적 ${done}`);
       if (done % 10 === 0) saveData(); // 중간 저장
-    } catch (e) { fail++; console.log(`❌ item ${it.id}: ${e.message}`); }
+    } catch (e) { fail++; console.log(`❌ item ${it.id}: ${e.message}`); if (quotaHit(e)) break; }
     await sleep(2200);
   }
   saveData();
@@ -123,7 +133,7 @@ JSON만: {"q":"질문","choices":["보기1","보기2","보기3","보기4"],"answ
       it.quizV = 1; done++;
       console.log(`✅ item ${it.id} 퀴즈 생성 · 누적 ${done}`);
       if (done % 10 === 0) saveData();
-    } catch (e) { fail++; console.log(`❌ item ${it.id}: ${e.message}`); }
+    } catch (e) { fail++; console.log(`❌ item ${it.id}: ${e.message}`); if (quotaHit(e)) break; }
     await sleep(2200);
   }
   saveData();
