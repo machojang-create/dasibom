@@ -728,7 +728,9 @@ body{
           <span class="cmp-icon">💬</span>
           ${esc(item.comparison_text)}
         </div>
-      </div>`;
+      </div>`+
+      /* 말벗 한마디 (desc 보강 시 생성되는 대화 유도 질문) */
+      (item.talk ? `<div style="margin-top:10px;background:#FFF8E8;border:1.5px solid #E8D9A8;border-radius:14px;padding:13px 16px;font-size:14.5px;color:#6B5320;line-height:1.7;text-align:center">🗣️ <b>말벗 한마디</b> — ${esc(item.talk)}</div>` : '');
 
     return el;
   }
