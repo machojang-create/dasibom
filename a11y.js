@@ -46,6 +46,8 @@
     var css = [
       /* 구버전 컨트롤 일괄 숨김 (통일) */
       '.a11y-bar,.ts-bar,.font-ctrl,.hc-btn{display:none!important}',
+      /* 글씨 바가 하단 콘텐츠·버튼을 가리지 않도록 본문 하단 여백 확보 (고정 footer는 페이지별 보정) */
+      'body{padding-bottom:84px}',
       /* 공용 바 */
       '.dsb-a11y{position:fixed;bottom:16px;right:12px;z-index:99990;display:flex;align-items:center;gap:2px;',
       ' background:rgba(255,255,255,.96);border:1px solid #ddd6c8;border-radius:50px;padding:5px 9px;',
