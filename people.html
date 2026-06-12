@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인물 지도 — 내 삶의 소중한 사람들 · 다시봄</title>
+<meta name="description" content="자서전 속에 등장하는 소중한 사람들을 한 장의 지도로 모아드립니다.">
+<script src="a11y.js?v=3" defer></script>
+<script src="attend.js?v=2" defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#F6FBF9;color:#1F2A1A;min-height:100vh}
+header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(12,124,98,.12);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:19px;font-weight:800;color:#0C7C62;text-decoration:none}
+.back{border:1.5px solid rgba(12,124,98,.25);color:#0C7C62;background:none;font-size:14px;font-weight:700;padding:8px 16px;border-radius:50px;text-decoration:none}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px 40px}
+.hero{padding:32px 0 8px;text-align:center}
+.hero h1{font-family:'Nanum Myeongjo','Batang',serif;font-size:clamp(24px,6vw,30px);font-weight:800;color:#143D2E;line-height:1.45}
+.hero p{margin-top:10px;font-size:15.5px;color:#3E5548;line-height:1.8}
+.me{width:86px;height:86px;border-radius:50%;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:18px auto 4px;font-weight:800;box-shadow:0 10px 26px -10px rgba(14,157,125,.6)}
+.me span{font-size:24px}.me small{font-size:12px;font-weight:700}
+.notice{margin:18px 0 22px;background:#E9F6F0;border:1px solid #BFE5D6;border-radius:14px;padding:12px 16px;font-size:13.5px;color:#1E5A47;line-height:1.7}
+.btn-new{display:block;width:100%;padding:18px 0;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:17.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px -8px rgba(14,157,125,.55);font-family:inherit;margin-bottom:24px}
+/* 폼 */
+.form{display:none;background:#fff;border:1.5px solid rgba(12,124,98,.18);border-radius:20px;padding:20px 18px;margin-bottom:24px;box-shadow:0 6px 22px rgba(10,92,73,.08)}
+.form.open{display:block}
+.f-lbl{display:block;font-size:14px;font-weight:800;color:#1E5A47;margin:14px 0 7px}
+.f-lbl:first-child{margin-top:0}
+.f-in{width:100%;padding:13px;border:1.5px solid #CFE5DB;border-radius:12px;font-size:16px;color:#1F2A1A;outline:none;font-family:inherit;background:#FBFEFD}
+.f-in:focus{border-color:#0e9d7d}
+.rels{display:flex;gap:7px;flex-wrap:wrap}
+.rel{padding:9px 14px;border:1.5px solid #CFE5DB;border-radius:50px;background:#fff;font-size:14px;font-weight:700;color:#3E5548;cursor:pointer;font-family:inherit}
+.rel.on{background:#0e9d7d;border-color:#0e9d7d;color:#fff}
+textarea.f-in{min-height:90px;line-height:1.8}
+.f-acts{display:flex;gap:10px;margin-top:16px}
+.f-save{flex:2;padding:15px 0;border:none;border-radius:50px;background:#0e9d7d;color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit}
+.f-cancel{flex:1;padding:15px 0;border:1.5px solid #CFE5DB;border-radius:50px;background:#fff;color:#56705F;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+/* 지도(관계 그룹) */
+.grp{margin-bottom:22px}
+.grp-t{font-size:13px;font-weight:800;letter-spacing:1px;color:#56705F;margin-bottom:10px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pcard{background:#fff;border:1.5px solid rgba(12,124,98,.14);border-radius:18px;padding:16px 14px;text-align:center;box-shadow:0 3px 14px rgba(10,92,73,.06);cursor:pointer}
+.pcard .pe{font-size:34px;line-height:1;margin-bottom:8px}
+.pcard .pn{font-family:'Nanum Myeongjo','Batang',serif;font-size:18px;font-weight:800;color:#143D2E}
+.pcard .pr{font-size:12.5px;font-weight:700;color:#0C7C62;margin-top:2px}
+.pcard .pm{font-size:13px;color:#56705F;margin-top:8px;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.empty{text-align:center;color:#56705F;font-size:15px;line-height:2;padding:34px 12px;background:#fff;border:1.5px dashed #BFE5D6;border-radius:18px}
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:#1F2A1A;color:#F5F8F0;padding:13px 26px;font-size:14px;z-index:9999;white-space:nowrap;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none}
+</style>
+</head>
+<body>
+
+<header><a class="logo" href="/">🌱 다시봄</a><a class="back" href="/">‹ 홈으로</a></header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>인물 지도</h1>
+    <p>내 삶에 등장한 소중한 사람들을<br>한 장의 지도로 모아드립니다.</p>
+    <div class="me"><span>🌳</span><small>나</small></div>
+  </div>
+
+  <div class="notice">💎 <b>나의 인생 전집</b> 패키지 기능(준비 중)입니다. 지금은 직접 적어 보관할 수 있고, 곧 <b>자서전 속 인물을 봄이가 자동으로 찾아</b> 채워드릴 예정이에요.</div>
+
+  <button class="btn-new" id="btnNew">👤 인물 추가하기</button>
+
+  <div class="form" id="form">
+    <label class="f-lbl">이름 (부르던 호칭도 좋아요)</label>
+    <input class="f-in" id="fName" type="text" placeholder="예: 영희, 큰형님, 박씨 아저씨" maxlength="20">
+    <label class="f-lbl">관계</label>
+    <div class="rels" id="fRels"></div>
+    <label class="f-lbl">이 사람과의 기억 한 줄 (선택)</label>
+    <textarea class="f-in" id="fMemo" placeholder="예: 국민학교 때 늘 같이 등교하던 단짝"></textarea>
+    <div class="f-acts">
+      <button class="f-save" id="btnSave">저장하기</button>
+      <button class="f-cancel" id="btnCancel">닫기</button>
+      <button class="f-cancel" id="btnDel" style="display:none;color:#B03020;border-color:rgba(200,60,40,.3)">삭제</button>
+    </div>
+  </div>
+
+  <div id="map"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* 인물 지도 — 골격(로컬 보관, 수동 입력).
+   ★AI 자동 추출(전집 기능, 결제 후 연결): 자서전 답변 전체를 제미나이(gemini-3.1-pro 계열)에 보내
+   {name, rel, memo}[] JSON으로 인물·관계를 추출 → 아래 add()로 병합하는 구조로 설계됨.
+   연결 지점: importFromMemoir() 자리만 추후 구현. */
+var LS_KEY='dasibom_people';
+var RELS=[['배우자','💑'],['자녀','👨‍👩‍👧'],['손주','🧒'],['부모님','👵'],['형제자매','👫'],['친구','🤝'],['스승·은인','🙏'],['그 밖에','🌸']];
+function load(){ try{ return JSON.parse(localStorage.getItem(LS_KEY))||[]; }catch(e){ return []; } }
+function save(a){ try{ localStorage.setItem(LS_KEY, JSON.stringify(a)); }catch(e){} }
+function esc(s){ return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function emojiOf(rel){ var f=RELS.find(function(r){return r[0]===rel;}); return f?f[1]:'🌸'; }
+function popToast(m){ var t=document.getElementById('toast'); t.textContent=m; t.style.opacity=1; clearTimeout(t._h); t._h=setTimeout(function(){t.style.opacity=0;},2200); }
+
+var editId=null, selRel=RELS[0][0];
+function renderRels(){
+  var w=document.getElementById('fRels'); w.innerHTML='';
+  RELS.forEach(function(r){
+    var b=document.createElement('button'); b.type='button'; b.className='rel'+(selRel===r[0]?' on':''); b.textContent=r[1]+' '+r[0];
+    b.addEventListener('click',function(){ selRel=r[0]; renderRels(); });
+    w.appendChild(b);
+  });
+}
+function openForm(p){
+  editId=p?p.id:null; selRel=p?p.rel:RELS[0][0];
+  document.getElementById('fName').value=p?p.name:'';
+  document.getElementById('fMemo').value=p?(p.memo||''):'';
+  document.getElementById('btnDel').style.display=p?'':'none';
+  renderRels();
+  document.getElementById('form').classList.add('open');
+  document.getElementById('fName').focus();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function closeForm(){ document.getElementById('form').classList.remove('open'); editId=null; }
+
+document.getElementById('btnNew').addEventListener('click',function(){ openForm(null); });
+document.getElementById('btnCancel').addEventListener('click',closeForm);
+document.getElementById('btnSave').addEventListener('click',function(){
+  var name=document.getElementById('fName').value.trim();
+  var memo=document.getElementById('fMemo').value.trim();
+  if(!name){ popToast('이름(호칭)을 적어주세요'); return; }
+  var arr=load();
+  if(editId){ var it=arr.find(function(x){return x.id===editId;}); if(it){ it.name=name; it.rel=selRel; it.memo=memo; } popToast('고쳤습니다 ✓'); }
+  else{ arr.push({ id:Date.now(), name:name, rel:selRel, memo:memo, createdAt:new Date().toISOString().slice(0,10) }); popToast('인물 지도에 담았습니다 🌳'); }
+  save(arr); closeForm(); render();
+});
+document.getElementById('btnDel').addEventListener('click',function(){
+  if(!editId) return;
+  if(!confirm('이 분을 지도에서 지울까요?')) return;
+  save(load().filter(function(x){return x.id!==editId;})); closeForm(); render(); popToast('지웠습니다');
+});
+
+function render(){
+  var arr=load(), map=document.getElementById('map');
+  if(!arr.length){ map.innerHTML='<div class="empty">아직 담긴 분이 없어요.<br>👤 <b>인물 추가하기</b>로 첫 분을 모셔보세요.</div>'; return; }
+  var html='';
+  RELS.forEach(function(r){
+    var group=arr.filter(function(p){return p.rel===r[0];});
+    if(!group.length) return;
+    html+='<div class="grp"><div class="grp-t">'+r[1]+' '+r[0]+' ('+group.length+')</div><div class="cards">'
+      + group.map(function(p){
+          return '<div class="pcard" data-id="'+p.id+'"><div class="pe">'+emojiOf(p.rel)+'</div><div class="pn">'+esc(p.name)+'</div><div class="pr">'+esc(p.rel)+'</div>'+(p.memo?'<div class="pm">'+esc(p.memo)+'</div>':'')+'</div>';
+        }).join('')
+      +'</div></div>';
+  });
+  map.innerHTML=html;
+  map.querySelectorAll('.pcard').forEach(function(c){
+    c.addEventListener('click',function(){ var p=load().find(function(x){return x.id===Number(c.getAttribute('data-id'));}); if(p) openForm(p); });
+  });
+}
+render();
+</script>
+</body>
+</html>
