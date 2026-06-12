@@ -5,23 +5,29 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#FFFDE7",
-  "theme_color": "#FFD54F",
+  "background_color": "#F6FBF9",
+  "theme_color": "#0e9d7d",
   "lang": "ko",
   "categories": ["lifestyle", "education"],
-  "icons": [],
+  "icons": [
+    { "src": "/img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
   "shortcuts": [
     {
       "name": "자서전 쓰기",
       "short_name": "자서전",
       "description": "나의 이야기를 이어서 씁니다",
-      "url": "/memoir"
+      "url": "/memoir",
+      "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192" }]
     },
     {
       "name": "건강돋보기",
       "short_name": "건강",
       "description": "시니어 맞춤 건강식품 큐레이션",
-      "url": "/health-detail.html"
+      "url": "/health",
+      "icons": [{ "src": "/img/icon-192.png", "sizes": "192x192" }]
     }
   ]
 }

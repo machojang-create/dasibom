@@ -21,7 +21,8 @@
 <meta name="twitter:description" content="은퇴 이후의 삶은 끝이 아닌 또 하나의 시작입니다.">
 <meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#F5F1E8">
+<meta name="theme-color" content="#0e9d7d">
+<link rel="apple-touch-icon" href="/img/icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1736,6 +1737,13 @@
   Kakao.init('870c36c36fea1421ed701cefe6fc6562');
 
   // 안부 신호(B2G 출석)는 공용 attend.js가 기록 (전 페이지 공통)
+
+  // PWA: 서비스워커 등록 (sw.js는 Network-First — 설치 가능 조건 충족용)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('/sw.js').catch(function(){});
+    });
+  }
 
   // ── 봄이의 오늘 질문 (홈 카드 노출) ──
   // 자서전(memoir_*) localStorage 상태로 다음 질문·오늘 몫을 계산해 자서전 카드에 표시.
