@@ -21,6 +21,80 @@ const MODEL = 'claude-haiku-4-5-20251001';
 // 유료(자서전·전집) 본문 생성 모델: claude-opus-4-8 (고품질). 서버가 pkg로 결정.
 const MODEL_PAID = 'claude-opus-4-8';
 
+// ── AI 제공자 스위치 (2026-06-12 Macho 승인: 제미나이 일원화, Claude 결제 막힘) ──
+// 복귀 방법: firebase functions:config:set ai.provider="anthropic" 후 재배포
+const AI_PROVIDER =
+  process.env.AI_PROVIDER ||
+  ((() => { try { return functions.config().ai.provider; } catch (e) { return null; } })()) ||
+  'gemini';
+const GEMINI_KEY =
+  process.env.GEMINI_API_KEY ||
+  ((() => { try { return functions.config().gemini.key; } catch (e) { return null; } })()) ||
+  null;
+// 제미나이 모델 (2026-06-12 공식 가격표 기준 ID)
+const G_MODEL      = 'gemini-3.1-flash-lite';     // 무료 등급 (권당 ~20원)
+const G_MODEL_PAID = 'gemini-3.1-pro-preview';    // 유료 등급 — 결제 검증 도입 전까지 봉인(미사용)
+
+// 제미나이 REST 호출 (callAnthropic과 동일한 {status,text} 반환)
+function callGemini(model, payload) {
+  if (!GEMINI_KEY) {
+    return Promise.reject(new Error('GEMINI 키 미설정 (firebase functions:config:set gemini.key="...")'));
+  }
+  const body = JSON.stringify(payload);
+  return new Promise((resolve, reject) => {
+    const req = https.request({
+      hostname: 'generativelanguage.googleapis.com',
+      path:     `/v1beta/models/${model}:generateContent`,
+      method:   'POST',
+      headers: {
+        'Content-Type':   'application/json',
+        'x-goog-api-key': GEMINI_KEY,
+        'Content-Length': Buffer.byteLength(body)
+      }
+    }, (res) => {
+      let raw = '';
+      res.on('data', chunk => raw += chunk);
+      res.on('end', () => resolve({ status: res.statusCode, text: raw }));
+    });
+    req.on('error', reject);
+    req.write(body);
+    req.end();
+  });
+}
+
+// ── 제공자 공통 텍스트 생성 — 순수 텍스트 반환(실패 시 throw) ──
+// opt: { system?, user, maxTokens?, json?, model? }
+async function aiText(opt) {
+  if (AI_PROVIDER === 'gemini') {
+    const body = {
+      contents: [{ parts: [{ text: opt.user }] }],
+      generationConfig: { maxOutputTokens: opt.maxTokens || 800 }
+    };
+    if (opt.system) body.systemInstruction = { parts: [{ text: opt.system }] };
+    if (opt.json)   body.generationConfig.responseMimeType = 'application/json';
+    const r = await callGemini(opt.model || G_MODEL, body);
+    let parsed;
+    try { parsed = JSON.parse(r.text); } catch (e) { throw new Error('Gemini 응답 파싱 실패: ' + r.text.slice(0, 200)); }
+    if (parsed.error) throw new Error('Gemini 오류: ' + String(parsed.error.message || JSON.stringify(parsed.error)).slice(0, 200));
+    const cand = (parsed.candidates || [])[0];
+    const text = ((cand && cand.content && cand.content.parts) || []).map(p => p.text || '').join('').trim();
+    if (!text) throw new Error('Gemini 빈 응답' + (cand && cand.finishReason ? ' (' + cand.finishReason + ')' : ''));
+    return text;
+  }
+  // Anthropic 경로 (ai.provider="anthropic"으로 복귀 시 사용)
+  const payload = {
+    model: opt.model || MODEL,
+    max_tokens: opt.maxTokens || 800,
+    messages: [{ role: 'user', content: opt.user }]
+  };
+  if (opt.system) payload.system = opt.system;
+  const result = await callAnthropic(payload);
+  let parsed;
+  try { parsed = JSON.parse(result.text); } catch (e) { throw new Error('Anthropic 응답 파싱 실패: ' + result.text.slice(0, 200)); }
+  if (parsed.error) throw new Error('Anthropic 오류: ' + JSON.stringify(parsed.error).slice(0, 200));
+  return (parsed.content || []).map(b => b.text || '').join('').trim();
+}
+
 function callAnthropic(payload) {
   if (!ANTHROPIC_KEY) {
     return Promise.reject(new Error('AI 키가 설정되지 않았습니다 (firebase functions:config:set anthropic.key="...")'));
@@ -275,7 +349,7 @@ exports.generateSection = functions
     //    결제(PortOne) 붙으면: 서버에서 Firestore 결제기록 확인 후에만 MODEL_PAID 허용
     //    + 의심 요청(결제 없는 premium 등) 로깅. (절대 잊지 말 것 — release_blockers #1)
     //    원래 로직: (pkg === 'basic' || pkg === 'premium') ? MODEL_PAID : MODEL
-    const useModel = MODEL;
+    const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL; // 결제검증 도입 후 PAID 분기 복원
     if (!question || !answer) {
       throw new functions.https.HttpsError('invalid-argument', '질문과 답변이 필요합니다.');
     }
@@ -325,28 +399,12 @@ D. 마지막 문단 끝 문장: 삶의 통찰이 담긴 여운 있는 마무리
 
     const maxTok = Math.min(300 + paraCount * 220, 1000);
 
-    let result;
+    let text;
     try {
-      result = await callAnthropic({
-        model:      useModel,
-        max_tokens: maxTok,
-        system:     systemPrompt,
-        messages:   [{ role: 'user', content: userMsg }]
-      });
+      text = await aiText({ system: systemPrompt, user: userMsg, maxTokens: maxTok, model: useModel });
     } catch (e) {
-      throw new functions.https.HttpsError('internal', '생성 중 네트워크 오류: ' + e.message);
+      throw new functions.https.HttpsError('internal', '생성 오류: ' + e.message);
     }
-
-    let parsed;
-    try { parsed = JSON.parse(result.text); } catch (e) {
-      throw new functions.https.HttpsError('internal', 'Anthropic 응답 파싱 실패: ' + result.text.slice(0, 200));
-    }
-
-    if (parsed.error) {
-      throw new functions.https.HttpsError('internal', 'Anthropic 오류: ' + JSON.stringify(parsed.error));
-    }
-
-    const text = (parsed.content || []).map(b => b.text || '').join('').trim();
     return { text };
   });
 
@@ -382,27 +440,13 @@ ${qa}
 - 각 제목에 한 줄 설명 추가
 - JSON 배열만 출력: [{"title":"제목","desc":"설명"}, ...]`;
 
-    let result;
+    let raw;
     try {
-      result = await callAnthropic({
-        model:      MODEL,
-        max_tokens: 400,
-        messages:   [{ role: 'user', content: prompt }]
-      });
+      raw = await aiText({ user: prompt, maxTokens: 400, json: true });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '제목 생성 오류: ' + e.message);
     }
-
-    let parsed;
-    try { parsed = JSON.parse(result.text); } catch (e) {
-      throw new functions.https.HttpsError('internal', '응답 파싱 실패');
-    }
-
-    if (parsed.error) {
-      throw new functions.https.HttpsError('internal', 'Anthropic 오류: ' + JSON.stringify(parsed.error));
-    }
-
-    const raw = (parsed.content || []).map(b => b.text || '').join('').replace(/```json|```/g, '').trim();
+    raw = raw.replace(/```json|```/g, '').trim();
     let titles;
     try { titles = JSON.parse(raw); } catch (e) {
       throw new functions.https.HttpsError('internal', '제목 JSON 파싱 실패: ' + raw.slice(0, 100));
@@ -436,16 +480,7 @@ async function _generateOneWisdom() {
 [출력 형식 — JSON 오직 이것만, 다른 텍스트 없이]
 {"quote":"명언 본문(40~70자)","author":"작성자 이름","bio":"작성자 연혁 1줄(없으면 빈 문자열)","interpretation":"어르신 눈높이의 쉬운 해석(50~90자)"}`;
 
-  const result = await callAnthropic({
-    model:      MODEL,
-    max_tokens: 300,
-    messages:   [{ role: 'user', content: prompt }]
-  });
-
-  const parsed = JSON.parse(result.text);
-  if (parsed.error) throw new Error('Anthropic 오류: ' + JSON.stringify(parsed.error));
-
-  const raw  = (parsed.content || []).map(b => b.text || '').join('').replace(/```json|```/g,'').trim();
+  const raw = (await aiText({ user: prompt, maxTokens: 300, json: true })).replace(/```json|```/g, '').trim();
   const data = JSON.parse(raw);
   if (!data.quote || !data.author) throw new Error('필수 필드 누락: ' + raw);
   return { ...data, topic, createdAt: Date.now() };
