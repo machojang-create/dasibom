@@ -739,6 +739,10 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       <div style="margin-top:8px"><button id="btnCopyShare" style="padding:8px 18px;border:none;border-radius:8px;background:#1F2A1A;color:#fff;cursor:pointer">링크 복사</button></div>
       <div style="font-size:12px;color:#999;margin-top:8px">이 링크는 3일간 유효합니다. ('나만 보기'로 표시한 이야기는 빠집니다)</div>
     </div>
+    <div style="margin-top:14px">
+      <button id="btnPublishLib" style="padding:13px 22px;border:1.5px solid #0e9d7d;border-radius:50px;background:#fff;color:#0e9d7d;font-size:14.5px;font-weight:700;cursor:pointer">📚 공개 서재에 올리기</button>
+      <div style="font-size:12px;color:#999;margin-top:7px;line-height:1.6">올리면 공개 서재에서 누구나 읽을 수 있어요. '나만 보기' 이야기는 빠지며, 언제든 내릴 수 있습니다.</div>
+    </div>
   </div>
   <div class="cta" id="pvCta" style="display:none">
     <div class="cta-ey">소중한 선물</div>
@@ -1327,6 +1331,7 @@ var APP={
   qDates:  LS.load('qDates',{}),   // {질문index:'YYYY-MM-DD'} 처음 답변/패스한 날 (하루 캡·일차 계산용)
   qPrivate:LS.load('qPrivate',{}),  // {질문index: true=나만보기 / false=공개} (민감질문)
   selProd: 'basic', mode:'text',
+  libPublished: LS.load('libPub', false),
   recording:false, rec:null, chTimer:null, genIv:null
 };
 
@@ -1916,6 +1921,7 @@ function showPreview(shared){
   // CTA / 공유 (공유 보기 모드면 숨김)
   el('pvCta').style.display = shared ? 'none' : 'block';
   var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = (shared||isFree) ? 'none' : '';
+  var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '✓ 서재에 공개됨 — 내리기' : '📚 공개 서재에 올리기';
   var _back=el('btnPvBack'); if(_back) _back.style.display = shared ? 'none' : '';
   if(!shared) renderProds();
   go('s-preview');
@@ -1926,6 +1932,44 @@ function showPreview(shared){
 }
 
 function scrollToCta(){document.getElementById('pvCta').scrollIntoView({behavior:'smooth'});}
+
+// ── 공개 서재 게시/내리기 — '나만 보기' 제외본(sharedChapters)을 library.html 호환 배열로 저장 ──
+function _libChaptersArray(){
+  var src = APP.sharedChapters || {};
+  var keys = Object.keys(src).map(Number).sort(function(a,b){return a-b;});
+  return keys.map(function(ci){
+    var c = src[ci] || {};
+    return { title: c.storyName || '이야기', content: (c.texts || []).join('\n\n') };
+  });
+}
+async function toggleLibraryPublish(){
+  try{
+    await initFirebase();
+    if(!_auth || !_auth.currentUser){ popToast('로그인 후 이용할 수 있어요'); return; }
+    var btn = el('btnPublishLib');
+    var docRef = _db.collection('memoirs').doc(_auth.currentUser.uid);
+    if(APP.libPublished){
+      await docRef.set({ isPublic: false }, { merge: true });
+      APP.libPublished = false; LS.save('libPub', false);
+      if(btn) btn.textContent = '📚 공개 서재에 올리기';
+      popToast('공개 서재에서 내렸습니다');
+      return;
+    }
+    var chapters = _libChaptersArray();
+    if(!chapters.length){ popToast('올릴 내용이 없어요 — 자서전을 먼저 완성해주세요'); return; }
+    await docRef.set({
+      isPublic: true,
+      title: APP.bookTitle || (APP.preview && APP.preview.title) || '나의 이야기',
+      summary: (chapters[0].content || '').slice(0, 90),
+      authorName: (_auth.currentUser.displayName || '익명'),
+      chapters: chapters,
+      publishedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+    APP.libPublished = true; LS.save('libPub', true);
+    if(btn) btn.textContent = '✓ 서재에 공개됨 — 내리기';
+    popToast('공개 서재에 올렸습니다 📚');
+  }catch(e){ popToast('서재 게시 실패: ' + e.message); }
+}
 
 // 글씨 크기(body.ts-N → --ts)·다크 모드: 공용 a11y.js가 담당 (전 페이지 통일, 구버전 컨트롤 제거)
 
@@ -2011,6 +2055,7 @@ document.addEventListener('DOMContentLoaded',function(){
   el('qpPublic').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=false; el('qpPublic').classList.add('on'); el('qpPrivate').classList.remove('on'); saveState(); });
   el('btnMakeShare').addEventListener('click',makeShareLink);
   el('btnCopyShare').addEventListener('click',copyShare);
+  if(el('btnPublishLib')) el('btnPublishLib').addEventListener('click',toggleLibraryPublish);
 
   initPkgCards();
   el('btnPkgSelect').addEventListener('click',function(){
