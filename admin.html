@@ -146,6 +146,30 @@ td{padding:14px 16px;font-size:13px;vertical-align:middle}
 .care-save{padding:8px 16px;background:#34d399;border:none;border-radius:8px;color:#0a2018;font-size:12px;font-weight:700;cursor:pointer}
 .care-msg{font-size:11.5px;color:#4ade80;min-width:60px}
 .care-box-hint{font-size:11px;color:#5a6a5f;margin-top:9px;line-height:1.6}
+/* ── B2G 월간 보고서 (인쇄 친화) ── */
+.crep-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:900;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+.crep-bg.open{display:flex}
+.crep{background:#fff;color:#1a1a1a;width:100%;max-width:780px;border-radius:14px;padding:36px 40px;font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif}
+.crep h2{font-size:21px;margin-bottom:4px;color:#0a3d2e}
+.crep .crep-sub{font-size:12.5px;color:#666;margin-bottom:20px}
+.crep h3{font-size:14px;margin:22px 0 10px;color:#0a3d2e;border-left:4px solid #34d399;padding-left:8px}
+.crep table{width:100%;border-collapse:collapse;font-size:12.5px}
+.crep th,.crep td{border:1px solid #d8d8d8;padding:7px 9px;text-align:left}
+.crep th{background:#eef7f2;color:#0a3d2e;font-weight:700}
+.crep .crep-stats{display:flex;gap:10px;flex-wrap:wrap}
+.crep .crep-stat{flex:1;min-width:110px;border:1px solid #d8e8de;border-radius:10px;padding:12px;text-align:center}
+.crep .crep-stat b{display:block;font-size:22px;color:#0a3d2e}
+.crep .crep-stat span{font-size:11.5px;color:#557}
+.crep .crep-foot{margin-top:24px;font-size:11px;color:#777;line-height:1.7;border-top:1px solid #e2e2e2;padding-top:12px}
+.crep-acts{display:flex;gap:10px;margin-top:20px}
+.crep-print{flex:1;padding:13px 0;border:none;border-radius:10px;background:#0a3d2e;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.crep-close{padding:13px 22px;border:1px solid #ccc;border-radius:10px;background:#fff;color:#555;font-size:14px;cursor:pointer}
+@media print{
+  body>*{display:none!important}
+  #careReportBg{display:block!important;position:static!important;background:#fff!important;padding:0!important}
+  #careReportBg .crep{box-shadow:none!important;border-radius:0!important;max-width:100%!important;padding:0!important}
+  .crep-acts{display:none!important}
+}
 
 /* ── 오늘의 지혜 관리 ── */
 .wisdom-section{padding:24px;max-width:1100px;margin:0 auto}
@@ -300,6 +324,7 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       <label class="care-set-item">🚨 긴급 <input type="number" id="cfgE" min="1"> 일</label>
       <button class="btn-refresh" onclick="careApplyCfg()">적용</button>
       <button class="btn-refresh" id="careModeBtn" onclick="careToggleMode()" style="margin-left:auto">모드 전환</button>
+      <button class="btn-refresh" onclick="openCareReport()">🖨 월간 보고서</button>
       <button class="btn-refresh" onclick="careReload()" title="실데이터 새로고침">↻</button>
       <span style="font-size:11px;color:#555">접속·활동 = 그날 출석(안부 신호)</span>
     </div>
@@ -879,6 +904,63 @@ function careSaveLog(btn){
     try{ localStorage.setItem('care_logs_demo', JSON.stringify(CARE_LOGS)); }catch(ex){}
     renderCare(); _careReopen(key);
   }
+}
+
+/* ── B2G 월간 보고서 (인쇄·PDF) — 현재 모드(careRows) 데이터로 생성 ── */
+var CARE_ST_LABEL={green:'🟢 정상',yellow:'🟡 주의',red:'🔴 위험',emergency:'🚨 긴급',nodata:'⚪ 기록없음'};
+function openCareReport(){
+  var now=new Date(), y=now.getFullYear(), m=now.getMonth();
+  var rows=careRows();
+  var cnt={green:0,yellow:0,red:0,emergency:0,nodata:0};
+  rows.forEach(function(p){ cnt[careStatus(p.days)]++; });
+  function inMonth(l){
+    if(l.ts){ var d=new Date(l.ts); return d.getFullYear()===y && d.getMonth()===m; }
+    return parseInt(String(l.date||'').split('.')[0],10)===m+1; // 구형 기록(ts 없음)은 월만 비교
+  }
+  var typeCnt={}, logLines=[];
+  rows.forEach(function(p){ (p.logs||[]).forEach(function(l){
+    if(!inMonth(l)) return;
+    typeCnt[l.type]=(typeCnt[l.type]||0)+1;
+    logLines.push({date:l.date,name:p.name,org:p.org,type:l.type,memo:l.memo||''});
+  }); });
+  var rank={nodata:0,emergency:1,red:2,yellow:3,green:4};
+  var sorted=rows.slice().sort(function(a,b){ return rank[careStatus(a.days)]-rank[careStatus(b.days)]; });
+  var trs=sorted.map(function(p){
+    var st=careStatus(p.days);
+    var acts=(p.logs||[]).filter(inMonth).length;
+    return '<tr><td>'+esc(p.name)+'</td><td>'+esc(p.org)+'</td><td>'+careLastTxt(p.days)+'</td><td>'+CARE_ST_LABEL[st]+'</td><td style="text-align:center">'+acts+'</td></tr>';
+  }).join('');
+  var logTrs=logLines.map(function(l){
+    return '<tr><td>'+esc(l.date)+'</td><td>'+esc(l.name)+'</td><td>'+esc(l.org)+'</td><td>'+esc(l.type)+'</td><td>'+esc(l.memo)+'</td></tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;color:#999">이번 달 조치 기록이 없습니다</td></tr>';
+  var typeSummary=Object.keys(typeCnt).map(function(k){ return k+' '+typeCnt[k]+'건'; }).join(' · ') || '없음';
+  var html=
+    '<h2>다시봄 안부 안전망 — 월간 보고서</h2>'
+    +'<div class="crep-sub">'+y+'년 '+(m+1)+'월 · '+(CARE_MODE==='real'?'실데이터':'시연 데이터(가상)')+' · 생성 '+now.toLocaleDateString('ko-KR')+' · 신호등 기준: 주의 '+CARE_CFG.y+'일 / 위험 '+CARE_CFG.r+'일 / 긴급 '+CARE_CFG.e+'일</div>'
+    +'<h3>요약</h3>'
+    +'<div class="crep-stats">'
+    +'<div class="crep-stat"><b>'+rows.length+'</b><span>관리 대상</span></div>'
+    +'<div class="crep-stat"><b>'+cnt.green+'</b><span>🟢 정상</span></div>'
+    +'<div class="crep-stat"><b>'+cnt.yellow+'</b><span>🟡 주의</span></div>'
+    +'<div class="crep-stat"><b>'+(cnt.red+cnt.emergency+cnt.nodata)+'</b><span>🔴 위험·긴급·기록없음</span></div>'
+    +'<div class="crep-stat"><b>'+logLines.length+'</b><span>이번 달 조치</span></div>'
+    +'</div>'
+    +'<div style="font-size:12px;color:#555;margin-top:8px">조치 유형: '+typeSummary+'</div>'
+    +'<h3>대상자 현황 (위험 우선)</h3>'
+    +'<table><thead><tr><th>이름</th><th>기관</th><th>마지막 활동</th><th>상태</th><th>이달 조치</th></tr></thead><tbody>'+trs+'</tbody></table>'
+    +'<h3>'+(m+1)+'월 조치 기록</h3>'
+    +'<table><thead><tr><th>날짜</th><th>이름</th><th>기관</th><th>유형</th><th>메모</th></tr></thead><tbody>'+logTrs+'</tbody></table>'
+    +'<div class="crep-foot">· 본 보고서의 출석(안부 신호)은 다시봄 앱 접속·활동 기록 기반입니다.<br>· 다시봄은 신호 제공을 담당하며, 확인·조치(연락·방문)의 책임은 관할 기관에 있습니다.<br>· 기관별 데이터 격리 적용 전(시연 단계) 보고서입니다.</div>';
+  var bg=document.getElementById('careReportBg');
+  if(!bg){
+    bg=document.createElement('div'); bg.id='careReportBg'; bg.className='crep-bg';
+    bg.addEventListener('click',function(e){ if(e.target===bg) bg.classList.remove('open'); });
+    document.body.appendChild(bg);
+  }
+  bg.innerHTML='<div class="crep">'+html
+    +'<div class="crep-acts"><button class="crep-print" onclick="window.print()">🖨 인쇄 · PDF 저장</button>'
+    +'<button class="crep-close" onclick="document.getElementById(\'careReportBg\').classList.remove(\'open\')">닫기</button></div></div>';
+  bg.classList.add('open');
 }
 
 /* ── 오늘의 지혜 CRUD ── */
