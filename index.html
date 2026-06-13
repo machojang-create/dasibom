@@ -976,6 +976,8 @@
   font-weight:500;
 }
 #dasibom-onboarding .dob-bubble .dob-em{ color:#0e9d7d; font-weight:800; }
+#dasibom-onboarding .dob-bubble.dob-typing::after{content:'';display:inline-block;width:2px;height:1em;background:#0e9d7d;margin-left:3px;vertical-align:-2px;animation:dsbCaret .7s steps(1) infinite}
+@keyframes dsbCaret{50%{opacity:0}}
 #dasibom-onboarding .dob-btn{
   margin-top:22px; font-family:inherit;
   font-size:clamp(19px,4.8vw,22px); font-weight:700; color:#fff;
@@ -2364,6 +2366,30 @@
       var el=document.getElementById(s);
       if(s===id){ el.classList.add('show'); } else { el.classList.remove('show'); }
     });
+    var b=document.querySelector('#'+id+' .dob-bubble');
+    if(b) dobTypeBubble(b);
+  }
+  // 봄이 가이드 말풍선 타자기 (태그 보존: <b>·{호칭} span). 취소·움직임줄이기 존중.
+  var _dobTimer=null;
+  function dobTypeBubble(el){
+    if(_dobTimer){ clearTimeout(_dobTimer); _dobTimer=null; }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var nodes=[]; (function w(n){ Array.prototype.forEach.call(n.childNodes,function(c){ if(c.nodeType===3) nodes.push(c); else w(c); }); })(el);
+    var fulls=nodes.map(function(t){return t.nodeValue;});
+    var total=fulls.reduce(function(a,b){return a+b.length;},0);
+    if(reduce || total>180){ return; } // 그대로 표시
+    nodes.forEach(function(t){ t.nodeValue=''; });
+    el.classList.add('dob-typing');
+    var ti=0, ci=0;
+    function finish(){ nodes.forEach(function(t,k){ t.nodeValue=fulls[k]; }); el.classList.remove('dob-typing'); _dobTimer=null; }
+    function step(){
+      while(ti<nodes.length && ci>=fulls[ti].length){ ti++; ci=0; }
+      if(ti>=nodes.length){ el.classList.remove('dob-typing'); _dobTimer=null; return; }
+      nodes[ti].nodeValue += fulls[ti].charAt(ci); ci++;
+      _dobTimer=setTimeout(step, 26);
+    }
+    _dobTimer=setTimeout(step, 140);
+    el.onclick=function(){ if(_dobTimer){ clearTimeout(_dobTimer); finish(); } };
   }
   function applyHonorific(){
     var h = state.honorific || '어르신';

@@ -264,6 +264,8 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .bom-face{width:60px;height:auto;flex-shrink:0;filter:drop-shadow(0 6px 12px rgba(150,110,70,.18))}
 .bom-bubble{position:relative;flex:1;background:#fff;border:1px solid var(--sepiaP,#e7ddcf);border-radius:18px 18px 18px 4px;padding:14px 16px;box-shadow:0 4px 14px rgba(120,90,60,.08)}
 .bom-bubble .q-txt{margin-bottom:0}
+.q-txt.dsb-typing::after{content:'';display:inline-block;width:2px;height:1em;background:var(--sepia,#9a8a7a);margin-left:3px;vertical-align:-2px;animation:dsbCaret .7s steps(1) infinite}
+@keyframes dsbCaret{50%{opacity:0}}
 /* 시니어 글씨 크기 조절 (보통/크게/아주크게) */
 body.ts-2{--ts:1.18}
 body.ts-3{--ts:1.4}
@@ -1608,6 +1610,22 @@ function showStory(idx,cb){
   go('s-ch');
   APP.chTimer=setTimeout(function(){if(cb)cb();},2300);
 }
+// 봄이 말풍선 타자기 연출 (취소·탭 스킵·움직임 줄이기 존중·긴 문장 즉시)
+var _bomTypeTimer=null;
+function dsbTypeBubble(elm, text){
+  if(!elm) return;
+  if(_bomTypeTimer){ clearTimeout(_bomTypeTimer); _bomTypeTimer=null; }
+  text = text || '';
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce || text.length>140){ elm.textContent=text; elm.classList.remove('dsb-typing'); return; }
+  elm.textContent=''; elm.classList.add('dsb-typing');
+  var i=0;
+  function step(){ i++; elm.textContent=text.slice(0,i);
+    if(i<text.length){ _bomTypeTimer=setTimeout(step,26); }
+    else { elm.classList.remove('dsb-typing'); _bomTypeTimer=null; } }
+  _bomTypeTimer=setTimeout(step,120);
+  elm.onclick=function(){ if(_bomTypeTimer){ clearTimeout(_bomTypeTimer); _bomTypeTimer=null; elm.textContent=text; elm.classList.remove('dsb-typing'); } };
+}
 function renderQ(i){
   var q=QS[i]; var maxQ=APP.maxQ;
   var pct=Math.round(i/maxQ*100);
@@ -1624,7 +1642,7 @@ function renderQ(i){
   if(_sched){ if(isFreeTier()){ _sched.textContent=dayNumber()+'일차 · 오늘 '+consumedToday()+'/'+DAILY_CAP; _sched.style.display=''; } else { _sched.style.display='none'; } }
   el('qProgressTxt').textContent='당신의 이야기가 만들어지고 있습니다 ('+pct+'%)';
   el('qNum').textContent=String(i+1).padStart(3,'0')+' 번째 질문';
-  el('qTxt').textContent=q.q;
+  dsbTypeBubble(el('qTxt'), q.q);
   el('qHint').textContent=q.h;
   var _ex=el('qEx'); if(_ex){ if(q.hint){ _ex.style.display='none'; } else { _ex.style.display=''; _ex.textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게. 한 줄만 적어도 봄이가 풀어드려요.'; } }
   var _bf=el('bomFace'); if(_bf){ _bf.src='img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
