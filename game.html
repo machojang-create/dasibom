@@ -449,7 +449,7 @@ body.shake{animation:bShake .35s}
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="#4A7A3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       메인으로
     </button>
-    <a href="/" class="gnb-logo" style="display:flex;align-items:center;gap:8px;text-decoration:none">
+    <a href="/?home=1" class="gnb-logo" style="display:flex;align-items:center;gap:8px;text-decoration:none">
       <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
       <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
       <circle cx="22" cy="13" r="5" fill="#A5C87A"/>
@@ -969,7 +969,7 @@ function showScreen(id){
   if(id==='s-calendar')renderCalendar();
   if(id==='s-home'){updateHomeDots();renderHomeCal();updateTodayPtsDisplay();renderMissionCards();renderCategoryList();}
 }
-function goMainSite(){window.location.href='/';}
+function goMainSite(){window.location.href='/?home=1';}
 
 // ── Game Flow ──
 function startGame(type){

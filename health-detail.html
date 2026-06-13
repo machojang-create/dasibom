@@ -318,7 +318,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 
 <!-- ── GNB ── -->
 <header>
-  <a class="logo" href="/">
+  <a class="logo" href="/?home=1">
     <svg width="40" height="40" viewBox="0 0 44 44" fill="none">
       <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
       <circle cx="22" cy="13" r="5" fill="#83CBB2"/>
@@ -952,7 +952,7 @@ function renderMypageTab(){
       +'<p style="font-size:17px;font-weight:700;color:#212529;margin:0 0 4px">'+escH(name)+'</p>'
       +(email?'<p style="font-size:12px;color:#6C757D;margin:0 0 4px">'+escH(email)+'</p>':'')
       +'<p style="font-size:12px;color:#81C784;font-weight:600;margin:0 0 18px">'+providerLabel+' 로그인 중</p>'
-      +'<button onclick="location.href=\'/\'" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 26px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">← 메인으로 돌아가기</button>'
+      +'<button onclick="location.href=\'/?home=1\'" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 26px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">← 메인으로 돌아가기</button>'
       +'</div>';
   } else {
     el.innerHTML =
@@ -960,7 +960,7 @@ function renderMypageTab(){
       +'<div style="width:56px;height:56px;border-radius:50%;background:#E9F6F0;display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:24px;border:2px solid #83CBB2">👤</div>'
       +'<p style="font-size:15px;font-weight:700;color:#212529;margin:0 0 4px">게스트 이용 중</p>'
       +'<p style="font-size:12px;color:#6C757D;margin:0 0 13px">로그인하면 더 많은 기능을 이용할 수 있어요</p>'
-      +'<button onclick="location.href=\'/\'" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer">로그인하러 가기 →</button>'
+      +'<button onclick="location.href=\'/?home=1\'" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer">로그인하러 가기 →</button>'
       +'</div>';
   }
 }
