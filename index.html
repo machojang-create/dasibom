@@ -1158,6 +1158,21 @@
   var introEl=document.getElementById('dasibom-intro');
   // 재방문자거나 인트로 요소 없으면 즉시 제거하고 끝
   if(!introEl){ return; }
+  // 사이트 내부에서 돌아온 경우(돌아가기 ?home=1 또는 같은 도메인 referrer) — 인트로 없이 바로 메인
+  var _fromInside = (function(){
+    try{
+      if(new URLSearchParams(location.search).get('home')==='1') return true;
+      if(document.referrer){ return new URL(document.referrer).origin === location.origin; }
+    }catch(e){}
+    return false;
+  })();
+  if(_fromInside){
+    introEl.parentNode && introEl.parentNode.removeChild(introEl);
+    try{ localStorage.setItem('dasibom_visited','1'); }catch(e){}
+    document.documentElement.style.overflow=''; document.body.style.overflow='';
+    if(location.search.indexOf('home=1')>=0){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+    return;
+  }
   var isNewVisitor = !localStorage.getItem('dasibom_visited');
   if(!isNewVisitor){
     // 재방문 — 신규용 v2 인트로 제거하고, 재방문용 v1 벚꽃 인트로 재생
