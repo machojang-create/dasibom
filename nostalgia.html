@@ -567,7 +567,7 @@ body{
   /* ── fetch ── */
   async function loadData(){
     try{
-      const r = await fetch('/nostalgia_data.json');
+      const r = await fetch('/nostalgia_data.json', { cache: 'no-cache' });
       if(!r.ok) throw new Error(r.status);
       const d = await r.json();
       ALL_CATS  = d.categories || [];
@@ -788,6 +788,11 @@ body{
 
   function buildQuiz(item){
     let quiz=item.quiz;
+    // 그날 항목에 퀴즈가 없으면, 퀴즈를 가진 항목들 중 날짜별로 하나 골라 출제(AI 생성 전엔 시드 8개가 돌아감)
+    if(!quiz){
+      var pool=ALL_ITEMS.filter(function(x){return x.quiz;});
+      if(pool.length){ quiz=pool[localDayIdx(pool.length)].quiz; }
+    }
     if(!quiz && new URLSearchParams(location.search).get('quiztest')==='1'){
       quiz={q:'(미리보기) 1960~70년대 봄, 쌀이 떨어지면 끼니를 잇게 해준 것은?',choices:['쑥과 나물','컵라면','식빵','피자'],answer:0,explain:'보릿고개 시절에는 들에서 캔 쑥과 나물로 죽을 끓여 봄을 견뎠습니다. 흰 쌀밥 한 그릇이 가장 큰 선물이던 시절이었지요.'};
     }

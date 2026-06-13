@@ -614,7 +614,7 @@ var currentCat = null, currentProduct = null;
 // ════════════════════════════════
 async function loadData(){
   try{
-    var resp = await fetch('/health_data.json');
+    var resp = await fetch('/health_data.json', { cache: 'no-cache' });
     if(!resp.ok) throw new Error('HTTP ' + resp.status);
     DATA = await resp.json();
     CATEGORIES = DATA.categories;

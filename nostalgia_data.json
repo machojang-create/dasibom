@@ -165,7 +165,19 @@
       "past_img": "/nostalgia/img/item_1_past.jpg",
       "present_img": "/nostalgia/img/item_1_present.jpg",
       "talk": "어르신께서는 보릿고개 시절 어떤 음식이 가장 그리우셨나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "옛날 봄철, 묵은 곡식이 떨어졌을 때 끼니를 잇게 해준 것은?",
+        "choices": [
+          "컵라면",
+          "산과 들의 나물과 쑥",
+          "냉동 만두",
+          "통조림"
+        ],
+        "answer": 1,
+        "explain": "보릿고개에는 들에서 캔 나물과 쑥으로 죽을 끓여 봄을 견뎠습니다. 흰 쌀밥 한 그릇이 큰 선물이던 시절이었지요."
+      },
+      "quizV": 1
     },
     {
       "id": 2,
@@ -180,7 +192,19 @@
       "past_img": "/nostalgia/img/item_2_past.jpg",
       "present_img": "/nostalgia/img/item_2_present.jpg",
       "talk": "추억의 도시락과 요즘 밀키트, 어떤 점이 가장 인상 깊으셨나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "예전 학창시절, 점심을 담아 다니던 것은 무엇일까요?",
+        "choices": [
+          "양은 도시락",
+          "밀키트 배송",
+          "편의점 삼각김밥",
+          "급식 카드"
+        ],
+        "answer": 0,
+        "explain": "어머니가 새벽에 싸 주신 양은 도시락은 난로 위에 데워 먹기도 했지요. 그 온기가 곧 사랑이었습니다."
+      },
+      "quizV": 1
     },
     {
       "id": 3,
@@ -195,7 +219,19 @@
       "past_img": "/nostalgia/img/item_3_past.jpg",
       "present_img": "/nostalgia/img/item_3_present.jpg",
       "talk": "혼분식 시절, 가장 기억에 남는 음식은 무엇이신가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "쌀 소비를 줄이려 정부가 장려하던 식사 방식은?",
+        "choices": [
+          "채식 위주",
+          "외식 장려",
+          "혼분식(보리·밀 섞기)",
+          "간헐적 단식"
+        ],
+        "answer": 2,
+        "explain": "도시락에 보리를 섞었는지 검사하던 시절이었습니다. 지금은 잡곡밥이 오히려 건강식으로 사랑받지요."
+      },
+      "quizV": 1
     },
     {
       "id": 4,
@@ -210,7 +246,19 @@
       "past_img": "/nostalgia/img/item_4_past.jpg",
       "present_img": "/nostalgia/img/item_4_present.jpg",
       "talk": "어르신께는 어떤 달고나 추억이 있으신가요? 탕후루도 드셔보셨나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "연탄불 위에서 설탕과 소다로 부풀려 만든 추억의 간식은?",
+        "choices": [
+          "달고나(뽑기)",
+          "탕후루",
+          "마카롱",
+          "젤리"
+        ],
+        "answer": 0,
+        "explain": "국자에 설탕을 녹여 소다를 넣으면 노랗게 부풀던 달고나. 모양을 잘 떼면 하나 더 주던 재미가 있었지요."
+      },
+      "quizV": 1
     },
     {
       "id": 5,
@@ -225,7 +273,19 @@
       "past_img": "/nostalgia/img/item_5_past.jpg",
       "present_img": "/nostalgia/img/item_5_present.jpg",
       "talk": "어르신께서는 어떤 아이스케키를 가장 좋아하셨나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "한여름 동네를 돌며 종을 울리던 아저씨가 팔던 것은?",
+        "choices": [
+          "붕어빵",
+          "호떡",
+          "솜사탕",
+          "아이스케키"
+        ],
+        "answer": 3,
+        "explain": "\"아이스케키~\" 종소리가 들리면 아이들이 우르르 모여들었지요. 얼음과자 하나가 큰 행복이었습니다."
+      },
+      "quizV": 1
     },
     {
       "id": 6,
@@ -240,7 +300,19 @@
       "past_img": "/nostalgia/img/item_6_past.jpg",
       "present_img": "/nostalgia/img/item_6_present.jpg",
       "talk": "추억 속 불량식품 중 가장 생각나는 간식은 무엇인가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "학교 앞 문방구에서 팔던 군것질을 흔히 뭐라 불렀나요?",
+        "choices": [
+          "건강식",
+          "불량식품",
+          "유기농 간식",
+          "수제 디저트"
+        ],
+        "answer": 1,
+        "explain": "쫀드기·아폴로 같은 군것질이 가득했지요. 몸에 좋진 않았어도 추억만은 달콤합니다."
+      },
+      "quizV": 1
     },
     {
       "id": 7,
@@ -255,7 +327,19 @@
       "past_img": "/nostalgia/img/item_7_past.jpg",
       "present_img": "/nostalgia/img/item_7_present.jpg",
       "talk": "예전 마당집과 요즘 아파트, 어떤 점이 가장 큰 차이로 다가오시나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "대가족이 살던 옛 한옥 마당에서 된장·간장 항아리를 두던 곳은?",
+        "choices": [
+          "장독대",
+          "냉장고",
+          "베란다",
+          "다용도실"
+        ],
+        "answer": 0,
+        "explain": "햇볕 드는 장독대에 항아리가 줄지어 있었지요. 어머니의 손맛이 익어가던 자리입니다."
+      },
+      "quizV": 1
     },
     {
       "id": 8,
@@ -270,7 +354,19 @@
       "past_img": "/nostalgia/img/item_8_past.jpg",
       "present_img": "/nostalgia/img/item_8_present.jpg",
       "talk": "고향을 떠나 처음 머물렀던 보금자리는 어떤 곳이었나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "고향 떠나 상경한 청춘들이 머물던, 주인집에 딸린 작은 방은?",
+        "choices": [
+          "호텔",
+          "오피스텔",
+          "문간방 하숙",
+          "1인 기숙사"
+        ],
+        "answer": 2,
+        "explain": "좁아도 꿈만은 컸던 하숙방. 주인집 아주머니 밥상에 정이 오갔지요."
+      },
+      "quizV": 1
     },
     {
       "id": 9,
