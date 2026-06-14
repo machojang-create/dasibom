@@ -102,6 +102,8 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .pkg-feat{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);line-height:1.9}
 .pkg-feat-gold{color:var(--gold);font-weight:700}
 .pkg-price-gold{color:var(--gold)!important}
+.pkg-disc-badge{font-size:11.5px;font-weight:700;color:#fff;background:linear-gradient(135deg,#FF8A5B,#FF6B3D);border-radius:50px;padding:3px 12px;display:inline-block;margin-top:7px}
+.pkg-disc-badge.soft{background:none;color:var(--sepia);font-weight:600;padding-left:0}
 /* 인쇄 세트 선택 */
 .print-set-wrap{
   display:none;background:rgba(201,168,64,.06);border:1px solid rgba(201,168,64,.3);
@@ -1362,8 +1364,48 @@ function go(id){
   document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
   document.getElementById(id).classList.add('active');
   window.scrollTo(0,0);
+  if(id==='s-package'){ try{ applyTimingDiscount(); }catch(e){} }
 }
 function el(id){return document.getElementById(id);}
+
+// ── 타이밍 할인: 무료 자서전(15문항) 완성 후 30일 내에만 할인가, 이후 정가 ──
+//    s-package 화면 진입 시 호출. 결제 미연결이라 표시+data-price(결제액) 갱신.
+//    상태: preview(미완성=할인 노출·유도) / active(완성 30일내=할인+카운트다운) / expired(경과=정가)
+function applyTimingDiscount(){
+  var DAYS = 30, FREE = 15;
+  function won(n){ return Number(n).toLocaleString('ko-KR') + '원'; }
+  var doneCount = 0, lastDate = '';
+  for(var i=0;i<FREE;i++){
+    var a = APP.answers && APP.answers[i];
+    if(a != null && String(a).trim()){
+      doneCount++;
+      var d = APP.qDates && APP.qDates[i];
+      if(d && d > lastDate) lastDate = d;
+    }
+  }
+  var freeDone = (doneCount >= FREE), daysSince = null;
+  if(freeDone && lastDate){ daysSince = Math.floor((new Date() - new Date(lastDate+'T00:00:00')) / 86400000); }
+  var state = !freeDone ? 'preview' : (daysSince <= DAYS ? 'active' : 'expired');
+  var left = (daysSince==null) ? DAYS : Math.max(0, DAYS - daysSince);
+  ['basic','premium'].forEach(function(pkg){
+    var cfg = PKG_CONFIG[pkg]; if(!cfg) return;
+    var card = document.querySelector('.pkg-card[data-pkg="'+pkg+'"]'); if(!card) return;
+    var priceEl = card.querySelector('.pkg-price'); if(!priceEl) return;
+    var suffix = ' <span>/ 전자책 제공</span>', badge = '';
+    if(state === 'expired'){
+      priceEl.innerHTML = won(cfg.listPrice) + suffix;
+      card.setAttribute('data-price', cfg.listPrice);
+    } else {
+      priceEl.innerHTML = '<span class="pkg-price-orig">정가 '+won(cfg.listPrice)+'</span> '+won(cfg.price)+suffix;
+      card.setAttribute('data-price', cfg.price);
+      badge = (state==='active')
+        ? '<div class="pkg-disc-badge">🔥 완성 축하 할인 · '+(left>0?('D-'+left+' 남음'):'오늘 마감')+'</div>'
+        : '<div class="pkg-disc-badge soft">🌱 무료 완성하면 한 달간 할인가로 드려요</div>';
+    }
+    var oldB = card.querySelector('.pkg-disc-badge'); if(oldB) oldB.remove();
+    if(badge){ var row = priceEl.closest('.pkg-row') || priceEl.parentNode; row.insertAdjacentHTML('afterend', badge); }
+  });
+}
 
 // ── C-2b 질문풀 v3 연동: 티어별 리스트 조립 + {호칭}/세대 치환 ──
 function _honorific(){ try{ return localStorage.getItem('dasibom_honorific')||'어르신'; }catch(e){ return '어르신'; } }
