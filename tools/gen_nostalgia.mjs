@@ -16,6 +16,10 @@ import path from 'node:path';
 const KEY = process.env.GEMINI_API_KEY;
 if (!KEY) { console.error('❌ GEMINI_API_KEY 환경변수가 없습니다. 가이드(이미지생성_가이드.md) 참고.'); process.exit(1); }
 
+// 웹용 압축(있으면 사용). 설치: npm install sharp  (없으면 원본 저장 — 용량 큼)
+let sharp = null;
+try { sharp = (await import('sharp')).default; } catch (e) {}
+
 const ROOT = path.resolve(import.meta.dirname, '..');
 const DATA = path.join(ROOT, 'nostalgia_data.json');
 const IMG_DIR = path.join(ROOT, 'nostalgia', 'img');
@@ -26,7 +30,8 @@ function opt(name, def) { const i = args.indexOf('--' + name); return i >= 0 ? a
 const FROM = parseInt(opt('from', '1'), 10);
 const TO = parseInt(opt('to', '999'), 10);
 const ONLY = opt('only', '');           // past | present (이미지 모드)
-const IMG_MODEL = 'gemini-2.5-flash-image';
+const IMG_MODEL = opt('model', 'gemini-2.5-flash-image'); // 기본=2.5(하루한도 넉넉·검증됨). 최상급 원하면 --model gemini-3-pro-image (하루 250장)
+const FORCE = args.includes('--force');               // 기존 이미지 덮어쓰기(재생성)
 const TXT_MODEL = 'gemini-2.5-flash';
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
@@ -38,12 +43,16 @@ async function callGemini(model, body, tries = 4) {
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': KEY },
       body: JSON.stringify(body)
     });
-    if (res.status === 429 || res.status >= 500) {
-      const wait = 20000 * t;
+    if (res.status === 429) {
+      // 한도/결제 문제는 대기해도 안 풀리므로 실제 사유를 즉시 출력하고 중단
+      throw new Error('429 한도/결제 사유 → ' + (await res.text()).replace(/\s+/g, ' ').slice(0, 500));
+    }
+    if (res.status >= 500) {
+      const wait = 15000 * t;
       console.log(`   ⏳ ${res.status} — ${wait / 1000}초 대기 후 재시도(${t}/${tries})`);
       await sleep(wait); continue;
     }
-    if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}: ${(await res.text()).replace(/\s+/g,' ').slice(0, 500)}`);
     return res.json();
   }
   throw new Error('재시도 한도 초과(한도 초과가 계속되면 내일 이어서 돌리세요)');
@@ -64,20 +73,22 @@ function quotaHit(e) {
 if (mode === 'images') {
   fs.mkdirSync(IMG_DIR, { recursive: true });
   let done = 0, skip = 0, fail = 0;
-  const STYLE_TAIL = ', clean composition, no text, no letters, no watermark';
+  const STYLE_TAIL = ', authentic South Korean (한국) scene with Korean people and natural Korean faces, consistent eye style; for past scenes use Korean hanbok or era-appropriate Korean everyday clothing and Korean hanok/brick-house architecture; NEVER Japanese kimono, NEVER Japanese architecture or torii or tatami; warm cohesive Korean storybook illustration, soft rounded shapes, high quality, detailed, clean composition, no text, no letters, no watermark, avoid any Japanese style';
   for (const it of items) {
     for (const side of ['past', 'present']) {
       if (ONLY && ONLY !== side) continue;
       const file = path.join(IMG_DIR, `item_${it.id}_${side}.jpg`);
-      if (fs.existsSync(file)) { skip++; continue; }
+      if (!FORCE && fs.existsSync(file)) { skip++; continue; }
       const prompt = (it[side + '_img_prompt'] || '').trim();
       if (!prompt) { skip++; continue; }
       try {
         const j = await callGemini(IMG_MODEL, { contents: [{ parts: [{ text: prompt + STYLE_TAIL }] }] });
         const part = (j.candidates?.[0]?.content?.parts || []).find(p => p.inlineData?.data);
         if (!part) throw new Error('이미지 응답 없음: ' + JSON.stringify(j).slice(0, 200));
-        fs.writeFileSync(file, Buffer.from(part.inlineData.data, 'base64'));
-        done++; console.log(`✅ item ${it.id} ${side} (${Math.round(fs.statSync(file).size / 1024)}KB) · 누적 ${done}`);
+        const raw = Buffer.from(part.inlineData.data, 'base64');
+        if (sharp) { await sharp(raw).resize({ width: 900, withoutEnlargement: true }).jpeg({ quality: 76 }).toFile(file); }
+        else { fs.writeFileSync(file, raw); }
+        done++; console.log(`✅ item ${it.id} ${side} (${Math.round(fs.statSync(file).size / 1024)}KB${sharp ? '' : ' ⚠원본'}) · 누적 ${done}`);
       } catch (e) { fail++; console.log(`❌ item ${it.id} ${side}: ${e.message}`); if (quotaHit(e)) { it._stop = 1; break; } }
       await sleep(6500); // 무료 한도 보호
     }
