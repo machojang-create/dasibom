@@ -788,7 +788,7 @@ body{
 
   function buildQuiz(item){
     let quiz=item.quiz;
-    // 그날 항목에 퀴즈가 없으면, 퀴즈를 가진 항목들 중 날짜별로 하나 골라 출제(AI 생성 전엔 시드 8개가 돌아감)
+    // 그날 항목에 퀴즈가 없으면, 퀴즈를 가진 항목들 중 날짜별로 하나 골라 출제(현재 손수 작성 30개가 날짜별로 회전)
     if(!quiz){
       var pool=ALL_ITEMS.filter(function(x){return x.quiz;});
       if(pool.length){ quiz=pool[localDayIdx(pool.length)].quiz; }

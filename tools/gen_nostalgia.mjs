@@ -125,7 +125,7 @@ JSON으로만 답하라: {"past":"...","present":"...","talk":"..."}`;
 } else if (mode === 'quiz') {
   let done = 0, skip = 0, fail = 0;
   for (const it of items) {
-    if (it.quizV === 1) { skip++; continue; }
+    if (it.quizV >= 1) { skip++; continue; }  // 손수 작성(quizV 1·2 등) 보호: 덮어쓰지 않음
     const instr =
 `너는 한국 시니어(60~80대) 회상 퀴즈 출제자다. 아래 자료로 4지선다 1문제를 만들어라.
 규칙: 과거 설명에 근거한 정답 1개, 그럴듯한 오답 3개(시대가 다른 물건/풍습 등), 질문은 존댓말 35자 이내, 너무 어렵지 않게(추억을 떠올리면 맞출 수 있게), 해설은 2문장(따뜻한 존댓말, 정답 근거 + 그 시절 정서 한 스푼).

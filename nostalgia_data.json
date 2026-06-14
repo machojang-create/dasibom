@@ -167,17 +167,17 @@
       "talk": "어르신께서는 보릿고개 시절 어떤 음식이 가장 그리우셨나요?",
       "descV": 2,
       "quiz": {
-        "q": "옛날 봄철, 묵은 곡식이 떨어졌을 때 끼니를 잇게 해준 것은?",
+        "q": "‘보릿고개’는 1년 중 어느 때를 가리켰을까요?",
         "choices": [
-          "컵라면",
-          "산과 들의 나물과 쑥",
-          "냉동 만두",
-          "통조림"
+          "가을 추수 직후",
+          "한겨울 김장철",
+          "지난 곡식은 떨어지고 보리는 안 여문 늦봄~초여름",
+          "장마 끝난 한여름"
         ],
-        "answer": 1,
-        "explain": "보릿고개에는 들에서 캔 나물과 쑥으로 죽을 끓여 봄을 견뎠습니다. 흰 쌀밥 한 그릇이 큰 선물이던 시절이었지요."
+        "answer": 2,
+        "explain": "묵은 양식은 바닥나고 보리는 아직 여물지 않은 5~6월이 가장 배고픈 보릿고개였지요. 들나물로 죽을 끓여 넘겼습니다."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 2,
@@ -194,17 +194,17 @@
       "talk": "추억의 도시락과 요즘 밀키트, 어떤 점이 가장 인상 깊으셨나요?",
       "descV": 2,
       "quiz": {
-        "q": "예전 학창시절, 점심을 담아 다니던 것은 무엇일까요?",
+        "q": "겨울철 학교에서 양은 도시락을 어떻게 데웠나요?",
         "choices": [
-          "양은 도시락",
-          "밀키트 배송",
-          "편의점 삼각김밥",
-          "급식 카드"
+          "교실 난로 위에 층층이 쌓아서",
+          "전자레인지에",
+          "뜨거운 물에 담가서",
+          "그냥 차게 먹었다"
         ],
         "answer": 0,
-        "explain": "어머니가 새벽에 싸 주신 양은 도시락은 난로 위에 데워 먹기도 했지요. 그 온기가 곧 사랑이었습니다."
+        "explain": "난로 위에 쌓아 데우면 맨 아래는 눌어붙고 위는 차가웠지요. 그 누룽지 냄새가 교실에 퍼졌습니다."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 3,
@@ -221,17 +221,17 @@
       "talk": "혼분식 시절, 가장 기억에 남는 음식은 무엇이신가요?",
       "descV": 2,
       "quiz": {
-        "q": "쌀 소비를 줄이려 정부가 장려하던 식사 방식은?",
+        "q": "혼분식 장려 시절, 학교에서 점심에 무엇을 검사했나요?",
         "choices": [
-          "채식 위주",
-          "외식 장려",
-          "혼분식(보리·밀 섞기)",
-          "간헐적 단식"
+          "손톱 길이",
+          "도시락에 보리·잡곡이 섞였는지",
+          "숙제",
+          "우유를 다 마셨는지"
         ],
-        "answer": 2,
-        "explain": "도시락에 보리를 섞었는지 검사하던 시절이었습니다. 지금은 잡곡밥이 오히려 건강식으로 사랑받지요."
+        "answer": 1,
+        "explain": "쌀을 아끼려 보리쌀을 섞었는지 검사했지요. 지금은 잡곡밥이 오히려 건강식입니다."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 4,
@@ -248,17 +248,17 @@
       "talk": "어르신께는 어떤 달고나 추억이 있으신가요? 탕후루도 드셔보셨나요?",
       "descV": 2,
       "quiz": {
-        "q": "연탄불 위에서 설탕과 소다로 부풀려 만든 추억의 간식은?",
+        "q": "달고나(뽑기)에서 모양을 안 깨고 떼어내면?",
         "choices": [
-          "달고나(뽑기)",
-          "탕후루",
-          "마카롱",
-          "젤리"
+          "돈을 돌려받음",
+          "스티커를 줌",
+          "하나 더 공짜",
+          "꽝"
         ],
-        "answer": 0,
-        "explain": "국자에 설탕을 녹여 소다를 넣으면 노랗게 부풀던 달고나. 모양을 잘 떼면 하나 더 주던 재미가 있었지요."
+        "answer": 2,
+        "explain": "별·우산 모양을 안 깨고 떼면 하나 더 주었지요. 바늘에 침 발라 떼던 긴장감이 있었습니다."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 5,
@@ -275,17 +275,17 @@
       "talk": "어르신께서는 어떤 아이스케키를 가장 좋아하셨나요?",
       "descV": 2,
       "quiz": {
-        "q": "한여름 동네를 돌며 종을 울리던 아저씨가 팔던 것은?",
+        "q": "아이스케키 장수가 동네에 왔음을 무엇으로 알렸나요?",
         "choices": [
-          "붕어빵",
-          "호떡",
-          "솜사탕",
-          "아이스케키"
+          "북소리",
+          "종소리",
+          "호루라기",
+          "확성기 노래"
         ],
-        "answer": 3,
-        "explain": "\"아이스케키~\" 종소리가 들리면 아이들이 우르르 모여들었지요. 얼음과자 하나가 큰 행복이었습니다."
+        "answer": 1,
+        "explain": "아이스께끼~ 외침과 딸랑딸랑 종소리가 들리면 아이들이 모여들었지요."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 6,
@@ -302,17 +302,17 @@
       "talk": "추억 속 불량식품 중 가장 생각나는 간식은 무엇인가요?",
       "descV": 2,
       "quiz": {
-        "q": "학교 앞 문방구에서 팔던 군것질을 흔히 뭐라 불렀나요?",
+        "q": "다음 중 학교 앞 ‘불량식품’으로 통하던 것은?",
         "choices": [
-          "건강식",
-          "불량식품",
-          "유기농 간식",
-          "수제 디저트"
+          "한우 정육",
+          "쫀드기·아폴로·뽀빠이",
+          "두유",
+          "유기농 채소"
         ],
         "answer": 1,
-        "explain": "쫀드기·아폴로 같은 군것질이 가득했지요. 몸에 좋진 않았어도 추억만은 달콤합니다."
+        "explain": "쫀드기, 아폴로(쪽쪽이), 뽀빠이가 가득했지요. 몸에 좋진 않아도 추억은 달콤합니다."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 7,
@@ -329,17 +329,17 @@
       "talk": "예전 마당집과 요즘 아파트, 어떤 점이 가장 큰 차이로 다가오시나요?",
       "descV": 2,
       "quiz": {
-        "q": "대가족이 살던 옛 한옥 마당에서 된장·간장 항아리를 두던 곳은?",
+        "q": "한옥 마당집에서 된장·간장을 보관하던 곳은?",
         "choices": [
+          "마루 밑",
+          "우물가",
           "장독대",
-          "냉장고",
-          "베란다",
-          "다용도실"
+          "사랑방"
         ],
-        "answer": 0,
-        "explain": "햇볕 드는 장독대에 항아리가 줄지어 있었지요. 어머니의 손맛이 익어가던 자리입니다."
+        "answer": 2,
+        "explain": "볕 잘 드는 장독대에 항아리가 줄지어 있었고, 어머니가 매일 뚜껑을 여닫으셨지요."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 8,
@@ -356,17 +356,17 @@
       "talk": "고향을 떠나 처음 머물렀던 보금자리는 어떤 곳이었나요?",
       "descV": 2,
       "quiz": {
-        "q": "고향 떠나 상경한 청춘들이 머물던, 주인집에 딸린 작은 방은?",
+        "q": "예전 하숙집에서 보통 함께 제공되던 것은?",
         "choices": [
-          "호텔",
-          "오피스텔",
-          "문간방 하숙",
-          "1인 기숙사"
+          "아침·저녁 밥상",
+          "수영장",
+          "주차장",
+          "에어컨"
         ],
-        "answer": 2,
-        "explain": "좁아도 꿈만은 컸던 하숙방. 주인집 아주머니 밥상에 정이 오갔지요."
+        "answer": 0,
+        "explain": "좁은 문간방이라도 주인집 아주머니 밥상에 정이 오갔지요."
       },
-      "quizV": 1
+      "quizV": 2
     },
     {
       "id": 9,
@@ -381,7 +381,19 @@
       "past_img": "/nostalgia/img/item_9_past.jpg",
       "present_img": "/nostalgia/img/item_9_present.jpg",
       "talk": "예전 공동 화장실에 얽힌 재미있는 이야기 있으세요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "수세식이 귀하던 시절, 집 밖 재래식 화장실을 흔히 뭐라 불렀나요?",
+        "choices": [
+          "뒷간(변소)",
+          "정주간",
+          "툇마루",
+          "부뚜막"
+        ],
+        "answer": 0,
+        "explain": "집 밖 뒷간을 새벽마다 차례로 썼지요. 겨울엔 정말 추웠습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 10,
@@ -396,7 +408,19 @@
       "past_img": "/nostalgia/img/item_10_past.jpg",
       "present_img": "/nostalgia/img/item_10_present.jpg",
       "talk": "아궁이에서 지어 먹던 밥에 얽힌 특별한 추억은 무엇인가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "아궁이 불기운으로 방바닥을 데우던 우리 전통 난방은?",
+        "choices": [
+          "벽난로",
+          "온돌",
+          "라디에이터",
+          "화로"
+        ],
+        "answer": 1,
+        "explain": "아궁이 열이 방 밑 구들을 데우는 온돌이지요. 아랫목에 둘러앉던 온기입니다."
+      },
+      "quizV": 2
     },
     {
       "id": 11,
@@ -411,7 +435,19 @@
       "past_img": "/nostalgia/img/item_11_past.jpg",
       "present_img": "/nostalgia/img/item_11_present.jpg",
       "talk": "그 시절, 연탄 곤로로 어떤 요리를 해 드셨는지 기억나세요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "다 탄 연탄재는 눈 오는 날 어디에 쓰였나요?",
+        "choices": [
+          "빙판에 뿌려 미끄럼 방지",
+          "거름으로만",
+          "연료로 재사용",
+          "버리지 않고 보관"
+        ],
+        "answer": 0,
+        "explain": "하얗게 탄 연탄재를 빙판에 뿌려 미끄럼을 막았지요. 연탄가스 사고도 많아 조심하던 시절입니다."
+      },
+      "quizV": 2
     },
     {
       "id": 12,
@@ -426,7 +462,19 @@
       "past_img": "/nostalgia/img/item_12_past.jpg",
       "present_img": "/nostalgia/img/item_12_present.jpg",
       "talk": "물 긷던 추억, 가장 기억에 남는 순간은 언제였나요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "수돗물이 없던 시절, 우물물을 길어 어떻게 날랐나요?",
+        "choices": [
+          "물동이를 머리에 이고",
+          "수도 호스로",
+          "정수기로",
+          "지게 하나로"
+        ],
+        "answer": 0,
+        "explain": "동이에 물을 채워 똬리를 받치고 머리에 이고 날랐지요. 한 방울 안 흘리는 솜씨가 대단했습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 13,
@@ -441,7 +489,19 @@
       "past_img": "/nostalgia/img/item_13_past.jpg",
       "present_img": "/nostalgia/img/item_13_present.jpg",
       "talk": "냇가 빨래하던 시절, 가장 기억에 남는 순간은 언제이신가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "냇가에서 빨래할 때 옷감을 두드리던 도구는?",
+        "choices": [
+          "다듬잇방망이",
+          "빨랫방망이",
+          "홍두깨",
+          "절굿공이"
+        ],
+        "answer": 1,
+        "explain": "빨랫방망이로 탕탕 두드려 때를 뺐지요. (다듬잇방망이·홍두깨는 다림질용이라 헷갈리기 쉽습니다.)"
+      },
+      "quizV": 2
     },
     {
       "id": 14,
@@ -456,7 +516,19 @@
       "past_img": "/nostalgia/img/item_14_past.jpg",
       "present_img": "/nostalgia/img/item_14_present.jpg",
       "talk": "예전 빗자루와 지금 로봇청소기 중 어떤 것이 더 정감 있으신가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "옛날 마당 쓸던 빗자루는 주로 무엇으로 만들었나요?",
+        "choices": [
+          "플라스틱",
+          "고무",
+          "수수·싸리 같은 자연 재료",
+          "말총"
+        ],
+        "answer": 2,
+        "explain": "수수나 싸리를 묶어 만든 비로 마당을 쓸었지요. 댓돌 옆에 늘 세워두었습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 15,
@@ -471,7 +543,19 @@
       "past_img": "/nostalgia/img/item_15_past.jpg",
       "present_img": "/nostalgia/img/item_15_present.jpg",
       "talk": "다듬이질하며 겪으셨던 재미난 일화나 추억이 있으신가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "다듬잇돌에 옷감을 올리고 방망이질한 ‘다듬이질’의 목적은?",
+        "choices": [
+          "곡식 빻기",
+          "옷감 구김 펴고 윤내기",
+          "불 지피기",
+          "떡 치기"
+        ],
+        "answer": 1,
+        "explain": "두드려서 구김을 펴고 윤을 냈지요. 또닥또닥 소리가 자장가 같았습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 16,
@@ -486,7 +570,19 @@
       "past_img": "/nostalgia/img/item_16_past.jpg",
       "present_img": "/nostalgia/img/item_16_present.jpg",
       "talk": "연탄난로와 요즘 에어컨, 어떤 점이 가장 기억에 남으세요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "연탄을 쓰며 가장 무서웠던 사고는?",
+        "choices": [
+          "감전",
+          "폭발",
+          "연탄가스(일산화탄소) 중독",
+          "화상만"
+        ],
+        "answer": 2,
+        "explain": "자는 사이 새어 나온 연탄가스 중독이 잦아, 아침에 동치미 국물을 마시게 하던 시절이지요."
+      },
+      "quizV": 2
     },
     {
       "id": 17,
@@ -501,7 +597,19 @@
       "past_img": "/nostalgia/img/item_17_past.jpg",
       "present_img": "/nostalgia/img/item_17_present.jpg",
       "talk": "죽부인과 함께했던 여름밤이나 요즘 온수매트 사용 경험을 이야기해 주시겠어요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "‘죽부인’은 무엇으로 만든 여름 침구였나요?",
+        "choices": [
+          "오리털",
+          "대나무를 엮어",
+          "삼베",
+          "돌"
+        ],
+        "answer": 1,
+        "explain": "대나무를 둥글게 엮어 끌어안고 자면 바람이 통해 시원했지요. 선풍기도 귀하던 여름밤의 지혜입니다."
+      },
+      "quizV": 2
     },
     {
       "id": 18,
@@ -516,7 +624,19 @@
       "past_img": "/nostalgia/img/item_18_past.jpg",
       "present_img": "/nostalgia/img/item_18_present.jpg",
       "talk": "부채와 에어컨, 어르신께 더 시원한 추억은 무엇인가요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "전기 없이 여름밤 손으로 부쳐 더위를 식히던 물건은?",
+        "choices": [
+          "부채",
+          "난로",
+          "담요",
+          "장갑"
+        ],
+        "answer": 0,
+        "explain": "어머니가 부쳐주시던 부채 바람에 잠들곤 했지요. 모깃불 연기와 함께한 여름밤입니다."
+      },
+      "quizV": 2
     },
     {
       "id": 19,
@@ -529,7 +649,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, young Korean couple at trendy cafe outdoor terrace, brick wall with fairy lights, coffee drinks and cake, taking smartphone photos, warm evening light, pastel greens and pinks, no text in image",
       "comparison_text": "평상 위 수박 한 조각 나누던 그 정겨운 골목, 지금은 사진 속에서만 볼 수 있습니다.",
       "past_img": "/nostalgia/img/item_19_past.jpg",
-      "present_img": "/nostalgia/img/item_19_present.jpg"
+      "present_img": "/nostalgia/img/item_19_present.jpg",
+      "quiz": {
+        "q": "여름 저녁 동네 평상에서 흔히 즐기던 것은?",
+        "choices": [
+          "수박·부침개에 막걸리",
+          "경양식 돈가스",
+          "파스타",
+          "팥빙수 기계"
+        ],
+        "answer": 0,
+        "explain": "평상에 둘러앉아 수박 쪼개 먹고 부침개에 막걸리 한 사발 하던 풍경이지요."
+      },
+      "quizV": 2
     },
     {
       "id": 20,
@@ -542,7 +674,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, person scanning QR code to enter unmanned convenience store at night, bright fluorescent interior visible through glass, self-checkout kiosk, empty aisles, cool blues and whites, no text in image",
       "comparison_text": "외상장부 한 칸에 담긴 구멍가게 아저씨의 인심, 그 따뜻함이 그리운 날입니다.",
       "past_img": "/nostalgia/img/item_20_past.jpg",
-      "present_img": "/nostalgia/img/item_20_present.jpg"
+      "present_img": "/nostalgia/img/item_20_present.jpg",
+      "quiz": {
+        "q": "구멍가게에서 돈 없을 때 물건을 가져가고 나중에 갚던 것을?",
+        "choices": [
+          "할부",
+          "외상",
+          "적금",
+          "곗돈"
+        ],
+        "answer": 1,
+        "explain": "외상 좀 달아 두세요 하면 공책에 적어두던 인심이 있었지요. 사탕도 하나 더 얹어주던 이웃입니다."
+      },
+      "quizV": 2
     },
     {
       "id": 21,
@@ -557,7 +701,19 @@
       "past_img": "/nostalgia/img/item_21_past.jpg",
       "present_img": "/nostalgia/img/item_21_present.jpg",
       "talk": "옛날 이발소나 미용실, 어떤 점이 가장 기억에 남으세요?",
-      "descV": 2
+      "descV": 2,
+      "quiz": {
+        "q": "이발소 앞에서 빙글빙글 돌던 삼색 봉의 색은?",
+        "choices": [
+          "빨강·파랑·흰색",
+          "검정·노랑",
+          "초록·흰색",
+          "빨강 한 색"
+        ],
+        "answer": 0,
+        "explain": "청·홍·백 삼색 봉이 돌면 이발소 표시였지요. 아버지들의 사랑방이기도 했습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 22,
@@ -570,7 +726,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, Korean parent using school management smartphone app, notifications showing lunch menu and activity schedule, child doing homework on tablet at home, bright modern living room, clean blues and greens, no text in image",
       "comparison_text": "육성회비 봉투를 꼭 쥐고 등교하던 그 아침이, 지금 아이들에겐 상상도 못 할 이야기입니다.",
       "past_img": "/nostalgia/img/item_22_past.jpg",
-      "present_img": "/nostalgia/img/item_22_present.jpg"
+      "present_img": "/nostalgia/img/item_22_present.jpg",
+      "quiz": {
+        "q": "예전 학교에 매달 봉투에 넣어 내던 돈은?",
+        "choices": [
+          "급식비",
+          "교통비",
+          "육성회비",
+          "수학여행 적금"
+        ],
+        "answer": 2,
+        "explain": "육성회비(뒤의 기성회비)를 못 내면 교실에서 이름이 불리던 민망함이 있었지요."
+      },
+      "quizV": 2
     },
     {
       "id": 23,
@@ -583,7 +751,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, modern Korean classroom with large smart interactive whiteboard, students using tablets, bright LED lighting, teacher using digital pen, clean modern school design, cool whites and blues, no text in image",
       "comparison_text": "난로 주변에 옹기종기 모여 도시락을 데우던 그 교실, 추웠지만 그 어느 곳보다 따뜻했습니다.",
       "past_img": "/nostalgia/img/item_23_past.jpg",
-      "present_img": "/nostalgia/img/item_23_present.jpg"
+      "present_img": "/nostalgia/img/item_23_present.jpg",
+      "quiz": {
+        "q": "겨울 교실 난로 ‘명당’ 자리에서 점심때 한 일은?",
+        "choices": [
+          "물 끓이기",
+          "도시락 데우기",
+          "빨래 말리기",
+          "손 씻기"
+        ],
+        "answer": 1,
+        "explain": "난로 위에 도시락을 쌓아 데웠고, 난로 가까운 자리가 최고 인기였지요."
+      },
+      "quizV": 2
     },
     {
       "id": 24,
@@ -596,7 +776,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, Korean student attending online class on laptop at home desk, teacher visible on screen, notes and textbooks beside laptop, comfortable home study setup, soft warm study room lighting, no text in image",
       "comparison_text": "운동장 조회에서 꼿꼿이 서 있던 그 시절, 불편했지만 함께여서 버틸 수 있었습니다.",
       "past_img": "/nostalgia/img/item_24_past.jpg",
-      "present_img": "/nostalgia/img/item_24_present.jpg"
+      "present_img": "/nostalgia/img/item_24_present.jpg",
+      "quiz": {
+        "q": "매일 아침 운동장에 전교생이 줄 서서 듣던 것은?",
+        "choices": [
+          "교장 선생님 훈화",
+          "라디오 뉴스",
+          "출석 호명",
+          "청소 검사"
+        ],
+        "answer": 0,
+        "explain": "길고 긴 훈화에 여름엔 쓰러지는 아이도 있었지요. 앞으로 나란히로 줄 맞추던 기억이 납니다."
+      },
+      "quizV": 2
     },
     {
       "id": 25,
@@ -609,7 +801,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, Korean children admiring collection of character figurines and goods on shelf, Sanrio and cute character merchandise, colorful display, bright bedroom, pastel pinks and purples, no text in image",
       "comparison_text": "종이 한 장으로도 충분히 행복했던 그 시절, 상상력이 최고의 장난감이었습니다.",
       "past_img": "/nostalgia/img/item_25_past.jpg",
-      "present_img": "/nostalgia/img/item_25_present.jpg"
+      "present_img": "/nostalgia/img/item_25_present.jpg",
+      "quiz": {
+        "q": "종이 인형 놀이의 핵심 준비물은?",
+        "choices": [
+          "찰흙",
+          "실",
+          "가위",
+          "물감"
+        ],
+        "answer": 2,
+        "explain": "가위로 옷을 조심조심 오려 어깨 탭을 접어 입혔지요. 그 집중력과 설렘이 있었습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 26,
@@ -622,7 +826,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, excited child opening Pokemon trading card pack, rare holographic card glowing, collection binder full of cards nearby, bright colorful bedroom, vivid yellows and blues, no text in image",
       "comparison_text": "직접 접은 딱지 하나에 온 마음을 걸었던 그 승부욕, 그때가 가장 순수한 경쟁이었습니다.",
       "past_img": "/nostalgia/img/item_26_past.jpg",
-      "present_img": "/nostalgia/img/item_26_present.jpg"
+      "present_img": "/nostalgia/img/item_26_present.jpg",
+      "quiz": {
+        "q": "딱지치기에서 이기면 어떻게 됐나요?",
+        "choices": [
+          "상대 딱지를 뒤집으면 가져감",
+          "점수를 적음",
+          "돈을 받음",
+          "한 판 쉼"
+        ],
+        "answer": 0,
+        "explain": "내리쳐 상대 딱지가 뒤집히면 따먹었지요. 두꺼운 딱지 만들려 박스를 모으던 정성이 있었습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 27,
@@ -635,7 +851,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, Korean child playing mobile game on large tablet, colorful game characters on screen, headphones on, gaming chair, snacks nearby, vibrant game world visible on screen, cool techy blues and purples, no text in image",
       "comparison_text": "구슬 하나에 온 정신을 쏟던 그 집중력, 스마트폰보다 훨씬 고급진 몰입이었습니다.",
       "past_img": "/nostalgia/img/item_27_past.jpg",
-      "present_img": "/nostalgia/img/item_27_present.jpg"
+      "present_img": "/nostalgia/img/item_27_present.jpg",
+      "quiz": {
+        "q": "구슬치기에서 보통 어떻게 따먹었나요?",
+        "choices": [
+          "멀리 굴리기 시합",
+          "상대 구슬을 맞히면 가져감",
+          "색깔 맞추기",
+          "구멍에 넣기만"
+        ],
+        "answer": 1,
+        "explain": "땅에 구멍을 파거나 상대 구슬을 정확히 맞혀 따먹었지요. 유리구슬을 주머니 가득 모았습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 28,
@@ -648,7 +876,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, Korean family enjoying theme park, children on colorful rides, themed areas with castle backdrop, everyone smiling with ears headbands, modern amusement park, vivid festive colors, no text in image",
       "comparison_text": "박이 터지며 사탕이 쏟아지던 그 순간의 환호성, 어른이 된 지금도 가슴이 두근거립니다.",
       "past_img": "/nostalgia/img/item_28_past.jpg",
-      "present_img": "/nostalgia/img/item_28_present.jpg"
+      "present_img": "/nostalgia/img/item_28_present.jpg",
+      "quiz": {
+        "q": "운동회 ‘박 터뜨리기’에서 박이 터지면 나온 것은?",
+        "choices": [
+          "물",
+          "사탕과 종이꽃, 현수막 문구",
+          "비둘기",
+          "상품권"
+        ],
+        "answer": 1,
+        "explain": "콩주머니를 던져 박이 터지면 사탕과 축하 현수막이 펼쳐졌지요."
+      },
+      "quizV": 2
     },
     {
       "id": 29,
@@ -661,7 +901,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, children playing in colorful indoor kids cafe with ball pit and climbing wall, parents watching from coffee area, bright primary colors and soft foam structures, modern family space, no text in image",
       "comparison_text": "번호표 하나를 찾던 그 보물찾기의 두근거림, 지금의 키즈카페도 그 설렘만은 못 따라옵니다.",
       "past_img": "/nostalgia/img/item_29_past.jpg",
-      "present_img": "/nostalgia/img/item_29_present.jpg"
+      "present_img": "/nostalgia/img/item_29_present.jpg",
+      "quiz": {
+        "q": "소풍 ‘보물찾기’에서 숨겨진 것은 주로?",
+        "choices": [
+          "상품과 바꿀 번호 쪽지",
+          "진짜 보물",
+          "사탕",
+          "돈"
+        ],
+        "answer": 0,
+        "explain": "나무 밑·돌 틈의 번호 쪽지를 찾아 상품으로 바꿨지요. 한 장도 못 찾으면 시무룩했습니다."
+      },
+      "quizV": 2
     },
     {
       "id": 30,
@@ -674,7 +926,19 @@
       "present_img_prompt": "cute 2D flat vector illustration, warm pastel tone, thick outline, Korean students on experiential learning trip at science museum, teacher explaining large exhibit, children using interactive displays, modern museum interior, bright educational colors, no text in image",
       "comparison_text": "어머니 도시락 김밥 한 줄이 세상 어떤 뷔페보다 맛있었던 그 봄날 소풍이 그립습니다.",
       "past_img": "/nostalgia/img/item_30_past.jpg",
-      "present_img": "/nostalgia/img/item_30_present.jpg"
+      "present_img": "/nostalgia/img/item_30_present.jpg",
+      "quiz": {
+        "q": "소풍 도시락의 단골 메뉴는?",
+        "choices": [
+          "주먹밥",
+          "꽁보리밥",
+          "김밥",
+          "감자"
+        ],
+        "answer": 2,
+        "explain": "새벽부터 어머니가 말아 주신 김밥과 삶은 달걀, 사이다 한 병. 도시락 뚜껑을 여는 순간이 소풍의 가장 큰 기쁨이었지요."
+      },
+      "quizV": 2
     },
     {
       "id": 31,
