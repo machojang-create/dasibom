@@ -241,6 +241,42 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
   </div>
 </div>
 
+<!-- ── 관리자 권한 신청/대기 게이트 (master 아닌 로그인 사용자) ── -->
+<style>
+.gate-input{width:100%;padding:13px 14px;margin-bottom:10px;background:#12151f;border:1.5px solid #2a2d3a;border-radius:10px;color:#e0e0e0;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box}
+.gate-input:focus{border-color:#4ade80}
+.gate-msg{font-size:14px;color:#c8d3cb;line-height:1.8;margin:14px 0 18px;text-align:center}
+.gate-msg b{color:#4ade80}
+.btn-ghost-line{width:100%;padding:12px;background:transparent;border:1.5px solid #2f3447;border-radius:10px;color:#9aa;font-size:13.5px;font-weight:600;cursor:pointer}
+.btn-ghost-line:hover{border-color:#4ade80;color:#4ade80}
+</style>
+<div id="gateScreen" class="login-wrap" style="display:none">
+  <div class="login-box">
+    <div class="login-logo">🌱</div>
+    <div class="login-title">관리자 권한 신청</div>
+    <div id="gateApply">
+      <div class="login-sub" id="gateApplyEmail" style="margin-bottom:16px"></div>
+      <input type="text" id="appName" class="gate-input" placeholder="이름 / 담당자명" maxlength="30">
+      <input type="text" id="appOrg" class="gate-input" placeholder="소속 기관 (예: 노원구청, OO복지관)" maxlength="40">
+      <select id="appRole" class="gate-input">
+        <option value="org_admin">1등급 — 기관 책임자 (org_admin)</option>
+        <option value="caregiver">2등급 — 돌봄 담당자 (caregiver)</option>
+        <option value="viewer">열람 전용 (viewer)</option>
+      </select>
+      <button class="btn-google" id="btnApply" style="justify-content:center">권한 신청하기</button>
+      <div id="appErr" class="login-err"></div>
+    </div>
+    <div id="gatePending" style="display:none">
+      <div class="gate-msg">⏳ <b>승인 대기 중입니다</b><br>운영자가 신청을 확인하면<br>관리자 기능을 이용하실 수 있습니다.</div>
+    </div>
+    <div id="gateRejected" style="display:none">
+      <div class="gate-msg">🚫 <b>신청이 반려되었습니다</b><br>문의가 필요하면 운영자에게 연락해 주세요.</div>
+      <button class="btn-ghost-line" id="btnReapply" style="margin-bottom:10px">다시 신청하기</button>
+    </div>
+    <button class="btn-ghost-line" id="btnGateLogout" style="margin-top:14px">로그아웃</button>
+  </div>
+</div>
+
 <!-- ── 관리자 대시보드 ── -->
 <div id="adminWrap" style="display:none">
   <header class="admin-header">
@@ -254,6 +290,7 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     <button class="admin-tab active" data-tab="members" onclick="switchTab('members')">👥 회원 관리</button>
     <button class="admin-tab" data-tab="wisdom" onclick="switchTab('wisdom')">✦ 오늘의 지혜</button>
     <button class="admin-tab" data-tab="care" onclick="switchTab('care')">💚 안부 안전망 <span id="careBadge" class="care-tab-badge" style="display:none"></span></button>
+    <button class="admin-tab role-master" data-tab="approvals" onclick="switchTab('approvals')" style="display:none">🛡️ 승인 관리 <span id="apprBadge" class="care-tab-badge" style="display:none"></span></button>
   </nav>
 
   <!-- 회원 관리 탭 -->
@@ -336,6 +373,30 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     </div>
 
     <div class="table-wrap" id="careList"></div>
+  </div>
+
+  <!-- 승인 관리 탭 (master 전용) -->
+  <style>
+  .appr-head{font-size:13px;color:#9fb0a4;line-height:1.7;margin-bottom:16px;background:#16241c;border:1px solid #234534;border-radius:10px;padding:12px 14px}
+  .appr-sec-t{font-size:12px;font-weight:700;color:#4ade80;letter-spacing:.5px;margin:18px 2px 9px}
+  .appr-card{background:#1a1f2e;border:1px solid #2a2f3e;border-radius:12px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .appr-card.pending{border-color:#3a4a2e;background:#1a241a}
+  .appr-info{flex:1;min-width:160px}
+  .appr-name{font-size:14.5px;font-weight:700;color:#e8e8e8}
+  .appr-meta{font-size:12px;color:#8a948c;margin-top:3px;line-height:1.6}
+  .appr-role-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px;background:rgba(74,222,128,.14);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+  .appr-status{font-size:11px;font-weight:700;padding:2px 9px;border-radius:50px}
+  .appr-status.approved{background:rgba(74,222,128,.14);color:#4ade80}
+  .appr-status.rejected{background:rgba(248,113,113,.14);color:#f87171}
+  .appr-btns{display:flex;gap:7px}
+  .appr-btn{padding:8px 14px;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+  .appr-ok{background:#34d399;color:#0a2018}
+  .appr-no{background:#2a2f3e;color:#f87171;border:1px solid #4a2f33}
+  .appr-empty{color:#5a6a5f;font-size:13px;padding:24px;text-align:center}
+  </style>
+  <div id="tabApprovals" class="admin-body" style="display:none">
+    <div class="appr-head">🛡️ 관리자 권한 신청을 확인하고 <b style="color:#4ade80">승인</b> 또는 <b style="color:#f87171">반려</b>하세요. 승인하면 해당 등급으로 즉시 접근할 수 있습니다.</div>
+    <div id="apprList"><div class="appr-empty">불러오는 중…</div></div>
   </div>
 
   <!-- 편집 모달 -->
@@ -484,6 +545,7 @@ function buildAdminQList(pkg){
 }
 
 var _db, _auth, _rtdb, _fn, _allRows = [], _filtered = [];
+var CURRENT_USER = null, CURRENT_ROLE = null, CURRENT_ORG = null;
 
 function init(){
   firebase.initializeApp({
@@ -497,17 +559,24 @@ function init(){
 
   _auth.onAuthStateChanged(function(user){
     if(!user){
-      show('loginScreen'); hide('adminWrap'); return;
+      hide('gateScreen'); hide('adminWrap'); show('loginScreen'); return;
     }
+    CURRENT_USER = user;
     var email = user.email || '';
-    if(!ADMIN_EMAILS.includes(email)){
-      _auth.signOut();
-      document.getElementById('loginErr').textContent = '관리자 권한이 없습니다: ' + email;
-      show('loginScreen'); hide('adminWrap'); return;
-    }
-    hide('loginScreen'); show('adminWrap');
-    document.getElementById('adminEmail').textContent = email;
-    loadData();
+    if(ADMIN_EMAILS.includes(email)){ enterAdmin(email, 'master', null); return; }
+    // 비-master: admin_roles/{uid} 확인 → 승인/대기/반려/미신청
+    _db.collection('admin_roles').doc(user.uid).get().then(function(doc){
+      if(doc.exists){
+        var d = doc.data() || {};
+        if(d.status === 'approved' && d.role){ enterAdmin(email, d.role, d.orgId || null); }
+        else if(d.status === 'rejected'){ showGate('rejected', email); }
+        else { showGate('pending', email); }
+      } else { showGate('apply', email); }
+    }).catch(function(e){
+      showGate('apply', email);
+      var ae = document.getElementById('appErr');
+      if(ae) ae.textContent = '권한 확인 실패: ' + (e.code || e.message) + ' (firestore.rules 배포 전일 수 있어요)';
+    });
   });
 
   document.getElementById('btnLogin').onclick = function(){
@@ -516,6 +585,9 @@ function init(){
       .catch(function(e){ document.getElementById('loginErr').textContent = e.message; });
   };
   document.getElementById('btnLogout').onclick = function(){ _auth.signOut(); };
+  document.getElementById('btnGateLogout').onclick = function(){ _auth.signOut(); };
+  document.getElementById('btnApply').onclick = submitApplication;
+  document.getElementById('btnReapply').onclick = function(){ showGate('apply', (CURRENT_USER&&CURRENT_USER.email)||''); };
   document.getElementById('btnRefresh').onclick = loadData;
   document.getElementById('searchInput').addEventListener('input', applyFilter);
   document.getElementById('pkgFilter').addEventListener('change', applyFilter);
@@ -753,13 +825,100 @@ function hide(id){ document.getElementById(id).style.display='none'; }
 
 /* ── 탭 전환 ── */
 function switchTab(tab) {
-  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare' };
+  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals' };
   document.querySelectorAll('.admin-tab').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-tab') === tab);
   });
   Object.keys(map).forEach(function(k){ if(k===tab){ show(map[k]); } else { hide(map[k]); } });
   if (tab === 'wisdom') loadWisdomList();
   if (tab === 'care') renderCare();
+  if (tab === 'approvals') loadApprovals();
+}
+
+/* ── 관리자 권한(역할) — 신청·승인 (MVP, Firestore admin_roles 문서 기반) ──
+   master = ADMIN_EMAILS(운영사). 비-master는 신청→master 승인 후 등급으로 접근.
+   ※ 비-master의 기관 데이터 서버 격리는 release_blockers #2(rules+claims) 이후 확대. */
+function enterAdmin(email, role, orgId){
+  CURRENT_ROLE = role; CURRENT_ORG = orgId || null;
+  hide('loginScreen'); hide('gateScreen'); show('adminWrap');
+  var label = (ROLE_SCHEMA[role] && ROLE_SCHEMA[role].label) || role;
+  document.getElementById('adminEmail').textContent = email + ' · ' + label + (orgId ? ' ('+orgId+')' : '');
+  applyRoleGating(role);
+  loadData();
+}
+function showGate(state, email){
+  hide('loginScreen'); hide('adminWrap'); show('gateScreen');
+  document.getElementById('gateApply').style.display    = (state==='apply')    ? 'block' : 'none';
+  document.getElementById('gatePending').style.display  = (state==='pending')  ? 'block' : 'none';
+  document.getElementById('gateRejected').style.display = (state==='rejected') ? 'block' : 'none';
+  if(state==='apply'){
+    var e=document.getElementById('gateApplyEmail'); if(e) e.textContent = email + ' 계정으로 신청합니다';
+    var ae=document.getElementById('appErr'); if(ae) ae.textContent='';
+  }
+}
+// 등급별 탭 노출 — master=전체 / 그 외=안부(care)만. (회원 자서전·운영콘텐츠·승인은 master 전용)
+function applyRoleGating(role){
+  var isMaster = (role === 'master');
+  function tabVis(tab, on){ var b=document.querySelector('.admin-tab[data-tab="'+tab+'"]'); if(b) b.style.display = on ? '' : 'none'; }
+  tabVis('members', isMaster);
+  tabVis('wisdom', isMaster);
+  tabVis('care', true);
+  tabVis('approvals', isMaster);
+  switchTab(isMaster ? 'members' : 'care');
+}
+function submitApplication(){
+  var u = CURRENT_USER; if(!u) return;
+  var name = (document.getElementById('appName').value||'').trim();
+  var org  = (document.getElementById('appOrg').value||'').trim();
+  var role = document.getElementById('appRole').value;
+  var err  = document.getElementById('appErr');
+  if(!name || !org){ err.textContent = '이름과 소속 기관을 입력해 주세요.'; return; }
+  err.textContent = '신청 중…';
+  _db.collection('admin_roles').doc(u.uid).set({
+    email: u.email||'', name: name, orgId: org, role: role,
+    status: 'pending', requestedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){ showGate('pending', u.email||''); })
+    .catch(function(e){ err.textContent = '신청 실패: ' + (e.code||e.message); });
+}
+function loadApprovals(){
+  var list = document.getElementById('apprList');
+  if(CURRENT_ROLE !== 'master'){ list.innerHTML = '<div class="appr-empty">접근 권한이 없습니다.</div>'; return; }
+  list.innerHTML = '<div class="appr-empty">불러오는 중…</div>';
+  _db.collection('admin_roles').get().then(function(snap){
+    var pending=[], decided=[];
+    snap.forEach(function(d){ var x=d.data()||{}; x._id=d.id; (x.status==='pending'?pending:decided).push(x); });
+    var badge=document.getElementById('apprBadge');
+    if(badge){ if(pending.length){ badge.textContent=pending.length; badge.style.display=''; } else { badge.style.display='none'; } }
+    var html='';
+    html += '<div class="appr-sec-t">⏳ 승인 대기 ('+pending.length+')</div>';
+    html += pending.length ? pending.map(apprCard).join('') : '<div class="appr-empty">대기 중인 신청이 없습니다.</div>';
+    html += '<div class="appr-sec-t">처리된 관리자 ('+decided.length+')</div>';
+    html += decided.length ? decided.map(apprCard).join('') : '<div class="appr-empty">없습니다.</div>';
+    list.innerHTML = html;
+  }).catch(function(e){ list.innerHTML = '<div class="appr-empty">불러오기 실패: '+(e.code||e.message)+'<br>(firestore.rules 배포가 필요할 수 있어요)</div>'; });
+}
+function apprCard(x){
+  var label=(ROLE_SCHEMA[x.role]&&ROLE_SCHEMA[x.role].label)||x.role||'-';
+  var statusHtml = x.status==='pending'
+    ? '<div class="appr-btns"><button class="appr-btn appr-ok" onclick="approveAdmin(\''+x._id+'\')">승인</button><button class="appr-btn appr-no" onclick="rejectAdmin(\''+x._id+'\')">반려</button></div>'
+    : '<span class="appr-status '+(x.status==='approved'?'approved':'rejected')+'">'+(x.status==='approved'?'승인됨':'반려됨')+'</span>'
+      + (x.status==='approved'
+          ? '<button class="appr-btn appr-no" style="margin-left:8px" onclick="rejectAdmin(\''+x._id+'\')">정지</button>'
+          : '<button class="appr-btn appr-ok" style="margin-left:8px" onclick="approveAdmin(\''+x._id+'\')">재승인</button>');
+  return '<div class="appr-card'+(x.status==='pending'?' pending':'')+'">'
+    + '<div class="appr-info"><div class="appr-name">'+esc(x.name||'(이름 없음)')+' <span class="appr-role-badge">'+esc(label)+'</span></div>'
+    + '<div class="appr-meta">'+esc(x.email||'')+' · 소속: '+esc(x.orgId||'-')+'</div></div>'
+    + statusHtml + '</div>';
+}
+function approveAdmin(id){
+  _db.collection('admin_roles').doc(id).update({
+    status:'approved', approvedBy:(CURRENT_USER&&CURRENT_USER.email)||'', approvedAt:firebase.firestore.FieldValue.serverTimestamp()
+  }).then(loadApprovals).catch(function(e){ alert('승인 실패: '+(e.code||e.message)); });
+}
+function rejectAdmin(id){
+  if(!confirm('이 관리자 신청을 반려/정지할까요?')) return;
+  _db.collection('admin_roles').doc(id).update({ status:'rejected' })
+    .then(loadApprovals).catch(function(e){ alert('처리 실패: '+(e.code||e.message)); });
 }
 
 /* ── 안부 안전망 (B2G) — 실데이터 + 시연(더미) 겸용 ──

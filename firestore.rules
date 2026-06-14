@@ -22,5 +22,23 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.ownerUid == request.auth.uid;
       allow update, delete: if request.auth != null && resource.data.ownerUid == request.auth.uid;
     }
+
+    // 관리자 권한 신청·승인 (MVP) — 본인은 'pending' 신청만, 승인/거절/삭제는 master(운영사)만
+    //   master = Firebase 토큰 이메일이 운영사 계정. 승인되면 admin.html이 role/orgId로 기능 게이트.
+    //   ※ custom claims 업그레이드는 release_blockers #2(보안 리팩터)와 함께 나중에.
+    match /admin_roles/{uid} {
+      function isMaster() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      // 읽기: 본인 문서 또는 master(승인 큐 조회)
+      allow read: if request.auth != null && (request.auth.uid == uid || isMaster());
+      // 본인 신청·재신청: 자기 문서를 status='pending'·허용된 role로만 (승인상태는 못 건드림)
+      allow write: if request.auth != null && request.auth.uid == uid
+        && request.resource.data.status == 'pending'
+        && request.resource.data.role in ['org_admin', 'caregiver', 'viewer'];
+      // master: 승인·거절·정지·삭제 전체
+      allow read, write: if isMaster();
+    }
   }
 }
