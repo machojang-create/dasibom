@@ -13,8 +13,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const KEY = process.env.GEMINI_API_KEY;
-if (!KEY) { console.error('❌ GEMINI_API_KEY 환경변수가 없습니다. 가이드(이미지생성_가이드.md) 참고.'); process.exit(1); }
+// 키: 환경변수 우선, 없으면 tools/gemini.key 파일(깃 추적 제외)에서 읽음
+const KEY_FILE = path.resolve(import.meta.dirname, 'gemini.key');
+const KEY = (process.env.GEMINI_API_KEY || (fs.existsSync(KEY_FILE) ? fs.readFileSync(KEY_FILE, 'utf8') : '')).trim();
+if (!KEY) { console.error('❌ Gemini 키가 없습니다. 환경변수 GEMINI_API_KEY 를 설정하거나, tools/gemini.key 파일에 키 한 줄만 넣어 저장해 주세요.'); process.exit(1); }
 
 // 웹용 압축(있으면 사용). 설치: npm install sharp  (없으면 원본 저장 — 용량 큼)
 let sharp = null;
