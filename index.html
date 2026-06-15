@@ -528,7 +528,7 @@
   }
   .wc-overlay{
     position:absolute;inset:0;
-    background:linear-gradient(160deg,rgba(0,0,0,.18) 0%,rgba(0,0,0,.58) 100%);
+    background:linear-gradient(160deg,rgba(0,0,0,.36) 0%,rgba(0,0,0,.60) 55%,rgba(0,0,0,.74) 100%);
   }
   .wc-inner{
     position:relative;z-index:1;
@@ -2049,14 +2049,26 @@
     var dateEl = document.getElementById('wc-date');
     if(dateEl){ var d=new Date(); dateEl.textContent = d.getFullYear()+'. '+(d.getMonth()+1)+'. '+d.getDate(); }
 
-    /* 배경 그라데이션 */
+    /* 배경 — 명언에 어울리는 이미지가 있으면 깔고(스크림 위 흰 글씨), 없으면 토픽 그라데이션 */
     var bg = document.getElementById('wc-bg');
-    if(bg){ bg.style.background = TOPIC_THEME[w.topic] || DEFAULT_THEME; }
+    if(bg){
+      if(w.img){
+        bg.style.backgroundColor = '#3d3326';
+        bg.style.backgroundImage = "url('" + w.img + "')";
+        bg.style.backgroundSize = 'cover';
+        bg.style.backgroundPosition = 'center';
+      } else {
+        bg.style.backgroundImage = 'none';
+        bg.style.background = TOPIC_THEME[w.topic] || DEFAULT_THEME;
+      }
+    }
   }
 
   function loadWisdom() {
-    // 날짜 인덱스로 즉시 표시 (30개 순환, 매일 바뀜)
-    renderWisdom(FALLBACK[getDayIndex(FALLBACK)]);
+    // 날짜 인덱스로 즉시 표시 (30개 순환, 매일 바뀜) — FALLBACK 인덱스 = 명언 배경 이미지(w_N.jpg) 번호
+    var _i = getDayIndex(FALLBACK), _w = FALLBACK[_i];
+    if(!_w.img) _w.img = 'img/wisdom/w_' + _i + '.jpg';
+    renderWisdom(_w);
     // Firebase에 오늘 날짜로 등록된 커스텀 명언이 있으면 덮어쓰기
     try {
       var d=new Date();
