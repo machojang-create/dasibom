@@ -40,5 +40,21 @@ service cloud.firestore {
       // master: 승인·거절·정지·삭제 전체
       allow read, write: if isMaster();
     }
+
+    // 오늘의 지혜 — 한 줄 공감(커뮤니티). 누구나 읽기 / 인증 사용자가 짧은 글 작성 / 본인·운영자 삭제
+    match /wisdom_comments/{cid} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 15
+        && request.resource.data.day is string;
+      allow update: if false;
+      allow delete: if request.auth != null && (
+        resource.data.uid == request.auth.uid
+        || request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com']
+      );
+    }
   }
 }
