@@ -2615,5 +2615,68 @@
 })();
 </script>
 
+<!-- ════════ 봄이 컨텐츠 가이드 (메뉴 최초 터치 튜토리얼) ════════ -->
+<style>
+.bom-guide-ov{position:fixed;inset:0;z-index:5000;background:rgba(28,38,30,.5);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:24px}
+.bom-guide-ov.on{display:flex}
+.bom-guide-card{position:relative;background:#fff;border-radius:26px;max-width:360px;width:100%;padding:30px 24px 24px;text-align:center;box-shadow:0 24px 60px -18px rgba(0,0,0,.45);animation:bomGuidePop .34s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes bomGuidePop{from{opacity:0;transform:translateY(22px) scale(.93)}to{opacity:1;transform:none}}
+.bom-guide-face{width:98px;height:98px;object-fit:contain;margin:-70px auto 8px;display:block;filter:drop-shadow(0 8px 16px rgba(0,0,0,.2))}
+.bom-guide-title{font-size:20px;font-weight:800;color:#143D2E;margin-bottom:11px}
+.bom-guide-text{font-size:calc(15.5px * var(--ts,1));line-height:1.85;color:#485a4d;margin-bottom:22px}
+.bom-guide-btn{width:100%;padding:15px;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:16.5px;font-weight:800;cursor:pointer;font-family:inherit}
+.bom-guide-btn:active{transform:scale(.98)}
+body.dark .bom-guide-card{background:#262E26}
+body.dark .bom-guide-title{color:#EFE6D0}
+body.dark .bom-guide-text{color:#c8bba4}
+</style>
+<div class="bom-guide-ov" id="bomGuide" aria-hidden="true" role="dialog">
+  <div class="bom-guide-card">
+    <img class="bom-guide-face" id="bomGuideFace" src="img/bom_smile.png" alt="봄이">
+    <div class="bom-guide-title" id="bomGuideTitle"></div>
+    <div class="bom-guide-text" id="bomGuideText"></div>
+    <button class="bom-guide-btn" id="bomGuideOk">알겠어요 🌸</button>
+  </div>
+</div>
+<script>
+(function(){
+  var GUIDE = {
+    memoir:    { face:'bom_smile.png',  title:'✍️ 나의 자서전',  text:'봄이와 함께 어르신의 인생 이야기를 책으로 만들어요. 질문에 한 줄씩만 답하셔도 봄이가 멋진 글로 풀어드려요!' },
+    health:    { face:'bom_think.png',  title:'💊 건강 돋보기',  text:'약 봉투나 영양제를 큰 글씨로 쉽게 살펴봐요. 무엇에 좋은지, 같이 드셔도 되는지 알려드릴게요.' },
+    nostalgia: { face:'bom_grin.png',   title:'🖼️ 그때 그 시절', text:'매일 옛 추억을 하나씩 만나고, 추억 퀴즈도 풀어요. 도장도 모으고 추억첩도 채워보세요!' },
+    game:      { face:'bom_cheer.png',  title:'🧠 두뇌 게임',    text:'간단한 놀이로 즐겁게 머리를 깨워요. 부담 없이 하루 한 판이면 충분해요!' },
+    library:   { face:'bom_smile.png',  title:'📚 공개 서재',    text:'다른 분들이 공개한 자서전을 함께 읽어보는 공간이에요. 따뜻한 인생 이야기가 가득해요.' },
+    letter:    { face:'bom_calm.png',   title:'💌 마음의 유언',  text:'사랑하는 사람에게 먼 훗날 전할 편지를 미리 적어둘 수 있어요. 천천히 마음을 담아보세요.' }
+  };
+  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/library':'library', '/letter':'letter' };
+  var ov=document.getElementById('bomGuide');
+  var faceEl=document.getElementById('bomGuideFace'), titleEl=document.getElementById('bomGuideTitle'),
+      textEl=document.getElementById('bomGuideText'), okBtn=document.getElementById('bomGuideOk');
+  if(!ov) return;
+  var _href=null;
+  function seen(k){ try{ return !!localStorage.getItem('dasibom_tut_'+k); }catch(e){ return false; } }
+  function markSeen(k){ try{ localStorage.setItem('dasibom_tut_'+k,'1'); }catch(e){} }
+  function openGuide(k, href){
+    var g=GUIDE[k]; if(!g) return;
+    faceEl.src='img/'+g.face; titleEl.textContent=g.title; textEl.textContent=g.text; _href=href||null;
+    ov.classList.add('on'); ov.setAttribute('aria-hidden','false');
+  }
+  function closeGuide(go){
+    ov.classList.remove('on'); ov.setAttribute('aria-hidden','true');
+    var h=_href; _href=null; if(go && h){ location.href=h; }
+  }
+  okBtn.addEventListener('click', function(){ closeGuide(true); });
+  ov.addEventListener('click', function(e){ if(e.target===ov) closeGuide(false); });
+  // 홈 메뉴 카드/티저 — 최초 터치 시 봄이 가이드 먼저, 이후엔 바로 이동
+  document.querySelectorAll('a.card, a.letter-tease').forEach(function(elm){
+    var href=(elm.getAttribute('href')||'').split('?')[0].split('#')[0];
+    var k=HREF_GUIDE[href]; if(!k) return;
+    elm.addEventListener('click', function(e){
+      if(seen(k)) return;            // 이미 본 컨텐츠 → 정상 이동
+      e.preventDefault(); markSeen(k); openGuide(k, elm.getAttribute('href'));
+    }, true);
+  });
+})();
+</script>
 </body>
 </html>
