@@ -1023,6 +1023,11 @@
 #dasibom-onboarding .dob-hint{
   margin-top:14px; font-size:clamp(14px,3.4vw,16px); color:#9a8a7a;
 }
+#dasibom-onboarding .dob-guide-list{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:360px; margin:18px 0 8px; }
+#dasibom-onboarding .dob-guide-item{ display:flex; align-items:center; gap:13px; background:rgba(255,255,255,.62); border:1px solid rgba(14,157,125,.18); border-radius:16px; padding:12px 15px; text-align:left; }
+#dasibom-onboarding .dgi-ico{ font-size:1.7em; flex-shrink:0; line-height:1; }
+#dasibom-onboarding .dob-guide-item b{ font-size:clamp(15px,3.8vw,17px); color:#143D2E; }
+#dasibom-onboarding .dob-guide-item small{ font-size:clamp(12.5px,3vw,13.5px); color:#7a8a7f; line-height:1.55; }
 </style>
 
 <script src="a11y.js?v=3" defer></script>
@@ -1144,12 +1149,18 @@
     <div class="dob-hint">버튼을 눌러 태어난 해를 맞춰주세요</div>
     <button class="dob-btn" id="dob-go3">다음</button>
   </div>
-  <!-- 화면 4: 마무리 -->
+  <!-- 화면 4: 마무리 + 봄이 기능 가이드 -->
   <div class="dob-screen" id="dob-s4">
     <img class="dob-bom" src="img/bom_wink.png" alt="봄이">
     <div class="dob-bubble">
-      <span id="dob-call2" class="dob-em">어르신</span>, 반가워요! 이제 준비됐어요.<br>
-      천천히, 편하게 둘러보세요. 제가 옆에서 도와드릴게요!
+      <span id="dob-call2" class="dob-em">어르신</span>, 반가워요! 여기서 이런 걸 할 수 있어요.<br>
+      제가 옆에서 차근차근 도와드릴게요!
+    </div>
+    <div class="dob-guide-list">
+      <div class="dob-guide-item"><span class="dgi-ico">✍️</span><div><b>나의 자서전</b><br><small>봄이와 함께 내 인생 이야기를 책으로 남겨요</small></div></div>
+      <div class="dob-guide-item"><span class="dgi-ico">🖼️</span><div><b>그때그시절</b><br><small>매일 옛 추억을 하나씩 만나고 퀴즈도 풀어요</small></div></div>
+      <div class="dob-guide-item"><span class="dgi-ico">💊</span><div><b>건강돋보기</b><br><small>약·건강 정보를 큰 글씨로 쉽게 살펴봐요</small></div></div>
+      <div class="dob-guide-item"><span class="dgi-ico">🧠</span><div><b>두뇌 게임</b><br><small>재미있는 놀이로 머리도 깨워요</small></div></div>
     </div>
     <button class="dob-btn" id="dob-finish">시작하기</button>
   </div>
