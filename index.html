@@ -2667,15 +2667,16 @@ body.dark .bom-guide-text{color:#c8bba4}
   }
   okBtn.addEventListener('click', function(){ closeGuide(true); });
   ov.addEventListener('click', function(e){ if(e.target===ov) closeGuide(false); });
-  // 홈 메뉴 카드/티저 — 최초 터치 시 봄이 가이드 먼저, 이후엔 바로 이동
-  document.querySelectorAll('a.card, a.letter-tease').forEach(function(elm){
-    var href=(elm.getAttribute('href')||'').split('?')[0].split('#')[0];
+  // 모든 메뉴 링크(홈 카드·GNB·더보기·동적 생성 포함) — 컨텐츠 최초 터치 시 봄이 가이드 먼저.
+  // 이벤트 위임(document 캡처)이라 나중에 생성되는 버튼도 자동 적용. 컨텐츠별 1회 플래그 공유.
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href]');
+    if(!a) return;
+    var href=(a.getAttribute('href')||'').split('?')[0].split('#')[0];
     var k=HREF_GUIDE[href]; if(!k) return;
-    elm.addEventListener('click', function(e){
-      if(seen(k)) return;            // 이미 본 컨텐츠 → 정상 이동
-      e.preventDefault(); markSeen(k); openGuide(k, elm.getAttribute('href'));
-    }, true);
-  });
+    if(seen(k)) return;              // 이미 본 컨텐츠 → 정상 이동
+    e.preventDefault(); markSeen(k); openGuide(k, a.getAttribute('href'));
+  }, true);
 })();
 </script>
 </body>
