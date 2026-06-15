@@ -7,6 +7,10 @@
 <meta name="description" content="자서전 속에 등장하는 소중한 사람들을 한 장의 지도로 모아드립니다.">
 <script src="a11y.js?v=3" defer></script>
 <script src="attend.js?v=2" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;overflow-x:hidden}
@@ -21,7 +25,9 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .me{width:86px;height:86px;border-radius:50%;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:18px auto 4px;font-weight:800;box-shadow:0 10px 26px -10px rgba(14,157,125,.6)}
 .me span{font-size:24px}.me small{font-size:12px;font-weight:700}
 .notice{margin:18px 0 22px;background:#E9F6F0;border:1px solid #BFE5D6;border-radius:14px;padding:12px 16px;font-size:13.5px;color:#1E5A47;line-height:1.7}
-.btn-new{display:block;width:100%;padding:18px 0;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:17.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px -8px rgba(14,157,125,.55);font-family:inherit;margin-bottom:24px}
+.btn-new{display:block;width:100%;padding:18px 0;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:17.5px;font-weight:800;cursor:pointer;box-shadow:0 8px 22px -8px rgba(14,157,125,.55);font-family:inherit;margin-bottom:12px}
+.btn-auto{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:15px 0;border:1.5px solid #0e9d7d;border-radius:50px;background:#fff;color:#0C7C62;font-size:15.5px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:24px}
+.btn-auto:disabled{opacity:.6;cursor:default}
 /* 폼 */
 .form{display:none;background:#fff;border:1.5px solid rgba(12,124,98,.18);border-radius:20px;padding:20px 18px;margin-bottom:24px;box-shadow:0 6px 22px rgba(10,92,73,.08)}
 .form.open{display:block}
@@ -60,9 +66,10 @@ textarea.f-in{min-height:90px;line-height:1.8}
     <div class="me"><span>🌳</span><small>나</small></div>
   </div>
 
-  <div class="notice">💎 <b>나의 인생 전집</b> 패키지 기능(준비 중)입니다. 지금은 직접 적어 보관할 수 있고, 곧 <b>자서전 속 인물을 봄이가 자동으로 찾아</b> 채워드릴 예정이에요.</div>
+  <div class="notice">💎 <b>나의 인생 전집</b> 패키지 기능입니다. 직접 적어 보관하거나, <b>✨ 자서전에서 자동으로 찾기</b>로 봄이가 자서전 속 인물을 찾아 채워드려요.</div>
 
   <button class="btn-new" id="btnNew">👤 인물 추가하기</button>
+  <button class="btn-auto" id="btnAuto">✨ 자서전에서 자동으로 찾기</button>
 
   <div class="form" id="form">
     <label class="f-lbl">이름 (부르던 호칭도 좋아요)</label>
@@ -153,6 +160,53 @@ function render(){
   });
 }
 render();
+</script>
+
+<script>
+/* 인물 지도 — 자서전 자동 추출 (Cloud Function extractPeople, Gemini) */
+(function(){
+  try{
+    firebase.initializeApp({ apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0", authDomain:"mylife-650f0.firebaseapp.com", projectId:"mylife-650f0", storageBucket:"mylife-650f0.firebasestorage.app", messagingSenderId:"512010655611", appId:"1:512010655611:web:32b153b836b23ae96a8fde", databaseURL:"https://mylife-650f0-default-rtdb.firebaseio.com" });
+  }catch(e){}
+  try{ firebase.auth().signInAnonymously().catch(function(){}); }catch(e){}
+
+  function memoirText(){
+    var parts=[];
+    try{ var pv=JSON.parse(localStorage.getItem('memoir_preview')||'null');
+      if(Array.isArray(pv)) pv.forEach(function(c){ if(c&&c.content) parts.push(String(c.content)); else if(typeof c==='string') parts.push(c); });
+    }catch(e){}
+    try{ var ans=JSON.parse(localStorage.getItem('memoir_answers')||'{}');
+      Object.keys(ans).forEach(function(k){ if(ans[k]) parts.push(String(ans[k])); });
+    }catch(e){}
+    return parts.join('\n').trim();
+  }
+
+  var btn=document.getElementById('btnAuto');
+  if(btn) btn.addEventListener('click', function(){
+    var text=memoirText();
+    if(text.length<20){ popToast('먼저 자서전에 이야기를 적어 주세요 🌱'); return; }
+    var orig=btn.textContent; btn.disabled=true; btn.textContent='봄이가 찾는 중… 🔍';
+    var done=function(){ btn.disabled=false; btn.textContent=orig; };
+    var fn;
+    try{ fn=firebase.app().functions('asia-northeast3').httpsCallable('extractPeople'); }
+    catch(e){ done(); popToast('연결 오류 — 잠시 후 다시 시도해 주세요'); return; }
+    fn({ text:text }).then(function(res){
+      var found=(res&&res.data&&res.data.people)||[];
+      if(!found.length){ popToast('자서전에서 인물을 찾지 못했어요'); return; }
+      var arr=load(), added=0;
+      found.forEach(function(p){
+        if(!p || !p.name) return;
+        if(arr.some(function(x){ return x.name===p.name && x.rel===p.rel; })) return;
+        arr.push({ id:Date.now()+Math.floor(Math.random()*10000), name:p.name, rel:p.rel||'그 밖에', memo:p.memo||'', createdAt:new Date().toISOString().slice(0,10), auto:true });
+        added++;
+      });
+      save(arr); render();
+      popToast(added ? ('봄이가 '+added+'명을 찾아 담았어요 🌳') : '이미 모두 담겨 있어요 🌳');
+    }).catch(function(e){
+      popToast('자동 찾기 실패: '+((e&&e.message)||'오류'));
+    }).then(done);
+  });
+})();
 </script>
 </body>
 </html>

@@ -409,6 +409,67 @@ D. 마지막 문단 끝 문장: 삶의 통찰이 담긴 여운 있는 마무리
   });
 
 // ════════════════════════════════════════
+// 자서전 → 등장인물 자동 추출 (인물 지도, people.html)
+// ════════════════════════════════════════
+exports.extractPeople = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 120, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    }
+    const text = String((data && data.text) || '').slice(0, 12000).trim();
+    if (text.length < 20) {
+      throw new functions.https.HttpsError('invalid-argument', '자서전 내용이 너무 짧습니다. 먼저 이야기를 작성해 주세요.');
+    }
+    // 남용 방지 — generateSection과 동일 카운터(uid 하루 상한)
+    const DAILY_GEN_CAP = 60;
+    const _uid = context.auth.uid;
+    const _day = new Date().toISOString().slice(0, 10);
+    const usageRef = admin.firestore().collection('usage_daily').doc(_uid + '_' + _day);
+    const allowed = await admin.firestore().runTransaction(async (tx) => {
+      const snap = await tx.get(usageRef);
+      const n = (snap.exists ? (snap.data().n || 0) : 0) + 1;
+      if (n > DAILY_GEN_CAP) return false;
+      tx.set(usageRef, { n, uid: _uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      return true;
+    });
+    if (!allowed) {
+      throw new functions.https.HttpsError('resource-exhausted', '오늘 한도를 초과했습니다. 내일 다시 이용해 주세요.');
+    }
+    const prompt =
+`다음은 한 어르신의 자서전 글이다. 글에 실제로 등장하는 '사람'만 골라 인물 목록을 만들어라.
+규칙:
+- 각 인물: {"name":"글에 나온 호칭이나 이름", "rel":"관계", "memo":"글에서 드러난 한 줄 특징(20자 이내)"}
+- rel은 반드시 다음 중 하나만: 배우자 / 자녀 / 손주 / 부모님 / 형제자매 / 친구 / 스승·은인 / 그 밖에
+- 글쓴이 본인은 제외. 글에 없는 사람을 추측으로 지어내지 말 것.
+- 같은 사람은 한 번만. 최대 12명.
+- 반드시 JSON 배열만 출력: [{"name":"...","rel":"...","memo":"..."}]
+
+[자서전]
+${text}`;
+    let raw;
+    try {
+      raw = await aiText({ user: prompt, maxTokens: 800, json: true });
+    } catch (e) {
+      throw new functions.https.HttpsError('internal', '추출 오류: ' + e.message);
+    }
+    let people = [];
+    try {
+      const parsed = JSON.parse(String(raw).replace(/```json|```/g, '').trim());
+      const RELS = ['배우자', '자녀', '손주', '부모님', '형제자매', '친구', '스승·은인', '그 밖에'];
+      people = (Array.isArray(parsed) ? parsed : []).filter((p) => p && p.name).map((p) => ({
+        name: String(p.name).slice(0, 20).trim(),
+        rel: RELS.includes(p.rel) ? p.rel : '그 밖에',
+        memo: String(p.memo || '').slice(0, 40).trim()
+      })).slice(0, 12);
+    } catch (e) {
+      throw new functions.https.HttpsError('internal', '결과 해석 오류');
+    }
+    return { people };
+  });
+
+// ════════════════════════════════════════
 // 자서전 제목 후보 생성
 // ════════════════════════════════════════
 exports.generateTitles = functions
