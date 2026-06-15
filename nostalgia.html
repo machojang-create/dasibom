@@ -493,6 +493,10 @@ body{
 </style>
 <script src="a11y.js?v=3" defer></script>
 <script src="attend.js?v=2" defer></script>
+<script src="bom_guide.js?v=1" defer></script>
+<script>window.BOM_GUIDES={
+  ns_album:{face:'bom_grin.png',title:'📖 추억첩',text:'오늘의 퀴즈를 맞히면 그 추억이 추억첩에 한 장씩 모여요. 여기서 그동안 모은 추억들을 다시 만나보실 수 있어요!'}
+};</script>
 </head>
 <body>
 
@@ -865,7 +869,7 @@ body{
     box.innerHTML=
       '<div class="nsq-head"><div class="nsq-title">🧠 오늘의 추억 퀴즈</div>'
       +'<div class="nsq-chips"><span class="nsq-chip">🔥 연속 <b id="nsqStreak">0</b>일</span>'
-      +'<button type="button" class="nsq-chip btn" id="nsqAlbumBtn">📖 추억첩 <b id="nsqColN">0</b>장</button></div></div>'
+      +'<button type="button" class="nsq-chip btn" id="nsqAlbumBtn" data-bomguide="ns_album">📖 추억첩 <b id="nsqColN">0</b>장</button></div></div>'
       +'<div class="nsq-q">'+esc(quiz.q)+'</div>'
       +'<div class="nsq-choices" id="nsqC"></div>'
       +'<div class="nsq-res" id="nsqRes"></div>'

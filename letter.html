@@ -7,6 +7,10 @@
 <meta name="description" content="사랑하는 이에게 지금 마음을 적어두면, 약속한 날에 전해드립니다.">
 <script src="a11y.js?v=3" defer></script>
 <script src="attend.js?v=2" defer></script>
+<script src="bom_guide.js?v=1" defer></script>
+<script>window.BOM_GUIDES={
+  letter_new:{face:'bom_calm.png',title:'💌 새 편지 쓰기',text:'사랑하는 사람에게 먼 훗날 전할 편지를 쓸 수 있어요. 받는 분과 전할 날짜를 정하고, 마음을 천천히 담아보세요.'}
+};</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;overflow-x:hidden}
@@ -71,7 +75,7 @@ textarea.f-in{min-height:190px;line-height:1.9;font-size:16.5px;resize:vertical}
 
   <div class="notice">💎 <b>나의 인생 전집</b> 패키지 기능(준비 중)입니다. 지금은 작성·보관까지 해보실 수 있어요. 가족에게 실제 전달(문자·이메일)은 곧 연결됩니다. 사망 여부를 추측하지 않으며, <b>오직 어르신이 정한 날짜</b>에만 전합니다.</div>
 
-  <button class="btn-new" id="btnNew">💌 새 편지 쓰기</button>
+  <button class="btn-new" id="btnNew" data-bomguide="letter_new">💌 새 편지 쓰기</button>
 
   <div class="form" id="form">
     <label class="f-lbl">받는 분</label>
