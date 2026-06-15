@@ -1769,6 +1769,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+<script src="wisdom_pool.js?v=1"></script><!-- 오늘의 지혜 명언 풀(테마 이미지 매칭) — loadWisdom 전 동기 로드 -->
 <script>
   firebase.initializeApp({
     apiKey: "AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
@@ -2065,10 +2066,18 @@
   }
 
   function loadWisdom() {
-    // 날짜 인덱스로 즉시 표시 (30개 순환, 매일 바뀜) — FALLBACK 인덱스 = 명언 배경 이미지(w_N.jpg) 번호
-    var _i = getDayIndex(FALLBACK), _w = FALLBACK[_i];
-    if(!_w.img) _w.img = 'img/wisdom/w_' + _i + '.jpg';
-    renderWisdom(_w);
+    // 명언 풀(wisdom_pool.js)이 있으면 사용 — 매일 새 명언(목표 365개), 테마별 배경 이미지.
+    // 풀이 없으면 내장 30개(FALLBACK)로 폴백.
+    var pool = window.WISDOM_POOL, themes = window.WISDOM_THEMES || {};
+    if (pool && pool.length) {
+      var pi = getDayIndex(pool), e = pool[pi];
+      renderWisdom({ quote:e.q, author:e.a, bio:e.b||'', interpretation:e.i, topic:e.t,
+        img: themes[e.t] || ('img/wisdom/w_' + (pi % 30) + '.jpg') });
+    } else {
+      var _i = getDayIndex(FALLBACK), _w = FALLBACK[_i];
+      if(!_w.img) _w.img = 'img/wisdom/w_' + _i + '.jpg';
+      renderWisdom(_w);
+    }
     // Firebase에 오늘 날짜로 등록된 커스텀 명언이 있으면 덮어쓰기
     try {
       var d=new Date();
