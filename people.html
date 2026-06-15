@@ -11,6 +11,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+<script src="bom_guide.js?v=1" defer></script>
+<script>window.BOM_GUIDES={
+  people_add:{face:'bom_smile.png',title:'👤 인물 추가하기',text:'소중한 분을 한 분씩 직접 담을 수 있어요. 이름과 관계, 기억 한 줄만 적으면 돼요.'},
+  people_auto:{face:'bom_grin.png',title:'✨ 자동으로 찾기',text:'이 버튼을 누르면 봄이가 어르신의 자서전을 읽고 등장한 사람들을 자동으로 찾아 지도에 담아드려요!'}
+};</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;overflow-x:hidden}
@@ -68,8 +73,8 @@ textarea.f-in{min-height:90px;line-height:1.8}
 
   <div class="notice">💎 <b>나의 인생 전집</b> 패키지 기능입니다. 직접 적어 보관하거나, <b>✨ 자서전에서 자동으로 찾기</b>로 봄이가 자서전 속 인물을 찾아 채워드려요.</div>
 
-  <button class="btn-new" id="btnNew">👤 인물 추가하기</button>
-  <button class="btn-auto" id="btnAuto">✨ 자서전에서 자동으로 찾기</button>
+  <button class="btn-new" id="btnNew" data-bomguide="people_add">👤 인물 추가하기</button>
+  <button class="btn-auto" id="btnAuto" data-bomguide="people_auto">✨ 자서전에서 자동으로 찾기</button>
 
   <div class="form" id="form">
     <label class="f-lbl">이름 (부르던 호칭도 좋아요)</label>
