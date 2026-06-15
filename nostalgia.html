@@ -203,6 +203,20 @@ body{
   box-shadow:0 14px 34px rgba(74,122,58,.16);
   transform:translateY(-4px);
 }
+/* ── 추억 엽서 (월 2~3회 자동) ── */
+.ns-postcard{position:relative;background:linear-gradient(135deg,#FFFBF2,#FBF3E4);border-radius:20px;box-shadow:0 12px 32px rgba(74,122,58,.14);overflow:hidden;margin-bottom:22px;border:1px solid #EFE3CC}
+.ns-postcard::after{content:'';position:absolute;inset:9px;pointer-events:none;border:2px dashed rgba(165,135,90,.22);border-radius:13px}
+.nspc-stamp{position:absolute;top:16px;right:16px;width:50px;height:58px;background:rgba(255,255,255,.72);border:1px dashed rgba(165,135,90,.5);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:25px;transform:rotate(4deg);z-index:2}
+.nspc-badge{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#FF8A5B,#FF6B3D);color:#fff;font-size:12px;font-weight:800;letter-spacing:.5px;padding:6px 15px;border-radius:50px;margin:18px 0 0 18px}
+.nspc-img{margin:14px 16px 0;border-radius:13px;overflow:hidden;aspect-ratio:16/10;background:#EDE0D4}
+.nspc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.nspc-body{padding:14px 20px 20px}
+.nspc-topic{font-family:'Nanum Myeongjo',serif;font-size:21px;font-weight:800;color:#4A7A3A;margin-bottom:8px}
+.nspc-msg{font-size:15px;color:#6B5D49;line-height:1.8}
+.nspc-foot{display:flex;align-items:center;justify-content:space-between;margin-top:16px;flex-wrap:wrap;gap:10px}
+.nspc-date{font-size:12px;color:#A5926F;letter-spacing:.5px}
+.nspc-share{display:inline-flex;align-items:center;gap:6px;background:#4A7A3A;color:#fff;border:none;border-radius:50px;padding:9px 18px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.nspc-share:active{opacity:.8}
 .tl-past{border-top:4px solid #C8A882}
 .tl-present{border-top:4px solid #81C784}
 
@@ -612,6 +626,9 @@ body{
     const wrap = document.getElementById('tlWrap');
     wrap.innerHTML = '';
 
+    /* 추억 엽서 (월 2~3회 자동 · 맨 위에 노출) */
+    if(isPostcardDay()){ const pc=pickPostcardItem(); if(pc) wrap.appendChild(buildPostcard(pc)); }
+
     const alreadySeen = !!localStorage.getItem(seenKey);
 
     if(alreadySeen){
@@ -785,6 +802,52 @@ body{
   function qsave(s){ try{ localStorage.setItem(QLS, JSON.stringify(s)); }catch(e){} }
   function ymdStr(d){ return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0'); }
   function streakOf(s){ let n=0; const d=new Date(); for(;;){ const a=s.answers[ymdStr(d)]; if(a&&a.correct){ n++; d.setDate(d.getDate()-1); } else break; } return n; }
+
+  /* ── 추억 엽서 (월 2~3회 자동 · 긍정 추억만 화이트리스트) ── */
+  var NS_PC_NEG = ['전쟁','6·25','육이오','피란','피난','상실','장례','곡소리','상여','죽음','별세','부고','이혼','외환위기','IMF','가난','보릿고개','전당포'];
+  function isPostcardDay(){
+    if(new URLSearchParams(location.search).get('postcard')==='1') return true;
+    var d=new Date().getDate();
+    return d===5 || d===15 || d===25;   // 매월 3회
+  }
+  function nsPositivePool(){
+    return (ALL_ITEMS||[]).filter(function(it){
+      var t=(it.topic||'')+' '+(it.past_desc||'');
+      return it.past_img && !NS_PC_NEG.some(function(k){ return t.indexOf(k)>=0; });
+    });
+  }
+  function pickPostcardItem(){
+    var pool=nsPositivePool(); if(!pool.length) return null;
+    var now=new Date();
+    var seq=now.getFullYear()*36 + now.getMonth()*3 + (now.getDate()===5?0:(now.getDate()===15?1:2));
+    return pool[((seq%pool.length)+pool.length)%pool.length];
+  }
+  function buildPostcard(item){
+    var box=document.createElement('div'); box.className='ns-postcard'; box.id='nsPostcard';
+    var now=new Date();
+    var dateStr=now.getFullYear()+'년 '+(now.getMonth()+1)+'월 '+now.getDate()+'일';
+    var topic=String(item.topic||'').split('와 ')[0].split('과 ')[0];
+    var msg=String(item.past_desc||'').slice(0,90);
+    if(String(item.past_desc||'').length>90) msg+='…';
+    box.innerHTML=
+      '<div class="nspc-stamp">🌸</div>'+
+      '<div class="nspc-badge">💌 추억 엽서가 도착했어요</div>'+
+      '<div class="nspc-img"><img src="'+esc(item.past_img||'')+'" alt="" loading="lazy"></div>'+
+      '<div class="nspc-body">'+
+        '<div class="nspc-topic">'+esc(topic)+'</div>'+
+        '<div class="nspc-msg">'+esc(msg)+'</div>'+
+        '<div class="nspc-foot"><span class="nspc-date">다시봄 · '+dateStr+'</span>'+
+        '<button type="button" class="nspc-share" id="nspcShare">💌 엽서 보내기</button></div>'+
+      '</div>';
+    box.querySelector('#nspcShare').addEventListener('click',function(){ sharePostcard(item); });
+    return box;
+  }
+  function sharePostcard(item){
+    var txt='💌 추억 엽서 — '+(item.topic||'')+'\n\n'+String(item.past_desc||'').slice(0,100)+'\n\n다시봄 그때그시절에서 추억을 만나보세요.';
+    if(navigator.share){ navigator.share({title:'추억 엽서 — 다시봄', text:txt}).catch(function(){}); }
+    else if(navigator.clipboard){ navigator.clipboard.writeText(txt).then(function(){ alert('엽서 내용이 복사되었어요!'); }).catch(function(){ alert(txt); }); }
+    else { alert(txt); }
+  }
 
   function buildQuiz(item){
     let quiz=item.quiz;
