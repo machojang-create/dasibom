@@ -32,6 +32,8 @@
       { "source": "/people",             "destination": "/people.html" },
       { "source": "/terms",              "destination": "/terms.html" },
       { "source": "/privacy",            "destination": "/privacy.html" },
+      { "source": "/portfolio",          "destination": "/portfolio/index.html" },
+      { "source": "/portfolio/**",       "destination": "/portfolio/index.html" },
       { "source": "/**",                  "destination": "/index.html" }
     ],
     "headers": [
