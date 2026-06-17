@@ -1542,6 +1542,7 @@
       <div class="ns-loading">📽️ 불러오는 중…</div>
     </div>
     <div id="ns-yest-wrap" style="display:none;margin-top:20px"></div>
+    <div class="dbc" id="ns-home-comments" style="margin-top:18px"></div>
   </div>
 </section>
 
@@ -1988,6 +1989,7 @@
   });
 </script>
 
+<script src="/comments.js?v=1"></script>
 <script>
   // Nav scrolled
   const nav = document.getElementById('nav');
@@ -2331,10 +2333,15 @@
       var d = await r.json();
       _nsItems = d.items || [];
       if (!_nsItems.length) return;
+      var _todayItem = _nsItems[_nsDayIndex(_nsItems)];
       var todayWrap = document.getElementById('ns-today-wrap');
       if (todayWrap) {
         todayWrap.innerHTML = '';
-        todayWrap.appendChild(buildNsMini(_nsItems[_nsDayIndex(_nsItems)]));
+        todayWrap.appendChild(buildNsMini(_todayItem));
+      }
+      if (window.DasibomComments && _todayItem && _todayItem.id != null) {
+        var _cmEl = document.getElementById('ns-home-comments');
+        if (_cmEl) window.DasibomComments.mount(_cmEl, 'nostalgia:' + _todayItem.id, '오늘의 추억에 한마디');
       }
     } catch(e) {
       var w = document.getElementById('ns-today-wrap');

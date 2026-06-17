@@ -494,11 +494,6 @@ body{
 <script src="a11y.js?v=3" defer></script>
 <script src="attend.js?v=2" defer></script>
 <script src="bom_guide.js?v=1" defer></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>try{firebase.initializeApp({apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",authDomain:"mylife-650f0.firebaseapp.com",projectId:"mylife-650f0",storageBucket:"mylife-650f0.firebasestorage.app",messagingSenderId:"512010655611",appId:"1:512010655611:web:32b153b836b23ae96a8fde",databaseURL:"https://mylife-650f0-default-rtdb.firebaseio.com"});}catch(e){}</script>
-<script src="/comments.js?v=1"></script>
 <script>window.BOM_GUIDES={
   ns_album:{face:'bom_grin.png',title:'📖 추억첩',text:'오늘의 퀴즈를 맞히면 그 추억이 추억첩에 한 장씩 모여요. 여기서 그동안 모은 추억들을 다시 만나보실 수 있어요!'}
 };</script>
@@ -652,15 +647,6 @@ body{
 
     const card = buildCard(item);
     wrap.appendChild(card);
-
-    /* 오늘의 추억에 한마디 (공용 댓글) — 추억 카드 바로 아래에 노출 */
-    if(window.DasibomComments && item && item.id != null){
-      const cm = document.createElement('div');
-      cm.className = 'dbc';
-      cm.style.margin = '18px 0 4px';
-      wrap.appendChild(cm);
-      window.DasibomComments.mount(cm, 'nostalgia:' + item.id, '오늘의 추억에 한마디');
-    }
 
     if(!alreadySeen) localStorage.setItem(seenKey, '1');
 
