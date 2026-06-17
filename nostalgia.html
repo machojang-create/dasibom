@@ -653,6 +653,15 @@ body{
     const card = buildCard(item);
     wrap.appendChild(card);
 
+    /* 오늘의 추억에 한마디 (공용 댓글) — 추억 카드 바로 아래에 노출 */
+    if(window.DasibomComments && item && item.id != null){
+      const cm = document.createElement('div');
+      cm.className = 'dbc';
+      cm.style.margin = '18px 0 4px';
+      wrap.appendChild(cm);
+      window.DasibomComments.mount(cm, 'nostalgia:' + item.id, '오늘의 추억에 한마디');
+    }
+
     if(!alreadySeen) localStorage.setItem(seenKey, '1');
 
     /* 오늘의 추억 퀴즈 (quiz 필드 생성 후 표시 · ?quiztest=1로 미리보기) */
@@ -660,15 +669,6 @@ body{
     if(quizEl){
       wrap.appendChild(quizEl);
       if(location.hash === '#quiz') setTimeout(()=>quizEl.scrollIntoView({behavior:'smooth', block:'start'}), 350);
-    }
-
-    /* 오늘의 추억에 한마디 (공용 댓글) */
-    if(window.DasibomComments && item && item.id != null){
-      const cm = document.createElement('div');
-      cm.className = 'dbc';
-      cm.style.margin = '18px 0 0';
-      wrap.appendChild(cm);
-      window.DasibomComments.mount(cm, 'nostalgia:' + item.id, '오늘의 추억에 한마디');
     }
 
     const tmr = new Date();
