@@ -747,8 +747,9 @@
     position:relative;min-height:100vh;
     display:flex;align-items:center;justify-content:center;
     overflow:hidden;
-    background:#0C1A0C url('/img/hero.jpg') center/cover no-repeat;
+    background:#0C1A0C;
   }
+  .ch-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;}
   .ch-g1,.ch-g2,.ch-g3{position:absolute;inset:0;pointer-events:none;}
   /* 사진 위에 덧씌우는 어두운 컬러 오버레이 */
   .ch-g1{background:linear-gradient(to bottom,rgba(8,20,8,.72) 0%,rgba(12,26,12,.55) 50%,rgba(8,20,8,.78) 100%);animation:none;}
@@ -1352,13 +1353,13 @@
     var p1=document.getElementById('di-p1'),p2=document.getElementById('di-p2'),p3=document.getElementById('di-p3'),enterWrap=document.getElementById('di-enter-wrap');
     var T=[];
     function show(el){el.classList.add('show');} function hide(el){el.classList.remove('show');}
-    T.push(setTimeout(function(){show(p1);},2000));
-    T.push(setTimeout(function(){hide(p1);},6500));
-    T.push(setTimeout(function(){show(p2);},8200));
-    T.push(setTimeout(function(){hide(p2);},15700));
-    T.push(setTimeout(function(){show(p3);},16400));
-    T.push(setTimeout(function(){hide(p3);},21900));
-    T.push(setTimeout(function(){enterWrap.classList.add('show');},23000));
+    T.push(setTimeout(function(){show(p1);},1500));
+    T.push(setTimeout(function(){hide(p1);},4800));
+    T.push(setTimeout(function(){show(p2);},6000));
+    T.push(setTimeout(function(){hide(p2);},11500));
+    T.push(setTimeout(function(){show(p3);},12000));
+    T.push(setTimeout(function(){hide(p3);},16000));
+    T.push(setTimeout(function(){enterWrap.classList.add('show');},17000));
     var cascadeActive=false,cascadeStart=0,whiteoutEl=document.getElementById('di-whiteout');
     var done=false;
     document.getElementById('di-enter-btn').addEventListener('click',function(){
@@ -1448,6 +1449,9 @@
 
 <!-- CINEMATIC HERO -->
 <header class="cine-hero" id="top">
+  <video class="ch-video" autoplay muted loop playsinline preload="auto" poster="/img/hero-poster.jpg">
+    <source src="/img/hero.mp4" type="video/mp4">
+  </video>
   <div class="ch-g1"></div>
   <div class="ch-g2"></div>
   <div class="ch-g3"></div>
@@ -1468,6 +1472,7 @@
         <div class="m-en">Look At Life Anew</div>
       </div>
     </div>
+    <button class="ch-meaning-more" type="button" onclick="openStoryModal()" aria-haspopup="dialog">이름에 담긴 의미, 더 보기 →</button>
     <div class="ch-cta-wrap">
       <a class="ch-cta-a" href="#wisdom-section">
         오늘의 이야기 만나기
@@ -1570,14 +1575,7 @@
   </div>
 </div>
 
-<!-- 다시봄 이름의 의미 (팝업 트리거) -->
-<div class="story-cta-wrap" data-reveal="">
-  <button class="story-cta" type="button" onclick="openStoryModal()" aria-haspopup="dialog">
-    <span class="sct-ico" aria-hidden="true">🌸</span>
-    <span class="sct-txt"><b>다시봄</b>, 이름에 담긴 <b>두 가지 의미</b></span>
-    <span class="sct-arrow" aria-hidden="true">→</span>
-  </button>
-</div>
+<!-- (다시봄 이름의 의미 트리거는 상단 hero로 이동) -->
 
 <!-- CONTENTS -->
 <section class="contents svc-section" id="contents">
@@ -2575,8 +2573,8 @@
     rEl.style.display='block';
     document.documentElement.style.overflow='hidden';
     document.body.style.overflow='hidden';
-    /* 안전장치: 무슨 일이 생겨도 14초 뒤엔 무조건 홈으로(정상 종료는 12초). */
-    setTimeout(function(){ endReturn(); }, 14000);
+    /* 안전장치: 무슨 일이 생겨도 7초 뒤엔 무조건 홈으로(정상 종료는 6초). */
+    setTimeout(function(){ endReturn(); }, 7000);
     var s=document.createElement('script');
     s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js';
     s.onload=runReturn;
@@ -2585,10 +2583,19 @@
   };
 
   function endReturn(){
-    rEl.classList.add('dr-hide');
-    document.documentElement.style.overflow='';
-    document.body.style.overflow='';
-    setTimeout(function(){ rEl.parentNode && rEl.parentNode.removeChild(rEl); }, 850);
+    if(rEl._ending) return; rEl._ending=true;
+    /* 화면이 하얗게 되면서 메인으로 연결 (최초 인트로 whiteout과 통일) */
+    var flash=document.createElement('div');
+    flash.style.cssText='position:fixed;inset:0;z-index:99999;background:#fff;opacity:0;transition:opacity .35s ease;pointer-events:none';
+    document.body.appendChild(flash);
+    requestAnimationFrame(function(){ flash.style.opacity='1'; });
+    setTimeout(function(){
+      rEl.parentNode && rEl.parentNode.removeChild(rEl);
+      document.documentElement.style.overflow='';
+      document.body.style.overflow='';
+      flash.style.opacity='0';
+      setTimeout(function(){ flash.parentNode && flash.parentNode.removeChild(flash); }, 450);
+    }, 360);
   }
 
   function runReturn(){
@@ -2660,10 +2667,10 @@
       dv.style.animationDelay=(i*.5)+'s'; dv.style.animationDuration=(5+i*.4)+'s';
       raysEl.appendChild(dv);
     });
-    setTimeout(function(){var e=document.getElementById('dr-sub'); if(e)e.classList.add('dr-show');},3000);
-    setTimeout(function(){var e=document.getElementById('dr-main'); if(e)e.classList.add('dr-show');},4200);
-    setTimeout(function(){var e=document.getElementById('dr-tag'); if(e)e.classList.add('dr-show');},6000);
-    var clock=new THREE.Clock(),DUR=12,ended=false;
+    setTimeout(function(){var e=document.getElementById('dr-sub'); if(e)e.classList.add('dr-show');},1500);
+    setTimeout(function(){var e=document.getElementById('dr-main'); if(e)e.classList.add('dr-show');},2100);
+    setTimeout(function(){var e=document.getElementById('dr-tag'); if(e)e.classList.add('dr-show');},3000);
+    var clock=new THREE.Clock(),DUR=6,ended=false;
     function eio(t){return t<.5?2*t*t:-1+(4-2*t)*t;}
     var lkV=new THREE.Vector3();
     (function loop(){
@@ -2681,7 +2688,7 @@
         if(p.position.y<-CFG.SY-2){ p.position.y=CFG.SY+rnd(0,4); p.position.x=rnd(-CFG.SX,CFG.SX); p.position.z=rnd(d.zMin,d.zMax); }
       }
       renderer.render(scene,cam);
-      // 12초 후 종료 → 홈
+      // 6초 후 종료 → 홈 (DUR)
       if(el>DUR && !ended){ ended=true; endReturn(); }
     })();
     window.addEventListener('resize',function(){ renderer.setSize(innerWidth,innerHeight); cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix(); });
@@ -2798,17 +2805,11 @@ body.dark .bom-guide-text{color:#c8bba4}
 </script>
 <!-- 다시봄 이름의 의미 — 팝업 모달 -->
 <style>
-  .story-cta-wrap{display:flex;justify-content:center;padding:44px 20px}
-  .story-cta{display:inline-flex;align-items:center;gap:12px;padding:15px 26px;border-radius:999px;
-    background:var(--paper,#fff);border:1.5px solid rgba(92,122,74,.28);cursor:pointer;font-family:inherit;
-    font-size:calc(16px * var(--ts,1));color:var(--ink,#2a241d);box-shadow:0 10px 30px -18px rgba(120,100,75,.4);
-    transition:transform .25s cubic-bezier(.2,.7,.2,1),box-shadow .25s,border-color .25s}
-  .story-cta:hover{transform:translateY(-3px);box-shadow:0 18px 40px -20px rgba(120,100,75,.5);border-color:rgba(92,122,74,.5)}
-  .story-cta .sct-ico{font-size:20px}
-  .story-cta .sct-txt b{font-weight:800}
-  .story-cta .sct-arrow{color:#5C7A4A;font-weight:800;transition:transform .25s}
-  .story-cta:hover .sct-arrow{transform:translateX(4px)}
-  body.dark .story-cta{background:#262E26;color:#EFE6D0;border-color:rgba(168,194,141,.3)}
+  .ch-meaning-more{display:inline-block;margin-top:28px;background:none;border:none;cursor:pointer;font-family:inherit;
+    font-size:13px;letter-spacing:.05em;color:rgba(201,169,97,.85);padding:7px 2px 6px;
+    border-bottom:1px solid rgba(201,169,97,.35);opacity:0;animation:chUp 1s ease 1.55s forwards;
+    transition:color .2s,transform .2s,border-color .2s}
+  .ch-meaning-more:hover{color:#E8C77A;transform:translateY(-1px);border-bottom-color:rgba(201,169,97,.7)}
   .story-modal{position:fixed;inset:0;z-index:9000;display:none;align-items:center;justify-content:center;
     padding:20px;background:rgba(30,26,20,.55);backdrop-filter:blur(6px)}
   .story-modal.open{display:flex;animation:smFade .25s ease}
@@ -2859,6 +2860,13 @@ body.dark .bom-guide-text{color:#c8bba4}
   function openStoryModal(){var m=document.getElementById('storyModal');if(m){m.classList.add('open');m.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}}
   function closeStoryModal(){var m=document.getElementById('storyModal');if(m){m.classList.remove('open');m.setAttribute('aria-hidden','true');document.body.style.overflow='';}}
   document.addEventListener('keydown',function(e){if(e.key==='Escape')closeStoryModal();});
+  /* 히어로 영상 자동재생 보강 (모바일·엄격 브라우저 대비) */
+  (function(){var v=document.querySelector('.ch-video');if(!v)return;
+   function go(){try{var p=v.play();if(p&&p.catch)p.catch(function(){});}catch(e){}}
+   if(v.readyState>=2)go();else v.addEventListener('loadeddata',go);
+   document.addEventListener('click',go,{once:true,passive:true});
+   document.addEventListener('touchstart',go,{once:true,passive:true});
+  })();
 </script>
 </body>
 </html>
