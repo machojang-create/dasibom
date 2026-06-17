@@ -712,6 +712,22 @@
     transition:background .2s;
   }
   .gp-card:hover .gp-play{background:var(--sage-deep)}
+  /* ── hover 연출 강화 (네 가지 카드처럼 — 게임카드·추억 미리보기·일일명언) ── */
+  .gp-card{transition:transform .26s cubic-bezier(.2,.7,.2,1),box-shadow .26s}
+  .gp-card:hover{transform:translateY(-7px) scale(1.025)}
+  body:not(.dark) .gp-card:hover{box-shadow:0 26px 50px -26px rgba(120,100,140,.5)}
+  .gp-cat-icon{transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+  .gp-card:hover .gp-cat-icon{transform:scale(1.12) translateY(-2px)}
+  .ns-mini-pair{transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
+  .ns-mini-pair:hover{transform:translateY(-5px)}
+  body:not(.dark) .ns-mini-pair:hover{box-shadow:0 22px 44px -26px rgba(150,120,80,.42)}
+  .ns-mini-img img{transition:opacity .4s,transform .55s cubic-bezier(.2,.7,.2,1)}
+  .ns-mini-pair:hover .ns-mini-img img.loaded{transform:scale(1.05)}
+  .wisdom-card-news{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+  .wisdom-card-news:hover{transform:translateY(-4px)}
+  @media (prefers-reduced-motion:reduce){
+    .gp-card:hover,.ns-mini-pair:hover,.wisdom-card-news:hover,.gp-card:hover .gp-cat-icon,.ns-mini-pair:hover .ns-mini-img img.loaded{transform:none}
+  }
 
   /* ── 서비스 카드 간격 ── */
   .svc-section{padding:80px 0}
@@ -1950,6 +1966,7 @@
 </script>
 
 <script src="/comments.js?v=1"></script>
+<script src="/fx.js?v=1"></script>
 <script>
   // Nav scrolled
   const nav = document.getElementById('nav');
