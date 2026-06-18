@@ -2868,5 +2868,97 @@ body.dark .bom-guide-text{color:#c8bba4}
    document.addEventListener('touchstart',go,{once:true,passive:true});
   })();
 </script>
+<!-- 봄이 챗봇 위젯 -->
+<style>
+  .bomchat{position:fixed;right:18px;bottom:18px;z-index:8500;font-family:inherit}
+  .bomchat-fab{position:relative;width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;padding:0;background:linear-gradient(145deg,#FFE0B2,#FFB74D);box-shadow:0 10px 28px -8px rgba(180,120,40,.5);animation:bcBob 3.2s ease-in-out infinite}
+  .bomchat-fab img{width:60px;height:60px;object-fit:contain;display:block;margin:2px auto 0}
+  @keyframes bcBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .bomchat-dot{position:absolute;top:3px;right:3px;width:13px;height:13px;border-radius:50%;background:#e2574c;border:2px solid #fff;animation:bcPulse 1.8s ease-in-out infinite}
+  @keyframes bcPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+  .bomchat-greet{position:absolute;right:72px;bottom:10px;width:214px;background:#fff;border-radius:16px 16px 4px 16px;padding:12px 15px;font-size:14px;line-height:1.55;color:#3a2e22;box-shadow:0 12px 32px -10px rgba(0,0,0,.32);cursor:pointer;display:none;animation:bcGreetIn .35s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes bcGreetIn{from{transform:translateY(10px) scale(.95)}to{transform:none}}
+  .bomchat-greet b{color:#d4845a;font-weight:800}
+  .bomchat-panel{position:absolute;right:0;bottom:78px;width:min(342px,calc(100vw - 36px));background:#fff;border-radius:22px;box-shadow:0 26px 64px -18px rgba(0,0,0,.42);overflow:hidden;display:none}
+  .bomchat-panel.open{display:block;animation:bcPop .3s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes bcPop{from{opacity:0;transform:translateY(14px) scale(.96)}to{opacity:1;transform:none}}
+  .bcp-head{display:flex;align-items:center;gap:11px;padding:15px 16px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2)}
+  .bcp-face{width:46px;height:46px;border-radius:50%;object-fit:contain;background:#fff;flex-shrink:0}
+  .bcp-name{font-weight:800;font-size:16px;color:#5b3a1a;line-height:1.2}
+  .bcp-sub{font-size:11.5px;color:#9a7a52}
+  .bcp-vbtn,.bcp-x{background:rgba(255,255,255,.65);border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:grid;place-items:center;color:#5b3a1a}
+  .bcp-vbtn{margin-left:auto}
+  .bcp-body{padding:16px;max-height:62vh;overflow-y:auto}
+  .bcp-msg{background:#FFF6E9;border-radius:14px 14px 14px 4px;padding:13px 15px;font-size:14.5px;line-height:1.65;color:#4a3a26;margin-bottom:16px}
+  .bcp-qlabel{font-size:12px;font-weight:800;color:#b58a4a;margin:0 2px 10px;letter-spacing:.02em}
+  .bcp-q{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1.5px solid #F0E3D0;border-radius:14px;padding:12px 13px;margin-bottom:9px;cursor:pointer;font-family:inherit;font-size:13.5px;line-height:1.5;color:#3a2e22;transition:border-color .2s,transform .2s,box-shadow .2s}
+  .bcp-q:hover{border-color:#FFB74D;transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(180,120,40,.4)}
+  .bcq-play{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#FFF0DB;border:none;display:grid;place-items:center;font-size:14px;cursor:pointer}
+  .bcq-txt{flex:1}
+  .bcq-go{flex-shrink:0;color:#d4845a;font-weight:800}
+  .bcp-cta{display:block;text-align:center;margin-top:8px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-weight:800;font-size:15px;text-decoration:none}
+  body.dark .bomchat-panel{background:#2a2420}
+  body.dark .bcp-msg{background:#332b22;color:#e6d9c5}
+  body.dark .bcp-q{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
+  body.dark .bomchat-greet{background:#2a2420;color:#e6d9c5}
+  @media(max-width:760px){.bomchat{right:14px;bottom:14px}}
+</style>
+<div class="bomchat" id="bomChat">
+  <div class="bomchat-panel" id="bomChatPanel" role="dialog" aria-label="봄이와 대화">
+    <div class="bcp-head">
+      <img class="bcp-face" src="/img/bom_smile.png" alt="봄이">
+      <div><div class="bcp-name">봄이</div><div class="bcp-sub">다시봄 도우미 · 10살 🌸</div></div>
+      <button class="bcp-vbtn" id="bcpVoice" title="음성 켜고끄기" aria-label="음성 켜고끄기">🔊</button>
+      <button class="bcp-x" onclick="bomChatToggle(false)" aria-label="닫기">✕</button>
+    </div>
+    <div class="bcp-body" id="bcpBody"></div>
+  </div>
+  <div class="bomchat-greet" id="bomGreet" onclick="bomChatToggle(true)"></div>
+  <button class="bomchat-fab" id="bomFab" onclick="bomChatToggle()" aria-label="봄이와 대화하기">
+    <img src="/img/bom_wink.png" alt="봄이">
+    <span class="bomchat-dot" id="bomDot"></span>
+  </button>
+</div>
+<script>
+(function(){
+  var hon=''; try{ hon=localStorage.getItem('dasibom_honorific')||''; }catch(e){}
+  var honTxt = hon || '어르신';
+  var voiceOn=true; try{ voiceOn=localStorage.getItem('dasibom_bomvoice')!=='0'; }catch(e){}
+  var QS=[
+    {t:'어디에서 태어나셨어요? 그곳은 어떤 곳이었는지 들려주세요.', v:'/voice/bom_q1.mp3'},
+    {t:'어릴 적 살던 동네와 집은 어떤 모습이었어요?', v:'/voice/bom_q2.mp3'},
+    {t:'어릴 때 어떤 놀이를 하며 노셨어요? 친구도 떠올려 보세요.', v:'/voice/bom_q3.mp3'}
+  ];
+  var audio=new Audio(), rendered=false, greetShown=false;
+  function play(src){ if(!voiceOn) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
+  function paintVoice(){ var b=document.getElementById('bcpVoice'); if(b) b.textContent=voiceOn?'🔊':'🔇'; }
+  function render(){
+    if(rendered) return; rendered=true;
+    var b=document.getElementById('bcpBody'); if(!b) return;
+    var h='<div class="bcp-msg">안녕하세요, <b>'+honTxt+'</b>! 저는 봄이예요 🌸<br>오늘 옛이야기 하나만 들려주실래요? 아래에서 골라보세요.</div><div class="bcp-qlabel">💬 봄이가 궁금한 것</div>';
+    QS.forEach(function(q,i){ h+='<div class="bcp-q" data-i="'+i+'"><button class="bcq-play" data-v="'+q.v+'" aria-label="듣기">🔊</button><span class="bcq-txt">'+q.t+'</span><span class="bcq-go">→</span></div>'; });
+    h+='<a class="bcp-cta" href="/memoir">자서전 쓰러 가기 ✦</a>';
+    b.innerHTML=h;
+    b.addEventListener('click', function(e){
+      var pl=e.target.closest('.bcq-play'); if(pl){ e.stopPropagation(); play(pl.getAttribute('data-v')); return; }
+      if(e.target.closest('.bcp-q')){ location.href='/memoir'; }
+    });
+  }
+  window.bomChatToggle=function(force){
+    var p=document.getElementById('bomChatPanel'), g=document.getElementById('bomGreet'), dot=document.getElementById('bomDot');
+    var open=(typeof force==='boolean')?force:!p.classList.contains('open');
+    if(open){ render(); p.classList.add('open'); if(g)g.style.display='none'; if(dot)dot.style.display='none'; play('/voice/bom_greet.mp3'); }
+    else { p.classList.remove('open'); }
+  };
+  document.addEventListener('click', function(e){ if(e.target.closest('#bcpVoice')){ voiceOn=!voiceOn; try{localStorage.setItem('dasibom_bomvoice',voiceOn?'1':'0');}catch(_){} paintVoice(); if(voiceOn) play('/voice/bom_greet.mp3'); else { try{audio.pause();}catch(_){} } } });
+  paintVoice();
+  function homeReady(){ var ids=['dasibom-intro','dasibom-intro-return','dasibom-onboarding']; for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el && getComputedStyle(el).display!=='none' && el.offsetParent!==null) return false; } return true; }
+  var tries=0;
+  (function waitHome(){ if(greetShown) return;
+    if(homeReady()){ setTimeout(function(){ var g=document.getElementById('bomGreet'); var p=document.getElementById('bomChatPanel'); if(g && p && !p.classList.contains('open')){ g.innerHTML='안녕하세요, <b>'+honTxt+'</b>! 저는 봄이예요 🌸<br>저를 눌러서 이야기 나눠요!'; g.style.display='block'; greetShown=true; setTimeout(function(){ g.style.display='none'; }, 9000); } }, 1200); }
+    else if(++tries<40){ setTimeout(waitHome, 800); }
+  })();
+})();
+</script>
 </body>
 </html>
