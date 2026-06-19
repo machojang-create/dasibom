@@ -50,9 +50,10 @@
     textEl.textContent = g.text || '';
     _pendingEl = el || null;
     ov.classList.add('on'); ov.setAttribute('aria-hidden', 'false');
+    if (window.BomVoice) BomVoice.say((g.title ? g.title + '. ' : '') + (g.text || ''), g.voice);
     return true;
   }
-  function close() { if (ov) { ov.classList.remove('on'); ov.setAttribute('aria-hidden', 'true'); } _pendingEl = null; }
+  function close() { if (ov) { ov.classList.remove('on'); ov.setAttribute('aria-hidden', 'true'); } _pendingEl = null; if (window.BomVoice) BomVoice.stop(); }
 
   // 모든 data-bomguide 요소 — 최초 터치 가로채기(캡처). 동적 생성 버튼도 위임으로 자동 적용.
   document.addEventListener('click', function (e) {

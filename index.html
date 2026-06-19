@@ -1950,6 +1950,7 @@
 
 <script src="/comments.js?v=1"></script>
 <script src="/fx.js?v=1"></script>
+<script src="/bom_voice.js?v=1"></script>
 <script>
   // Nav scrolled
   const nav = document.getElementById('nav');
@@ -2741,9 +2742,11 @@ body.dark .bom-guide-text{color:#c8bba4}
     var g=GUIDE[k]; if(!g) return;
     faceEl.src='img/'+g.face; titleEl.textContent=g.title; textEl.textContent=g.text; _href=href||null;
     ov.classList.add('on'); ov.setAttribute('aria-hidden','false');
+    if(window.BomVoice) BomVoice.say(g.title+'. '+g.text);
   }
   function closeGuide(go){
     ov.classList.remove('on'); ov.setAttribute('aria-hidden','true');
+    if(window.BomVoice) BomVoice.stop();
     var h=_href; _href=null; if(go && h){ location.href=h; }
   }
   okBtn.addEventListener('click', function(){ closeGuide(true); });
