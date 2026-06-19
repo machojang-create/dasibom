@@ -2905,6 +2905,20 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcq-txt{flex:1}
   .bcq-go{flex-shrink:0;color:#d4845a;font-weight:800}
   .bcp-cta{display:block;text-align:center;margin-top:8px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-weight:800;font-size:15px;text-decoration:none}
+  .bcp-q-wrap{border:1.5px solid #F0E3D0;border-radius:14px;padding:12px 13px;margin-bottom:10px;background:#fff}
+  .bcp-qhead{display:flex;align-items:center;gap:9px}
+  .bcp-qhead .bcq-txt{flex:1;font-size:13.5px;line-height:1.5;font-weight:600;color:#3a2e22}
+  .bcp-ansrow{display:flex;gap:7px;margin-top:10px}
+  .bcp-ans{flex:1;min-width:0;padding:10px 12px;border:1.5px solid #E6D8C4;border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#FFFDF9;color:#2a241d}
+  .bcp-ans:focus{border-color:#d4845a}
+  .bcp-save{flex-shrink:0;padding:0 14px;border:none;border-radius:10px;background:linear-gradient(135deg,#13d3a6,#0e9d7d);color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+  .bcp-saved{margin-top:10px;font-size:13px;line-height:1.55;color:#0e7d5a;background:#EAFBF4;border-radius:10px;padding:9px 11px}
+  .bcp-saved b{color:#0b5e44}
+  .bcp-edit{margin-left:4px;border:none;background:rgba(14,125,90,.13);color:#0e7d5a;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:50px;cursor:pointer;font-family:inherit}
+  body.dark .bcp-q-wrap{background:#241f1a;border-color:#3d342a}
+  body.dark .bcp-qhead .bcq-txt{color:#e6d9c5}
+  body.dark .bcp-ans{background:#1d1915;border-color:#3d342a;color:#e6d9c5}
+  body.dark .bcp-saved{background:#16241c;color:#7fe0bd}
   body.dark .bomchat-panel{background:#2a2420}
   body.dark .bcp-msg{background:#332b22;color:#e6d9c5}
   body.dark .bcp-q{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
@@ -2932,25 +2946,51 @@ body.dark .bom-guide-text{color:#c8bba4}
   var hon=''; try{ hon=localStorage.getItem('dasibom_honorific')||''; }catch(e){}
   var honTxt = hon || '어르신';
   var voiceOn=true; try{ voiceOn=localStorage.getItem('dasibom_bomvoice')!=='0'; }catch(e){}
+  // 봄이가 묻는 자서전 질문 — idx는 자서전(memoir_answers) 인덱스(무료 첫 3문항=0/1/2)
   var QS=[
-    {t:'어디에서 태어나셨어요? 그곳은 어떤 곳이었는지 들려주세요.', v:'/voice/bom_q1.mp3'},
-    {t:'어릴 적 살던 동네와 집은 어떤 모습이었어요? 마당이 있었는지도 궁금해요.', v:'/voice/bom_q2.mp3'},
-    {t:'어릴 때 어떤 놀이를 하며 노셨어요? 같이 뛰놀던 친구도 떠올려 보세요.', v:'/voice/bom_q3.mp3'}
+    {id:'MU1', idx:0, t:'어디에서 태어나셨어요? 그곳은 어떤 곳이었는지 들려주세요.', v:'/voice/bom_q1.mp3'},
+    {id:'MU2', idx:1, t:'어릴 적 살던 동네와 집은 어떤 모습이었어요? 마당이 있었는지도 궁금해요.', v:'/voice/bom_q2.mp3'},
+    {id:'MU3', idx:2, t:'어릴 때 어떤 놀이를 하며 노셨어요? 같이 뛰놀던 친구도 떠올려 보세요.', v:'/voice/bom_q3.mp3'}
   ];
-  var audio=new Audio(), rendered=false, greetShown=false;
+  var audio=new Audio(), greetShown=false, bodyBound=false;
   function play(src){ if(!voiceOn) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
   function paintVoice(){ var b=document.getElementById('bcpVoice'); if(b) b.textContent=voiceOn?'🔊':'🔇'; }
+  function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function arch(){ try{ return JSON.parse(localStorage.getItem('bom_archive')||'{}'); }catch(e){ return {}; } }
+  function qById(id){ for(var i=0;i<QS.length;i++) if(QS[i].id===id) return QS[i]; return null; }
+  // 봄이의 기억 저장 — 중앙 아카이브 + 자서전(인덱스)에 동시 반영
+  function saveAns(q,text){
+    text=(text||'').trim(); if(!text) return false;
+    var a=arch(); a[q.id]={q:q.t,a:text,ts:Date.now(),cat:'memoir'}; try{ localStorage.setItem('bom_archive',JSON.stringify(a)); }catch(e){}
+    try{ var ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); ma[q.idx]=text; localStorage.setItem('memoir_answers',JSON.stringify(ma)); }catch(e){}
+    return true;
+  }
+  function confirmSaved(){ if(window.BomVoice) BomVoice.say('고마워요! 잘 기억해 둘게요. 자서전에 담아드릴게요.'); }
   function render(){
-    if(rendered) return; rendered=true;
     var b=document.getElementById('bcpBody'); if(!b) return;
-    var h='<div class="bcp-msg">안녕하세요! 저는 봄이예요 🌸<br>만나서 반가워요. 오늘, 옛이야기 하나 들려주실래요?</div><div class="bcp-qlabel">💬 골라서 들어보세요 (봄이가 읽어드려요)</div>';
-    QS.forEach(function(q,i){ h+='<div class="bcp-q" data-i="'+i+'"><button class="bcq-play" data-v="'+q.v+'" aria-label="듣기">🔊</button><span class="bcq-txt">'+q.t+'</span><span class="bcq-go">→</span></div>'; });
-    h+='<a class="bcp-cta" href="/memoir">자서전 쓰러 가기 ✦</a>';
-    b.innerHTML=h;
-    b.addEventListener('click', function(e){
-      var pl=e.target.closest('.bcq-play'); if(pl){ e.stopPropagation(); play(pl.getAttribute('data-v')); return; }
-      if(e.target.closest('.bcp-q')){ location.href='/memoir'; }
+    var A=arch(), answered=QS.filter(function(q){return A[q.id];}).length;
+    var greet = answered>0
+      ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지난 이야기 잘 기억하고 있어요. 더 들려주실래요?'
+      : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>들려주신 이야기를 제가 기억했다가 자서전에 담아드려요.';
+    var h='<div class="bcp-msg">'+greet+'</div><div class="bcp-qlabel">💬 봄이가 궁금한 것 · '+answered+'/'+QS.length+' 기억함</div>';
+    QS.forEach(function(q){
+      var s=A[q.id];
+      h+='<div class="bcp-q-wrap" data-id="'+q.id+'"><div class="bcp-qhead"><button class="bcq-play" data-v="'+q.v+'" aria-label="듣기">🔊</button><span class="bcq-txt">'+esc(q.t)+'</span></div>';
+      h+= s ? '<div class="bcp-saved">✓ <b>기억함</b> · '+esc(s.a)+' <button class="bcp-edit" type="button">고치기</button></div>'
+            : '<div class="bcp-ansrow"><input class="bcp-ans" type="text" placeholder="여기에 답을 적어주세요" autocomplete="off"><button class="bcp-save" type="button">기억하기</button></div>';
+      h+='</div>';
     });
+    h+='<a class="bcp-cta" href="/memoir">📖 자서전으로 이어보기 ✦</a>';
+    b.innerHTML=h;
+    if(!bodyBound){
+      bodyBound=true;
+      b.addEventListener('click', function(e){
+        var pl=e.target.closest('.bcq-play'); if(pl){ play(pl.getAttribute('data-v')); return; }
+        var sv=e.target.closest('.bcp-save'); if(sv){ var w=sv.closest('.bcp-q-wrap'); var q=qById(w.getAttribute('data-id')); var inp=w.querySelector('.bcp-ans'); if(q&&saveAns(q,inp&&inp.value)){ confirmSaved(); render(); } return; }
+        var ed=e.target.closest('.bcp-edit'); if(ed){ var w2=ed.closest('.bcp-q-wrap'); var id=w2.getAttribute('data-id'); var a=arch(); delete a[id]; try{localStorage.setItem('bom_archive',JSON.stringify(a));}catch(_){}; render(); var f=document.querySelector('.bcp-q-wrap[data-id="'+id+'"] .bcp-ans'); if(f)f.focus(); return; }
+      });
+      b.addEventListener('keydown', function(e){ if(e.key==='Enter'){ var inp=e.target.closest('.bcp-ans'); if(inp){ var w=inp.closest('.bcp-q-wrap'); var q=qById(w.getAttribute('data-id')); if(q&&saveAns(q,inp.value)){ confirmSaved(); render(); } } } });
+    }
   }
   window.bomChatToggle=function(force){
     var p=document.getElementById('bomChatPanel'), g=document.getElementById('bomGreet'), dot=document.getElementById('bomDot');
