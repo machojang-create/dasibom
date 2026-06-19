@@ -2451,7 +2451,7 @@
       if(s===id){ el.classList.add('show'); } else { el.classList.remove('show'); }
     });
     var b=document.querySelector('#'+id+' .dob-bubble');
-    if(b) dobTypeBubble(b);
+    if(b){ if(window.BomVoice) BomVoice.say((b.textContent||'').trim()); dobTypeBubble(b); }
   }
   // 봄이 가이드 말풍선 타자기 (태그 보존: <b>·{호칭} span). 취소·움직임줄이기 존중.
   var _dobTimer=null;
