@@ -7,7 +7,8 @@
 (function () {
   if (window.BomVoice) return;
   var audio = new Audio();
-  function isOn() { try { return localStorage.getItem('dasibom_bomvoice') !== '0'; } catch (e) { return true; } }
+  var FEATURE_ON = false;  // ★보이스 마스터 스위치 — 제공자(클로바/일레븐) 결정 후 true로만 바꾸면 전체 재활성
+  function isOn() { try { return FEATURE_ON && localStorage.getItem('dasibom_bomvoice') !== '0'; } catch (e) { return false; } }
   function pickKo() {
     try { var vs = (window.speechSynthesis && speechSynthesis.getVoices()) || []; var ko = vs.filter(function (v) { return /ko/i.test(v.lang); }); return ko[0] || null; } catch (e) { return null; }
   }

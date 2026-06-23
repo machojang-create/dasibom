@@ -2953,7 +2953,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     {id:'MU3', idx:2, t:'어릴 때 어떤 놀이를 하며 노셨어요? 같이 뛰놀던 친구도 떠올려 보세요.', v:'/voice/bom_q3.mp3'}
   ];
   var audio=new Audio(), greetShown=false, bodyBound=false;
-  function play(src){ if(!voiceOn) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
+  function play(src){ if(!(window.BomVoice && window.BomVoice.isOn())) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
   function paintVoice(){ var b=document.getElementById('bcpVoice'); if(b) b.textContent=voiceOn?'🔊':'🔇'; }
   function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function arch(){ try{ return JSON.parse(localStorage.getItem('bom_archive')||'{}'); }catch(e){ return {}; } }
