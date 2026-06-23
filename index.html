@@ -2508,7 +2508,8 @@
     setTimeout(function(){
       ob.classList.remove('dob-on');
       ob.parentNode && ob.parentNode.removeChild(ob);
-      /* === [다음 단계] 홈에서 호칭 반영 / 봄이 챗봇 등장 연결 지점 === */
+      /* 온보딩 끝 → 봄이 챗봇 자동 오픈 (창구) */
+      setTimeout(function(){ if(window.bomChatToggle) window.bomChatToggle(true); }, 550);
     }, 620);
   }
 
@@ -2905,6 +2906,8 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcq-txt{flex:1}
   .bcq-go{flex-shrink:0;color:#d4845a;font-weight:800}
   .bcp-cta{display:block;text-align:center;margin-top:8px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-weight:800;font-size:15px;text-decoration:none}
+  .bcp-qprev{border:1.5px solid #F0E3D0;border-radius:12px;padding:10px 13px;margin-bottom:8px;background:#FFFCF7;font-size:13.5px;line-height:1.5;color:#5b4a36}
+  body.dark .bcp-qprev{background:#221d18;border-color:#3d342a;color:#cdbfa8}
   .bcp-q-wrap{border:1.5px solid #F0E3D0;border-radius:14px;padding:12px 13px;margin-bottom:10px;background:#fff}
   .bcp-qhead{display:flex;align-items:center;gap:9px}
   .bcp-qhead .bcq-txt{flex:1;font-size:13.5px;line-height:1.5;font-weight:600;color:#3a2e22}
@@ -2966,31 +2969,18 @@ body.dark .bom-guide-text{color:#c8bba4}
     return true;
   }
   function confirmSaved(){ if(window.BomVoice) BomVoice.say('고마워요! 잘 기억해 둘게요. 자서전에 담아드릴게요.'); }
+  // 챗봇 = 봄이의 창구(인사·진행상황·자서전으로 안내). 실제 답변은 자서전(memoir)에서.
   function render(){
     var b=document.getElementById('bcpBody'); if(!b) return;
-    var A=arch(), answered=QS.filter(function(q){return A[q.id];}).length;
+    var ma={}; try{ ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); }catch(e){}
+    var answered=Object.keys(ma).filter(function(k){ return String(ma[k]||'').trim()!==''; }).length;
     var greet = answered>0
-      ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지난 이야기 잘 기억하고 있어요. 더 들려주실래요?'
-      : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>들려주신 이야기를 제가 기억했다가 자서전에 담아드려요.';
-    var h='<div class="bcp-msg">'+greet+'</div><div class="bcp-qlabel">💬 봄이가 궁금한 것 · '+answered+'/'+QS.length+' 기억함</div>';
-    QS.forEach(function(q){
-      var s=A[q.id];
-      h+='<div class="bcp-q-wrap" data-id="'+q.id+'"><div class="bcp-qhead"><button class="bcq-play" data-v="'+q.v+'" aria-label="듣기">🔊</button><span class="bcq-txt">'+esc(q.t)+'</span></div>';
-      h+= s ? '<div class="bcp-saved">✓ <b>기억함</b> · '+esc(s.a)+' <button class="bcp-edit" type="button">고치기</button></div>'
-            : '<div class="bcp-ansrow"><input class="bcp-ans" type="text" placeholder="여기에 답을 적어주세요" autocomplete="off"><button class="bcp-save" type="button">기억하기</button></div>';
-      h+='</div>';
-    });
-    h+='<a class="bcp-cta" href="/memoir">📖 자서전으로 이어보기 ✦</a>';
+      ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지금까지 <b>'+answered+'가지</b> 이야기를 들려주셨어요. 오늘도 이어가볼까요?'
+      : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>매일 3가지만 답하면, 5일이면 <b>나만의 자서전</b>이 완성돼요. 같이 시작해요!';
+    var h='<div class="bcp-msg">'+greet+'</div><div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (예시)</div>';
+    QS.forEach(function(q){ h+='<div class="bcp-qprev">'+esc(q.t)+'</div>'; });
+    h+='<a class="bcp-cta" href="/memoir">📖 자서전에서 이야기 들려주기 ✦</a>';
     b.innerHTML=h;
-    if(!bodyBound){
-      bodyBound=true;
-      b.addEventListener('click', function(e){
-        var pl=e.target.closest('.bcq-play'); if(pl){ play(pl.getAttribute('data-v')); return; }
-        var sv=e.target.closest('.bcp-save'); if(sv){ var w=sv.closest('.bcp-q-wrap'); var q=qById(w.getAttribute('data-id')); var inp=w.querySelector('.bcp-ans'); if(q&&saveAns(q,inp&&inp.value)){ confirmSaved(); render(); } return; }
-        var ed=e.target.closest('.bcp-edit'); if(ed){ var w2=ed.closest('.bcp-q-wrap'); var id=w2.getAttribute('data-id'); var a=arch(); delete a[id]; try{localStorage.setItem('bom_archive',JSON.stringify(a));}catch(_){}; render(); var f=document.querySelector('.bcp-q-wrap[data-id="'+id+'"] .bcp-ans'); if(f)f.focus(); return; }
-      });
-      b.addEventListener('keydown', function(e){ if(e.key==='Enter'){ var inp=e.target.closest('.bcp-ans'); if(inp){ var w=inp.closest('.bcp-q-wrap'); var q=qById(w.getAttribute('data-id')); if(q&&saveAns(q,inp.value)){ confirmSaved(); render(); } } } });
-    }
   }
   window.bomChatToggle=function(force){
     var p=document.getElementById('bomChatPanel'), g=document.getElementById('bomGreet'), dot=document.getElementById('bomDot');
