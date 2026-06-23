@@ -1800,8 +1800,9 @@ function toggleRec(){
   if(APP.recording){APP.rec&&APP.rec.stop();APP.recording=false;el('vBtn').className='v-btn idle';el('vBtn').textContent='🎤';el('vLbl').textContent='버튼을 눌러 말씀해주세요';return;}
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){simVoice();return;}
+  var base=el('vArea').value; if(base && !/\s$/.test(base)) base+=' ';   // 시니어가 끊어 말해도 이어붙임(덮어쓰기 X)
   var r=new SR();r.lang='ko-KR';r.continuous=true;r.interimResults=true;
-  r.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;el('vArea').value=t;};
+  r.onresult=function(e){var t='';for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;el('vArea').value=base+t;};
   r.onend=function(){APP.recording=false;el('vBtn').className='v-btn idle';el('vBtn').textContent='🎤';el('vLbl').textContent='버튼을 눌러 말씀해주세요';};
   r.start();APP.rec=r;APP.recording=true;
   el('vBtn').className='v-btn rec';el('vBtn').textContent='⏹';el('vLbl').textContent='말씀해주세요 · 다시 누르면 종료';
