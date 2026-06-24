@@ -22,15 +22,17 @@
 html,body{width:100%;overflow-x:hidden}
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;background:#0a0805;color:var(--cream);min-height:100vh}
 .screen{display:none;min-height:100vh;flex-direction:column}
-.screen.active{display:flex}
+.screen.active{display:flex;animation:screenIn .42s cubic-bezier(.34,1.56,.64,1)}
+@keyframes screenIn{0%{opacity:0;transform:scale(.97) translateY(10px)}100%{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.screen.active{animation:none}}
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--inkL);color:var(--cream);padding:12px 24px;font-size:12px;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4);border-radius:2px;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
 
 /* ── 인트로 ── */
 #s-intro{position:relative;overflow:hidden;background:#0a0805;min-height:100vh}
 .intro-bg{position:fixed;inset:0;background:radial-gradient(ellipse at 65% 45%,rgba(180,100,40,.32) 0%,transparent 55%),radial-gradient(ellipse at 20% 70%,rgba(120,60,20,.2) 0%,transparent 50%),linear-gradient(180deg,#0a0805 0%,#1c0e06 45%,#280f04 70%,#0a0805 100%);z-index:0}
-.intro-page{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 36px;text-align:center;z-index:10;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
-.intro-page.active{opacity:1;pointer-events:auto}
+.intro-page{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 36px;text-align:center;z-index:10;opacity:0;transform:scale(.98);transition:opacity 1.1s cubic-bezier(.22,.9,.32,1.1),transform 1.1s cubic-bezier(.22,.9,.32,1.1);pointer-events:none}
+.intro-page.active{opacity:1;transform:none;pointer-events:auto}
 .p1-badge{font-size:12px;color:rgba(200,160,100,.5);letter-spacing:3px;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;margin-bottom:28px;opacity:0;transition:opacity 1s ease}
 .p1-badge.show{opacity:1}
 .p1-main{font-size:clamp(26px,7vw,40px);font-weight:700;color:#f0e4d0;line-height:1.45;letter-spacing:-.5px;margin-bottom:24px;opacity:0;transition:opacity 1s ease}
@@ -262,6 +264,8 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .bom-face{width:60px;height:auto;flex-shrink:0;filter:drop-shadow(0 6px 12px rgba(150,110,70,.18))}
 .bom-bubble{position:relative;flex:1;background:#fff;border:1px solid var(--sepiaP,#e7ddcf);border-radius:18px 18px 18px 4px;padding:14px 16px;box-shadow:0 4px 14px rgba(120,90,60,.08)}
 .bom-bubble .q-txt{margin-bottom:0}
+@keyframes dsbBubblePop{0%{transform:scale(.92) translateY(6px);opacity:.4}60%{transform:scale(1.025)}100%{transform:scale(1) translateY(0);opacity:1}}
+@media (prefers-reduced-motion:reduce){.bom-bubble{animation:none!important}}
 .q-txt.dsb-typing::after{content:'';display:inline-block;width:2px;height:1em;background:var(--sepia,#9a8a7a);margin-left:3px;vertical-align:-2px;animation:dsbCaret .7s steps(1) infinite}
 @keyframes dsbCaret{50%{opacity:0}}
 /* 시니어 글씨 크기 조절 (보통/크게/아주크게) */
@@ -1637,14 +1641,17 @@ function dsbTypeBubble(elm, text){
   if(!elm) return;
   if(_bomTypeTimer){ clearTimeout(_bomTypeTimer); _bomTypeTimer=null; }
   text = text || '';
+  // 말풍선이 말랑하게 통통 튀며 들어오는 등장(매 질문마다 재생) — 딱딱한 느낌 완화
+  var bubble = elm.closest('.bom-bubble');
+  if(bubble){ bubble.style.animation='none'; void bubble.offsetWidth; bubble.style.animation='dsbBubblePop .5s cubic-bezier(.34,1.56,.64,1)'; }
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduce || text.length>140){ elm.textContent=text; elm.classList.remove('dsb-typing'); return; }
   elm.textContent=''; elm.classList.add('dsb-typing');
   var i=0;
   function step(){ i++; elm.textContent=text.slice(0,i);
-    if(i<text.length){ _bomTypeTimer=setTimeout(step,26); }
+    if(i<text.length){ _bomTypeTimer=setTimeout(step,34); }
     else { elm.classList.remove('dsb-typing'); _bomTypeTimer=null; } }
-  _bomTypeTimer=setTimeout(step,120);
+  _bomTypeTimer=setTimeout(step,260); // 말풍선이 먼저 보이고 나서 차분하게 타이핑 시작
   elm.onclick=function(){ if(_bomTypeTimer){ clearTimeout(_bomTypeTimer); _bomTypeTimer=null; elm.textContent=text; elm.classList.remove('dsb-typing'); } };
 }
 function renderQ(i){
