@@ -176,7 +176,7 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 /* ── 인쇄 전용 ── */
 @media print{
   /* 화면 요소 숨기기 */
-  .pv-back,.pv-badge,.cta,#pvCta,.pv-lock-overlay,
+  .pv-back,.pv-badge,.cta,#pvCta,
   #s-intro,#s-package,#s-dash,#s-q,#s-title,#s-gen,
   .lm-bg,.modal-bg,.toast{display:none!important}
   /* 미리보기 화면만 표시 */
@@ -199,8 +199,6 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
   .pv-chapter-first{page-break-before:always}
   .pv-p{font-size:11pt!important;line-height:2.1!important;color:#222!important}
   .pv-story-lbl{color:#C8784A!important;font-size:10pt!important;border-bottom:1px solid #e0cdb8!important}
-  .pv-blur-content{filter:none!important;opacity:1!important}
-  .pv-blur-section{overflow:visible!important}
   .pv-chapter-sep{color:#C8784A!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .pv-chapter-first .pv-p:first-child::first-letter{color:#C8784A!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   body,html{background:#fff!important}
@@ -260,8 +258,6 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .q-savelbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--green)}
 .q-cnt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12.5px;color:var(--sepia)}
 .q-body{flex:1;padding:24px 24px 12px}
-.q-progress-txt{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);margin-bottom:14px;opacity:.8}
-.q-num{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--sepiaL);letter-spacing:2px;margin-bottom:12px;opacity:.5}
 .q-txt{font-size:calc(clamp(19px,5vw,25px) * var(--ts,1));font-weight:700;color:var(--ink);line-height:1.6;margin-bottom:10px;letter-spacing:-.3px}
 .q-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:calc(15px * var(--ts,1));color:var(--sepia);opacity:.88;margin-bottom:14px;line-height:1.7}
 /* C-3a 화면 3층: 봄이 말풍선 + 예시가이드 */
@@ -381,17 +377,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .pv-story-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);margin-bottom:14px;opacity:.8;font-weight:600;border-bottom:1px solid var(--sepiaP);padding-bottom:8px}
 .pv-p{font-size:calc(15px * var(--ts,1));line-height:2.3;color:var(--inkL);font-family:'Georgia','Batang',serif}
 
-/* 블러 처리 — 유료 유도 */
-.pv-blur-section{position:relative;overflow:hidden}
-.pv-blur-content{filter:blur(4px);user-select:none;pointer-events:none;opacity:.7}
-.pv-lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(251,248,243,.85);padding:32px;text-align:center}
-.pv-lock-icon{font-size:36px;margin-bottom:16px}
-.pv-lock-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px}
-.pv-lock-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);margin-bottom:24px;line-height:1.7;font-weight:300}
-
 .cta{margin:32px 24px;background:linear-gradient(180deg,#1a0e06,#0a0805);padding:36px 24px;text-align:center;border-radius:8px}
-.cta-ey{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);letter-spacing:2px;margin-bottom:10px;opacity:.8}
-.cta-h{font-size:20px;font-weight:700;color:var(--cream);line-height:1.5;margin-bottom:8px}
 .cta-s{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepiaL);margin-bottom:28px;opacity:.6}
 .prod-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
 .prod-card{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;transition:all .2s;border:1px solid rgba(196,168,130,.18)}
@@ -636,9 +622,6 @@ body.hc .ts-bar{border-color:#000;background:#fff}
     </div>
   </div>
   <div class="q-body">
-    <div class="q-progress-txt" id="qProgressTxt"></div>
-    <div id="qSched" style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;font-weight:700;color:#0e9d7d;margin-bottom:10px;display:none"></div>
-    <div class="q-num" id="qNum"></div>
     <div class="bom-row">
       <img class="bom-face" id="bomFace" src="img/bom_think.png" alt="봄이" onerror="this.style.display='none'">
       <div class="bom-bubble"><div class="q-txt" id="qTxt"></div></div>
@@ -771,11 +754,13 @@ body.hc .ts-bar{border-color:#000;background:#fff}
     </div>
   </div>
   <div class="cta" id="pvCta" style="display:none">
-    <div class="cta-ey">소중한 선물</div>
-    <div class="cta-h">"이 이야기를<br>기억으로 남겨보세요"</div>
-    <div class="cta-s">당신의 삶은 책이 될 자격이 있습니다</div>
+    <div class="bom-row" style="margin-bottom:18px">
+      <img class="bom-face" src="img/bom_smile.png" alt="봄이">
+      <div class="bom-bubble"><div class="q-txt">더 들려주실 이야기가 있으신가요?</div></div>
+    </div>
+    <div class="cta-s">더 깊은 이야기로 자서전을 채워드릴게요</div>
     <div class="prod-cards" id="prodCards"></div>
-    <button class="btn-pkg" id="btnBuy">지금 만들기</button>
+    <button class="btn-pkg" id="btnBuy">더 써볼게요</button>
   </div>
 </div>
 
@@ -1640,9 +1625,18 @@ function renderDash(){
   renderProds();
 }
 
+// 시작 진입점: 가격 비교 화면 없이 곧장 무료 15문항으로. 가격 제안은 자서전 완성 후 봄이가 묻는다(unlockPaidContinue).
+function startFreeJourney(){
+  APP.pkg='free'; APP.maxQ=15; APP.printSet=null;
+  APP.answers={}; APP.curQ=0; APP.preview=null; APP.bookTitle=''; APP.qDates={}; APP.qPrivate={};
+  buildQuestionList(); saveState(); renderDash(); go('s-dash');
+}
 function confirmReset(){
   if(confirm('처음부터 다시 시작할까요?\n저장된 내용이 모두 삭제됩니다.')){
-    APP.answers={};APP.preview=null;APP.curQ=0;APP.bookTitle='';saveState();go('s-package');
+    if(APP.pkg==='free'){ startFreeJourney(); return; }
+    // 이미 유료로 진행 중이면 등급은 유지하고 진행만 초기화(다시 시작해도 결제등급 유지)
+    APP.answers={};APP.preview=null;APP.curQ=0;APP.bookTitle='';APP.qDates={};APP.qPrivate={};
+    buildQuestionList(); saveState(); renderDash(); go('s-dash');
   }
 }
 function startNew(){
@@ -1695,17 +1689,10 @@ function renderQ(i){
   var pct=Math.round(i/maxQ*100);
   el('qBarFill').style.width=pct+'%';
   el('qStep').textContent=STORIES[q.ch].step;
-  // 게스트: 무료 잔여 표시 / 소셜 로그인: 전체 진행 표시
-  if(!isSocialUser() && i < GUEST_LIMIT){
-    el('qCnt').textContent='무료 '+(i+1)+'/'+GUEST_LIMIT+'문항';
-  } else {
-    el('qCnt').textContent=(i+1)+' / '+maxQ;
-  }
-  // 하루 스케줄 표시 (무료만): "N일차 · 오늘 M/3"
-  var _sched=el('qSched');
-  if(_sched){ if(isFreeTier()){ _sched.textContent=dayNumber()+'일차 · 오늘 '+consumedToday()+'/'+DAILY_CAP; _sched.style.display=''; } else { _sched.style.display='none'; } }
-  el('qProgressTxt').textContent='당신의 이야기가 만들어지고 있습니다 ('+pct+'%)';
-  el('qNum').textContent=String(i+1).padStart(3,'0')+' 번째 질문';
+  // 진행표시 1개로 통일: 무료=오늘 일차 기준, 유료=전체 문항 기준
+  el('qCnt').textContent = isFreeTier()
+    ? dayNumber()+'일차 · 오늘 '+consumedToday()+'/'+DAILY_CAP
+    : (i+1)+' / '+maxQ;
   dsbTypeBubble(el('qTxt'), q.q);
   el('qHint').textContent=q.h;
   var _ex=el('qEx'); if(_ex){ if(q.hint){ _ex.style.display='none'; } else { _ex.style.display=''; _ex.textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게. 한 줄만 적어도 봄이가 풀어드려요.'; } }
@@ -2028,44 +2015,26 @@ function showPreview(shared){
     lbl.textContent=(STORIES[ci]?STORIES[ci].badge:'🌸')+' · '+chData.storyName;
     div.appendChild(lbl);
 
+    // 무료든 유료든 직접 들려준 이야기는 전부 그대로 보여준다(잠금·블러 없음). 더 쓸지는 완성 후 봄이가 따로 묻는다.
     var content=document.createElement('div');
-    if(isFree&&idx>0){
-      content.className='pv-blur-section';
-      var blurred=document.createElement('div');
-      blurred.className='pv-blur-content no-copy';
-      blurred.innerHTML='<p class="pv-p">'+chData.texts.join('</p><p class="pv-p">')+'</p>';
-      content.appendChild(blurred);
-      if(idx===1){
-        var overlay=document.createElement('div');
-        overlay.className='pv-lock-overlay';
-        overlay.innerHTML='<div class="pv-lock-icon">🔒</div>'
-          +'<div class="pv-lock-title">나머지 이야기가 있습니다</div>'
-          +'<div class="pv-lock-sub">무료 체험은 첫 번째 이야기만 보실 수 있어요.<br>기본 패키지부터 전체 자서전을 받아보실 수 있습니다.</div>'
-          +'<button class="btn-pkg" style="max-width:260px" onclick="scrollToCta()">전체 자서전 받아보기</button>';
-        content.appendChild(overlay);
-      }
-    } else {
-      content.className='no-copy';
-      content.innerHTML='<p class="pv-p">'+chData.texts.join('</p><p class="pv-p" style="margin-top:22px">')+'</p>';
-    }
+    content.className='no-copy';
+    content.innerHTML='<p class="pv-p">'+chData.texts.join('</p><p class="pv-p" style="margin-top:22px">')+'</p>';
     div.appendChild(content);
     body.appendChild(div);
   });
 
-  // CTA / 공유 (공유 보기 모드면 숨김)
-  el('pvCta').style.display = shared ? 'none' : 'block';
+  // 봄이의 "더 쓰시겠어요?" 제안은 무료 완성본에서만(유료는 이미 다 쓴 것). 공유 보기 모드는 숨김.
+  el('pvCta').style.display = (shared || !isFree) ? 'none' : 'block';
   var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = (shared||isFree) ? 'none' : '';
   var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '✓ 서재에 공개됨 — 내리기' : '📚 공개 서재에 올리기';
   var _back=el('btnPvBack'); if(_back) _back.style.display = shared ? 'none' : '';
-  if(!shared) renderProds();
+  if(!shared && isFree) renderProds();
   go('s-preview');
 
   // 복사 방지
   document.addEventListener('contextmenu',function(e){e.preventDefault();});
   document.addEventListener('copy',function(e){e.preventDefault();popToast('복사는 완성본 구매 후 가능합니다');});
 }
-
-function scrollToCta(){document.getElementById('pvCta').scrollIntoView({behavior:'smooth'});}
 
 // ── 공개 서재 게시/내리기 — '나만 보기' 제외본(sharedChapters)을 library.html 호환 배열로 저장 ──
 function _libChaptersArray(){
@@ -2154,7 +2123,13 @@ function renderProds(){
 }
 function openModal(){var p=PRODUCTS.find(function(p){return p.id===APP.selProd;});el('modalT').textContent=p.name+' 만들기 — '+p.price;el('modalBg').classList.add('open');}
 function closeModal(){el('modalBg').classList.remove('open');}
-function completePurchase(){closeModal();popToast('결제 페이지로 이동합니다 (준비 중)');}
+function completePurchase(){closeModal();popToast('결제 페이지로 이동합니다 (준비 중)');} // ★PortOne 연동 후: 결제 성공 콜백에서 popToast 대신 unlockPaidContinue(APP.selProd) 호출
+// 결제 성공 시 호출 — 기존 무료 15문항 답변은 그대로 보존한 채 유료 질문으로 이어서 진행(처음부터 다시 X)
+function unlockPaidContinue(pkgId){
+  APP.pkg=pkgId; APP.maxQ=PKG_CONFIG[pkgId].q;
+  buildQuestionList(); APP.curQ=GUEST_LIMIT; saveState();
+  showStory(QS[APP.curQ].ch,function(){renderQ(APP.curQ);go('s-q');});
+}
 
 // ── 이벤트 바인딩 ──
 document.addEventListener('DOMContentLoaded',function(){
@@ -2185,7 +2160,7 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   }
 
-  el('btnStart').addEventListener('click',function(){go('s-package');});
+  el('btnStart').addEventListener('click',startFreeJourney);
   el('btnContinue').addEventListener('click',function(){renderDash();go('s-dash');});
   el('btnDayDone').addEventListener('click',function(){renderDash();go('s-dash');});
   if(el('spHome')) el('spHome').addEventListener('click',function(){ location.href='/index.html'; });
@@ -2207,7 +2182,7 @@ document.addEventListener('DOMContentLoaded',function(){
     saveState();renderDash();go('s-dash');
   });
 
-  el('btnReset').addEventListener('click',function(){if(confirm('처음으로 돌아갈까요?'))go('s-package');});
+  el('btnReset').addEventListener('click',confirmReset);
 
   el('mTxt').addEventListener('click',function(){setMode('text');});
   el('mVoice').addEventListener('click',function(){setMode('voice');});
