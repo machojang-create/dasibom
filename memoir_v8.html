@@ -686,6 +686,24 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   </div>
 </div>
 
+<!-- ════ 서프라이즈 자서전 전달 (D — 익일 오전 10시) ════ -->
+<style>
+#s-surprise{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 36%,rgba(200,140,70,.30) 0%,transparent 60%),linear-gradient(180deg,#0a0805 0%,#1c0e06 55%,#0a0805 100%)}
+.sp-petal{position:fixed;top:-40px;font-size:22px;pointer-events:none;z-index:1;animation:spFall linear forwards}
+@keyframes spFall{0%{transform:translateY(-40px) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(105vh) rotate(540deg);opacity:.2}}
+#spBom{animation:spPop .6s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes spPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+</style>
+<div class="screen" id="s-surprise">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;gap:18px;position:relative;z-index:2">
+    <img id="spBom" src="img/bom_cheer.png" alt="봄이" style="width:160px;height:auto;filter:drop-shadow(0 12px 24px rgba(180,120,80,.25))" onerror="this.src='img/bom_smile.png'">
+    <div id="spTitle" style="font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(27px * var(--ts,1));font-weight:800;color:#F0D483;text-shadow:0 2px 18px rgba(200,140,60,.35)"></div>
+    <div id="spMsg" style="font-size:calc(17px * var(--ts,1));line-height:1.75;color:#EDE3D0;max-width:360px"></div>
+    <button id="spBtn" style="margin-top:10px;max-width:320px;width:100%;padding:17px 24px;border:none;border-radius:50px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:calc(16.5px * var(--ts,1));font-weight:800;cursor:pointer;display:none">내 자서전 열어보기 ✦</button>
+    <button id="spHome" style="background:none;border:none;color:#bba883;font-size:14px;text-decoration:underline;cursor:pointer">홈으로</button>
+  </div>
+</div>
+
 <!-- ════ 제목 선택 ════ -->
 <div class="screen" id="s-title">
   <div class="title-top">
@@ -1744,6 +1762,55 @@ function showDayDone(){
   go('s-daydone');
 }
 
+// ════════ D — 서프라이즈 자서전 (완료시 즉시공개 X, 익일 오전 10시 연출과 함께 전달) ════════
+function getSurprise(){ try{ return JSON.parse(localStorage.getItem('memoir_surprise')||'null'); }catch(e){ return null; } }
+function setSurprise(o){ try{ localStorage.setItem('memoir_surprise', JSON.stringify(o)); }catch(e){} }
+function _nextTenAM(){ var d=new Date(); d.setDate(d.getDate()+1); d.setHours(10,0,0,0); return d.getTime(); } // 익일 오전 10시
+// 자서전 생성 직후 호출 — 완성본을 바로 보여주지 않고 예약
+function scheduleSurprise(){
+  var at=_nextTenAM();
+  setSurprise({ readyAt:at, delivered:false, ts:Date.now() });
+  renderSurpriseWait(at); go('s-surprise');
+}
+function renderSurpriseWait(readyAt){
+  var t=new Date(readyAt);
+  if(el('spBom')) el('spBom').src='img/bom_think.png';
+  el('spTitle').textContent='봄이가 자서전을 엮고 있어요';
+  el('spMsg').innerHTML='어르신이 들려주신 이야기를 정성껏 한 권의 책으로 만들고 있어요.<br><b>'+(t.getMonth()+1)+'월 '+t.getDate()+'일 오전 10시</b>, 깜짝 선물처럼 보여드릴게요 🎁';
+  el('spBtn').style.display='none';
+}
+function surpriseReveal(){
+  if(el('spBom')){ el('spBom').src='img/bom_wink.png'; el('spBom').style.animation='none'; void el('spBom').offsetWidth; el('spBom').style.animation=''; }
+  el('spTitle').textContent='🎉 자서전이 도착했어요!';
+  el('spMsg').innerHTML='어르신의 이야기가 한 권의 책이 되었어요.<br>봄이가 정성껏 엮었답니다 🌸';
+  el('spBtn').style.display='';
+  go('s-surprise');
+  spPetals();
+}
+function openDeliveredBook(){
+  var s=getSurprise()||{}; s.delivered=true; setSurprise(s);
+  if(APP.preview){ showPreview(); } else { renderDash(); go('s-dash'); }
+}
+// 부팅/재진입 시: 예약된 서프라이즈가 있으면 그 화면을 우선 표시
+function maybeShowSurprise(){
+  var s=getSurprise();
+  if(!s || s.delivered) return false;
+  if(Date.now() >= s.readyAt) surpriseReveal();
+  else { renderSurpriseWait(s.readyAt); go('s-surprise'); }
+  return true;
+}
+function spPetals(){
+  var em=['🌸','🎉','✨','🌷','💛'];
+  for(var i=0;i<26;i++){ (function(n){ setTimeout(function(){
+    var s=document.createElement('span'); s.className='sp-petal'; s.textContent=em[n%em.length];
+    s.style.left=(Math.random()*100)+'vw';
+    s.style.animationDuration=(3+Math.random()*2.5)+'s';
+    s.style.fontSize=(16+Math.random()*16)+'px';
+    document.body.appendChild(s);
+    setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); }, 6500);
+  }, n*90); })(i); }
+}
+
 function goNext(){
   var v=getVal();
   if(!validAnswer(v)){ popToast('조금만 더 들려주세요('+MIN_CHARS+'자 이상). 한 줄이면 충분해요 — 나머지는 봄이가 풀어써요. 어려우면 「이 질문 건너뛰기」'); return; }
@@ -1900,7 +1967,8 @@ async function startGen(title){
   APP.preview={title:title, chapters:groupByChapter(generated)};
   APP.sharedChapters=groupByChapter(generated.filter(function(g){return !g.private;})); // 공유본(나만보기 제외)
   saveState();
-  setTimeout(showPreview, 800);
+  // 무료 자서전은 완료시점에 바로 보여주지 않고 → 익일 오전 10시 서프라이즈로 전달(D)
+  setTimeout(isFreeTier()? scheduleSurprise : showPreview, 800);
 }
 
 async function expandAnswer(question, answer, chapterName, paraCount){
@@ -2098,6 +2166,9 @@ document.addEventListener('DOMContentLoaded',function(){
   // Firebase 초기화 + 익명 로그인 + 이전 내용 복원 (백그라운드)
   autoSignIn();
 
+  // D — 예약된 서프라이즈 자서전이 있으면 우선 표시(준비중 또는 익일 10시 공개)
+  setTimeout(maybeShowSurprise, 750);
+
   var hasSaved=Object.keys(APP.answers).length>0;
   if(!hasSaved)el('btnContinue').style.display='none';
 
@@ -2116,6 +2187,8 @@ document.addEventListener('DOMContentLoaded',function(){
   el('btnStart').addEventListener('click',function(){go('s-package');});
   el('btnContinue').addEventListener('click',function(){renderDash();go('s-dash');});
   el('btnDayDone').addEventListener('click',function(){renderDash();go('s-dash');});
+  if(el('spBtn')) el('spBtn').addEventListener('click',openDeliveredBook);   // 서프라이즈 → 자서전 열기
+  if(el('spHome')) el('spHome').addEventListener('click',function(){ location.href='/index.html'; });
   el('qpPrivate').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=true; el('qpPrivate').classList.add('on'); el('qpPublic').classList.remove('on'); saveState(); });
   el('qpPublic').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=false; el('qpPublic').classList.add('on'); el('qpPrivate').classList.remove('on'); saveState(); });
   el('btnMakeShare').addEventListener('click',makeShareLink);
