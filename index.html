@@ -2874,7 +2874,7 @@ body.dark .bom-guide-text{color:#c8bba4}
 </script>
 <!-- 봄이 챗봇 위젯 -->
 <style>
-  .bomchat{position:fixed;right:18px;bottom:18px;z-index:8500;font-family:inherit}
+  .bomchat{position:fixed;right:18px;bottom:84px;z-index:8500;font-family:inherit}/* a11y 글씨바(bottom:16px) 위로 띄움 — 겹침 방지 */
   .bomchat-fab{position:relative;width:64px;height:64px;border-radius:50%;border:none;cursor:pointer;padding:0;background:#fff;box-shadow:0 10px 28px -8px rgba(180,120,40,.5),0 0 0 3px #FFD9A6;animation:bcBob 3.2s ease-in-out infinite;transition:transform .16s cubic-bezier(.34,1.56,.64,1)}
   .bomchat-fab:hover{transform:scale(1.07)}
   .bomchat-fab:active{transform:scale(.9)}
@@ -2926,7 +2926,7 @@ body.dark .bom-guide-text{color:#c8bba4}
   body.dark .bcp-msg{background:#332b22;color:#e6d9c5}
   body.dark .bcp-q{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
   body.dark .bomchat-greet{background:#2a2420;color:#e6d9c5}
-  @media(max-width:760px){.bomchat{right:14px;bottom:14px}}
+  @media(max-width:760px){.bomchat{right:14px;bottom:80px}}
 </style>
 <div class="bomchat" id="bomChat">
   <div class="bomchat-panel" id="bomChatPanel" role="dialog" aria-label="봄이와 대화">
@@ -2955,21 +2955,11 @@ body.dark .bom-guide-text{color:#c8bba4}
     {id:'MU2', idx:1, t:'어릴 적 살던 동네와 집은 어떤 모습이었어요? 마당이 있었는지도 궁금해요.', v:'/voice/bom_q2.mp3'},
     {id:'MU3', idx:2, t:'어릴 때 어떤 놀이를 하며 노셨어요? 같이 뛰놀던 친구도 떠올려 보세요.', v:'/voice/bom_q3.mp3'}
   ];
-  var audio=new Audio(), greetShown=false, bodyBound=false;
+  var audio=new Audio(), greetShown=false;
   function play(src){ if(!(window.BomVoice && window.BomVoice.isOn())) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
   function paintVoice(){ var b=document.getElementById('bcpVoice'); if(b) b.textContent=voiceOn?'🔊':'🔇'; }
   function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-  function arch(){ try{ return JSON.parse(localStorage.getItem('bom_archive')||'{}'); }catch(e){ return {}; } }
-  function qById(id){ for(var i=0;i<QS.length;i++) if(QS[i].id===id) return QS[i]; return null; }
-  // 봄이의 기억 저장 — 중앙 아카이브 + 자서전(인덱스)에 동시 반영
-  function saveAns(q,text){
-    text=(text||'').trim(); if(!text) return false;
-    var a=arch(); a[q.id]={q:q.t,a:text,ts:Date.now(),cat:'memoir'}; try{ localStorage.setItem('bom_archive',JSON.stringify(a)); }catch(e){}
-    try{ var ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); ma[q.idx]=text; localStorage.setItem('memoir_answers',JSON.stringify(ma)); }catch(e){}
-    return true;
-  }
-  function confirmSaved(){ if(window.BomVoice) BomVoice.say('고마워요! 잘 기억해 둘게요. 자서전에 담아드릴게요.'); }
-  // 챗봇 = 봄이의 창구(인사·진행상황·자서전으로 안내). 실제 답변은 자서전(memoir)에서.
+  // 챗봇 = 봄이의 창구(정해진 인사·진행상황·자서전으로 안내). ★고정 스크립트 — AI 생성 응답 아님. 실제 답변 입력은 자서전(memoir)에서.
   function render(){
     var b=document.getElementById('bcpBody'); if(!b) return;
     var ma={}; try{ ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); }catch(e){}
