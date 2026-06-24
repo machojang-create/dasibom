@@ -397,7 +397,7 @@ body.shake{animation:bShake .35s}
 .cgame-btn:active{transform:scale(.95)}
 .cgame-btn.cdone{background:linear-gradient(135deg,#F1F8E9,#DCEDC8);border-color:#81C784}
 .cgame-btn.cmission{border-color:#A5C87A;background:rgba(255,213,79,.1)}
-.cgame-icon{font-size:22px}
+.cgame-icon{width:36px;height:36px;object-fit:cover;border-radius:10px}
 .cgame-name{font-size:13px;font-weight:700;color:#1F2A1A;line-height:1.4}
 .cgame-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-top:1px}
 .cgame-badge.b-done{background:#C8E6C9;color:#2E7D32}
@@ -664,10 +664,14 @@ const GAME_NAMES = {
   math:'암산 챌린지', pattern:'숫자 패턴'
 };
 
-const GAME_ICON = {
-  card:'🃏', position:'✨', shape:'🔍', matchsame:'🎯',
-  number:'🔢', reverse:'↩️', wordbingo:'💬', wordcombine:'🔤',
-  classify:'⚖️', timing:'⏱', math:'🧮', pattern:'📐'
+// 게임 카드 대표 이미지(아이콘 대신 사진) — [조정 2026-06-24] 뇌건강게임 카드 12종 사진 교체
+const GAME_IMG = {
+  card:'img/gameicon-card.jpg', position:'img/gameicon-position.jpg',
+  shape:'img/gameicon-shape.jpg', matchsame:'img/gameicon-matchsame.jpg',
+  number:'img/gameicon-number.jpg', reverse:'img/gameicon-reverse.jpg',
+  wordbingo:'img/gameicon-wordbingo.jpg', wordcombine:'img/gameicon-wordcombine.jpg',
+  classify:'img/gameicon-classify.jpg', timing:'img/gameicon-timing.jpg',
+  math:'img/gameicon-math.jpg', pattern:'img/gameicon-pattern.jpg'
 };
 
 const CATEGORIES = [
@@ -2297,7 +2301,7 @@ function renderMissionCards(){
     btn.className='mcard'+(isDone?' mdone':'');
     if(!isDone&&!isComingSoon)btn.onclick=function(){startGame(gid);};
     btn.innerHTML=
-      '<div class="mcard-icon" style="background:'+cat.color+'">'+(GAME_ICON[gid]||'🎮')+'</div>'
+      '<div class="mcard-icon" style="background:'+cat.color+'"><img src="'+GAME_IMG[gid]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:14px"></div>'
       +'<div class="mcard-info">'
         +'<div class="mcard-name">'+(GAME_NAMES[gid]||gid)+'</div>'
         +'<div class="mcard-cat">'+cat.icon+' '+cat.name+(isComingSoon?' · 준비중':'')+'</div>'
@@ -2333,7 +2337,7 @@ function renderCategoryList(){
       if(isComingSoon)badgeCls='b-coming';
       inner+='<button class="cgame-btn'+(b&&b.completed?' cdone':'')+(isMission?' cmission':'')+'" '
         +(isComingSoon?'disabled style="opacity:.55;cursor:default"':'onclick="startGame(\''+gid+'\')"')+'>'
-        +'<span class="cgame-icon">'+(GAME_ICON[gid]||'🎮')+'</span>'
+        +'<img class="cgame-icon" src="'+GAME_IMG[gid]+'" alt="">'
         +'<span class="cgame-name">'+(GAME_NAMES[gid]||gid)+(isMission?' ★':'')+'</span>'
         +'<span class="cgame-badge '+badgeCls+'">'+(b&&!isComingSoon?b.score+'%':badgeTxt)+'</span>'
         +'</button>';
