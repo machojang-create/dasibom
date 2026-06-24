@@ -703,7 +703,8 @@
     text-decoration:none;color:var(--ink);border:1px solid var(--line);
   }
   .gp-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(45,58,42,.10)}
-  .gp-cat-icon{font-size:40px;margin-bottom:12px}
+  .gp-cat-icon{width:64px;height:64px;margin-bottom:12px;border-radius:16px;overflow:hidden}
+  .gp-cat-icon img{width:100%;height:100%;object-fit:cover;display:block}
   .gp-cat-badge{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;font-weight:500}
   .gp-name{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;margin-bottom:20px;color:var(--ink)}
   .gp-play{
@@ -2368,18 +2369,18 @@
 <script>
 (function(){
   var ALL_GAMES=[
-    {name:'기억의 짝꿍',   cat:'기억력',  icon:'🧩'},
-    {name:'위치 기억하기',  cat:'기억력',  icon:'🧩'},
-    {name:'다른 그림 찾기', cat:'주의력',  icon:'👁'},
-    {name:'같은 것 찾기',   cat:'주의력',  icon:'👁'},
-    {name:'숫자 순서 터치', cat:'작업기억',icon:'🔢'},
-    {name:'거꾸로 숫자',    cat:'작업기억',icon:'🔢'},
-    {name:'단어 빙고',      cat:'언어력',  icon:'💬'},
-    {name:'글자 조합',      cat:'언어력',  icon:'💬'},
-    {name:'좌우 분류',      cat:'실행력',  icon:'⚡'},
-    {name:'타이밍 맞추기',  cat:'실행력',  icon:'⚡'},
-    {name:'암산 챌린지',    cat:'계산력',  icon:'🧮'},
-    {name:'숫자 패턴',      cat:'계산력',  icon:'🧮'}
+    {name:'기억의 짝꿍',   cat:'기억력',  gid:'card'},
+    {name:'위치 기억하기',  cat:'기억력',  gid:'position'},
+    {name:'다른 그림 찾기', cat:'주의력',  gid:'shape'},
+    {name:'같은 것 찾기',   cat:'주의력',  gid:'matchsame'},
+    {name:'숫자 순서 터치', cat:'작업기억',gid:'number'},
+    {name:'거꾸로 숫자',    cat:'작업기억',gid:'reverse'},
+    {name:'단어 빙고',      cat:'언어력',  gid:'wordbingo'},
+    {name:'글자 조합',      cat:'언어력',  gid:'wordcombine'},
+    {name:'좌우 분류',      cat:'실행력',  gid:'classify'},
+    {name:'타이밍 맞추기',  cat:'실행력',  gid:'timing'},
+    {name:'암산 챌린지',    cat:'계산력',  gid:'math'},
+    {name:'숫자 패턴',      cat:'계산력',  gid:'pattern'}
   ];
   var d=new Date(),start=new Date(2025,0,1);
   var di=Math.floor((d-start)/86400000);
@@ -2388,7 +2389,7 @@
   if(!el)return;
   el.innerHTML=games.map(function(g){
     return '<a class="gp-card" href="/game">'+
-      '<div class="gp-cat-icon">'+g.icon+'</div>'+
+      '<div class="gp-cat-icon"><img src="/img/gameicon-'+g.gid+'.jpg" alt=""></div>'+
       '<div class="gp-cat-badge">'+g.cat+'</div>'+
       '<div class="gp-name">'+g.name+'</div>'+
       '<div class="gp-play">지금 플레이 →</div>'+
