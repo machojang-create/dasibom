@@ -1952,6 +1952,27 @@
 <script src="/fx.js?v=1"></script>
 <script src="/bom_voice.js?v=1"></script>
 <script>
+// ════ 홈 배경음악 — 피아노 3곡 이어서 반복재생 (fx.js 사운드토글·dasibom_sound 키 공유) ════
+(function(){
+  var TRACKS=['/bgm/bgm-bombit-1.mp3','/bgm/bgm-bombit-2.mp3','/bgm/bgm-moonlight-jazz.mp3'];
+  var idx=Math.floor(Math.random()*TRACKS.length);
+  var audio=new Audio(); audio.volume=0.35; audio.preload='auto'; audio.src=TRACKS[idx];
+  function soundOn(){ try{ return localStorage.getItem('dasibom_sound')!=='0'; }catch(e){ return true; } }
+  function tryPlay(){ var p=audio.play(); if(p&&p.catch) p.catch(function(){}); }
+  audio.addEventListener('ended', function(){ idx=(idx+1)%TRACKS.length; audio.src=TRACKS[idx]; tryPlay(); });
+  function sync(){
+    if(soundOn()){ if(audio.paused) tryPlay(); }
+    else if(!audio.paused){ audio.pause(); }
+  }
+  // 브라우저 자동재생 정책상 첫 사용자 동작 후에만 재생 가능 — 클릭/터치/키 입력 시도 + 토글 상태 1초마다 동기화
+  ['click','touchstart','keydown'].forEach(function(ev){ document.addEventListener(ev, sync, {passive:true}); });
+  setInterval(sync, 1000);
+  // 이 페이지에선 🔊 버튼이 효과음+배경음악 둘 다 제어 — 라벨 보정(fx.js가 DOMContentLoaded에서 버튼을 만든 직후 실행되도록 같은 이벤트 사용)
+  function fixLabel(){ var b=document.getElementById('fx-sound-toggle'); if(b){ b.title='소리 켜기/끄기'; b.setAttribute('aria-label','소리 켜기/끄기'); } }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fixLabel); else fixLabel();
+})();
+</script>
+<script>
   // Nav scrolled
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 24), {passive:true});
