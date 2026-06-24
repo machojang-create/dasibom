@@ -1969,7 +1969,20 @@
   setInterval(sync, 1000);
   // 이 페이지에선 🔊 버튼이 효과음+배경음악 둘 다 제어 — 라벨 보정(fx.js가 DOMContentLoaded에서 버튼을 만든 직후 실행되도록 같은 이벤트 사용)
   function fixLabel(){ var b=document.getElementById('fx-sound-toggle'); if(b){ b.title='소리 켜기/끄기'; b.setAttribute('aria-label','소리 켜기/끄기'); } }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', fixLabel); else fixLabel();
+  // 작은 아이콘만으론 음악 켜고끄는 곳인지 찾기 어려워 — 첫 방문 1회만 짧게 안내 후 사라짐(시니어 UX 원칙: 1회·짧게)
+  function showHint(){
+    try{ if(localStorage.getItem('dasibom_bgm_hint')) return; }catch(e){}
+    var b=document.getElementById('fx-sound-toggle'); if(!b) return;
+    var tip=document.createElement('div');
+    tip.className='bgm-hint';
+    tip.textContent='🎵 음악이 흘러요 — 여기서 끄고 켤 수 있어요';
+    document.body.appendChild(tip);
+    function hide(){ if(tip.parentNode) tip.parentNode.removeChild(tip); try{ localStorage.setItem('dasibom_bgm_hint','1'); }catch(e){} }
+    tip.addEventListener('click', hide);
+    setTimeout(hide, 7000);
+  }
+  function onReady(){ fixLabel(); setTimeout(showHint, 1200); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', onReady); else onReady();
 })();
 </script>
 <script>
@@ -2948,6 +2961,8 @@ body.dark .bom-guide-text{color:#c8bba4}
   body.dark .bcp-q{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
   body.dark .bomchat-greet{background:#2a2420;color:#e6d9c5}
   @media(max-width:760px){.bomchat{right:14px;bottom:80px}}
+  .bgm-hint{position:fixed;left:14px;bottom:72px;z-index:8001;max-width:200px;background:#fff;color:#3a2e22;font-size:13px;line-height:1.5;padding:11px 14px;border-radius:16px 16px 16px 4px;box-shadow:0 12px 28px -10px rgba(0,0,0,.35);cursor:pointer;animation:bcGreetIn .35s cubic-bezier(.2,.9,.3,1.2)}
+  body.dark .bgm-hint{background:#2a2420;color:#e6d9c5}
 </style>
 <div class="bomchat" id="bomChat">
   <div class="bomchat-panel" id="bomChatPanel" role="dialog" aria-label="봄이와 대화">
