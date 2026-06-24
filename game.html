@@ -822,11 +822,11 @@ const POSITION_LEVELS = [
   {cols:5, count:8}
 ];
 
-// Card: per-level theme config — [조정 2026-06-24] 난이도 하향: 3~5단계 짝수 줄이고 외우는 시간 늘림
+// Card: per-level theme config — [조정 2026-06-24] 아이콘→사진 교체(10장) + 난이도 하향, 외우는 시간 늘림
 const CARD_LEVELS = [
-  {theme:'과일', icons:['🍎','🍊','🍋','🍇'],                     count:4,  cols:2, preview:3},
-  {theme:'사물', icons:['✂️','🔑','💡','🎀','⏰','🧲'],           count:6,  cols:3, preview:4},
-  {theme:'꽃',   icons:['🌸','🌺','🌹','🌷','🌼','💐'],           count:8,  cols:4, preview:5},
+  {theme:'과일', isPhoto:true, icons:['card-apple.jpg','card-orange.jpg'],                                                              count:4,  cols:2, preview:3},
+  {theme:'사물', isPhoto:true, icons:['card-scissors.jpg','card-key.jpg','card-bulb.jpg'],                                              count:6,  cols:3, preview:4},
+  {theme:'꽃',   isPhoto:true, icons:['card-cherryblossom.jpg','card-hibiscus.jpg','card-rose.jpg','card-tulip.jpg','card-daisy.jpg'],  count:10, cols:5, preview:5},
   {theme:'단어', isText:true, words:['사랑','행복','봄날','기쁨','하늘','바다','나무','강물'], count:10, cols:5, preview:6},
   {theme:'유사단어', isText:true, words:['사람','사랑','나무','나비','하나','하늘','기억','기쁨','봄날','봄비'], count:12, cols:4, preview:6}
 ];
@@ -1056,6 +1056,8 @@ function buildCardGame(){
     c.dataset.val=val;
     var backContent=lv.isText
       ?'<span style="font-size:clamp(12px,3.5vw,17px);font-weight:900;color:#1F2A1A;word-break:keep-all;text-align:center;padding:4px">'+lv.words[val]+'</span>'
+      :lv.isPhoto
+      ?'<img src="img/'+lv.icons[val]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:14px" draggable="false">'
       :lv.icons[val];
     c.innerHTML='<div class="flip-inner"><div class="flip-front">🌿</div><div class="flip-back">'+backContent+'</div></div>';
     c.addEventListener('click',function(){onCardClick(c,val);});
