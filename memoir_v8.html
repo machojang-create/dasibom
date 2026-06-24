@@ -265,9 +265,11 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .bom-bubble{position:relative;flex:1;background:#fff;border:1px solid var(--sepiaP,#e7ddcf);border-radius:18px 18px 18px 4px;padding:14px 16px;box-shadow:0 4px 14px rgba(120,90,60,.08)}
 .bom-bubble .q-txt{margin-bottom:0}
 @keyframes dsbBubblePop{0%{transform:scale(.92) translateY(6px);opacity:.4}60%{transform:scale(1.025)}100%{transform:scale(1) translateY(0);opacity:1}}
-@media (prefers-reduced-motion:reduce){.bom-bubble{animation:none!important}}
+@media (prefers-reduced-motion:reduce){.bom-bubble{animation:none!important}.dsb-char{animation:none!important;opacity:1!important;transform:none!important}}
 .q-txt.dsb-typing::after{content:'';display:inline-block;width:2px;height:1em;background:var(--sepia,#9a8a7a);margin-left:3px;vertical-align:-2px;animation:dsbCaret .7s steps(1) infinite}
 @keyframes dsbCaret{50%{opacity:0}}
+.dsb-char{display:inline-block;opacity:0;transform:translateY(4px) scale(.9);animation:dsbCharIn .3s cubic-bezier(.34,1.56,.64,1) forwards}
+@keyframes dsbCharIn{to{opacity:1;transform:none}}
 /* 시니어 글씨 크기 조절 (보통/크게/아주크게) */
 body.ts-2{--ts:1.18}
 body.ts-3{--ts:1.4}
@@ -1648,10 +1650,15 @@ function dsbTypeBubble(elm, text){
   if(reduce || text.length>140){ elm.textContent=text; elm.classList.remove('dsb-typing'); return; }
   elm.textContent=''; elm.classList.add('dsb-typing');
   var i=0;
-  function step(){ i++; elm.textContent=text.slice(0,i);
-    if(i<text.length){ _bomTypeTimer=setTimeout(step,34); }
-    else { elm.classList.remove('dsb-typing'); _bomTypeTimer=null; } }
-  _bomTypeTimer=setTimeout(step,260); // 말풍선이 먼저 보이고 나서 차분하게 타이핑 시작
+  // 글자 하나씩 살짝 떠오르며 부드럽게 나타남(말랑한 페이드인) — 통째로 슬라이스하던 방식 대신 글자별 span 추가
+  function step(){
+    var ch=text[i]; i++;
+    if(/\s/.test(ch)){ elm.appendChild(document.createTextNode(ch)); }
+    else { var sp=document.createElement('span'); sp.className='dsb-char'; sp.textContent=ch; elm.appendChild(sp); }
+    if(i<text.length){ _bomTypeTimer=setTimeout(step,68); }
+    else { elm.classList.remove('dsb-typing'); _bomTypeTimer=null; }
+  }
+  _bomTypeTimer=setTimeout(step,260); // 말풍선이 먼저 보이고 나서 차분하게 타이핑 시작(기존 2배로 느리게: 34→68ms)
   elm.onclick=function(){ if(_bomTypeTimer){ clearTimeout(_bomTypeTimer); _bomTypeTimer=null; elm.textContent=text; elm.classList.remove('dsb-typing'); } };
 }
 function renderQ(i){
