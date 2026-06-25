@@ -698,15 +698,15 @@
   @media(max-width:760px){.gp-cards{grid-template-columns:1fr}}
   .gp-card{
     display:flex;flex-direction:column;align-items:center;
-    background:#fff;border-radius:20px;padding:32px 20px 24px;
+    background:#fff;border-radius:20px;padding:0 0 24px;overflow:hidden;
     text-align:center;transition:transform .2s,box-shadow .2s;
     text-decoration:none;color:var(--ink);border:1px solid var(--line);
   }
   .gp-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(45,58,42,.10)}
-  .gp-cat-icon{width:64px;height:64px;margin-bottom:12px;border-radius:16px;overflow:hidden}
-  .gp-cat-icon img{width:100%;height:100%;object-fit:cover;display:block}
-  .gp-cat-badge{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;font-weight:500}
-  .gp-name{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;margin-bottom:20px;color:var(--ink)}
+  .gp-cat-icon{width:100%;height:128px;margin-bottom:16px;flex-shrink:0}
+  .gp-cat-icon img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+  .gp-cat-badge{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;font-weight:500;padding:0 20px}
+  .gp-name{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;margin-bottom:20px;color:var(--ink);padding:0 20px}
   .gp-play{
     display:inline-block;padding:11px 24px;border-radius:999px;
     background:var(--sage);color:#fff;font-size:13.5px;font-weight:600;
@@ -717,8 +717,7 @@
   .gp-card{transition:transform .26s cubic-bezier(.2,.7,.2,1),box-shadow .26s}
   .gp-card:hover{transform:translateY(-7px) scale(1.025)}
   body:not(.dark) .gp-card:hover{box-shadow:0 26px 50px -26px rgba(120,100,140,.5)}
-  .gp-cat-icon{transition:transform .3s cubic-bezier(.2,.7,.2,1)}
-  .gp-card:hover .gp-cat-icon{transform:scale(1.12) translateY(-2px)}
+  .gp-card:hover .gp-cat-icon img{transform:scale(1.1)}
   .ns-mini-pair{transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
   .ns-mini-pair:hover{transform:translateY(-5px)}
   body:not(.dark) .ns-mini-pair:hover{box-shadow:0 22px 44px -26px rgba(150,120,80,.42)}
@@ -727,7 +726,7 @@
   .wisdom-card-news{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
   .wisdom-card-news:hover{transform:translateY(-4px)}
   @media (prefers-reduced-motion:reduce){
-    .gp-card:hover,.ns-mini-pair:hover,.wisdom-card-news:hover,.gp-card:hover .gp-cat-icon,.ns-mini-pair:hover .ns-mini-img img.loaded{transform:none}
+    .gp-card:hover,.ns-mini-pair:hover,.wisdom-card-news:hover,.gp-card:hover .gp-cat-icon img,.ns-mini-pair:hover .ns-mini-img img.loaded{transform:none}
   }
 
   /* ── 서비스 카드 간격 ── */
