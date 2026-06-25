@@ -2962,7 +2962,13 @@ body.dark .bom-guide-text{color:#c8bba4}
   body.dark .bcp-msg{background:#332b22;color:#e6d9c5}
   body.dark .bcp-q{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
   body.dark .bomchat-greet{background:#2a2420;color:#e6d9c5}
-  @media(max-width:760px){.bomchat{right:14px;bottom:80px}}
+  @media(max-width:760px){
+    .bomchat{right:14px;bottom:80px}
+    /* 모바일: 글씨확대(zoom)에서 width:100%가 확대 전 기준으로 계산되는 문제가 있어 — top/right/bottom/left 4면 고정만으로 크기가 저절로 정해지게(width/height는 auto로 비워둠) */
+    .bomchat-panel.open{position:fixed;top:0;right:0;bottom:0;left:0;width:auto;height:auto;max-width:none;border-radius:0;display:flex;flex-direction:column;zoom:1}
+    .bcp-body{max-height:none;flex:1}
+    .bcp-x{width:46px;height:46px;font-size:22px;background:rgba(0,0,0,.08)}
+  }
   .bgm-hint{position:fixed;left:14px;bottom:72px;z-index:8001;max-width:200px;background:#fff;color:#3a2e22;font-size:13px;line-height:1.5;padding:11px 14px;border-radius:16px 16px 16px 4px;box-shadow:0 12px 28px -10px rgba(0,0,0,.35);cursor:pointer;animation:bcGreetIn .35s cubic-bezier(.2,.9,.3,1.2)}
   body.dark .bgm-hint{background:#2a2420;color:#e6d9c5}
 </style>
