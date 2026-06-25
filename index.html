@@ -3016,8 +3016,14 @@ body.dark .bom-guide-text{color:#c8bba4}
     var greet = answered>0
       ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지금까지 <b>'+answered+'가지</b> 이야기를 들려주셨어요. 오늘도 이어가볼까요?'
       : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>매일 3가지만 답하면, 5일이면 <b>나만의 자서전</b>이 완성돼요. 같이 시작해요!';
-    var h='<div class="bcp-msg">'+greet+'</div><div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (예시)</div>';
-    QS.forEach(function(q){ h+='<div class="bcp-qprev">'+esc(q.t)+'</div>'; });
+    var h='<div class="bcp-msg">'+greet+'</div>';
+    // 예시질문 안내는 최초 1회만 — 매번 뜨면 피로감+"기억 못 하는 도우미" 느낌(2026-06-16 기획서)
+    var introSeen=false; try{ introSeen=localStorage.getItem('dasibom_chatbot_intro_seen')==='1'; }catch(e){}
+    if(!introSeen){
+      h+='<div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (예시)</div>';
+      QS.forEach(function(q){ h+='<div class="bcp-qprev">'+esc(q.t)+'</div>'; });
+      try{ localStorage.setItem('dasibom_chatbot_intro_seen','1'); }catch(e){}
+    }
     h+='<a class="bcp-cta" href="/memoir">📖 자서전에서 이야기 들려주기 ✦</a>';
     b.innerHTML=h;
   }
