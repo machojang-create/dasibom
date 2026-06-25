@@ -696,17 +696,20 @@
   .gp-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:14px}
   .gp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
   @media(max-width:760px){.gp-cards{grid-template-columns:1fr}}
+  /* 사진이 카드 전체를 채우고, 텍스트는 하단에 그라디언트 위 캡션으로 올라가는 구조(포스터형) */
   .gp-card{
-    display:flex;flex-direction:column;align-items:center;
-    background:#fff;border-radius:20px;padding:0 0 24px;overflow:hidden;
-    text-align:center;transition:transform .2s,box-shadow .2s;
-    text-decoration:none;color:var(--ink);border:1px solid var(--line);
+    position:relative;display:block;min-height:240px;
+    border-radius:20px;overflow:hidden;
+    text-decoration:none;border:1px solid var(--line);
   }
-  .gp-card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(45,58,42,.10)}
-  .gp-cat-icon{width:100%;height:128px;margin-bottom:16px;flex-shrink:0}
-  .gp-cat-icon img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
-  .gp-cat-badge{font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-bottom:8px;font-weight:500;padding:0 20px}
-  .gp-name{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;margin-bottom:20px;color:var(--ink);padding:0 20px}
+  .gp-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+  .gp-card::after{
+    content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(20,15,10,0) 26%,rgba(20,15,10,.52) 62%,rgba(14,10,6,.88) 100%);
+  }
+  .gp-card-text{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 20px 22px;text-align:center}
+  .gp-cat-badge{font-size:11.5px;letter-spacing:.06em;color:rgba(255,255,255,.85);margin-bottom:6px;font-weight:600}
+  .gp-name{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;margin-bottom:16px;color:#fff}
   .gp-play{
     display:inline-block;padding:11px 24px;border-radius:999px;
     background:var(--sage);color:#fff;font-size:13.5px;font-weight:600;
@@ -717,7 +720,7 @@
   .gp-card{transition:transform .26s cubic-bezier(.2,.7,.2,1),box-shadow .26s}
   .gp-card:hover{transform:translateY(-7px) scale(1.025)}
   body:not(.dark) .gp-card:hover{box-shadow:0 26px 50px -26px rgba(120,100,140,.5)}
-  .gp-card:hover .gp-cat-icon img{transform:scale(1.1)}
+  .gp-card:hover .gp-photo{transform:scale(1.08)}
   .ns-mini-pair{transition:transform .3s cubic-bezier(.2,.7,.2,1),box-shadow .3s}
   .ns-mini-pair:hover{transform:translateY(-5px)}
   body:not(.dark) .ns-mini-pair:hover{box-shadow:0 22px 44px -26px rgba(150,120,80,.42)}
@@ -726,7 +729,7 @@
   .wisdom-card-news{transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
   .wisdom-card-news:hover{transform:translateY(-4px)}
   @media (prefers-reduced-motion:reduce){
-    .gp-card:hover,.ns-mini-pair:hover,.wisdom-card-news:hover,.gp-card:hover .gp-cat-icon img,.ns-mini-pair:hover .ns-mini-img img.loaded{transform:none}
+    .gp-card:hover,.ns-mini-pair:hover,.wisdom-card-news:hover,.gp-card:hover .gp-photo,.ns-mini-pair:hover .ns-mini-img img.loaded{transform:none}
   }
 
   /* ── 서비스 카드 간격 ── */
@@ -2388,10 +2391,12 @@
   if(!el)return;
   el.innerHTML=games.map(function(g){
     return '<a class="gp-card" href="/game">'+
-      '<div class="gp-cat-icon"><img src="/img/gameicon-'+g.gid+'.jpg" alt=""></div>'+
-      '<div class="gp-cat-badge">'+g.cat+'</div>'+
-      '<div class="gp-name">'+g.name+'</div>'+
-      '<div class="gp-play">지금 플레이 →</div>'+
+      '<img class="gp-photo" src="/img/gameicon-'+g.gid+'.jpg" alt="">'+
+      '<div class="gp-card-text">'+
+        '<div class="gp-cat-badge">'+g.cat+'</div>'+
+        '<div class="gp-name">'+g.name+'</div>'+
+        '<div class="gp-play">지금 플레이 →</div>'+
+      '</div>'+
     '</a>';
   }).join('');
 })();
