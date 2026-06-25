@@ -279,7 +279,8 @@
   /* Contents */
   .contents{background:var(--cream);}
   body:not(.dark) .contents{background:linear-gradient(180deg,#FBF7F0 0%,#F6F0FA 100%);}
-  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  @media(max-width:1080px){.cards{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:760px){.cards{grid-template-columns:1fr}}
   .card{
     position:relative;background:var(--paper);
@@ -1218,10 +1219,10 @@
       제가 옆에서 차근차근 도와드릴게요!
     </div>
     <div class="dob-guide-list">
-      <div class="dob-guide-item"><span class="dgi-ico">✍️</span><div><b>나의 자서전</b><br><small>봄이와 함께 내 인생 이야기를 책으로 남겨요</small></div></div>
-      <div class="dob-guide-item"><span class="dgi-ico">🖼️</span><div><b>그때그시절</b><br><small>매일 옛 추억을 하나씩 만나고 퀴즈도 풀어요</small></div></div>
+      <div class="dob-guide-item"><span class="dgi-ico">✍️</span><div><b>나의 추억, 너의 기억</b><br><small>봄이와 함께 내 인생 이야기를 책으로 남겨요</small></div></div>
+      <div class="dob-guide-item"><span class="dgi-ico">🖼️</span><div><b>그때 그 시절</b><br><small>매일 옛 추억을 하나씩 만나고 퀴즈도 풀어요</small></div></div>
       <div class="dob-guide-item"><span class="dgi-ico">💊</span><div><b>건강돋보기</b><br><small>약·건강 정보를 큰 글씨로 쉽게 살펴봐요</small></div></div>
-      <div class="dob-guide-item"><span class="dgi-ico">🧠</span><div><b>두뇌 게임</b><br><small>재미있는 놀이로 머리도 깨워요</small></div></div>
+      <div class="dob-guide-item"><span class="dgi-ico">🎮</span><div><b>오늘의 두뇌 운동</b><br><small>재미있는 놀이로 머리도 깨워요</small></div></div>
     </div>
     <button class="dob-btn" id="dob-finish">시작하기</button>
   </div>
@@ -1549,7 +1550,7 @@
   <div class="wrap">
     <div class="ns-prev-head">
       <div class="ns-title-wrap">
-        <div class="nt-badge">📽️&nbsp; 다시보는 그때 그 시절</div>
+        <div class="nt-badge">📽️&nbsp; 그때 그 시절</div>
         <div class="nt-sub">오늘의 추억 — 매일 하나씩 새로운 이야기</div>
       </div>
       <div class="ns-ctrl-wrap">
@@ -1597,9 +1598,9 @@
 <span id="svc-cards"></span>
   <div class="wrap">
     <div class="sec-head">
-      <h2 class="sec-title" data-reveal="">네 가지 <em>콘텐츠</em>로<br>채워가는 하루.</h2>
+      <h2 class="sec-title" data-reveal="">세 가지 <em>콘텐츠</em>로<br>채워가는 하루.</h2>
       <p class="sec-sub" data-reveal="">
-        기억을 기록하고, 몸을 돌보고, 추억을 나누고, 마음을 돌보는 — 다시봄의 네 가지 방식.
+        기억을 기록하고, 몸을 돌보고, 즐겁게 노는 — 다시봄의 세 가지 방식.
       </p>
     </div>
     <div class="cards">
@@ -1636,6 +1637,7 @@
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
 
+      <!-- 그때그시절 카드 제거(2026-06-26) — 메인에 "오늘의 추억" 직접 노출되므로 카드 불필요. 페이지는 /nostalgia에 그대로 있음.
       <a class="card card-3" href="/nostalgia" data-reveal="">
         <div>
           <div class="top">
@@ -1651,19 +1653,21 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
+      -->
 
-      <a class="card card-4" href="/game" data-reveal="">
+      <!-- 게임 카드는 추억의 오락실로 교체(2026-06-26) — 뇌건강게임은 메인 "오늘의 두뇌 운동"이 전부이므로 카드 불필요해짐 -->
+      <a class="card card-4" href="/arcade" data-reveal="">
         <div>
           <div class="top">
-            <span class="idx">— 04 / PLAY</span>
-            <span class="tag">치매 예방 두뇌 게임</span>
+            <span class="idx">— 03 / PLAY</span>
+            <span class="tag">무제한 캐주얼 게임</span>
           </div>
-          <h3 class="title">오늘의<br>뇌 건강</h3>
-          <p class="desc">카드 뒤집기, 모양 찾기, 숫자 터치 — 5단계 게임으로 매일 뇌를 깨워보세요.</p>
+          <h3 class="title">추억의<br>오락실</h3>
+          <p class="desc">블라스트, 3매치, 버블슈터 — 마음 편히 즐기는 그 시절 오락실 게임들.</p>
         </div>
         <div class="visual">
-          <img src="/img/card4.jpg" alt="퍼즐과 두뇌 게임" loading="lazy">
-          <div class="ph">게임 시작하기</div>
+          <img src="/img/card4.jpg" alt="추억의 오락실, 캐주얼 게임" loading="lazy">
+          <div class="ph">오락실 들어가기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
@@ -1725,9 +1729,10 @@
         <h5>콘텐츠</h5>
         <ul>
           <li><a href="/memoir">나의 추억, 너의 기억</a></li>
-          <li><a href="/health">건강 돋보기</a></li>
-          <li><a href="/nostalgia">다시보는 그때 그 시절</a></li>
-          <li><a href="/game">오늘의 뇌 건강</a></li>
+          <li><a href="/health">건강돋보기</a></li>
+          <li><a href="/nostalgia">그때 그 시절</a></li>
+          <li><a href="/game">오늘의 두뇌 운동</a></li>
+          <li><a href="/arcade">추억의 오락실</a></li>
         </ul>
       </div>
       <div>
@@ -2765,14 +2770,15 @@ body.dark .bom-guide-text{color:#c8bba4}
 <script>
 (function(){
   var GUIDE = {
-    memoir:    { face:'bom_smile.png',  title:'✍️ 나의 자서전',  text:'봄이와 함께 어르신의 인생 이야기를 책으로 만들어요. 질문에 한 줄씩만 답하셔도 봄이가 멋진 글로 풀어드려요!' },
-    health:    { face:'bom_think.png',  title:'💊 건강 돋보기',  text:'약 봉투나 영양제를 큰 글씨로 쉽게 살펴봐요. 무엇에 좋은지, 같이 드셔도 되는지 알려드릴게요.' },
+    memoir:    { face:'bom_smile.png',  title:'✍️ 나의 추억, 너의 기억', text:'봄이와 함께 어르신의 인생 이야기를 책으로 만들어요. 질문에 한 줄씩만 답하셔도 봄이가 멋진 글로 풀어드려요!' },
+    health:    { face:'bom_think.png',  title:'💊 건강돋보기',   text:'약 봉투나 영양제를 큰 글씨로 쉽게 살펴봐요. 무엇에 좋은지, 같이 드셔도 되는지 알려드릴게요.' },
     nostalgia: { face:'bom_grin.png',   title:'🖼️ 그때 그 시절', text:'매일 옛 추억을 하나씩 만나고, 추억 퀴즈도 풀어요. 도장도 모으고 추억첩도 채워보세요!' },
-    game:      { face:'bom_cheer.png',  title:'🧠 두뇌 게임',    text:'간단한 놀이로 즐겁게 머리를 깨워요. 부담 없이 하루 한 판이면 충분해요!' },
+    game:      { face:'bom_cheer.png',  title:'🎮 오늘의 두뇌 운동', text:'간단한 놀이로 즐겁게 머리를 깨워요. 부담 없이 하루 세 판이면 충분해요!' },
+    arcade:    { face:'bom_cheer.png',  title:'🕹️ 추억의 오락실', text:'블라스트·3매치·버블슈터 — 제한 없이 마음 편히 즐기는 시간이에요!' },
     library:   { face:'bom_smile.png',  title:'📚 공개 서재',    text:'다른 분들이 공개한 자서전을 함께 읽어보는 공간이에요. 따뜻한 인생 이야기가 가득해요.' },
     letter:    { face:'bom_calm.png',   title:'💌 마음의 유언',  text:'사랑하는 사람에게 먼 훗날 전할 편지를 미리 적어둘 수 있어요. 천천히 마음을 담아보세요.' }
   };
-  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/library':'library', '/letter':'letter' };
+  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter' };
   var ov=document.getElementById('bomGuide');
   var faceEl=document.getElementById('bomGuideFace'), titleEl=document.getElementById('bomGuideTitle'),
       textEl=document.getElementById('bomGuideText'), okBtn=document.getElementById('bomGuideOk');

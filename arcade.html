@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>추억의 오락실 — 다시봄</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Square:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;min-height:100vh;overflow-x:hidden}
+body{font-family:'Nanum Square','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#FFF9F0;color:#424242}
+
+/* GNB */
+.gnb{position:sticky;top:0;z-index:100;background:rgba(255,249,240,.96);backdrop-filter:blur(12px);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(121,85,72,.08)}
+.gnb-back{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:6px;color:#C8784A;font-size:15px;font-weight:700;padding:8px 12px;border-radius:12px;font-family:inherit}
+.gnb-back:active{background:rgba(121,85,72,.1)}
+.gnb-title{font-family:'Nanum Myeongjo',serif;font-size:18px;font-weight:800;color:#1F2A1A}
+.gnb-spacer{width:70px}
+
+/* HERO */
+.arcade-hero{background:linear-gradient(160deg,#FFB37A 0%,#E8824A 60%,#C8633A 100%);padding:44px 24px 36px;text-align:center;color:#fff;border-radius:0 0 40px 40px;position:relative;overflow:hidden}
+.arcade-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,.12)}
+.arcade-hero::after{content:'';position:absolute;bottom:-30px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hero-icon{font-size:52px;display:block;margin-bottom:10px;position:relative;z-index:1}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.32);border-radius:50px;padding:5px 16px;font-size:11px;font-weight:800;letter-spacing:2.5px;margin-bottom:14px;position:relative;z-index:1}
+.hero-title{font-family:'Nanum Myeongjo',serif;font-size:clamp(24px,6vw,30px);font-weight:800;line-height:1.4;margin-bottom:10px;position:relative;z-index:1}
+.hero-sub{font-size:clamp(13px,3.5vw,15px);opacity:.9;line-height:1.7;position:relative;z-index:1;max-width:38ch;margin:0 auto}
+
+/* GAME LIST */
+.game-section{padding:28px 20px 60px;max-width:520px;margin:0 auto}
+.agame-btn{display:block;width:100%;background:linear-gradient(160deg,#FFC96B,#E8924A);border:2px solid #D4732E;border-radius:24px;padding:24px 20px;margin-bottom:18px;text-align:center;cursor:pointer;font-family:inherit;box-shadow:0 8px 0 rgba(180,90,40,.35),0 12px 22px -8px rgba(150,80,40,.4);transition:transform .15s,box-shadow .15s}
+.agame-btn:active{transform:translateY(4px);box-shadow:0 4px 0 rgba(180,90,40,.35),0 6px 14px -6px rgba(150,80,40,.4)}
+.agame-btn:disabled{cursor:default;opacity:.92}
+.agame-title{font-family:'Nanum Myeongjo',serif;font-size:24px;font-weight:800;color:#3A2410;margin-bottom:6px}
+.agame-desc{font-size:14px;font-weight:700;color:#5A3D1E;opacity:.85;margin-bottom:10px}
+.agame-badge{display:inline-block;background:rgba(255,255,255,.55);border-radius:50px;padding:5px 14px;font-size:12px;font-weight:800;color:#8A5A2A}
+
+.coming-note{text-align:center;font-size:13px;color:#A0876C;line-height:1.8;margin-top:8px}
+</style>
+<script src="a11y.js?v=3" defer></script>
+<script src="attend.js?v=2" defer></script>
+</head>
+<body>
+
+<header class="gnb">
+  <button class="gnb-back" onclick="location.href='/?home=1'">← 돌아가기</button>
+  <div class="gnb-title">추억의 오락실</div>
+  <div class="gnb-spacer"></div>
+</header>
+
+<section class="arcade-hero">
+  <span class="hero-icon">🕹️</span>
+  <div class="hero-badge">디지털 놀이터</div>
+  <div class="hero-title">마음 편히<br>즐기는 시간</div>
+  <p class="hero-sub">제한 없이, 부담 없이 — 그 시절 오락실처럼 마음껏 즐겨보세요.</p>
+</section>
+
+<section class="game-section">
+  <button class="agame-btn" disabled>
+    <div class="agame-title">블라스트</div>
+    <div class="agame-desc">같은 색 블럭 누르기</div>
+    <div class="agame-badge">준비 중 🔧</div>
+  </button>
+  <button class="agame-btn" disabled>
+    <div class="agame-title">3매치</div>
+    <div class="agame-desc">자리 바꿔서 3개 맞추기</div>
+    <div class="agame-badge">준비 중 🔧</div>
+  </button>
+  <button class="agame-btn" disabled>
+    <div class="agame-title">버블슈터</div>
+    <div class="agame-desc">방울 쏘아올려 맞추기</div>
+    <div class="agame-badge">준비 중 🔧</div>
+  </button>
+  <p class="coming-note">곧 새로운 게임들로 채워드릴게요 🌸</p>
+</section>
+
+</body>
+</html>
