@@ -1238,6 +1238,15 @@
    ════════════════════════════════════════════════ */
 (function(){
   var introEl=document.getElementById('dasibom-intro');
+  // 홈을 떠날 때(카드 클릭 등) 스크롤 위치 저장 — 돌아왔을 때 그 자리로 복원
+  // (unload 계열 이벤트가 누락될 수 있어, 스크롤 중 주기적으로도 저장해 항상 최신 위치 보장)
+  var _scrollSaveT=null;
+  function _saveHomeScroll(){ try{ sessionStorage.setItem('dasibom_home_scroll', String(window.scrollY)); }catch(e){} }
+  window.addEventListener('scroll', function(){
+    if(_scrollSaveT) return;
+    _scrollSaveT=setTimeout(function(){ _scrollSaveT=null; _saveHomeScroll(); }, 200);
+  }, {passive:true});
+  window.addEventListener('pagehide', _saveHomeScroll);
   // 재방문자거나 인트로 요소 없으면 즉시 제거하고 끝
   if(!introEl){ return; }
   // 사이트 내부에서 돌아온 경우(돌아가기 ?home=1 또는 같은 도메인 referrer) — 인트로 없이 바로 메인
@@ -1253,6 +1262,14 @@
     try{ localStorage.setItem('dasibom_visited','1'); }catch(e){}
     document.documentElement.style.overflow=''; document.body.style.overflow='';
     if(location.search.indexOf('home=1')>=0){ try{ history.replaceState(null,'',location.pathname); }catch(e){} }
+    // 떠나기 전 스크롤 위치로 복원(이미지 로딩 끝나 전체 높이 확정된 뒤)
+    try{
+      var _sy=parseInt(sessionStorage.getItem('dasibom_home_scroll')||'0',10);
+      if(_sy>0){
+        var _restoreScroll=function(){ window.scrollTo(0,_sy); };
+        if(document.readyState==='complete'){ _restoreScroll(); } else { window.addEventListener('load',_restoreScroll,{once:true}); }
+      }
+    }catch(e){}
     return;
   }
   var isNewVisitor = !localStorage.getItem('dasibom_visited');

@@ -2125,7 +2125,10 @@ document.addEventListener('DOMContentLoaded',function(){
   var hasSaved=Object.keys(APP.answers).length>0;
   if(!hasSaved)el('btnContinue').style.display='none';
 
-  showPage(0);
+  // 감성 인트로(3페이지 풀 연출)는 최초 1회만 — 매일 들어갈 때마다 보면 감흥이 떨어짐. 재방문은 곧장 마지막 페이지(시작 버튼)로.
+  var introSeen=false; try{ introSeen=localStorage.getItem('memoir_intro_seen')==='1'; }catch(e){}
+  if(introSeen){ showPage(2); }
+  else{ try{ localStorage.setItem('memoir_intro_seen','1'); }catch(e){} showPage(0); }
   initIntroTouch();
 
   // 다음 버튼
