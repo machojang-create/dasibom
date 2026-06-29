@@ -765,6 +765,45 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   </div>
 </div>
 
+<!-- ════ 설문 모달 (서프라이즈 후 1회) ════ -->
+<div class="modal-bg" id="surveyBg">
+  <div class="modal-box" style="padding-bottom:40px">
+    <div class="modal-t" style="font-size:18px;margin-bottom:6px">봄이가 여쭤볼게요 🌸</div>
+    <div class="modal-s" style="margin-bottom:22px">자서전을 받아보셨나요? 딱 세 가지만요 😊</div>
+    <div id="sq1" class="sq-group">
+      <div class="sq-q">더 많은 이야기를 남기고 싶으세요?</div>
+      <div class="sq-opts">
+        <button class="sq-btn" data-q="1" data-v="yes">네, 더 쓰고 싶어요</button>
+        <button class="sq-btn" data-q="1" data-v="no">지금은 괜찮아요</button>
+      </div>
+    </div>
+    <div id="sq2" class="sq-group" style="display:none">
+      <div class="sq-q">PDF나 인쇄책으로도 받고 싶으세요?</div>
+      <div class="sq-opts">
+        <button class="sq-btn" data-q="2" data-v="print">네, 손에 들고 싶어요</button>
+        <button class="sq-btn" data-q="2" data-v="digital">앱에서 보는 것으로 충분해요</button>
+      </div>
+    </div>
+    <div id="sq3" class="sq-group" style="display:none">
+      <div class="sq-q">얼마 정도면 적당할 것 같으세요?</div>
+      <div class="sq-opts">
+        <button class="sq-btn" data-q="3" data-v="40k">4만원대</button>
+        <button class="sq-btn" data-q="3" data-v="80k">8만원대</button>
+        <button class="sq-btn" data-q="3" data-v="120k">12만원대</button>
+        <button class="sq-btn" data-q="3" data-v="idk">잘 모르겠어요</button>
+      </div>
+    </div>
+    <button class="btn btn-ghost" id="btnSurveySkip" style="margin-top:18px;width:100%">다음에 할게요</button>
+  </div>
+</div>
+<style>
+.sq-group{margin-bottom:16px}
+.sq-q{font-size:15px;font-weight:700;color:var(--ink);margin-bottom:10px;line-height:1.5}
+.sq-opts{display:flex;flex-direction:column;gap:8px}
+.sq-btn{width:100%;padding:13px 16px;border:1.5px solid var(--border,#e8e0d4);border-radius:10px;background:#fff;color:var(--ink);font-size:14.5px;text-align:left;cursor:pointer;transition:background .15s,border-color .15s}
+.sq-btn.on{background:var(--orange,#c8784a);border-color:var(--orange,#c8784a);color:#fff;font-weight:700}
+</style>
+
 <!-- ════ 결제 모달 ════ -->
 <div class="modal-bg" id="modalBg">
   <div class="modal-box">
@@ -2100,6 +2139,49 @@ function renderProds(){
 }
 function openModal(){var p=PRODUCTS.find(function(p){return p.id===APP.selProd;});el('modalT').textContent=p.name+' 만들기 — '+p.price;el('modalBg').classList.add('open');}
 function closeModal(){el('modalBg').classList.remove('open');}
+
+// ── 설문 모달 (서프라이즈 자서전 받은 직후 1회) ──
+var _surveyAns = {};
+function _shouldShowSurvey(){
+  var s = getSurprise()||{};
+  return s.delivered && !localStorage.getItem('memoir_survey_done');
+}
+function showSurveyModal(){
+  _surveyAns = {};
+  ['sq1','sq2','sq3'].forEach(function(id,i){ el(id).style.display = i===0?'':'none'; });
+  el('surveyBg').querySelectorAll('.sq-btn').forEach(function(b){ b.classList.remove('on'); });
+  el('surveyBg').classList.add('open');
+}
+function closeSurveyModal(){
+  el('surveyBg').classList.remove('open');
+  localStorage.setItem('memoir_survey_done','1');
+  renderDash(); go('s-dash');
+}
+function _saveSurvey(){
+  if(!_db) return;
+  var uid = _auth && _auth.currentUser && _auth.currentUser.uid;
+  if(!uid) return;
+  _db.collection('survey').doc(uid).set(Object.assign({uid:uid,ts:new Date().toISOString()},_surveyAns),{merge:true}).catch(function(){});
+}
+(function _initSurvey(){
+  document.addEventListener('DOMContentLoaded',function(){
+    el('surveyBg').addEventListener('click',function(e){ if(e.target===this) closeSurveyModal(); });
+    el('btnSurveySkip').addEventListener('click', closeSurveyModal);
+    el('surveyBg').querySelectorAll('.sq-btn').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var q=this.dataset.q, v=this.dataset.v;
+        el('surveyBg').querySelectorAll('.sq-btn[data-q="'+q+'"]').forEach(function(b){ b.classList.remove('on'); });
+        this.classList.add('on');
+        _surveyAns['q'+q] = v;
+        setTimeout(function(){
+          if(q==='1'){ el('sq1').style.display='none'; el('sq2').style.display=''; }
+          else if(q==='2'){ el('sq2').style.display='none'; el('sq3').style.display=''; }
+          else if(q==='3'){ _saveSurvey(); closeSurveyModal(); popToast('소중한 의견 감사해요 🌸'); }
+        },260);
+      });
+    });
+  });
+})();
 function completePurchase(){closeModal();popToast('결제 페이지로 이동합니다 (준비 중)');} // ★PortOne 연동 후: 결제 성공 콜백에서 popToast 대신 unlockPaidContinue(APP.selProd) 호출
 // 결제 성공 시 호출 — 기존 무료 15문항 답변은 그대로 보존한 채 유료 질문으로 이어서 진행(처음부터 다시 X)
 function unlockPaidContinue(pkgId){
@@ -2218,7 +2300,9 @@ document.addEventListener('DOMContentLoaded',function(){
     startGen(title);
   });
 
-  el('btnPvBack').addEventListener('click',function(){renderDash();go('s-dash');});
+  el('btnPvBack').addEventListener('click',function(){
+    if(_shouldShowSurvey()){ showSurveyModal(); } else { renderDash(); go('s-dash'); }
+  });
   el('btnBuy').addEventListener('click',openModal);
   el('modalBg').addEventListener('click',function(e){if(e.target===this)closeModal();});
   el('btnPurchase').addEventListener('click',completePurchase);
