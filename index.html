@@ -1257,9 +1257,11 @@
   }
   var isNewVisitor = !localStorage.getItem('dasibom_visited');
   if(!isNewVisitor){
-    // 재방문 — 감성 인트로는 '최초 1회만'. 재방문은 인트로 없이 바로 메인으로.
+    // 재방문 — 신규용 v2 인트로(긴 연출)는 최초 1회만. 재방문마다는 v1 벚꽃(다시봄라이프) 인트로를 짧게 재생.
     introEl.parentNode && introEl.parentNode.removeChild(introEl);
-    document.documentElement.style.overflow=''; document.body.style.overflow='';
+    var __startRet=function(){ if(window.startReturnIntro){ window.startReturnIntro(); } };
+    if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',__startRet); }
+    else { __startRet(); }
     return;
   }
   // 신규 방문자 — 본문 스크롤 잠깐 잠금
