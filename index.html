@@ -2974,8 +2974,11 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcq-txt{flex:1}
   .bcq-go{flex-shrink:0;color:#d4845a;font-weight:800}
   .bcp-cta{display:block;text-align:center;margin-top:8px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-weight:800;font-size:15px;text-decoration:none}
-  .bcp-qprev{border:1.5px solid #F0E3D0;border-radius:12px;padding:10px 13px;margin-bottom:8px;background:#FFFCF7;font-size:13.5px;line-height:1.5;color:#5b4a36}
+  .bcp-qprev{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1.5px solid #F0E3D0;border-radius:12px;padding:10px 13px;margin-bottom:8px;background:#FFFCF7;font-size:13.5px;line-height:1.5;color:#5b4a36;text-decoration:none;cursor:pointer;transition:transform .12s,background .12s}
+  .bcp-qprev:active{transform:scale(.97);background:#FBF1E2}
+  .bcp-qarrow{color:#c8784a;font-weight:800;font-size:16px;flex-shrink:0}
   body.dark .bcp-qprev{background:#221d18;border-color:#3d342a;color:#cdbfa8}
+  body.dark .bcp-qprev:active{background:#2a241d}
   .bcp-q-wrap{border:1.5px solid #F0E3D0;border-radius:14px;padding:12px 13px;margin-bottom:10px;background:#fff}
   .bcp-qhead{display:flex;align-items:center;gap:9px}
   .bcp-qhead .bcq-txt{flex:1;font-size:13.5px;line-height:1.5;font-weight:600;color:#3a2e22}
@@ -3047,8 +3050,8 @@ body.dark .bom-guide-text{color:#c8bba4}
     // 예시질문 안내는 최초 1회만 — 매번 뜨면 피로감+"기억 못 하는 도우미" 느낌(2026-06-16 기획서)
     var introSeen=false; try{ introSeen=localStorage.getItem('dasibom_chatbot_intro_seen')==='1'; }catch(e){}
     if(!introSeen){
-      h+='<div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (예시)</div>';
-      QS.forEach(function(q){ h+='<div class="bcp-qprev">'+esc(q.t)+'</div>'; });
+      h+='<div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (눌러서 바로 답하기)</div>';
+      QS.forEach(function(q){ h+='<a class="bcp-qprev" href="/memoir?continue=1">'+esc(q.t)+'<span class="bcp-qarrow">›</span></a>'; });
       try{ localStorage.setItem('dasibom_chatbot_intro_seen','1'); }catch(e){}
     }
     h+='<a class="bcp-cta" href="/memoir">📖 자서전에서 이야기 들려주기 ✦</a>';
