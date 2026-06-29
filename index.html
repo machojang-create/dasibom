@@ -2375,23 +2375,25 @@
 <!-- 오늘의 게임 3선 -->
 <script>
 (function(){
-  var ALL_GAMES=[
-    {name:'기억의 짝꿍',   cat:'기억력',  gid:'card'},
-    {name:'위치 기억하기',  cat:'기억력',  gid:'position'},
-    {name:'다른 그림 찾기', cat:'주의력',  gid:'shape'},
-    {name:'같은 것 찾기',   cat:'주의력',  gid:'matchsame'},
-    {name:'숫자 순서 터치', cat:'작업기억',gid:'number'},
-    {name:'거꾸로 숫자',    cat:'작업기억',gid:'reverse'},
-    {name:'단어 빙고',      cat:'언어력',  gid:'wordbingo'},
-    {name:'글자 조합',      cat:'언어력',  gid:'wordcombine'},
-    {name:'좌우 분류',      cat:'실행력',  gid:'classify'},
-    {name:'타이밍 맞추기',  cat:'실행력',  gid:'timing'},
-    {name:'암산 챌린지',    cat:'계산력',  gid:'math'},
-    {name:'숫자 패턴',      cat:'계산력',  gid:'pattern'}
-  ];
-  var d=new Date(),start=new Date(2025,0,1);
-  var di=Math.floor((d-start)/86400000);
-  var games=[ALL_GAMES[di%12],ALL_GAMES[(di+4)%12],ALL_GAMES[(di+8)%12]];
+  var GAME_META={
+    card:{name:'기억의 짝꿍',cat:'기억력'},        position:{name:'위치 기억하기',cat:'기억력'},
+    shape:{name:'다른 그림 찾기',cat:'주의력'},      matchsame:{name:'같은 것 찾기',cat:'주의력'},
+    number:{name:'숫자 순서 터치',cat:'작업기억'},   reverse:{name:'거꾸로 숫자',cat:'작업기억'},
+    wordbingo:{name:'단어 빙고',cat:'언어력'},       wordcombine:{name:'글자 조합',cat:'언어력'},
+    classify:{name:'좌우 분류',cat:'실행력'},        timing:{name:'타이밍 맞추기',cat:'실행력'},
+    math:{name:'암산 챌린지',cat:'계산력'},          pattern:{name:'숫자 패턴',cat:'계산력'}
+  };
+  // game.html의 오늘의 미션 선정 알고리즘과 완전히 동일하게(2026-06-26 — 홈 미리보기와 실제 게임페이지가 다른 3개를 보여주던 문제 수정)
+  var CATEGORIES=[{games:['card','position']},{games:['shape','matchsame']},{games:['number','reverse']},{games:['wordbingo','wordcombine']},{games:['classify','timing']},{games:['math','pattern']}];
+  function todayStr(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function getDailyMission(){
+    var seed=parseInt(todayStr().replace(/-/g,''));
+    function sr(s){var x=Math.sin(s+1)*10000;return x-Math.floor(x);}
+    var arr=[0,1,2,3,4];
+    for(var i=4;i>0;i--){var j=Math.floor(sr(seed*(i+7))*(i+1));var t=arr[i];arr[i]=arr[j];arr[j]=t;}
+    return arr.slice(0,3).map(function(ci,i){ var cat=CATEGORIES[ci]; return cat.games[sr(seed*(ci+99)+i)<0.5?0:1]; });
+  }
+  var games=getDailyMission().map(function(gid){ var m=GAME_META[gid]; return {gid:gid,name:m.name,cat:m.cat}; });
   var el=document.getElementById('gp-cards');
   if(!el)return;
   el.innerHTML=games.map(function(g){
