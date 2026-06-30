@@ -3047,7 +3047,7 @@ body.dark .bom-guide-text{color:#c8bba4}
       <button id="bcpSend" class="bcp-chat-send" aria-label="보내기">➤</button>
     </div>
   </div>
-  <div class="bomchat-greet" id="bomGreet" onclick="bomChatToggle(true)"></div>
+  <div class="bomchat-greet" id="bomGreet"></div>
   <button class="bomchat-fab" id="bomFab" onclick="bomChatToggle()" aria-label="봄이와 대화하기">
     <img src="/img/bom_fab.png" alt="봄이">
     <span class="bomchat-dot" id="bomDot"></span>
@@ -3147,7 +3147,6 @@ body.dark .bom-guide-text{color:#c8bba4}
       ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지금까지 <b>'+answered+'가지</b> 이야기를 들려주셨어요. 오늘도 이어가볼까요?'
       : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>매일 3가지만 답하면, 5일이면 <b>나만의 자서전</b>이 완성돼요. 같이 시작해요!';
     var h=bomMsgRow(greet,'bom_smile');
-    h+='<div class="bcp-tip">🌤️ '+esc(randomTip())+'</div>';
     // 실제 진행상태 기준으로 매번 최신 다음 질문을 보여줌(고정 예시 아님)
     var qi=nextQuestions();
     if(qi.list.length){
@@ -3180,11 +3179,49 @@ body.dark .bom-guide-text{color:#c8bba4}
   document.addEventListener('click', function(e){ if(e.target.closest('#bcpVoice')){ voiceOn=!voiceOn; try{localStorage.setItem('dasibom_bomvoice',voiceOn?'1':'0');}catch(_){} paintVoice(); if(voiceOn) play('/voice/bom_greet.mp3'); else { try{audio.pause();}catch(_){} } } });
   paintVoice();
   function homeReady(){ var ids=['dasibom-intro','dasibom-intro-return','dasibom-onboarding']; for(var i=0;i<ids.length;i++){ var el=document.getElementById(ids[i]); if(el && getComputedStyle(el).display!=='none' && el.offsetParent!==null) return false; } return true; }
+
+  // ── 봄이 아이콘에서 1분마다 랜덤으로 먼저 말 걸기(상황별: 안부/콘텐츠 유도/잡담) ──
+  // 챗봇창 안의 메시지와는 별개 — FAB 옆 말풍선(bomGreet)에서만 노출, 표정도 매번 바뀜.
+  var _greetHref=null;
+  function _floatingLines(){
+    var lines=[];
+    TIPS_BY_SEASON[seasonKey()].concat(TIPS_GENERAL).forEach(function(t){ lines.push({text:t, face:'bom_calm'}); });
+    var tagKeys=Object.keys(CONTENT_TAGS);
+    var unseen=tagKeys.filter(function(k){ return !tutSeen(k); });
+    (unseen.length?unseen:tagKeys).forEach(function(k){
+      var c=CONTENT_TAGS[k];
+      lines.push({text:c.emoji+' '+c.label+', 한번 둘러보러 가볼까요? 저 누르면 바로 가요!', face:'bom_sparkle', href:c.href});
+    });
+    ['심심하지 않으세요? 저랑 얘기해요! 🌸','오늘 하루는 어떠셨어요?','저 여기서 기다리고 있었어요! 😊','문득 생각나서 인사하러 왔어요 ٩(◕‿◕)۶','오늘 컨디션은 어떠세요? 무리하지 마시고 천천히요 🌱'].forEach(function(t){ lines.push({text:t, face:'bom_grin'}); });
+    return lines;
+  }
+  function paintFabFace(face){ var img=document.querySelector('#bomFab img'); if(img) img.src='img/'+(face||'bom_fab')+'.png'; }
+  function showFloatingGreet(text,face,href){
+    var g=document.getElementById('bomGreet'), p=document.getElementById('bomChatPanel');
+    if(!g || !p || p.classList.contains('open')) return;
+    g.innerHTML=esc(text); g.style.display='block'; greetShown=true;
+    paintFabFace(face);
+    _greetHref=href||null;
+    setTimeout(function(){ g.style.display='none'; paintFabFace('bom_fab'); }, 9000);
+  }
+  document.getElementById('bomGreet').addEventListener('click', function(){
+    if(_greetHref){ location.href=_greetHref; } else { bomChatToggle(true); }
+  });
   var tries=0;
-  (function waitHome(){ if(greetShown) return;
-    if(homeReady()){ setTimeout(function(){ var g=document.getElementById('bomGreet'); var p=document.getElementById('bomChatPanel'); if(g && p && !p.classList.contains('open')){ g.innerHTML='안녕하세요, <b>'+honTxt+'</b>! 저는 봄이예요 🌸<br>저를 눌러서 이야기 나눠요!'; g.style.display='block'; greetShown=true; setTimeout(function(){ g.style.display='none'; }, 9000); } }, 1200); }
+  (function waitHome(){
+    if(homeReady()){
+      setTimeout(function(){
+        var lines=_floatingLines(), pick=lines[Math.floor(Math.random()*lines.length)];
+        showFloatingGreet(pick.text, pick.face, pick.href);
+      }, 1200);
+    }
     else if(++tries<40){ setTimeout(waitHome, 800); }
   })();
+  setInterval(function(){
+    if(!homeReady()) return;
+    var lines=_floatingLines(), pick=lines[Math.floor(Math.random()*lines.length)];
+    showFloatingGreet(pick.text, pick.face, pick.href);
+  }, 60000);
 
   // ── 봄이 자유 대화(AI) — 위험 주제는 클라에서도 즉시 차단(서버가 최종 권한) ──
   var BOM_RISKY_KEYWORDS=['정치','대통령','선거','국회','여당','야당','경제','금리','환율','인플레이션','종교','교회','성당','절','불교','기독교','천주교','이슬람','외교','북한','전쟁','국방','주식','코인','비트코인','투자','개인정보','주민등록번호','전화번호','주소','계좌번호','비밀번호','결제','환불','구매','카드번호','금융','대출','보험','세금','의학','진단','처방','질병','약','병원','수술','증상','법률','소송','변호사','계약'];
