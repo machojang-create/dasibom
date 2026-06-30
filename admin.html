@@ -494,17 +494,50 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
   <!-- 봇 심기 -->
   <div id="tabBots" class="admin-body" style="display:none">
     <div class="stats-section-title">🤖 봇 댓글 심기</div>
-    <div style="background:#1e2130;border-radius:14px;padding:20px;margin-bottom:18px;line-height:1.7;font-size:14px;color:#aab">
-      <b style="color:#7c9cff">그때그시절</b>과 <b style="color:#7c9cff">오늘의 지혜</b>에 자연스러운 봇 댓글을 심습니다.<br>
-      30명의 시니어 봇 페르소나가 <b>오늘부터 30일치</b> 댓글을 1~2시간 간격으로 작성합니다.<br>
-      오늘 댓글 중 <b>일부는 이미 과거 시간</b>으로 지정되어 즉시 노출됩니다.<br>
-      <span style="color:#f8b84e">⚠ 이미 심어진 날짜는 중복 심어지지 않습니다. 날짜별 1회만 심깁니다.</span>
+
+    <!-- 자동 모드 -->
+    <div style="background:#1a2040;border:1.5px solid #7c9cff44;border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:700;color:#7c9cff;margin-bottom:8px">⚡ 자동 모드 (오늘 하루)</div>
+      <div style="font-size:13px;color:#aab;margin-bottom:14px;line-height:1.7">
+        오늘 하루치만, 봇 수와 상관없이 <b>완전 랜덤</b>하게 댓글을 심습니다.<br>
+        몇 개가 됐든 하루 안에서 랜덤 시간으로 배분됩니다.
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
+        <label style="color:#aab;font-size:13px">하루 최대 댓글 수
+          <input id="botAutoCount" type="number" value="100" min="1" max="500"
+            style="width:80px;margin-left:8px;padding:7px 10px;border-radius:8px;border:1px solid #444;background:#111;color:#fff;font-size:14px">
+        </label>
+      </div>
+      <button onclick="seedBotsAuto()" style="padding:12px 26px;border:none;border-radius:10px;background:#7c9cff;color:#fff;font-size:14px;font-weight:700;cursor:pointer">⚡ 오늘 자동 심기</button>
     </div>
-    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
-      <button onclick="seedBots()" style="padding:13px 28px;border:none;border-radius:10px;background:#7c9cff;color:#fff;font-size:15px;font-weight:700;cursor:pointer">▶ 30일치 봇 심기 시작</button>
-      <button onclick="clearBots()" style="padding:13px 28px;border:none;border-radius:10px;background:#444;color:#fff;font-size:15px;font-weight:700;cursor:pointer">🗑 봇 댓글 전체 삭제</button>
+
+    <!-- 커스텀 모드 -->
+    <div style="background:#1e2130;border:1.5px solid #444;border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:700;color:#e0e0e0;margin-bottom:8px">⚙ 커스텀 모드</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:16px">
+        <label style="color:#aab;font-size:13px;display:flex;flex-direction:column;gap:6px">봇 인원 수 (최대 30)
+          <input id="botCount" type="number" value="30" min="1" max="30"
+            style="padding:9px 12px;border-radius:8px;border:1px solid #444;background:#111;color:#fff;font-size:14px">
+        </label>
+        <label style="color:#aab;font-size:13px;display:flex;flex-direction:column;gap:6px">댓글 간격 (분, 최소 30)
+          <input id="botInterval" type="number" value="90" min="30" max="480"
+            style="padding:9px 12px;border-radius:8px;border:1px solid #444;background:#111;color:#fff;font-size:14px">
+        </label>
+        <label style="color:#aab;font-size:13px;display:flex;flex-direction:column;gap:6px">기간 (일, 최대 60)
+          <input id="botDays" type="number" value="30" min="1" max="60"
+            style="padding:9px 12px;border-radius:8px;border:1px solid #444;background:#111;color:#fff;font-size:14px">
+        </label>
+      </div>
+      <div style="font-size:12px;color:#888;margin-bottom:14px">
+        예) 봇 30명 / 90분 간격 / 30일 → 하루 약 <span id="botPreview">9~10</span>개 댓글
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button onclick="seedBots()" style="padding:12px 26px;border:none;border-radius:10px;background:#4caf50;color:#fff;font-size:14px;font-weight:700;cursor:pointer">▶ 커스텀 심기 시작</button>
+        <button onclick="clearBots()" style="padding:12px 26px;border:none;border-radius:10px;background:#555;color:#fff;font-size:14px;font-weight:700;cursor:pointer">🗑 봇 댓글 전체 삭제</button>
+      </div>
     </div>
-    <div id="botLog" style="background:#111;border-radius:10px;padding:16px;font-size:13px;color:#8f8;font-family:monospace;min-height:120px;max-height:360px;overflow-y:auto;white-space:pre-wrap">준비 완료. 버튼을 눌러 시작하세요.</div>
+
+    <div id="botLog" style="background:#111;border-radius:10px;padding:16px;font-size:13px;color:#8f8;font-family:monospace;min-height:120px;max-height:360px;overflow-y:auto;white-space:pre-wrap">준비 완료.</div>
   </div>
 
   <!-- 편집 모달 -->
@@ -1166,46 +1199,111 @@ var WS_CMTS = [
 
 function _rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 function _botLog(msg){ var el=document.getElementById('botLog'); el.textContent+='\n'+msg; el.scrollTop=el.scrollHeight; }
+function _botLogClear(){ document.getElementById('botLog').textContent=''; }
 function _nsScope(dayMs){
   var start=new Date(2025,0,1).getTime();
   return 'nostalgia:'+((Math.floor((dayMs-start)/86400000)%300+300)%300);
 }
 function _dayKey(d){ return d.toISOString().slice(0,10); }
 
-async function seedBots(){
+// 옵션 입력값 미리보기
+(function(){
+  function upd(){
+    var interval=parseInt(document.getElementById('botInterval')&&document.getElementById('botInterval').value)||90;
+    var perDay=Math.floor(840/interval); // 8am~22pm = 840분
+    var el=document.getElementById('botPreview');
+    if(el) el.textContent=perDay+'~'+(perDay+1);
+  }
+  document.addEventListener('input',function(e){ if(e.target&&(e.target.id==='botInterval'||e.target.id==='botCount'||e.target.id==='botDays')) upd(); });
+})();
+
+async function _writeDocs(docs){
   var db=firebase.firestore();
+  var BATCH_MAX=490;
+  for(var s=0;s<docs.length;s+=BATCH_MAX){
+    var chunk=docs.slice(s,s+BATCH_MAX);
+    var batch=db.batch();
+    chunk.forEach(function(item){ batch.set(db.collection(item.col).doc(), item.data); });
+    await batch.commit();
+    _botLog('  ✓ '+(s+chunk.length)+'/'+docs.length+' 저장');
+  }
+}
+
+/* ── 자동 모드: 오늘 하루, 완전 랜덤 ── */
+async function seedBotsAuto(){
+  _botLogClear();
+  var maxCount=parseInt(document.getElementById('botAutoCount').value)||100;
+  maxCount=Math.min(500,Math.max(1,maxCount));
   var NOW=Date.now();
-  var docs=[]; // {col, data}
+  var todayMid=new Date(); todayMid.setHours(0,0,0,0);
+  var dayMs=todayMid.getTime();
+  var nsScope=_nsScope(dayMs);
+  var wisKey=_dayKey(new Date(dayMs));
 
-  // 오늘 0시 KST = UTC -9h. 계산은 로컬 Date 기준
+  _botLog('⚡ 자동 모드: 오늘('+wisKey+') 최대 '+maxCount+'개 랜덤 심기');
+
+  // 오늘 8am~22pm(840분) 안에서 완전 랜덤 timestamp 생성
+  var DAY_START=dayMs+8*3600000;
+  var DAY_END  =dayMs+22*3600000;
+  var docs=[];
+  for(var i=0;i<maxCount;i++){
+    var ts=DAY_START+Math.random()*(DAY_END-DAY_START);
+    var bot=_rnd(BOT_PERSONAS);
+    var tsObj=new Date(ts);
+    if(Math.random()<0.5){
+      docs.push({col:'comments',data:{scope:nsScope,text:_rnd(NS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
+    } else {
+      docs.push({col:'wisdom_comments',data:{day:wisKey,text:_rnd(WS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
+    }
+  }
+  _botLog('총 '+docs.length+'건 생성 → Firestore 저장 중...');
+  await _writeDocs(docs);
+  _botLog('\n✅ 자동 심기 완료!');
+}
+
+/* ── 커스텀 모드 ── */
+async function seedBots(){
+  _botLogClear();
+  var db=firebase.firestore();
+  var botCount =Math.min(30,Math.max(1,parseInt(document.getElementById('botCount').value)||30));
+  var interval =Math.max(30,parseInt(document.getElementById('botInterval').value)||90); // 분
+  var days     =Math.min(60,Math.max(1,parseInt(document.getElementById('botDays').value)||30));
+  var NOW=Date.now();
   var todayMid=new Date(); todayMid.setHours(0,0,0,0); var todayMs=todayMid.getTime();
+  var activeBots=BOT_PERSONAS.slice(0,botCount);
 
-  _botLog('▶ 30일치 계획 생성 중...');
+  _botLog('⚙ 커스텀 모드: 봇 '+botCount+'명 / '+interval+'분 간격 / '+days+'일치');
 
-  for(var d=0;d<30;d++){
+  var docs=[];
+  for(var d=0;d<days;d++){
     var dayMs=todayMs+d*86400000;
     var dayObj=new Date(dayMs);
     var nsScope=_nsScope(dayMs);
     var wisKey=_dayKey(dayObj);
 
-    // 이미 심은 날짜 체크 (wisdom_comments에 bot uid 존재 여부로 판단)
+    // 중복 체크
     var checkSnap=await db.collection('wisdom_comments')
-      .where('day','==',wisKey).where('uid','==','bot_b01').limit(1).get();
-    if(!checkSnap.empty){ _botLog('  SKIP day+'+(d)+' ('+wisKey+' 이미 심어짐)'); continue; }
+      .where('day','==',wisKey).where('uid','>=','bot_').limit(1).get();
+    if(!checkSnap.empty){ _botLog('  SKIP '+wisKey+' (이미 심어짐)'); continue; }
 
-    // 오늘(d=0): 슬롯 0~2는 과거(5h,3h,1h 전), 슬롯 3~9는 미래
+    // 슬롯: 8am~22pm(840분)을 interval 간격으로 나눔
+    var slotCount=Math.floor(840/interval);
     var slots=[];
     if(d===0){
-      slots=[-5,-3,-1,1,2.5,4,6,8,10,12].map(function(h){return NOW+h*3600000;});
+      // 오늘: 일부 과거(-4h,-2h,-0.5h), 나머지 미래
+      var past=[-4,-2,-0.5].map(function(h){return NOW+h*3600000;});
+      var future=[];
+      for(var k=0;k<slotCount;k++) future.push(dayMs+8*3600000+(k*interval+Math.floor(Math.random()*15))*60000);
+      slots=past.concat(future);
     } else {
-      // 8am~10pm, 10 슬롯, ~84분 간격
-      var base=dayMs+8*3600000;
-      slots=[0,84,168,252,336,420,504,588,672,756].map(function(m){return base+m*60000;});
+      for(var k=0;k<slotCount;k++){
+        var jitter=Math.floor(Math.random()*(interval*0.3))*60000; // 최대 30% 지터
+        slots.push(dayMs+8*3600000+k*interval*60000+jitter);
+      }
     }
 
-    // 슬롯마다 교대로 nostalgia / wisdom
     slots.forEach(function(ts,i){
-      var bot=_rnd(BOT_PERSONAS);
+      var bot=_rnd(activeBots);
       var tsObj=new Date(ts);
       if(i%2===0){
         docs.push({col:'comments',data:{scope:nsScope,text:_rnd(NS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
@@ -1213,22 +1311,13 @@ async function seedBots(){
         docs.push({col:'wisdom_comments',data:{day:wisKey,text:_rnd(WS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
       }
     });
-    _botLog('  계획 day+'+(d)+': '+wisKey+' / '+nsScope+' ('+slots.length+'건)');
+    _botLog('  day+'+(d)+' '+wisKey+': '+slots.length+'건');
   }
 
-  if(!docs.length){ _botLog('ℹ 심을 데이터 없음 (모두 이미 심어진 날짜)'); return; }
-  _botLog('\n총 '+docs.length+'건 Firestore 배치 쓰기 시작...');
-
-  // 500건씩 배치
-  var BATCH_MAX=490;
-  for(var s=0;s<docs.length;s+=BATCH_MAX){
-    var chunk=docs.slice(s,s+BATCH_MAX);
-    var batch=db.batch();
-    chunk.forEach(function(item){ batch.set(db.collection(item.col).doc(), item.data); });
-    await batch.commit();
-    _botLog('  ✓ '+(s+chunk.length)+'/'+docs.length+' 완료');
-  }
-  _botLog('\n✅ 봇 심기 완료! 그때그시절·오늘의 지혜를 새로고침해서 확인하세요.');
+  if(!docs.length){ _botLog('ℹ 심을 데이터 없음'); return; }
+  _botLog('\n총 '+docs.length+'건 저장 중...');
+  await _writeDocs(docs);
+  _botLog('\n✅ 커스텀 심기 완료!');
 }
 
 async function clearBots(){
