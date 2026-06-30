@@ -1809,6 +1809,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
 <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
 <script src="wisdom_pool.js?v=1"></script><!-- 오늘의 지혜 명언 풀(테마 이미지 매칭) — loadWisdom 전 동기 로드 -->
 <script>
@@ -2997,6 +2998,15 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcp-tag{display:inline-block;padding:8px 13px;border-radius:50px;background:#FFF0DB;color:#8a5a26;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap}
   .bcp-tag:active{transform:scale(.96)}
   body.dark .bcp-tag{background:#332a1d;color:#e0b87a}
+  .bcp-chatrow{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #F0E3D0;background:#fff}
+  .bcp-chat-input{flex:1;min-width:0;padding:11px 14px;border:1.5px solid #E6D8C4;border-radius:50px;font-size:14px;font-family:inherit;outline:none;background:#FFFDF9;color:#2a241d}
+  .bcp-chat-input:focus{border-color:#d4845a}
+  .bcp-chat-send{flex-shrink:0;width:42px;height:42px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:16px;cursor:pointer}
+  .bcp-chat-send:disabled{opacity:.5}
+  .bcp-user-msg{background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;border-radius:14px 14px 4px 14px;padding:11px 15px;font-size:14px;line-height:1.6;margin-bottom:10px;margin-left:32px;text-align:right}
+  .bcp-typing{display:inline-block;color:#b58a4a;font-size:13px;margin-bottom:14px}
+  body.dark .bcp-chatrow{background:#1c1714;border-color:#3d342a}
+  body.dark .bcp-chat-input{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
   body.dark .bcp-ans{background:#1d1915;border-color:#3d342a;color:#e6d9c5}
   body.dark .bcp-saved{background:#16241c;color:#7fe0bd}
   body.dark .bomchat-panel{background:#2a2420}
@@ -3022,6 +3032,10 @@ body.dark .bom-guide-text{color:#c8bba4}
       <button class="bcp-x" onclick="bomChatToggle(false)" aria-label="닫기">✕</button>
     </div>
     <div class="bcp-body" id="bcpBody"></div>
+    <div class="bcp-chatrow">
+      <input type="text" id="bcpInput" class="bcp-chat-input" placeholder="봄이에게 말 걸어보세요" maxlength="200">
+      <button id="bcpSend" class="bcp-chat-send" aria-label="보내기">➤</button>
+    </div>
   </div>
   <div class="bomchat-greet" id="bomGreet" onclick="bomChatToggle(true)"></div>
   <button class="bomchat-fab" id="bomFab" onclick="bomChatToggle()" aria-label="봄이와 대화하기">
@@ -3147,6 +3161,53 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(homeReady()){ setTimeout(function(){ var g=document.getElementById('bomGreet'); var p=document.getElementById('bomChatPanel'); if(g && p && !p.classList.contains('open')){ g.innerHTML='안녕하세요, <b>'+honTxt+'</b>! 저는 봄이예요 🌸<br>저를 눌러서 이야기 나눠요!'; g.style.display='block'; greetShown=true; setTimeout(function(){ g.style.display='none'; }, 9000); } }, 1200); }
     else if(++tries<40){ setTimeout(waitHome, 800); }
   })();
+
+  // ── 봄이 자유 대화(AI) — 위험 주제는 클라에서도 즉시 차단(서버가 최종 권한) ──
+  var BOM_RISKY_KEYWORDS=['정치','대통령','선거','국회','여당','야당','경제','금리','환율','인플레이션','종교','교회','성당','절','불교','기독교','천주교','이슬람','외교','북한','전쟁','국방','주식','코인','비트코인','투자','개인정보','주민등록번호','전화번호','주소','계좌번호','비밀번호','결제','환불','구매','카드번호','금융','대출','보험','세금','의학','진단','처방','질병','약','병원','수술','증상','법률','소송','변호사','계약'];
+  var BOM_RISKY_REPLY='음... 그건 제가 아직 어려서 잘 모르겠어요! 죄송해요 🌱 그것보다 우리 다른 이야기 할까요?';
+  function _bomIsRisky(s){ return BOM_RISKY_KEYWORDS.some(function(k){ return s.indexOf(k)>-1; }); }
+  function _bomEnsureAuth(){
+    return new Promise(function(resolve,reject){
+      var u=firebase.auth().currentUser;
+      if(u){ resolve(u.uid); return; }
+      firebase.auth().signInAnonymously().then(function(r){ resolve(r.user.uid); }).catch(reject);
+    });
+  }
+  function bomAppendMsg(html,cls){
+    var b=document.getElementById('bcpBody'); if(!b) return;
+    var div=document.createElement('div'); div.className=cls; div.innerHTML=html;
+    b.appendChild(div); b.scrollTop=b.scrollHeight;
+  }
+  function bomSendChat(){
+    var inp=document.getElementById('bcpInput'), btn=document.getElementById('bcpSend');
+    var msg=(inp.value||'').trim();
+    if(!msg) return;
+    inp.value=''; btn.disabled=true;
+    bomAppendMsg(esc(msg),'bcp-user-msg');
+    if(_bomIsRisky(msg)){
+      bomAppendMsg(esc(BOM_RISKY_REPLY),'bcp-msg');
+      btn.disabled=false;
+      return;
+    }
+    var typing=document.createElement('div'); typing.className='bcp-typing'; typing.id='bcpTyping'; typing.textContent='봄이가 생각하고 있어요…';
+    document.getElementById('bcpBody').appendChild(typing);
+    document.getElementById('bcpBody').scrollTop=document.getElementById('bcpBody').scrollHeight;
+    _bomEnsureAuth().then(function(){
+      var fn=firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
+      return fn({ message: msg });
+    }).then(function(res){
+      var t=document.getElementById('bcpTyping'); if(t) t.remove();
+      bomAppendMsg(esc((res.data&&res.data.text)||''),'bcp-msg');
+    }).catch(function(){
+      var t=document.getElementById('bcpTyping'); if(t) t.remove();
+      bomAppendMsg('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱','bcp-msg');
+    }).finally(function(){ btn.disabled=false; });
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    var btn=document.getElementById('bcpSend'), inp=document.getElementById('bcpInput');
+    if(btn) btn.addEventListener('click',bomSendChat);
+    if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter') bomSendChat(); });
+  });
 })();
 </script>
 </body>

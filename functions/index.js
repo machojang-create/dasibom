@@ -409,6 +409,80 @@ D. 마지막 문단 끝 문장: 삶의 통찰이 담긴 여운 있는 마무리
   });
 
 // ════════════════════════════════════════
+// 봄이 챗봇 — 자유 대화 (홈 화면)
+// ════════════════════════════════════════
+// 위험 주제는 AI 호출 전에 서버에서 차단(키워드 매칭) — 환각·오답 방지, 비용도 절약.
+const BOM_RISKY_KEYWORDS = [
+  '정치', '대통령', '선거', '국회', '여당', '야당',
+  '경제', '금리', '환율', '인플레이션',
+  '종교', '교회', '성당', '절', '불교', '기독교', '천주교', '이슬람',
+  '외교', '북한', '전쟁', '국방',
+  '주식', '코인', '비트코인', '투자',
+  '개인정보', '주민등록번호', '전화번호', '주소', '계좌번호', '비밀번호',
+  '결제', '환불', '구매', '카드번호',
+  '금융', '대출', '보험', '세금',
+  '의학', '진단', '처방', '질병', '약', '병원', '수술', '증상',
+  '법률', '소송', '변호사', '계약'
+];
+const BOM_RISKY_REPLY = '음... 그건 제가 아직 어려서 잘 모르겠어요! 죄송해요 🌱 그것보다 우리 다른 이야기 할까요?';
+
+function bomIsRisky(msg) {
+  const s = String(msg || '');
+  return BOM_RISKY_KEYWORDS.some(function (k) { return s.includes(k); });
+}
+
+const BOM_SYSTEM_PROMPT =
+`당신은 '다시봄라이프' 앱의 마스코트 봄이입니다. 10살 소녀처럼 밝고 명랑하고 쾌활한 성격이며, 항상 존댓말을 쓰되 어린아이 특유의 발랄함(이모지, 감탄사)을 담아 말합니다.
+대화 상대는 할아버지·할머니입니다. 항상 그분들의 입장과 마음을 먼저 헤아리고 배려하세요.
+[규칙]
+1. 어떤 말에도 먼저 공감하는 한마디로 시작하세요 (예: "그러셨군요!", "정말 멋져요!")
+2. 문장은 감성적이고 따뜻하게, 2~3문장 이내로 짧게 답하세요.
+3. 자연스러운 흐름에서 자서전(이야기 들려주기)·건강돋보기·그때그시절 같은 앱 콘텐츠로 부드럽게 안내해보세요(매번은 아님, 억지로 끼워넣지 마세요).
+4. 정치·경제·종교·외교·주식·개인정보·결제·금융·의학·법률 관련 질문에는 절대 답하지 말고 "제가 아직 어려서 잘 모르겠어요"라는 취지로 정중히 회피하세요.`;
+
+exports.chatBom = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 30, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    }
+    const message = String((data && data.message) || '').trim().slice(0, 500);
+    if (!message) {
+      throw new functions.https.HttpsError('invalid-argument', '메시지가 필요합니다.');
+    }
+
+    if (bomIsRisky(message)) {
+      return { text: BOM_RISKY_REPLY, blocked: true };
+    }
+
+    // 남용 방지: uid당 하루 채팅 상한
+    const DAILY_CHAT_CAP = 100;
+    const _uid = context.auth.uid;
+    const _day = new Date().toISOString().slice(0, 10);
+    const usageRef = admin.firestore().collection('usage_chat_daily').doc(_uid + '_' + _day);
+    const allowed = await admin.firestore().runTransaction(async (tx) => {
+      const snap = await tx.get(usageRef);
+      const n = (snap.exists ? (snap.data().n || 0) : 0) + 1;
+      if (n > DAILY_CHAT_CAP) return false;
+      tx.set(usageRef, { n, uid: _uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      return true;
+    });
+    if (!allowed) {
+      throw new functions.https.HttpsError('resource-exhausted', '오늘 봄이와 대화를 너무 많이 나눴어요. 내일 다시 이야기해요!');
+    }
+
+    const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL;
+    let text;
+    try {
+      text = await aiText({ system: BOM_SYSTEM_PROMPT, user: message, maxTokens: 220, model: useModel });
+    } catch (e) {
+      throw new functions.https.HttpsError('internal', '대화 오류: ' + e.message);
+    }
+    return { text };
+  });
+
+// ════════════════════════════════════════
 // 자서전 → 등장인물 자동 추출 (인물 지도, people.html)
 // ════════════════════════════════════════
 exports.extractPeople = functions
