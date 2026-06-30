@@ -7,6 +7,14 @@
         { "fieldPath": "provider", "order": "ASCENDING" },
         { "fieldPath": "socialId", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "memoirs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isPublic", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

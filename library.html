@@ -465,6 +465,7 @@ async function fetchMemoirs(){
     document.getElementById('totalCount').textContent = ALL_MEMOIRS.length;
     applyFilter();
   }catch(e){
+    console.error('fetchMemoirs failed:', e.code, e.message);
     showError('자서전을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.');
   }
 }

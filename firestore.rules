@@ -48,7 +48,7 @@ service cloud.firestore {
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
-        && request.resource.data.text.size() <= 15
+        && request.resource.data.text.size() <= 30
         && request.resource.data.day is string;
       allow update: if false;
       allow delete: if request.auth != null && (
@@ -89,6 +89,11 @@ service cloud.firestore {
     match /survey/{uid} {
       allow read: if request.auth != null && (request.auth.uid == uid || request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com']);
       allow write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // 말동무 사전 — 즐겨찾기(나만의 앨범). 본인 것만 읽기·쓰기(기기 이전 시에도 유지)
+    match /trendy_albums/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
     }
   }
 }
