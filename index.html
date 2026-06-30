@@ -3028,12 +3028,42 @@ body.dark .bom-guide-text{color:#c8bba4}
   var hon=''; try{ hon=localStorage.getItem('dasibom_honorific')||''; }catch(e){}
   var honTxt = hon || '어르신';
   var voiceOn=true; try{ voiceOn=localStorage.getItem('dasibom_bomvoice')!=='0'; }catch(e){}
-  // 봄이가 묻는 자서전 질문 — idx는 자서전(memoir_answers) 인덱스(무료 첫 3문항=0/1/2)
-  var QS=[
-    {id:'MU1', idx:0, t:'어디에서 태어나셨어요? 그곳은 어떤 곳이었는지 들려주세요.', v:'/voice/bom_q1.mp3'},
-    {id:'MU2', idx:1, t:'어릴 적 살던 동네와 집은 어떤 모습이었어요? 마당이 있었는지도 궁금해요.', v:'/voice/bom_q2.mp3'},
-    {id:'MU3', idx:2, t:'어릴 때 어떤 놀이를 하며 노셨어요? 같이 뛰놀던 친구도 떠올려 보세요.', v:'/voice/bom_q3.mp3'}
+  // 봄이가 묻는 자서전 질문 — QPOOL 미로드 시 폴백(고정 3문항)
+  var QS_FALLBACK=[
+    {t:'어디에서 태어나셨어요? 그곳은 어떤 곳이었는지 들려주세요.'},
+    {t:'어릴 적 살던 동네와 집은 어떤 모습이었어요? 마당이 있었는지도 궁금해요.'},
+    {t:'어릴 때 어떤 놀이를 하며 노셨어요? 같이 뛰놀던 친구도 떠올려 보세요.'}
   ];
+  function _josa(w,a,b){ var c=w.charCodeAt(w.length-1); var jong=(c>=0xAC00&&c<=0xD7A3)?((c-0xAC00)%28!==0):false; return jong?a:b; }
+  function _resolveBom(t){
+    var h=honTxt;
+    return String(t||'')
+      .replace(/\{호칭\}은/g, h+_josa(h,'은','는'))
+      .replace(/\{호칭\}이/g, h+_josa(h,'이','가'))
+      .replace(/\{호칭\}을/g, h+_josa(h,'을','를'))
+      .replace(/\{호칭\}/g, h);
+  }
+  // 실제 다음 안 답한 질문(최대 3개)을 자서전 진행상태(memoir_*)로 매번 새로 계산
+  function nextQuestions(){
+    var pool=window.QPOOL||[];
+    if(!pool.length) return {list:QS_FALLBACK.map(function(q){return q.t;}), capped:false};
+    function lsj(k,d){ try{ var v=localStorage.getItem('memoir_'+k); return v?JSON.parse(v):d; }catch(e){ return d; } }
+    var pkg=lsj('pkg','free'), answers=lsj('answers',{}), qDates=lsj('qDates',{});
+    function sel(tier,n){ var p=pool.filter(function(q){return q.tier===tier&&!q.reserve;}); var sh=p.filter(function(q){return q.show;}); var rest=p.filter(function(q){return !q.show;}).sort(function(a,b){return (b.pri||0)-(a.pri||0);}); return sh.concat(rest).slice(0,n); }
+    var list=pool.filter(function(q){return q.tier==='free'&&!q.reserve;});
+    if(pkg==='basic'||pkg==='premium') list=list.concat(sel('paid1',30));
+    if(pkg==='premium') list=list.concat(sel('paid2',30));
+    var today=new Date().toISOString().slice(0,10), doneToday=0;
+    Object.keys(qDates).forEach(function(k){ if(qDates[k]===today) doneToday++; });
+    var capped=(pkg==='free')&&doneToday>=3;
+    if(capped) return {list:[], capped:true};
+    var out=[];
+    for(var i=0;i<list.length && out.length<3;i++){
+      var a=answers[i];
+      if(a==null||String(a).trim()==='') out.push(_resolveBom(list[i].bom||list[i].gist||''));
+    }
+    return {list:out, capped:false};
+  }
   var audio=new Audio(), greetShown=false;
   function play(src){ if(!(window.BomVoice && window.BomVoice.isOn())) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
   function paintVoice(){ var b=document.getElementById('bcpVoice'); if(b) b.textContent=voiceOn?'🔊':'🔇'; }
@@ -3047,12 +3077,13 @@ body.dark .bom-guide-text{color:#c8bba4}
       ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지금까지 <b>'+answered+'가지</b> 이야기를 들려주셨어요. 오늘도 이어가볼까요?'
       : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>매일 3가지만 답하면, 5일이면 <b>나만의 자서전</b>이 완성돼요. 같이 시작해요!';
     var h='<div class="bcp-msg">'+greet+'</div>';
-    // 예시질문 안내는 최초 1회만 — 매번 뜨면 피로감+"기억 못 하는 도우미" 느낌(2026-06-16 기획서)
-    var introSeen=false; try{ introSeen=localStorage.getItem('dasibom_chatbot_intro_seen')==='1'; }catch(e){}
-    if(!introSeen){
+    // 실제 진행상태 기준으로 매번 최신 다음 질문을 보여줌(고정 예시 아님)
+    var qi=nextQuestions();
+    if(qi.list.length){
       h+='<div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (눌러서 바로 답하기)</div>';
-      QS.forEach(function(q){ h+='<a class="bcp-qprev" href="/memoir?continue=1">'+esc(q.t)+'<span class="bcp-qarrow">›</span></a>'; });
-      try{ localStorage.setItem('dasibom_chatbot_intro_seen','1'); }catch(e){}
+      qi.list.forEach(function(t){ h+='<a class="bcp-qprev" href="/memoir?continue=1">'+esc(t)+'<span class="bcp-qarrow">›</span></a>'; });
+    } else if(qi.capped){
+      h+='<div class="bcp-qlabel">🌸 오늘 이야기는 다 들었어요. 내일 또 들려주세요!</div>';
     }
     h+='<a class="bcp-cta" href="/memoir">📖 자서전에서 이야기 들려주기 ✦</a>';
     b.innerHTML=h;
