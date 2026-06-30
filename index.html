@@ -2954,27 +2954,31 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bomchat-greet{position:absolute;right:72px;bottom:10px;width:214px;background:#fff;border-radius:16px 16px 4px 16px;padding:12px 15px;font-size:14px;line-height:1.55;color:#3a2e22;box-shadow:0 12px 32px -10px rgba(0,0,0,.32);cursor:pointer;display:none;animation:bcGreetIn .35s cubic-bezier(.2,.9,.3,1.2)}
   @keyframes bcGreetIn{0%{opacity:0;transform:translateY(12px) scale(.85)}60%{opacity:1;transform:translateY(-2px) scale(1.05)}100%{opacity:1;transform:none}}
   .bomchat-greet b{color:#d4845a;font-weight:800}
-  .bomchat-panel{position:absolute;right:0;bottom:80px;width:min(342px,calc(100vw - 36px));background:#fff;border-radius:22px;box-shadow:0 26px 64px -18px rgba(0,0,0,.42);overflow:hidden;display:none;transform-origin:bottom right;will-change:transform}
-  .bomchat-panel.open{display:block;animation:bcPanelIn .46s cubic-bezier(.34,1.56,.64,1)}
+  .bomchat-panel{position:absolute;right:0;bottom:80px;width:min(320px,calc(100vw - 28px));max-height:min(540px,calc(100vh - 130px));background:#fff;border-radius:22px;box-shadow:0 26px 64px -18px rgba(0,0,0,.42);overflow:hidden;display:none;flex-direction:column;transform-origin:bottom right;will-change:transform}
+  .bomchat-panel.open{display:flex;animation:bcPanelIn .46s cubic-bezier(.34,1.56,.64,1)}
   .bomchat-panel.open.closing{animation:bcPanelOut .26s cubic-bezier(.45,0,.7,.25) forwards}
   @keyframes bcPanelIn{0%{opacity:0;transform:translateY(24px) scale(.68)}55%{opacity:1;transform:translateY(-6px) scale(1.05)}78%{transform:translateY(2px) scale(.99)}100%{opacity:1;transform:none}}
   @keyframes bcPanelOut{0%{opacity:1;transform:none}28%{transform:scale(1.06)}100%{opacity:0;transform:translateY(16px) scale(.55)}}
   @media (prefers-reduced-motion:reduce){.bomchat-panel.open,.bomchat-panel.open.closing{animation-duration:.01s}}
-  .bcp-head{display:flex;align-items:center;gap:11px;padding:15px 16px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2)}
-  .bcp-face{width:46px;height:46px;border-radius:50%;object-fit:cover;background:#fff;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,.7)}
-  .bcp-name{font-weight:800;font-size:16px;color:#5b3a1a;line-height:1.2}
-  .bcp-sub{font-size:11.5px;color:#9a7a52}
-  .bcp-vbtn,.bcp-x{background:rgba(255,255,255,.65);border:none;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;display:grid;place-items:center;color:#5b3a1a}
+  .bcp-head{flex-shrink:0;display:flex;align-items:center;gap:11px;padding:13px 16px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2)}
+  .bcp-face{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#fff;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,.7)}
+  .bcp-name{font-weight:800;font-size:15px;color:#5b3a1a;line-height:1.2}
+  .bcp-sub{font-size:11px;color:#9a7a52}
+  .bcp-vbtn,.bcp-x{background:rgba(255,255,255,.65);border:none;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:14px;display:grid;place-items:center;color:#5b3a1a}
   .bcp-vbtn{margin-left:auto}
-  .bcp-body{padding:16px;max-height:62vh;overflow-y:auto}
-  .bcp-msg{background:#FFF6E9;border-radius:14px 14px 14px 4px;padding:13px 15px;font-size:14.5px;line-height:1.65;color:#4a3a26;margin-bottom:16px}
+  .bcp-body{flex:1 1 auto;min-height:0;padding:14px 16px;overflow-y:auto}
+  .bcp-row{display:flex;align-items:flex-end;gap:7px;margin-bottom:14px}
+  .bcp-row .bcp-msg{margin-bottom:0;flex:1;min-width:0}
+  .bcp-mini-face{width:28px;height:28px;border-radius:50%;object-fit:cover;flex-shrink:0;background:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+  .bcp-msg{background:#FFF6E9;border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:14px;line-height:1.6;color:#4a3a26;margin-bottom:14px}
+  .bcp-divider{height:1px;background:#F0E3D0;margin:2px 0 14px}
   .bcp-qlabel{font-size:12px;font-weight:800;color:#b58a4a;margin:0 2px 10px;letter-spacing:.02em}
   .bcp-q{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:#fff;border:1.5px solid #F0E3D0;border-radius:14px;padding:12px 13px;margin-bottom:9px;cursor:pointer;font-family:inherit;font-size:13.5px;line-height:1.5;color:#3a2e22;transition:border-color .2s,transform .2s,box-shadow .2s}
   .bcp-q:hover{border-color:#FFB74D;transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(180,120,40,.4)}
   .bcq-play{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#FFF0DB;border:none;display:grid;place-items:center;font-size:14px;cursor:pointer}
   .bcq-txt{flex:1}
   .bcq-go{flex-shrink:0;color:#d4845a;font-weight:800}
-  .bcp-cta{display:block;text-align:center;margin-top:8px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-weight:800;font-size:15px;text-decoration:none}
+  .bcp-cta{display:block;text-align:center;margin:8px 0 16px;padding:14px;border-radius:14px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-weight:800;font-size:15px;text-decoration:none;box-shadow:0 8px 18px -8px rgba(200,120,74,.5)}
   .bcp-qprev{display:flex;align-items:center;justify-content:space-between;gap:8px;border:1.5px solid #F0E3D0;border-radius:12px;padding:10px 13px;margin-bottom:8px;background:#FFFCF7;font-size:13.5px;line-height:1.5;color:#5b4a36;text-decoration:none;cursor:pointer;transition:transform .12s,background .12s}
   .bcp-qprev:active{transform:scale(.97);background:#FBF1E2}
   .bcp-qarrow{color:#c8784a;font-weight:800;font-size:16px;flex-shrink:0}
@@ -2998,15 +3002,18 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcp-tag{display:inline-block;padding:8px 13px;border-radius:50px;background:#FFF0DB;color:#8a5a26;font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap}
   .bcp-tag:active{transform:scale(.96)}
   body.dark .bcp-tag{background:#332a1d;color:#e0b87a}
-  .bcp-chatrow{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #F0E3D0;background:#fff}
-  .bcp-chat-input{flex:1;min-width:0;padding:11px 14px;border:1.5px solid #E6D8C4;border-radius:50px;font-size:14px;font-family:inherit;outline:none;background:#FFFDF9;color:#2a241d}
+  .bcp-chatrow{flex-shrink:0;display:flex;gap:8px;padding:10px 14px;border-top:1px solid #F0E3D0;background:#fff}
+  .bcp-chat-input{flex:1;min-width:0;padding:10px 14px;border:1.5px solid #E6D8C4;border-radius:50px;font-size:14px;font-family:inherit;outline:none;background:#FFFDF9;color:#2a241d}
   .bcp-chat-input:focus{border-color:#d4845a}
-  .bcp-chat-send{flex-shrink:0;width:42px;height:42px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:16px;cursor:pointer}
+  .bcp-chat-send{flex-shrink:0;width:38px;height:38px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:15px;cursor:pointer}
   .bcp-chat-send:disabled{opacity:.5}
-  .bcp-user-msg{background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;border-radius:14px 14px 4px 14px;padding:11px 15px;font-size:14px;line-height:1.6;margin-bottom:10px;margin-left:32px;text-align:right}
-  .bcp-typing{display:inline-block;color:#b58a4a;font-size:13px;margin-bottom:14px}
+  .bcp-user-msg{background:#5b3a1a;color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;line-height:1.6;margin-bottom:14px;margin-left:38px;text-align:right}
+  .bcp-typing-row{display:flex;align-items:center;gap:7px;margin-bottom:14px}
+  .bcp-typing{display:inline-block;color:#b58a4a;font-size:13px}
   body.dark .bcp-chatrow{background:#1c1714;border-color:#3d342a}
   body.dark .bcp-chat-input{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
+  body.dark .bcp-divider{background:#3d342a}
+  body.dark .bcp-user-msg{background:#3a2a17}
   body.dark .bcp-ans{background:#1d1915;border-color:#3d342a;color:#e6d9c5}
   body.dark .bcp-saved{background:#16241c;color:#7fe0bd}
   body.dark .bomchat-panel{background:#2a2420}
@@ -3114,15 +3121,29 @@ body.dark .bom-guide-text{color:#c8bba4}
   function play(src){ if(!(window.BomVoice && window.BomVoice.isOn())) return; try{ audio.pause(); audio.src=src; audio.currentTime=0; var p=audio.play(); if(p&&p.catch)p.catch(function(){}); }catch(e){} }
   function paintVoice(){ var b=document.getElementById('bcpVoice'); if(b) b.textContent=voiceOn?'🔊':'🔇'; }
   function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  // 봄이 대사마다 표정이 바뀌도록 — 내용에 맞는 얼굴 선택(실제 대화하는 느낌)
+  var _bomFaceCycle=['bom_smile','bom_grin','bom_wink'], _bomFaceIdx=0;
+  function bomFaceFor(text){
+    var s=String(text||'');
+    if(/[?？]/.test(s)) return 'bom_think';
+    if(/[!！]|🎉|와|짱|신나/.test(s)) return 'bom_cheer';
+    if(/위로|괜찮|힘드|미안|죄송/.test(s)) return 'bom_calm';
+    var f=_bomFaceCycle[_bomFaceIdx%_bomFaceCycle.length]; _bomFaceIdx++; return f;
+  }
+  function bomMsgRow(html,faceKey){
+    return '<div class="bcp-row"><img class="bcp-mini-face" src="img/'+(faceKey||'bom_smile')+'.png" alt="봄이" onerror="this.style.visibility=\'hidden\'"><div class="bcp-msg">'+html+'</div></div>';
+  }
+  var _bomChatStarted=false;
   // 챗봇 = 봄이의 창구(정해진 인사·진행상황·자서전으로 안내). ★고정 스크립트 — AI 생성 응답 아님. 실제 답변 입력은 자서전(memoir)에서.
   function render(){
     var b=document.getElementById('bcpBody'); if(!b) return;
+    _bomChatStarted=false; _bomFaceIdx=0;
     var ma={}; try{ ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); }catch(e){}
     var answered=Object.keys(ma).filter(function(k){ return String(ma[k]||'').trim()!==''; }).length;
     var greet = answered>0
       ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지금까지 <b>'+answered+'가지</b> 이야기를 들려주셨어요. 오늘도 이어가볼까요?'
       : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>매일 3가지만 답하면, 5일이면 <b>나만의 자서전</b>이 완성돼요. 같이 시작해요!';
-    var h='<div class="bcp-msg">'+greet+'</div>';
+    var h=bomMsgRow(greet,'bom_smile');
     h+='<div class="bcp-tip">🌤️ '+esc(randomTip())+'</div>';
     // 실제 진행상태 기준으로 매번 최신 다음 질문을 보여줌(고정 예시 아님)
     var qi=nextQuestions();
@@ -3173,34 +3194,40 @@ body.dark .bom-guide-text{color:#c8bba4}
       firebase.auth().signInAnonymously().then(function(r){ resolve(r.user.uid); }).catch(reject);
     });
   }
-  function bomAppendMsg(html,cls){
+  function bomAppendHTML(html){
     var b=document.getElementById('bcpBody'); if(!b) return;
-    var div=document.createElement('div'); div.className=cls; div.innerHTML=html;
+    b.insertAdjacentHTML('beforeend',html); b.scrollTop=b.scrollHeight;
+  }
+  function bomAppendUser(text){
+    var div=document.createElement('div'); div.className='bcp-user-msg'; div.textContent=text;
+    var b=document.getElementById('bcpBody'); if(!b) return;
     b.appendChild(div); b.scrollTop=b.scrollHeight;
   }
+  function bomAppendBot(text){ bomAppendHTML(bomMsgRow(esc(text),bomFaceFor(text))); }
   function bomSendChat(){
     var inp=document.getElementById('bcpInput'), btn=document.getElementById('bcpSend');
     var msg=(inp.value||'').trim();
     if(!msg) return;
     inp.value=''; btn.disabled=true;
-    bomAppendMsg(esc(msg),'bcp-user-msg');
+    if(!_bomChatStarted){ bomAppendHTML('<div class="bcp-divider"></div>'); _bomChatStarted=true; }
+    bomAppendUser(msg);
     if(_bomIsRisky(msg)){
-      bomAppendMsg(esc(BOM_RISKY_REPLY),'bcp-msg');
+      bomAppendBot(BOM_RISKY_REPLY);
       btn.disabled=false;
       return;
     }
-    var typing=document.createElement('div'); typing.className='bcp-typing'; typing.id='bcpTyping'; typing.textContent='봄이가 생각하고 있어요…';
-    document.getElementById('bcpBody').appendChild(typing);
+    var typingFace=_bomFaceCycle[_bomFaceIdx%_bomFaceCycle.length];
+    bomAppendHTML('<div class="bcp-typing-row" id="bcpTyping"><img class="bcp-mini-face" src="img/'+typingFace+'.png" alt="봄이" onerror="this.style.visibility=\'hidden\'"><span class="bcp-typing">봄이가 생각하고 있어요…</span></div>');
     document.getElementById('bcpBody').scrollTop=document.getElementById('bcpBody').scrollHeight;
     _bomEnsureAuth().then(function(){
       var fn=firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
       return fn({ message: msg });
     }).then(function(res){
       var t=document.getElementById('bcpTyping'); if(t) t.remove();
-      bomAppendMsg(esc((res.data&&res.data.text)||''),'bcp-msg');
+      bomAppendBot((res.data&&res.data.text)||'');
     }).catch(function(){
       var t=document.getElementById('bcpTyping'); if(t) t.remove();
-      bomAppendMsg('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱','bcp-msg');
+      bomAppendBot('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱');
     }).finally(function(){ btn.disabled=false; });
   }
   document.addEventListener('DOMContentLoaded',function(){
