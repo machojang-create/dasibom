@@ -12,12 +12,14 @@
 <script>window.BOM_GUIDES={
   trendy_quiz:{face:'bom_cheer.png',title:'🎯 유행어 퀴즈',text:'시대를 골라서 5문제를 풀어보세요. 뜻을 보고 알맞은 유행어를 맞히면 돼요. 틀려도 괜찮아요, 재미로 즐겨보세요!'},
   trendy_album:{face:'bom_smile.png',title:'📖 나만의 앨범',text:'마음에 드는 유행어에 하트를 누르면 여기에 모아둘 수 있어요. 손주들에게 써먹어 보세요!'},
-  trendy_submit:{face:'bom_grin.png',title:'💡 신조어 제보',text:'어르신이 아시는 옛말이나 신조어를 다른 분들과 나눠보세요. 마음에 드는 말엔 공감 버튼도 눌러주세요!'}
+  trendy_submit:{face:'bom_grin.png',title:'💡 신조어 제보',text:'어르신이 아시는 옛말이나 신조어를 다른 분들과 나눠보세요. 마음에 드는 말엔 공감 버튼도 눌러주세요!'},
+  trendy_naming:{face:'bom_sparkle.png',title:'🏷️ AI 작명소',text:'요즘 상황이나 느낌을 설명해주시면, 봄이가 딱 맞는 신조어 이름을 지어드릴게요! 마음에 들면 커뮤니티에 올릴 수도 있어요.'}
 };</script>
 <script src="trendy_data.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js" defer></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;overflow-x:hidden}
@@ -126,6 +128,23 @@ body.dark .daily-banner{filter:brightness(.85)}
 body.dark .tr-output{background:#1c1714;color:#e6d9c5}
 body.dark .test-opt{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
 body.dark .fortune-desc{background:#1c1714;color:#e6d9c5}
+
+/* AI 작명소 */
+.naming-form{background:#fff;border:1.5px solid rgba(200,120,74,.14);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 3px 14px rgba(120,80,40,.06)}
+.naming-label{font-size:13.5px;font-weight:800;color:#8a7560;margin-bottom:8px;display:block}
+.naming-ta{width:100%;min-height:100px;padding:14px;border:1.5px solid #EBD9C2;border-radius:14px;font-size:15px;font-family:inherit;color:#3A2E22;resize:vertical;outline:none}
+.naming-ta:focus{border-color:#c8784a}
+.naming-gen{display:block;width:100%;margin-top:14px;padding:15px 0;border:none;border-radius:50px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:15.5px;font-weight:800;cursor:pointer}
+.naming-gen:disabled{opacity:.5;cursor:default}
+.naming-result{background:#FFFBF0;border:1.5px solid #EBD9C2;border-radius:16px;padding:20px;margin-bottom:14px}
+.naming-result-word{font-family:'Nanum Myeongjo','Batang',serif;font-size:26px;font-weight:800;color:#3A2A18;margin-bottom:10px}
+.naming-result-desc{font-size:14.5px;color:#4a3a26;line-height:1.7}
+.naming-share{display:block;width:100%;padding:14px 0;border:1.5px solid #c8784a;border-radius:50px;background:#fff;color:#c8784a;font-size:14.5px;font-weight:800;cursor:pointer;margin-top:12px}
+body.dark .naming-form{background:#241f1a;border-color:#3d342a}
+body.dark .naming-ta{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
+body.dark .naming-result{background:#1c1714;border-color:#3d342a}
+body.dark .naming-result-word{color:#e6d9c5}
+body.dark .naming-result-desc{color:#d8c9b0}
 </style>
 </head>
 <body>
@@ -150,6 +169,7 @@ body.dark .fortune-desc{background:#1c1714;color:#e6d9c5}
     <button class="tab" data-tab="translate">🗣️ 번역기</button>
     <button class="tab" data-tab="test">📝 트렌드 테스트</button>
     <button class="tab" data-tab="fortune">🥠 운세</button>
+    <button class="tab" data-tab="naming" data-bomguide="trendy_naming">🏷️ AI 작명소</button>
   </div>
 
   <div id="dailyBanner" class="daily-banner" style="display:none"></div>
@@ -204,6 +224,23 @@ body.dark .fortune-desc{background:#1c1714;color:#e6d9c5}
   <!-- 운세 -->
   <div id="pane-fortune" style="display:none">
     <div class="qz-card" id="fortuneCard" style="text-align:center"></div>
+  </div>
+
+  <!-- AI 작명소 -->
+  <div id="pane-naming" style="display:none">
+    <div class="naming-form">
+      <label class="naming-label">어떤 상황이나 느낌인가요? 설명해주시면 봄이가 이름을 지어드려요</label>
+      <textarea class="naming-ta" id="namingInput" placeholder="예) 카페에서 오래 앉아 일하는 사람들&#10;예) 밥 먹고 바로 소파에 눕는 버릇&#10;예) 손주가 너무 귀여워서 생기는 행복한 두근거림"></textarea>
+      <button class="naming-gen" id="namingGenBtn" onclick="runNaming()">✨ 이름 지어주세요!</button>
+    </div>
+    <div id="namingResult" style="display:none">
+      <div class="naming-result">
+        <div class="naming-result-word" id="namingWord"></div>
+        <div class="naming-result-desc" id="namingDesc"></div>
+      </div>
+      <button class="naming-share" id="namingShareBtn" onclick="submitNaming()">💡 커뮤니티에 제보하기</button>
+      <button class="naming-gen" style="background:#8a7560;margin-top:8px" onclick="resetNaming()">다시 만들기</button>
+    </div>
   </div>
 </div>
 
@@ -570,13 +607,95 @@ document.getElementById('tabs').addEventListener('click', function(e){
   var btn=e.target.closest('.tab'); if(!btn) return;
   activeTab=btn.getAttribute('data-tab');
   document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('on', b===btn); });
-  ['dict','tl','quiz','album','submit','translate','test','fortune'].forEach(function(t){
+  ['dict','tl','quiz','album','submit','translate','test','fortune','naming'].forEach(function(t){
     document.getElementById('pane-'+t).style.display = (t===activeTab) ? '' : 'none';
   });
   document.getElementById('dailyBanner').style.display = (activeTab==='dict') ? '' : 'none';
   if(activeTab==='quiz' && !qz.era) renderQuizPick();
   else renderActivePane();
 });
+
+/* ── AI 작명소 ── */
+var _namingResult = null;
+
+function runNaming(){
+  var input = document.getElementById('namingInput').value.trim();
+  if(!input){ popToast('상황을 먼저 설명해주세요'); return; }
+  var btn = document.getElementById('namingGenBtn');
+  btn.disabled = true; btn.textContent = '봄이가 이름 짓는 중…';
+  document.getElementById('namingResult').style.display = 'none';
+
+  var callFn = function(){
+    var fn = firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
+    var prompt = '다음 상황이나 느낌에 딱 맞는 재미있는 신조어를 1개만 만들어줘. '
+      + '반드시 아래 형식으로만 답해: [단어]: [한 줄 설명]. 설명은 40자 이내로. 다른 말은 절대 덧붙이지 마. '
+      + '상황: ' + input;
+    return fn({ message: prompt, mode: 'naming' });
+  };
+
+  var doCall = function(){
+    if(!firebase.apps.length){
+      var cfg={apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",authDomain:"mylife-650f0.firebaseapp.com",projectId:"mylife-650f0",storageBucket:"mylife-650f0.appspot.com",messagingSenderId:"598994481399",appId:"1:598994481399:web:7e1df4b3ec2e6fd4be4b52"};
+      firebase.initializeApp(cfg);
+    }
+    var auth = firebase.auth();
+    var proceed = function(){
+      callFn().then(function(res){
+        var text = (res.data && res.data.reply) || '';
+        var match = text.match(/^(.+?):\s*(.+)$/);
+        if(match){
+          _namingResult = { word: match[1].replace(/^\[|\]$/g,'').trim(), desc: match[2].replace(/^\[|\]$/g,'').trim(), situation: input };
+        } else {
+          _namingResult = { word: text.split(':')[0].trim() || '새 단어', desc: text, situation: input };
+        }
+        document.getElementById('namingWord').textContent = _namingResult.word;
+        document.getElementById('namingDesc').textContent = _namingResult.desc;
+        document.getElementById('namingResult').style.display = '';
+        btn.disabled = false; btn.textContent = '✨ 이름 지어주세요!';
+      }).catch(function(e){
+        btn.disabled = false; btn.textContent = '✨ 이름 지어주세요!';
+        popToast('잠시 후 다시 시도해주세요');
+      });
+    };
+    if(auth.currentUser){ proceed(); return; }
+    auth.onAuthStateChanged(function(u){
+      if(u){ proceed(); }
+      else { auth.signInAnonymously().then(proceed).catch(function(){ popToast('로그인 오류'); btn.disabled=false; btn.textContent='✨ 이름 지어주세요!'; }); }
+    });
+  };
+  doCall();
+}
+
+function resetNaming(){
+  _namingResult = null;
+  document.getElementById('namingResult').style.display = 'none';
+  document.getElementById('namingInput').value = '';
+  document.getElementById('namingGenBtn').disabled = false;
+  document.getElementById('namingGenBtn').textContent = '✨ 이름 지어주세요!';
+}
+
+function submitNaming(){
+  if(!_namingResult){ return; }
+  var shareBtn = document.getElementById('namingShareBtn');
+  shareBtn.disabled = true;
+  var db = firebase.firestore();
+  var uid = (firebase.auth().currentUser || {}).uid || 'anon';
+  db.collection('trendy_submissions').add({
+    word: _namingResult.word,
+    meaning: _namingResult.desc,
+    example: '상황: ' + _namingResult.situation,
+    votes: 0,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+    uid: uid,
+    source: 'ai_naming'
+  }).then(function(){
+    popToast('커뮤니티에 제보했습니다! 📚');
+    shareBtn.textContent = '✓ 제보 완료';
+  }).catch(function(){
+    shareBtn.disabled = false;
+    popToast('제보 실패, 다시 시도해주세요');
+  });
+}
 
 function boot(){
   if(!window.TRENDY_WORDS){ setTimeout(boot, 60); return; }

@@ -1614,9 +1614,14 @@ function renderDash(){
   }else{
     var html=APP.preview?'<button class="btn btn-orange" id="db1">내 자서전 보기 ✦</button>':'<button class="btn btn-orange" id="db1">자서전 만들기 →</button>';
     html+='<button class="btn btn-ghost" id="db2" style="margin-top:4px">처음부터 다시 시작</button>';
+    if(APP.preview){
+      var libLbl = APP.libPublished ? '✓ 공개 서재 공개됨 — 내리기' : '📚 공개 서재에 올리기';
+      html+='<button class="btn btn-ghost" id="db3" style="margin-top:4px;border-color:#0e9d7d;color:#0e9d7d">'+libLbl+'</button>';
+    }
     btns.innerHTML=html;
     el('db1').addEventListener('click',APP.preview?showPreview:goTitleScreen);
     el('db2').addEventListener('click',confirmReset);
+    if(APP.preview && el('db3')) el('db3').addEventListener('click',toggleLibraryPublish);
   }
 
   var list=el('chList'); list.innerHTML='';
@@ -2040,7 +2045,7 @@ function showPreview(shared){
 
   // 봄이의 "더 쓰시겠어요?" 제안은 무료 완성본에서만(유료는 이미 다 쓴 것). 공유 보기 모드는 숨김.
   el('pvCta').style.display = (shared || !isFree) ? 'none' : 'block';
-  var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = (shared||isFree) ? 'none' : '';
+  var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = shared ? 'none' : '';
   var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '✓ 서재에 공개됨 — 내리기' : '📚 공개 서재에 올리기';
   var _back=el('btnPvBack'); if(_back) _back.style.display = shared ? 'none' : '';
   if(!shared && isFree) renderProds();
@@ -2053,7 +2058,7 @@ function showPreview(shared){
 
 // ── 공개 서재 게시/내리기 — '나만 보기' 제외본(sharedChapters)을 library.html 호환 배열로 저장 ──
 function _libChaptersArray(){
-  var src = APP.sharedChapters || {};
+  var src = APP.sharedChapters || (APP.preview && APP.preview.chapters) || {};
   var keys = Object.keys(src).map(Number).sort(function(a,b){return a-b;});
   return keys.map(function(ci){
     var c = src[ci] || {};
@@ -2071,6 +2076,7 @@ async function toggleLibraryPublish(){
       APP.libPublished = false; LS.save('libPub', false);
       if(btn) btn.textContent = '📚 공개 서재에 올리기';
       popToast('공개 서재에서 내렸습니다');
+      renderDash();
       return;
     }
     var chapters = _libChaptersArray();
@@ -2086,6 +2092,7 @@ async function toggleLibraryPublish(){
     APP.libPublished = true; LS.save('libPub', true);
     if(btn) btn.textContent = '✓ 서재에 공개됨 — 내리기';
     popToast('공개 서재에 올렸습니다 📚');
+    renderDash();
   }catch(e){ popToast('서재 게시 실패: ' + e.message); }
 }
 
