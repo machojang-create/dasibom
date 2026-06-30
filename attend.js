@@ -21,7 +21,11 @@
       var day = new Date().toISOString().slice(0, 10);
       try { if (localStorage.getItem('dasibom_attend_day') === day) return; } catch (e) {}
       firebase.firestore().collection('users').doc(u.uid)
-        .set({ lastActiveAt: firebase.firestore.FieldValue.serverTimestamp(), lastActiveDay: day }, { merge: true })
+        .set({
+          lastActiveAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastActiveDay: day,
+          visitCount: firebase.firestore.FieldValue.increment(1) // 하루 1회 가드라 = 누적 '방문일수'
+        }, { merge: true })
         .then(function () { try { localStorage.setItem('dasibom_attend_day', day); } catch (e) {} })
         .catch(function () { /* 오프라인·규칙 거부 시 조용히 통과 */ });
     });

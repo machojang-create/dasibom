@@ -425,6 +425,22 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       <div class="stat-card yellow"><div class="stat-num" id="stNewToday">-</div><div class="stat-lbl">오늘 신규가입</div></div>
       <div class="stat-card orange"><div class="stat-num" id="stCareTarget2">-</div><div class="stat-lbl">안부 대상</div></div>
     </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stReturnRate">-</div><div class="stat-lbl">재접속율(2일 이상 방문)</div></div>
+      <div class="stat-card green"><div class="stat-num" id="stAvgVisit">-</div><div class="stat-lbl">1인당 평균 누적 접속일수</div></div>
+      <div class="stat-card yellow"><div class="stat-num" id="stMaxVisit">-</div><div class="stat-lbl">최다 접속 회원 일수</div></div>
+      <div class="stat-card orange"><div class="stat-num" id="stOnceOnly">-</div><div class="stat-lbl">1회 방문 후 미재방문</div></div>
+    </div>
+    <div class="stats-twocol">
+      <div class="stats-panel">
+        <div class="stats-panel-title">누적 접속일수 Top 10 회원</div>
+        <div id="topVisitors" class="bar-list"></div>
+      </div>
+      <div class="stats-panel">
+        <div class="stats-panel-title">접속 빈도 분포(누적 방문일수 구간)</div>
+        <div id="distVisit" class="bar-list"></div>
+      </div>
+    </div>
 
     <div class="stats-section-title">✍️ 자서전 진행</div>
     <div class="stats-row">
@@ -471,7 +487,7 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       <div class="stat-card yellow"><div class="stat-num" id="stCommentToday">-</div><div class="stat-lbl">오늘 댓글·한줄공감</div></div>
       <div class="stat-card orange"><div class="stat-num" id="stAvgLen">-</div><div class="stat-lbl">평균 답변 글자수</div></div>
     </div>
-    <div class="stats-note">⚠ 실결제 매출·유료회원 통계는 결제(PortOne) 연동 전까지 제공되지 않습니다. 패키지 선택 분포는 "결제 의향" 참고용 수치입니다.</div>
+    <div class="stats-note">⚠ 실결제 매출·유료회원 통계는 결제(PortOne) 연동 전까지 제공되지 않습니다. 패키지 선택 분포는 "결제 의향" 참고용 수치입니다.<br>⚠ 누적 접속일수(재접속율 등)는 오늘 배포 시점부터 새로 쌓이는 지표입니다 — 이전 방문 기록은 소급 집계되지 않습니다.</div>
   </div>
 
   <!-- 편집 모달 -->
@@ -703,7 +719,8 @@ async function loadData(){
         careOrg:     u.careOrg || '',
         lastActiveDay: u.lastActiveDay || null,
         careLogs:    u.careLogs || [],
-        isPublic:    !!m.isPublic
+        isPublic:    !!m.isPublic,
+        visitCount:  u.visitCount || 0
       });
     });
 
@@ -780,6 +797,28 @@ function renderStats(){
     var c=r.createdAt; var day = c&&c.toDate ? c.toDate().toISOString().slice(0,10) : null; return day===today;
   }).length;
   document.getElementById('stCareTarget2').textContent = rows.filter(function(r){ return r.careTarget; }).length;
+
+  // 재접속율·누적 접속 (attend.js의 users.visitCount = 하루 1회 가드된 누적 방문일수)
+  var visited = rows.filter(function(r){ return r.visitCount>0; });
+  var returned = rows.filter(function(r){ return r.visitCount>=2; });
+  var onceOnly = rows.filter(function(r){ return r.visitCount===1; });
+  document.getElementById('stReturnRate').textContent = visited.length ? Math.round(returned.length/visited.length*100)+'%' : '-';
+  document.getElementById('stAvgVisit').textContent = visited.length ? (visited.reduce(function(a,r){return a+r.visitCount;},0)/visited.length).toFixed(1) : '0';
+  document.getElementById('stMaxVisit').textContent = rows.length ? Math.max.apply(null, rows.map(function(r){return r.visitCount;})) : 0;
+  document.getElementById('stOnceOnly').textContent = onceOnly.length;
+  var topVisitors = rows.filter(function(r){ return r.visitCount>0; })
+    .sort(function(a,b){ return b.visitCount-a.visitCount; }).slice(0,10)
+    .map(function(r){ return {lbl:(r.name||r.email||r.uid.slice(0,8)), val:r.visitCount}; });
+  barList('topVisitors', topVisitors, {suffix:'일'});
+  var visitBuckets = {'1회':0, '2~4일':0, '5~9일':0, '10일 이상':0};
+  rows.forEach(function(r){
+    if(r.visitCount<=0) return;
+    else if(r.visitCount===1) visitBuckets['1회']++;
+    else if(r.visitCount<5) visitBuckets['2~4일']++;
+    else if(r.visitCount<10) visitBuckets['5~9일']++;
+    else visitBuckets['10일 이상']++;
+  });
+  barList('distVisit', Object.keys(visitBuckets).map(function(k){ return {lbl:k, val:visitBuckets[k]}; }), {suffix:'명'});
 
   // 자서전 진행
   var started = rows.filter(function(r){ return r.answerCount>0; });
