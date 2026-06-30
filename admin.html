@@ -649,7 +649,8 @@ function init(){
   _fn   = firebase.app().functions('asia-northeast3');
 
   _auth.onAuthStateChanged(function(user){
-    if(!user){
+    // 다른 페이지(자서전 등)에서 남은 익명 로그인은 "로그인 안 됨"으로 취급 — 반드시 구글 로그인으로만 진입
+    if(!user || user.isAnonymous){
       hide('gateScreen'); hide('adminWrap'); show('loginScreen'); return;
     }
     CURRENT_USER = user;
