@@ -199,6 +199,15 @@ body{
   background:#E9F6F0;padding:5px 12px;border-radius:20px;
 }
 
+/* ═══ 콘텐츠 없을 때 딤 처리(준비중) ═══ */
+.lib-notice{
+  max-width:640px;margin:0 auto 18px;padding:13px 18px;text-align:center;
+  background:#FFF8E8;border:1px solid #F0DFB0;border-radius:14px;
+  font-size:13.5px;color:#8A6A2A;line-height:1.7;
+}
+.lib-dim{opacity:.45;pointer-events:none;filter:grayscale(.3);transition:opacity .3s,filter .3s}
+.lib-dim.lib-ready{opacity:1;pointer-events:auto;filter:none}
+
 /* ═══ LOADING / EMPTY ═══ */
 .state-full{
   grid-column:1/-1;
@@ -355,6 +364,10 @@ body{
   </div>
 </section>
 
+<div class="lib-notice" id="libNotice">🌱 아직 공개된 이야기가 없어요 — 첫 자서전이 공개되면 가장 먼저 이 책장에 오릅니다.</div>
+
+<!-- 콘텐츠가 생기기 전까지는 흐리게(딤) 처리 — fetchMemoirs에서 실제 데이터가 있으면 자동 해제 -->
+<div id="libDim" class="lib-dim">
 <!-- TOOLBAR -->
 <div class="toolbar">
   <div class="search-wrap">
@@ -372,6 +385,7 @@ body{
     <span class="s-icon">📖</span>
     <p>자서전을 불러오는 중입니다…</p>
   </div>
+</div>
 </div>
 
 <!-- READER OVERLAY -->
@@ -449,7 +463,11 @@ function initFirebase(){
   try{
     if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
     _db = firebase.firestore();
-    fetchMemoirs();
+    // memoirs 컬렉션 규칙이 로그인을 요구하므로(공개 자서전 조회 포함) 비로그인 방문자는 익명 로그인 후 조회
+    firebase.auth().onAuthStateChanged(function(user){
+      if(user){ fetchMemoirs(); return; }
+      firebase.auth().signInAnonymously().catch(function(e){ showError('로그인 오류: '+e.message); });
+    });
   }catch(e){ showError('초기화 오류: '+e.message); }
 }
 
@@ -464,6 +482,11 @@ async function fetchMemoirs(){
     ALL_MEMOIRS = snap.docs.map(d => ({id:d.id, ...d.data()}));
     document.getElementById('totalCount').textContent = ALL_MEMOIRS.length;
     applyFilter();
+    // 실제 공개된 이야기가 생기면 딤 해제 + 준비중 안내 숨김
+    if(ALL_MEMOIRS.length > 0){
+      document.getElementById('libDim').classList.add('lib-ready');
+      var notice = document.getElementById('libNotice'); if(notice) notice.style.display = 'none';
+    }
   }catch(e){
     console.error('fetchMemoirs failed:', e.code, e.message);
     showError('자서전을 불러오지 못했습니다.<br>잠시 후 다시 시도해 주세요.');
