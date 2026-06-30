@@ -3076,7 +3076,7 @@ body.dark .bom-guide-text{color:#c8bba4}
   // 실제 다음 안 답한 질문(최대 3개)을 자서전 진행상태(memoir_*)로 매번 새로 계산
   function nextQuestions(){
     var pool=window.QPOOL||[];
-    if(!pool.length) return {list:QS_FALLBACK.map(function(q){return q.t;}), capped:false};
+    if(!pool.length) return {list:QS_FALLBACK.slice(0,1).map(function(q){return q.t;}), capped:false};
     function lsj(k,d){ try{ var v=localStorage.getItem('memoir_'+k); return v?JSON.parse(v):d; }catch(e){ return d; } }
     var pkg=lsj('pkg','free'), answers=lsj('answers',{}), qDates=lsj('qDates',{});
     function sel(tier,n){ var p=pool.filter(function(q){return q.tier===tier&&!q.reserve;}); var sh=p.filter(function(q){return q.show;}); var rest=p.filter(function(q){return !q.show;}).sort(function(a,b){return (b.pri||0)-(a.pri||0);}); return sh.concat(rest).slice(0,n); }
@@ -3088,7 +3088,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     var capped=(pkg==='free')&&doneToday>=3;
     if(capped) return {list:[], capped:true};
     var out=[];
-    for(var i=0;i<list.length && out.length<3;i++){
+    for(var i=0;i<list.length && out.length<1;i++){
       var a=answers[i];
       if(a==null||String(a).trim()==='') out.push(_resolveBom(list[i].bom||list[i].gist||''));
     }
@@ -3144,16 +3144,18 @@ body.dark .bom-guide-text{color:#c8bba4}
     var ma={}; try{ ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); }catch(e){}
     var answered=Object.keys(ma).filter(function(k){ return String(ma[k]||'').trim()!==''; }).length;
     var greet = answered>0
-      ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸<br>지금까지 <b>'+answered+'가지</b> 이야기를 들려주셨어요. 오늘도 이어가볼까요?'
-      : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸<br>매일 3가지만 답하면, 5일이면 <b>나만의 자서전</b>이 완성돼요. 같이 시작해요!';
+      ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸 오늘도 좋은 하루예요.'
+      : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸';
     var h=bomMsgRow(greet,'bom_smile');
-    // 실제 진행상태 기준으로 매번 최신 다음 질문을 보여줌(고정 예시 아님)
+    // 실제 진행상태 기준으로 매번 최신 다음 질문 1개만 보여줌(카드 자체가 진입 버튼 — 별도 CTA 없음)
     var qi=nextQuestions();
     if(qi.list.length){
       h+='<div class="bcp-qlabel">💬 봄이가 여쭤볼 이야기 (눌러서 바로 답하기)</div>';
-      qi.list.forEach(function(t){ h+='<a class="bcp-qprev" href="/memoir?continue=1">'+esc(t)+'<span class="bcp-qarrow">›</span></a>'; });
+      h+='<a class="bcp-qprev" href="/memoir?continue=1">'+esc(qi.list[0])+'<span class="bcp-qarrow">›</span></a>';
     } else if(qi.capped){
       h+='<div class="bcp-qlabel">🌸 오늘 이야기는 다 들었어요. 내일 또 들려주세요!</div>';
+    } else {
+      h+='<a class="bcp-cta" href="/memoir">📖 자서전 더 둘러보기 ✦</a>';
     }
     var tags=pickTags(2);
     if(tags.length){
@@ -3161,7 +3163,6 @@ body.dark .bom-guide-text{color:#c8bba4}
       tags.forEach(function(k){ var c=CONTENT_TAGS[k]; h+='<a class="bcp-tag" href="'+c.href+'">'+c.emoji+' '+c.label+'</a>'; });
       h+='</div>';
     }
-    h+='<a class="bcp-cta" href="/memoir">📖 자서전에서 이야기 들려주기 ✦</a>';
     b.innerHTML=h;
   }
   window.bomChatToggle=function(force){
