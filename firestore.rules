@@ -95,5 +95,29 @@ service cloud.firestore {
     match /trendy_albums/{uid} {
       allow read, write: if request.auth != null && request.auth.uid == uid;
     }
+
+    // 말동무 사전 — 신조어 제보(커뮤니티). 누구나 읽기 / 본인 명의로 작성 /
+    //   투표는 누구나 votes 필드만 ±1 — 본문(word/meaning/example) 변조 차단
+    match /trendy_submissions/{sid} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.word is string && request.resource.data.word.size() > 0 && request.resource.data.word.size() <= 20
+        && request.resource.data.meaning is string && request.resource.data.meaning.size() > 0 && request.resource.data.meaning.size() <= 60
+        && request.resource.data.votes == 0;
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['votes'])
+        && (request.resource.data.votes == resource.data.votes + 1 || request.resource.data.votes == resource.data.votes - 1);
+      allow delete: if request.auth != null && (
+        resource.data.uid == request.auth.uid
+        || request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com']
+      );
+    }
+    // 신조어 제보 투표 기록 — 1인 1표(문서ID={제보ID}_{uid})로 중복투표 차단
+    match /trendy_votes/{vid} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
   }
 }

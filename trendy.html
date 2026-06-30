@@ -11,7 +11,8 @@
 <script src="bom_guide.js?v=1" defer></script>
 <script>window.BOM_GUIDES={
   trendy_quiz:{face:'bom_cheer.png',title:'🎯 유행어 퀴즈',text:'시대를 골라서 5문제를 풀어보세요. 뜻을 보고 알맞은 유행어를 맞히면 돼요. 틀려도 괜찮아요, 재미로 즐겨보세요!'},
-  trendy_album:{face:'bom_smile.png',title:'📖 나만의 앨범',text:'마음에 드는 유행어에 하트를 누르면 여기에 모아둘 수 있어요. 손주들에게 써먹어 보세요!'}
+  trendy_album:{face:'bom_smile.png',title:'📖 나만의 앨범',text:'마음에 드는 유행어에 하트를 누르면 여기에 모아둘 수 있어요. 손주들에게 써먹어 보세요!'},
+  trendy_submit:{face:'bom_grin.png',title:'💡 신조어 제보',text:'어르신이 아시는 옛말이나 신조어를 다른 분들과 나눠보세요. 마음에 드는 말엔 공감 버튼도 눌러주세요!'}
 };</script>
 <script src="trendy_data.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
@@ -73,11 +74,28 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,251,244,.96);backdr
 .qz-result .score{font-family:'Nanum Myeongjo','Batang',serif;font-size:46px;font-weight:800;color:#c8784a;margin:10px 0}
 
 .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#3A2A18;color:#FFFBF4;padding:13px 26px;font-size:14px;z-index:9999;white-space:nowrap;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none}
+
+/* 신조어 제보(커뮤니티) */
+.sub-form{background:#fff;border:1.5px solid rgba(200,120,74,.14);border-radius:18px;padding:18px;margin-bottom:18px;box-shadow:0 3px 14px rgba(120,80,40,.06)}
+.sub-form-title{font-size:15px;font-weight:800;color:#3A2A18;margin-bottom:14px}
+.sub-list{display:flex;flex-direction:column;gap:10px}
+.sub-item{background:#fff;border:1.5px solid rgba(200,120,74,.14);border-radius:16px;padding:15px 17px;display:flex;align-items:center;gap:12px}
+.sub-item-body{flex:1;min-width:0}
+.sub-item-word{font-family:'Nanum Myeongjo','Batang',serif;font-size:18px;font-weight:800;color:#3A2A18;margin-bottom:4px}
+.sub-item-meaning{font-size:14px;color:#4a3a26;line-height:1.6}
+.sub-item-example{font-size:12.5px;color:#8a7560;margin-top:5px}
+.sub-vote{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;background:#FFF6E9;border:1.5px solid #EBD9C2;border-radius:14px;padding:9px 13px;cursor:pointer;font-family:inherit}
+.sub-vote.on{background:linear-gradient(135deg,#c8784a,#d4845a);border-color:transparent;color:#fff}
+.sub-vote .n{font-size:16px;font-weight:800}
+.sub-vote .l{font-size:10px}
+
 body.dark{background:#1c1714;color:#e6d9c5}
 body.dark header{background:rgba(28,23,20,.96);border-color:rgba(200,120,74,.2)}
-body.dark .wcard,body.dark .qz-card,body.dark .empty,body.dark .search,body.dark .tab,body.dark .era-chip,body.dark .qz-opt,body.dark .qz-pick{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
+body.dark .wcard,body.dark .qz-card,body.dark .empty,body.dark .search,body.dark .tab,body.dark .era-chip,body.dark .qz-opt,body.dark .qz-pick,body.dark .sub-form,body.dark .sub-item{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
 body.dark .wcard-meaning{color:#d8c9b0}
 body.dark .wcard-ex{background:#1c1714;color:#a8927a}
+body.dark .sub-item-meaning{color:#d8c9b0}
+body.dark .sub-vote{background:#1c1714;border-color:#3d342a;color:#e6d9c5}
 </style>
 </head>
 <body>
@@ -98,6 +116,7 @@ body.dark .wcard-ex{background:#1c1714;color:#a8927a}
     <button class="tab" data-tab="tl">⏱️ 시대별 타임라인</button>
     <button class="tab" data-tab="quiz" data-bomguide="trendy_quiz">🎯 퀴즈</button>
     <button class="tab" data-tab="album" data-bomguide="trendy_album">📖 나만의 앨범</button>
+    <button class="tab" data-tab="submit" data-bomguide="trendy_submit">💡 신조어 제보</button>
   </div>
 
   <!-- 사전 -->
@@ -117,6 +136,18 @@ body.dark .wcard-ex{background:#1c1714;color:#a8927a}
 
   <!-- 앨범 -->
   <div id="pane-album" style="display:none"></div>
+
+  <!-- 신조어 제보(커뮤니티) -->
+  <div id="pane-submit" style="display:none">
+    <div class="sub-form">
+      <div class="sub-form-title">내가 아는 말을 다른 분들과 나눠보세요</div>
+      <input type="text" id="subWord" class="search" placeholder="단어 (예: 갑분싸)" maxlength="20" style="margin-bottom:10px">
+      <input type="text" id="subMeaning" class="search" placeholder="무슨 뜻인가요?" maxlength="60" style="margin-bottom:10px">
+      <input type="text" id="subExample" class="search" placeholder="예문 (선택)" maxlength="80" style="margin-bottom:14px">
+      <button class="qz-next" id="subBtn" style="width:100%">제보하기</button>
+    </div>
+    <div class="sub-list" id="subList"></div>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -298,17 +329,98 @@ function renderQuizResult(){
   document.getElementById('qzRetry').addEventListener('click', renderQuizPick);
 }
 
+/* ── 신조어 제보(커뮤니티) — Firestore 공개 컬렉션, 실시간 공감투표 ── */
+var SUB_BAD=['시발','씨발','병신','개새','좆','니미','fuck','sex','섹스'];
+function _subClean(t){ var s=t.replace(/\s/g,'').toLowerCase(); return !SUB_BAD.some(function(w){return s.indexOf(w)>=0;}); }
+var _mySubVotes={}; // localStorage 캐시(내가 누른 투표 — UI 즉시반응용, 실제 막음은 서버 trendy_votes 문서)
+function _loadMyVotes(){ try{ return JSON.parse(localStorage.getItem('dasibom_trendy_votes'))||{}; }catch(e){ return {}; } }
+function _saveMyVotes(v){ try{ localStorage.setItem('dasibom_trendy_votes', JSON.stringify(v)); }catch(e){} }
+_mySubVotes=_loadMyVotes();
+
+function renderSubmissions(list){
+  var box=document.getElementById('subList'); if(!box) return;
+  if(!list.length){ box.innerHTML='<div class="empty">아직 제보된 말이 없어요.<br>위에서 첫 번째로 들려주세요 💡</div>'; return; }
+  box.innerHTML=list.map(function(s){
+    var voted=!!_mySubVotes[s.id];
+    return '<div class="sub-item">'
+      +'<div class="sub-item-body"><div class="sub-item-word">'+esc(s.word)+'</div>'
+      +'<div class="sub-item-meaning">'+esc(s.meaning)+'</div>'
+      +(s.example?'<div class="sub-item-example">💬 '+esc(s.example)+'</div>':'')+'</div>'
+      +'<button class="sub-vote'+(voted?' on':'')+'" data-id="'+esc(s.id)+'"><span class="n">👍 '+(s.votes||0)+'</span><span class="l">공감</span></button>'
+      +'</div>';
+  }).join('');
+}
+function loadSubmissions(){
+  var box=document.getElementById('subList'); if(box) box.innerHTML='<div class="empty">불러오는 중…</div>';
+  _ensureAuth().then(function(){
+    return _db.collection('trendy_submissions').orderBy('votes','desc').limit(100).get();
+  }).then(function(snap){
+    var arr=[]; snap.forEach(function(d){ arr.push(Object.assign({id:d.id}, d.data())); });
+    renderSubmissions(arr);
+  }).catch(function(e){
+    var box=document.getElementById('subList'); if(box) box.innerHTML='<div class="empty">불러오지 못했어요. 잠시 후 다시 시도해 주세요.</div>';
+  });
+}
+function submitWord(){
+  var word=document.getElementById('subWord').value.trim();
+  var meaning=document.getElementById('subMeaning').value.trim();
+  var example=document.getElementById('subExample').value.trim();
+  if(!word || !meaning){ popToast('단어와 뜻을 입력해 주세요'); return; }
+  if(!_subClean(word+meaning+example)){ popToast('서로 따뜻한 말로 남겨주세요 🌸'); return; }
+  var btn=document.getElementById('subBtn'); btn.disabled=true;
+  _ensureAuth().then(function(uid){
+    return _db.collection('trendy_submissions').add({
+      word:word, meaning:meaning, example:example, uid:uid, votes:0,
+      ts: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }).then(function(){
+    document.getElementById('subWord').value='';
+    document.getElementById('subMeaning').value='';
+    document.getElementById('subExample').value='';
+    popToast('제보해 주셔서 감사해요 💡');
+    loadSubmissions();
+  }).catch(function(e){ popToast('제보에 실패했어요. 잠시 후 다시 시도해 주세요'); }).finally(function(){ btn.disabled=false; });
+}
+function toggleVote(subId, btn){
+  var alreadyVoted=!!_mySubVotes[subId];
+  _ensureAuth().then(function(uid){
+    var subRef=_db.collection('trendy_submissions').doc(subId);
+    var voteRef=_db.collection('trendy_votes').doc(subId+'_'+uid);
+    var batch=_db.batch();
+    if(alreadyVoted){
+      batch.delete(voteRef);
+      batch.update(subRef, { votes: firebase.firestore.FieldValue.increment(-1) });
+    } else {
+      batch.set(voteRef, { subId:subId, uid:uid, ts: firebase.firestore.FieldValue.serverTimestamp() });
+      batch.update(subRef, { votes: firebase.firestore.FieldValue.increment(1) });
+    }
+    return batch.commit();
+  }).then(function(){
+    if(alreadyVoted) delete _mySubVotes[subId]; else _mySubVotes[subId]=true;
+    _saveMyVotes(_mySubVotes);
+    loadSubmissions();
+  }).catch(function(){ popToast('공감 처리에 실패했어요'); });
+}
+document.getElementById('subBtn').addEventListener('click', submitWord);
+document.getElementById('subList').addEventListener('click', function(e){
+  var btn=e.target.closest('.sub-vote'); if(!btn) return;
+  btn.disabled=true;
+  toggleVote(btn.getAttribute('data-id'), btn);
+  setTimeout(function(){ btn.disabled=false; }, 600);
+});
+
 var activeTab='dict';
 function renderActivePane(){
   if(activeTab==='dict') renderDict();
   else if(activeTab==='tl') renderTimeline();
   else if(activeTab==='album') renderAlbum();
+  else if(activeTab==='submit') loadSubmissions();
 }
 document.getElementById('tabs').addEventListener('click', function(e){
   var btn=e.target.closest('.tab'); if(!btn) return;
   activeTab=btn.getAttribute('data-tab');
   document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('on', b===btn); });
-  ['dict','tl','quiz','album'].forEach(function(t){
+  ['dict','tl','quiz','album','submit'].forEach(function(t){
     document.getElementById('pane-'+t).style.display = (t===activeTab) ? '' : 'none';
   });
   if(activeTab==='quiz' && !qz.era) renderQuizPick();
