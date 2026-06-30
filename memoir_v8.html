@@ -628,6 +628,30 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   </div>
 </div>
 
+<!-- ════ 완성 뱃지/인증서 모달 ════ -->
+<div id="badgeBg" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:900;overflow-y:auto;padding:24px 16px">
+  <div style="max-width:480px;margin:0 auto;background:linear-gradient(160deg,#1a1a2e,#0f2027);border-radius:24px;padding:40px 28px;text-align:center;position:relative;border:1.5px solid #f5c84244">
+    <button onclick="document.getElementById('badgeBg').style.display='none'" style="position:absolute;top:14px;right:16px;background:none;border:none;color:#aaa;font-size:20px;cursor:pointer">✕</button>
+    <div style="font-size:64px;margin-bottom:8px">🏅</div>
+    <div style="font-family:'Nanum Myeongjo','Batang',serif;font-size:22px;font-weight:800;color:#f5c842;margin-bottom:4px">자서전 완성 인증서</div>
+    <div style="color:#aaa;font-size:13px;margin-bottom:28px">Certificate of Memoir Completion</div>
+    <div style="background:rgba(245,200,66,.08);border:1px solid #f5c84233;border-radius:16px;padding:24px 20px;margin-bottom:24px">
+      <div style="color:#ddd;font-size:14px;margin-bottom:8px">이 인증서는</div>
+      <div id="badgeName" style="font-size:20px;font-weight:800;color:#fff;margin-bottom:8px"></div>
+      <div style="color:#aaa;font-size:13px;line-height:1.7">님이 다시봄라이프에서<br>소중한 삶의 이야기를<br>자서전으로 완성하셨음을 인증합니다.</div>
+      <div id="badgeDate" style="color:#f5c842;font-size:13px;font-weight:700;margin-top:14px"></div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;justify-content:center;margin-bottom:24px">
+      <div style="width:40px;height:1px;background:#f5c84244"></div>
+      <div style="color:#f5c842;font-size:18px">✦</div>
+      <div style="width:40px;height:1px;background:#f5c84244"></div>
+    </div>
+    <div id="badgeTitle" style="font-family:'Nanum Myeongjo','Batang',serif;font-size:17px;color:#e8e0c8;margin-bottom:24px"></div>
+    <button onclick="shareBadge()" style="width:100%;padding:14px;background:linear-gradient(145deg,#f5c842,#e8a800);border:none;border-radius:14px;color:#1a1200;font-size:16px;font-weight:800;cursor:pointer">📤 공유하기</button>
+    <div style="color:#666;font-size:11px;margin-top:12px">다시봄라이프 · dasibomlife.com</div>
+  </div>
+</div>
+
 <!-- ════ 오늘 완료 (하루 3문항 스케줄) ════ -->
 <div class="screen" id="s-daydone">
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;gap:16px">
@@ -1617,11 +1641,13 @@ function renderDash(){
     if(APP.preview){
       var libLbl = APP.libPublished ? '✓ 공개 서재 공개됨 — 내리기' : '📚 공개 서재에 올리기';
       html+='<button class="btn btn-ghost" id="db3" style="margin-top:4px;border-color:#0e9d7d;color:#0e9d7d">'+libLbl+'</button>';
+      html+='<button class="btn btn-ghost" id="db4" style="margin-top:4px;border-color:#f5c842;color:#f5c842">🏅 완성 뱃지 · 인증서 보기</button>';
     }
     btns.innerHTML=html;
     el('db1').addEventListener('click',APP.preview?showPreview:goTitleScreen);
     el('db2').addEventListener('click',confirmReset);
     if(APP.preview && el('db3')) el('db3').addEventListener('click',toggleLibraryPublish);
+    if(APP.preview && el('db4')) el('db4').addEventListener('click',showBadge);
   }
 
   var list=el('chList'); list.innerHTML='';
@@ -2065,6 +2091,22 @@ function _libChaptersArray(){
     return { title: c.storyName || '이야기', content: (c.texts || []).join('\n\n') };
   });
 }
+function showBadge(){
+  var u = _user || (window.firebase && firebase.auth && firebase.auth().currentUser);
+  var name = (u && (u.displayName || u.email)) || '작가';
+  var title = APP.bookTitle || APP.preview && APP.preview.title || '나의 이야기';
+  var dateStr = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('badgeName').textContent = name;
+  document.getElementById('badgeTitle').textContent = '「' + title + '」';
+  document.getElementById('badgeDate').textContent = dateStr + ' 완성';
+  document.getElementById('badgeBg').style.display = '';
+}
+window.shareBadge = function(){
+  var title = APP.bookTitle || APP.preview && APP.preview.title || '나의 이야기';
+  var text = '다시봄라이프에서 「' + title + '」 자서전을 완성했습니다 🏅';
+  if(navigator.share){ navigator.share({title:'자서전 완성 인증서', text:text, url:location.href}).catch(function(){}); }
+  else { navigator.clipboard && navigator.clipboard.writeText(text).then(function(){ popToast('클립보드에 복사되었습니다 ✓'); }); }
+};
 async function toggleLibraryPublish(){
   try{
     await initFirebase();

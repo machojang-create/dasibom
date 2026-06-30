@@ -309,6 +309,11 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     <button class="admin-tab role-master" data-tab="approvals" onclick="switchTab('approvals')" style="display:none">🛡️ 승인 관리 <span id="apprBadge" class="care-tab-badge" style="display:none"></span></button>
     <button class="admin-tab role-master" data-tab="stats" onclick="switchTab('stats')" style="display:none">📊 통계</button>
     <button class="admin-tab role-master" data-tab="bots" onclick="switchTab('bots')" style="display:none">🤖 봇 심기</button>
+    <button class="admin-tab role-master" data-tab="notices" onclick="switchTab('notices')" style="display:none">📢 공지사항</button>
+    <button class="admin-tab role-master" data-tab="banners" onclick="switchTab('banners')" style="display:none">🎉 이벤트배너</button>
+    <button class="admin-tab role-master" data-tab="coupons" onclick="switchTab('coupons')" style="display:none">🎟️ 쿠폰</button>
+    <button class="admin-tab role-master" data-tab="reports" onclick="switchTab('reports')" style="display:none">🚨 신고</button>
+    <button class="admin-tab role-master" data-tab="survey" onclick="switchTab('survey')" style="display:none">📋 설문</button>
   </nav>
 
   <!-- 회원 관리 탭 -->
@@ -559,6 +564,62 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
         <button class="wem-cancel" onclick="closeWisdomEdit()">취소</button>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- 공지사항 관리 -->
+<div id="tabNotices" class="admin-body" style="display:none">
+  <div class="stats-section-title">📢 공지사항 관리</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <input id="ntTitle" placeholder="제목" style="flex:1;min-width:180px;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="ntBody" placeholder="내용 (짧게)" style="flex:2;min-width:200px;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <button onclick="addNotice()" style="padding:10px 20px;background:#7c9cff;border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer">추가</button>
+  </div>
+  <div id="noticeList" style="display:flex;flex-direction:column;gap:8px"></div>
+</div>
+
+<!-- 이벤트 배너 관리 -->
+<div id="tabBanners" class="admin-body" style="display:none">
+  <div class="stats-section-title">🎉 이벤트 배너 관리</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <input id="bnText" placeholder="배너 문구 (예: 🎁 여름 이벤트!)" style="flex:2;min-width:200px;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="bnLink" placeholder="링크 (선택, 빈칸 가능)" style="flex:1;min-width:160px;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <select id="bnColor" style="padding:10px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0">
+      <option value="#0e9d7d">초록</option><option value="#e87000">주황</option><option value="#e05c5c">빨강</option><option value="#7c9cff">파랑</option>
+    </select>
+    <button onclick="addBanner()" style="padding:10px 20px;background:#0e9d7d;border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer">추가</button>
+  </div>
+  <div id="bannerList" style="display:flex;flex-direction:column;gap:8px"></div>
+</div>
+
+<!-- 쿠폰 관리 -->
+<div id="tabCoupons" class="admin-body" style="display:none">
+  <div class="stats-section-title">🎟️ 쿠폰 관리</div>
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    <input id="cpCode" placeholder="쿠폰 코드 (영문대문자)" style="flex:1;min-width:160px;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px;text-transform:uppercase">
+    <select id="cpType" style="padding:10px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0">
+      <option value="premium">프리미엄 1개월</option><option value="free_questions">무료 추가문항</option><option value="gift">선물용</option>
+    </select>
+    <input id="cpLimit" type="number" placeholder="사용횟수 제한(0=무제한)" style="width:140px;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <button onclick="addCoupon()" style="padding:10px 20px;background:#e87000;border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer">생성</button>
+  </div>
+  <div id="couponList" style="display:flex;flex-direction:column;gap:8px"></div>
+</div>
+
+<!-- 댓글 신고 -->
+<div id="tabReports" class="admin-body" style="display:none">
+  <div class="stats-section-title">🚨 댓글 신고 처리</div>
+  <div id="reportList" style="display:flex;flex-direction:column;gap:8px">
+    <div style="color:#888;font-size:14px;text-align:center;padding:24px">불러오는 중…</div>
+  </div>
+</div>
+
+<!-- 베타 설문 결과 -->
+<div id="tabSurvey" class="admin-body" style="display:none">
+  <div class="stats-section-title">📋 베타 설문 결과</div>
+  <div id="surveyStats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:20px"></div>
+  <div id="surveyList" style="display:flex;flex-direction:column;gap:8px">
+    <div style="color:#888;font-size:14px;text-align:center;padding:24px">불러오는 중…</div>
   </div>
 </div>
 
@@ -1123,7 +1184,7 @@ function hide(id){ document.getElementById(id).style.display='none'; }
 
 /* ── 탭 전환 ── */
 function switchTab(tab) {
-  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals', stats:'tabStats', bots:'tabBots' };
+  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals', stats:'tabStats', bots:'tabBots', notices:'tabNotices', banners:'tabBanners', coupons:'tabCoupons', reports:'tabReports', survey:'tabSurvey' };
   document.querySelectorAll('.admin-tab').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-tab') === tab);
   });
@@ -1132,6 +1193,11 @@ function switchTab(tab) {
   if (tab === 'care') renderCare();
   if (tab === 'approvals') loadApprovals();
   if (tab === 'stats') renderStats();
+  if (tab === 'notices') loadNotices();
+  if (tab === 'banners') loadBanners();
+  if (tab === 'coupons') loadCoupons();
+  if (tab === 'reports') loadReports();
+  if (tab === 'survey') loadSurvey();
 }
 
 /* ── 관리자 권한(역할) — 신청·승인 (MVP, Firestore admin_roles 문서 기반) ──
@@ -1165,6 +1231,11 @@ function applyRoleGating(role){
   tabVis('approvals', isMaster);
   tabVis('stats', isMaster);
   tabVis('bots', isMaster);
+  tabVis('notices', isMaster);
+  tabVis('banners', isMaster);
+  tabVis('coupons', isMaster);
+  tabVis('reports', isMaster);
+  tabVis('survey', isMaster);
   switchTab(isMaster ? 'members' : 'care');
 }
 /* ════════════════════════════════════════════
@@ -1728,6 +1799,189 @@ function deleteWisdom(key) {
   _rtdb.ref('wisdoms/' + key).remove()
     .then(function() { loadWisdomList(); })
     .catch(function(e) { alert('삭제 실패: ' + e.message); });
+}
+
+/* ══════════════════════════════════════════
+   공지사항 관리
+══════════════════════════════════════════ */
+function loadNotices(){
+  var el=document.getElementById('noticeList');
+  el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">불러오는 중…</div>';
+  _db.collection('notices').orderBy('ts','desc').limit(50).get().then(function(snap){
+    if(snap.empty){ el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">공지사항이 없습니다.</div>'; return; }
+    el.innerHTML=snap.docs.map(function(d){
+      var x=d.data();
+      return '<div style="background:#1a2040;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px">'
+        +'<div><div style="font-weight:700;color:#e8e8f0;font-size:14px">'+esc(x.title)+'</div>'
+        +'<div style="color:#aaa;font-size:12px;margin-top:4px">'+esc(x.body)+'</div></div>'
+        +'<button onclick="delNotice(\''+d.id+'\')" style="border:none;background:#e05c5c;color:#fff;border-radius:8px;padding:6px 14px;cursor:pointer;font-size:12px;white-space:nowrap">삭제</button>'
+        +'</div>';
+    }).join('');
+  }).catch(function(e){ el.innerHTML='<div style="color:#ff6b6b;padding:12px">로드 실패: '+e.message+'</div>'; });
+}
+window.addNotice=function(){
+  var title=(document.getElementById('ntTitle').value||'').trim();
+  var body=(document.getElementById('ntBody').value||'').trim();
+  if(!title||!body){ alert('제목과 내용을 모두 입력해 주세요'); return; }
+  _db.collection('notices').add({title:title,body:body,ts:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(function(){ document.getElementById('ntTitle').value=''; document.getElementById('ntBody').value=''; loadNotices(); })
+    .catch(function(e){ alert('추가 실패: '+e.message); });
+};
+window.delNotice=function(id){
+  if(!confirm('공지사항을 삭제할까요?')) return;
+  _db.collection('notices').doc(id).delete().then(loadNotices).catch(function(e){ alert(e.message); });
+};
+
+/* ══════════════════════════════════════════
+   이벤트 배너 관리
+══════════════════════════════════════════ */
+function loadBanners(){
+  var el=document.getElementById('bannerList');
+  el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">불러오는 중…</div>';
+  _db.collection('event_banners').orderBy('ts','desc').limit(20).get().then(function(snap){
+    if(snap.empty){ el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">등록된 배너가 없습니다.</div>'; return; }
+    el.innerHTML=snap.docs.map(function(d){
+      var x=d.data();
+      var active=x.active!==false;
+      return '<div style="background:#1a2040;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px">'
+        +'<div style="display:flex;align-items:center;gap:10px">'
+        +'<span style="width:12px;height:12px;border-radius:50%;background:'+(active?'#4caf50':'#888')+';display:inline-block"></span>'
+        +'<div><div style="font-weight:700;color:'+esc(x.color||'#0e9d7d')+';font-size:14px">'+esc(x.text)+'</div>'
+        +(x.link?'<div style="color:#7c9cff;font-size:11px">'+esc(x.link)+'</div>':'')+'</div></div>'
+        +'<div style="display:flex;gap:6px">'
+        +'<button onclick="toggleBanner(\''+d.id+'\','+active+')" style="border:none;background:'+(active?'#555':'#4caf50')+';color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">'+(active?'숨김':'활성')+'</button>'
+        +'<button onclick="delBanner(\''+d.id+'\')" style="border:none;background:#e05c5c;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">삭제</button>'
+        +'</div></div>';
+    }).join('');
+  }).catch(function(e){ el.innerHTML='<div style="color:#ff6b6b;padding:12px">로드 실패: '+e.message+'</div>'; });
+}
+window.addBanner=function(){
+  var text=(document.getElementById('bnText').value||'').trim();
+  var link=(document.getElementById('bnLink').value||'').trim();
+  var color=document.getElementById('bnColor').value;
+  if(!text){ alert('배너 문구를 입력해 주세요'); return; }
+  _db.collection('event_banners').add({text:text,link:link||'',color:color,active:true,ts:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(function(){ document.getElementById('bnText').value=''; document.getElementById('bnLink').value=''; loadBanners(); })
+    .catch(function(e){ alert('추가 실패: '+e.message); });
+};
+window.toggleBanner=function(id,active){
+  _db.collection('event_banners').doc(id).update({active:!active}).then(loadBanners).catch(function(e){ alert(e.message); });
+};
+window.delBanner=function(id){
+  if(!confirm('배너를 삭제할까요?')) return;
+  _db.collection('event_banners').doc(id).delete().then(loadBanners).catch(function(e){ alert(e.message); });
+};
+
+/* ══════════════════════════════════════════
+   쿠폰 관리
+══════════════════════════════════════════ */
+var COUPON_TYPE_LABEL={premium:'프리미엄 1개월',free_questions:'무료 추가문항',gift:'선물용'};
+function loadCoupons(){
+  var el=document.getElementById('couponList');
+  el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">불러오는 중…</div>';
+  _db.collection('coupons').orderBy('createdAt','desc').limit(100).get().then(function(snap){
+    if(snap.empty){ el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">생성된 쿠폰이 없습니다.</div>'; return; }
+    el.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      +'<thead><tr style="color:#aaa;border-bottom:1px solid #2e3a5c">'
+      +'<th style="text-align:left;padding:8px">코드</th><th style="padding:8px">종류</th>'
+      +'<th style="padding:8px">사용/제한</th><th style="padding:8px">상태</th><th style="padding:8px">삭제</th>'
+      +'</tr></thead><tbody>'
+      +snap.docs.map(function(d){
+        var x=d.data(); var used=x.usedCount||0; var lim=x.useLimit||0;
+        var full=lim>0&&used>=lim;
+        return '<tr style="border-bottom:1px solid #1a2040">'
+          +'<td style="padding:8px;color:#7c9cff;font-weight:700;letter-spacing:1px">'+esc(d.id)+'</td>'
+          +'<td style="padding:8px;text-align:center;color:#e8e8f0">'+esc(COUPON_TYPE_LABEL[x.type]||x.type)+'</td>'
+          +'<td style="padding:8px;text-align:center;color:#aaa">'+used+'/'+(lim||'∞')+'</td>'
+          +'<td style="padding:8px;text-align:center"><span style="background:'+(full?'#e05c5c':'#4caf50')+';color:#fff;border-radius:6px;padding:2px 10px;font-size:11px">'+(full?'소진':'유효')+'</span></td>'
+          +'<td style="padding:8px;text-align:center"><button onclick="delCoupon(\''+d.id+'\')" style="border:none;background:#444;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px">삭제</button></td>'
+          +'</tr>';
+      }).join('')+'</tbody></table>';
+  }).catch(function(e){ el.innerHTML='<div style="color:#ff6b6b;padding:12px">로드 실패: '+e.message+'</div>'; });
+}
+window.addCoupon=function(){
+  var code=(document.getElementById('cpCode').value||'').trim().toUpperCase();
+  var type=document.getElementById('cpType').value;
+  var limit=parseInt(document.getElementById('cpLimit').value)||0;
+  if(!code||!/^[A-Z0-9_-]{3,20}$/.test(code)){ alert('쿠폰 코드는 영문대문자·숫자 3~20자로 입력해 주세요'); return; }
+  _db.collection('coupons').doc(code).set({type:type,useLimit:limit,usedCount:0,createdAt:firebase.firestore.FieldValue.serverTimestamp()})
+    .then(function(){ document.getElementById('cpCode').value=''; loadCoupons(); })
+    .catch(function(e){ alert('생성 실패: '+e.message); });
+};
+window.delCoupon=function(code){
+  if(!confirm('쿠폰 '+code+'를 삭제할까요?')) return;
+  _db.collection('coupons').doc(code).delete().then(loadCoupons).catch(function(e){ alert(e.message); });
+};
+
+/* ══════════════════════════════════════════
+   댓글 신고 처리
+══════════════════════════════════════════ */
+function loadReports(){
+  var el=document.getElementById('reportList');
+  el.innerHTML='<div style="color:#888;font-size:14px;text-align:center;padding:24px">불러오는 중…</div>';
+  _db.collection('comment_reports').orderBy('ts','desc').limit(100).get().then(function(snap){
+    if(snap.empty){ el.innerHTML='<div style="color:#888;font-size:14px;text-align:center;padding:24px">신고된 댓글이 없습니다 ✓</div>'; return; }
+    el.innerHTML=snap.docs.map(function(d){
+      var x=d.data();
+      return '<div style="background:#1a2040;border-radius:10px;padding:14px 16px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:10px">'
+        +'<div style="flex:1;min-width:200px">'
+        +'<div style="color:#ffb347;font-size:12px;margin-bottom:4px">신고자: '+esc(x.uid||'?')+' · 컬렉션: '+esc(x.collection||'?')+'</div>'
+        +'<div style="color:#e8e8f0;font-size:14px">댓글: '+esc(x.commentText||x.text||'(텍스트 없음)')+'</div>'
+        +(x.reason?'<div style="color:#aaa;font-size:12px;margin-top:4px">사유: '+esc(x.reason)+'</div>':'')
+        +'</div>'
+        +'<div style="display:flex;gap:6px;flex-shrink:0">'
+        +(x.commentId?'<button onclick="blindComment(\''+esc(x.collection)+'\',\''+esc(x.commentId)+'\',\''+d.id+'\')" style="border:none;background:#e87000;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">블라인드</button>':'')
+        +'<button onclick="dismissReport(\''+d.id+'\')" style="border:none;background:#555;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">무시</button>'
+        +'</div></div>';
+    }).join('');
+  }).catch(function(e){ el.innerHTML='<div style="color:#ff6b6b;padding:12px">로드 실패: '+e.message+'</div>'; });
+}
+window.blindComment=function(col,commentId,reportId){
+  if(!confirm('해당 댓글을 블라인드(삭제) 처리할까요?')) return;
+  var batch=_db.batch();
+  batch.delete(_db.collection(col).doc(commentId));
+  batch.delete(_db.collection('comment_reports').doc(reportId));
+  batch.commit().then(loadReports).catch(function(e){ alert('처리 실패: '+e.message); });
+};
+window.dismissReport=function(reportId){
+  _db.collection('comment_reports').doc(reportId).delete().then(loadReports).catch(function(e){ alert(e.message); });
+};
+
+/* ══════════════════════════════════════════
+   베타 설문 결과
+══════════════════════════════════════════ */
+function loadSurvey(){
+  var statsEl=document.getElementById('surveyStats');
+  var listEl=document.getElementById('surveyList');
+  statsEl.innerHTML=''; listEl.innerHTML='<div style="color:#888;font-size:14px;text-align:center;padding:24px">불러오는 중…</div>';
+  _db.collection('survey').get().then(function(snap){
+    if(snap.empty){ listEl.innerHTML='<div style="color:#888;font-size:14px;text-align:center;padding:24px">설문 응답이 없습니다.</div>'; return; }
+    var all=[]; var totals={}; var counts={};
+    snap.forEach(function(d){ var x=d.data(); x._uid=d.id; all.push(x);
+      Object.keys(x).forEach(function(k){ if(k.startsWith('_')) return;
+        if(typeof x[k]==='number'){ totals[k]=(totals[k]||0)+x[k]; counts[k]=(counts[k]||0)+1; }
+      });
+    });
+    // 평균 카드 표시
+    var statCards=Object.keys(totals).map(function(k){
+      var avg=(totals[k]/counts[k]).toFixed(1);
+      return '<div style="background:#1a2040;border-radius:10px;padding:14px 16px;text-align:center">'
+        +'<div style="color:#aaa;font-size:12px;margin-bottom:6px">'+esc(k)+'</div>'
+        +'<div style="color:#7c9cff;font-size:26px;font-weight:800">'+avg+'</div>'
+        +'<div style="color:#666;font-size:11px">응답 '+counts[k]+'명</div>'
+        +'</div>';
+    });
+    statsEl.innerHTML='<div style="grid-column:1/-1;color:#aaa;font-size:13px;margin-bottom:4px">총 '+snap.size+'명 응답</div>'+statCards.join('');
+    // 응답 목록
+    listEl.innerHTML=all.map(function(x){
+      var fields=Object.keys(x).filter(function(k){ return k!=='_uid'&&k!=='ts'; });
+      return '<div style="background:#1a2040;border-radius:10px;padding:14px 16px">'
+        +'<div style="color:#7c9cff;font-size:11px;margin-bottom:8px">'+esc(x._uid)+'</div>'
+        +fields.map(function(k){ return '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">'
+          +'<span style="color:#aaa">'+esc(k)+'</span><span style="color:#e8e8f0;font-weight:600">'+esc(String(x[k]))+'</span>'
+          +'</div>'; }).join('')+'</div>';
+    }).join('');
+  }).catch(function(e){ listEl.innerHTML='<div style="color:#ff6b6b;padding:12px">로드 실패: '+e.message+'</div>'; });
 }
 </script>
 </body>

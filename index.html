@@ -1482,6 +1482,9 @@
   </div>
 </nav>
 
+<!-- 이벤트 배너 / 공지 (Firestore event_banners + notices) -->
+<div id="eventBannerWrap" style="display:none"></div>
+
 <!-- CINEMATIC HERO -->
 <header class="cine-hero" id="top">
   <video class="ch-video" autoplay muted loop playsinline preload="auto" poster="/img/hero-poster.jpg">
@@ -3277,6 +3280,65 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(btn) btn.addEventListener('click',bomSendChat);
     if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter') bomSendChat(); });
   });
+})();
+</script>
+
+<!-- ════ 이벤트 배너 + 공지 로더 ════ -->
+<style>
+.ev-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:11px 18px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,.12);transition:opacity .2s}
+.ev-banner:hover{opacity:.85}
+.ev-banner .ev-x{background:none;border:none;color:rgba(255,255,255,.6);font-size:16px;cursor:pointer;flex-shrink:0;line-height:1;padding:0 4px}
+</style>
+<script>
+(function(){
+  function initBanners(){
+    if(!window.firebase||!firebase.firestore) { setTimeout(initBanners,600); return; }
+    var db=firebase.firestore();
+    var wrap=document.getElementById('eventBannerWrap');
+    if(!wrap) return;
+    db.collection('event_banners').where('active','==',true).orderBy('ts','desc').limit(5).get()
+      .then(function(snap){
+        if(snap.empty) return;
+        wrap.style.display='';
+        snap.docs.forEach(function(d){
+          var x=d.data();
+          var row=document.createElement('div');
+          row.className='ev-banner';
+          row.style.background=x.color||'#0e9d7d';
+          row.innerHTML='<span>'+x.text.replace(/</g,'&lt;')+'</span>'
+            +'<button class="ev-x" title="닫기">✕</button>';
+          if(x.link) row.querySelector('span').onclick=function(){ window.open(x.link,'_blank'); };
+          row.querySelector('.ev-x').onclick=function(e){
+            e.stopPropagation(); row.remove();
+            if(!wrap.children.length) wrap.style.display='none';
+          };
+          wrap.appendChild(row);
+        });
+      }).catch(function(){});
+    db.collection('notices').orderBy('ts','desc').limit(3).get()
+      .then(function(snap){
+        if(snap.empty) return;
+        wrap.style.display='';
+        snap.docs.forEach(function(d){
+          var x=d.data();
+          var row=document.createElement('div');
+          row.className='ev-banner';
+          row.style.background='#1e2a1e';
+          row.style.borderLeft='3px solid #4caf50';
+          row.innerHTML='<span>📢 <b>'+x.title.replace(/</g,'&lt;')+'</b>'+(x.body?' — '+x.body.replace(/</g,'&lt;'):'')+'</span>'
+            +'<button class="ev-x" title="닫기">✕</button>';
+          row.querySelector('.ev-x').onclick=function(e){
+            e.stopPropagation(); row.remove();
+            if(!wrap.children.length) wrap.style.display='none';
+          };
+          wrap.appendChild(row);
+        });
+      }).catch(function(){});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initBanners);
+  else initBanners();
 })();
 </script>
 </body>

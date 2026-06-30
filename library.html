@@ -198,6 +198,15 @@ body{
   font-size:12px;font-weight:800;color:#0C7C62;
   background:#E9F6F0;padding:5px 12px;border-radius:20px;
 }
+.card-like{
+  display:flex;align-items:center;gap:4px;
+  font-size:12px;font-weight:700;color:#999;
+  background:#f5f5f5;padding:5px 12px;border-radius:20px;
+  cursor:pointer;user-select:none;transition:all .2s;border:none;
+}
+.card-like.on{color:#e05c5c;background:#fff0f0;}
+.card-like:hover{transform:scale(1.08);}
+.card-like .lc{font-size:11px;}
 
 /* ═══ 콘텐츠 없을 때 딤 처리(준비중) ═══ */
 .lib-notice{
@@ -539,6 +548,7 @@ function renderGrid(){
     wrap.appendChild(card);
   });
   setupObserver();
+  loadLikes();
 }
 
 function buildCard(m, idx){
@@ -568,12 +578,56 @@ function buildCard(m, idx){
       <div class="card-summary">${esc(m.summary || '내용을 불러오는 중입니다…')}</div>
       <div class="card-footer">
         <span class="card-date">${dateStr}</span>
-        <span class="card-read-btn">📖 읽어보기 ›</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <button class="card-like" id="like_${m.id}" onclick="event.stopPropagation();toggleLike('${m.id}',this)">❤️ <span class="lc">${m.likeCount||0}</span></button>
+          <span class="card-read-btn">📖 읽어보기 ›</span>
+        </div>
       </div>
     </div>`;
 
   return el;
 }
+
+/* ── Likes ── */
+let _myLikes = new Set(); // memoirId set
+
+async function loadLikes(){
+  try{
+    const u = firebase.auth().currentUser; if(!u) return;
+    const snap = await _db.collection('library_likes').where('uid','==',u.uid).get();
+    _myLikes = new Set(snap.docs.map(d => d.data().memoirId));
+    document.querySelectorAll('.card-like').forEach(btn => {
+      const mid = btn.id.replace('like_','');
+      if(_myLikes.has(mid)) btn.classList.add('on');
+    });
+  }catch(e){}
+}
+
+window.toggleLike = async function(memoirId, btn){
+  const u = firebase.auth().currentUser;
+  if(!u){ alert('로그인 후 좋아요를 누를 수 있어요'); return; }
+  const liked = _myLikes.has(memoirId);
+  const docId = memoirId + '_' + u.uid;
+  const likeRef = _db.collection('library_likes').doc(docId);
+  const memoirRef = _db.collection('memoirs').doc(memoirId);
+  const cntEl = btn.querySelector('.lc');
+  const cur = parseInt(cntEl.textContent)||0;
+  try{
+    if(liked){
+      await likeRef.delete();
+      await memoirRef.set({likeCount: Math.max(0,cur-1)},{merge:true});
+      _myLikes.delete(memoirId);
+      btn.classList.remove('on');
+      cntEl.textContent = Math.max(0,cur-1);
+    } else {
+      await likeRef.set({memoirId, uid: u.uid, ts: firebase.firestore.FieldValue.serverTimestamp()});
+      await memoirRef.set({likeCount: cur+1},{merge:true});
+      _myLikes.add(memoirId);
+      btn.classList.add('on');
+      cntEl.textContent = cur+1;
+    }
+  }catch(e){ alert('잠시 후 다시 시도해 주세요'); }
+};
 
 /* ── Reader ── */
 function openReader(m){

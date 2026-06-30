@@ -119,5 +119,57 @@ service cloud.firestore {
       allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
       allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
     }
+
+    // 공지사항 — 누구나 읽기, 마스터만 작성/수정/삭제
+    match /notices/{nid} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 이벤트 배너 — 누구나 읽기, 마스터만 관리
+    match /event_banners/{bid} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 쿠폰 — 인증 사용자 읽기(검증용), 마스터만 관리
+    match /coupons/{code} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 공개서재 좋아요 — 누구나 읽기, 본인 것만 생성/삭제 (문서ID={memoirId}_{uid})
+    match /library_likes/{lid} {
+      allow read: if true;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.uid == request.auth.uid;
+    }
+
+    // 공개서재 댓글 — 누구나 읽기, 인증 사용자 작성(짧은 글), 본인·마스터 삭제
+    match /library_comments/{lcid} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 50;
+      allow update: if false;
+      allow delete: if request.auth != null && (
+        resource.data.uid == request.auth.uid
+        || request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com']
+      );
+    }
+
+    // 댓글 신고 — 인증 사용자 신고 작성, 마스터만 조회·처리
+    match /comment_reports/{rid} {
+      allow read: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
   }
 }
