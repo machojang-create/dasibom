@@ -96,6 +96,36 @@ body.dark .wcard-meaning{color:#d8c9b0}
 body.dark .wcard-ex{background:#1c1714;color:#a8927a}
 body.dark .sub-item-meaning{color:#d8c9b0}
 body.dark .sub-vote{background:#1c1714;border-color:#3d342a;color:#e6d9c5}
+
+/* 오늘의 추천 유행어 */
+.daily-banner{background:linear-gradient(135deg,#FFE6A6,#FFC56B);border-radius:18px;padding:18px 20px;margin-bottom:18px;box-shadow:0 6px 18px -8px rgba(200,150,40,.4)}
+.daily-banner .db-lbl{font-size:11.5px;font-weight:800;color:#7a5a10;letter-spacing:.04em;margin-bottom:6px}
+.daily-banner .db-word{font-family:'Nanum Myeongjo','Batang',serif;font-size:22px;font-weight:800;color:#3A2A18;margin-bottom:6px}
+.daily-banner .db-meaning{font-size:14px;color:#5a4420;line-height:1.6}
+
+/* 번역기 */
+.tr-mode{display:block;margin:0 auto 18px;padding:11px 20px;border-radius:50px;border:none;background:#3A2A18;color:#fff;font-size:14px;font-weight:800;cursor:pointer}
+.tr-lbl{display:block;font-size:13px;font-weight:800;color:#8a7560;margin-bottom:7px}
+.tr-textarea{width:100%;min-height:110px;padding:14px;border:1.5px solid #EBD9C2;border-radius:14px;font-size:15px;font-family:inherit;color:#3A2E22;resize:vertical;margin-bottom:16px;outline:none}
+.tr-textarea:focus{border-color:#c8784a}
+.tr-output{min-height:90px;padding:14px;border-radius:14px;background:#FFFBF0;color:#3A2E22;font-size:15px;line-height:1.7;white-space:pre-wrap}
+
+/* 트렌드 테스트 */
+.test-step{font-size:12.5px;font-weight:800;color:#b58a4a;margin-bottom:14px}
+.test-q{font-size:17px;font-weight:700;color:#3A2A18;line-height:1.6;margin-bottom:18px}
+.test-opt{display:block;width:100%;text-align:left;padding:15px 16px;border:1.5px solid #EBD9C2;border-radius:12px;background:#fff;color:#3A2E22;font-size:14.5px;margin-bottom:10px;cursor:pointer;font-family:inherit;line-height:1.55}
+.test-opt:active{background:#FFF6E9}
+.test-result-badge{display:inline-block;background:#3A2A18;color:#FFE6A6;font-weight:800;font-size:17px;padding:10px 20px;border-radius:50px;margin-bottom:14px}
+
+/* 운세 */
+.fortune-btn{background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;border:none;padding:16px 30px;border-radius:50px;font-size:16px;font-weight:800;cursor:pointer}
+.fortune-word{display:inline-block;background:#3A2A18;color:#9ee6c0;font-weight:800;font-size:24px;padding:10px 22px;border-radius:50px;margin-bottom:18px;transform:rotate(-2deg)}
+.fortune-desc{font-size:16px;line-height:1.8;color:#3A2E22;background:#FFFBF0;padding:18px;border-radius:16px;margin-bottom:18px}
+
+body.dark .daily-banner{filter:brightness(.85)}
+body.dark .tr-output{background:#1c1714;color:#e6d9c5}
+body.dark .test-opt{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
+body.dark .fortune-desc{background:#1c1714;color:#e6d9c5}
 </style>
 </head>
 <body>
@@ -117,7 +147,12 @@ body.dark .sub-vote{background:#1c1714;border-color:#3d342a;color:#e6d9c5}
     <button class="tab" data-tab="quiz" data-bomguide="trendy_quiz">🎯 퀴즈</button>
     <button class="tab" data-tab="album" data-bomguide="trendy_album">📖 나만의 앨범</button>
     <button class="tab" data-tab="submit" data-bomguide="trendy_submit">💡 신조어 제보</button>
+    <button class="tab" data-tab="translate">🗣️ 번역기</button>
+    <button class="tab" data-tab="test">📝 트렌드 테스트</button>
+    <button class="tab" data-tab="fortune">🥠 운세</button>
   </div>
+
+  <div id="dailyBanner" class="daily-banner" style="display:none"></div>
 
   <!-- 사전 -->
   <div id="pane-dict">
@@ -147,6 +182,28 @@ body.dark .sub-vote{background:#1c1714;border-color:#3d342a;color:#e6d9c5}
       <button class="qz-next" id="subBtn" style="width:100%">제보하기</button>
     </div>
     <div class="sub-list" id="subList"></div>
+  </div>
+
+  <!-- 번역기 -->
+  <div id="pane-translate" style="display:none">
+    <div class="qz-card">
+      <button class="tr-mode" id="trMode">일반어 ➔ 유행어</button>
+      <label class="tr-lbl" id="trLblIn">일반어 입력</label>
+      <textarea id="trInput" class="tr-textarea" placeholder="번역할 내용을 입력하세요..."></textarea>
+      <label class="tr-lbl">번역 결과</label>
+      <div id="trOutput" class="tr-output">결과가 여기에 표시됩니다.</div>
+      <button class="qz-next" id="trBtn" style="margin-top:14px">번역하기 🚀</button>
+    </div>
+  </div>
+
+  <!-- 트렌드 테스트 -->
+  <div id="pane-test" style="display:none">
+    <div class="qz-card" id="testCard"></div>
+  </div>
+
+  <!-- 운세 -->
+  <div id="pane-fortune" style="display:none">
+    <div class="qz-card" id="fortuneCard" style="text-align:center"></div>
   </div>
 </div>
 
@@ -409,20 +466,114 @@ document.getElementById('subList').addEventListener('click', function(e){
   setTimeout(function(){ btn.disabled=false; }, 600);
 });
 
+/* ── 오늘의 추천 유행어 — 날짜 시드로 매일 같은 단어(자정 기준) ── */
+function renderDailyBanner(){
+  var box=document.getElementById('dailyBanner'); if(!box) return;
+  var data=window.TRENDY_WORDS||[]; if(!data.length) return;
+  var today=new Date().toISOString().slice(0,10);
+  var seed=0; for(var i=0;i<today.length;i++) seed+=today.charCodeAt(i);
+  var w=data[seed % data.length];
+  box.innerHTML='<div class="db-lbl">⭐ 오늘의 추천 유행어</div>'
+    +'<div class="db-word">'+esc(w.word)+' <span style="font-size:12px;font-weight:700;color:#7a5a10">('+esc(w.era)+')</span></div>'
+    +'<div class="db-meaning">'+esc(w.meaning)+'</div>';
+  box.style.display='';
+}
+
+/* ── 유행어 번역기 — 단순 치환(AI 아님, 재미용) ── */
+var TR_MAP=[['진짜','완전 폼 미쳤다'],['최고','찢었다'],['인정','인정~ 어 인정'],['좋아','오히려 좋아'],['수고','오운완(오늘 운동 완료 아님)'],['안녕','방가방가'],['동의','디토'],['대박','대박적']];
+var trMode='toSlang';
+function doTranslate(){
+  var input=document.getElementById('trInput').value;
+  var result=input;
+  if(trMode==='toSlang'){
+    TR_MAP.forEach(function(p){ result=result.split(p[0]).join(p[1]); });
+    if(result===input && input.length>0) result+='... 완전 럭키비키잖아! 🍀';
+  } else {
+    TR_MAP.slice().reverse().forEach(function(p){ result=result.split(p[1]).join(p[0]); });
+    result=result.split('럭키비키').join('운이 좋은');
+  }
+  document.getElementById('trOutput').textContent = result || '결과가 여기에 표시됩니다.';
+}
+document.getElementById('trMode').addEventListener('click', function(){
+  trMode = trMode==='toSlang' ? 'toNormal' : 'toSlang';
+  this.textContent = trMode==='toSlang' ? '일반어 ➔ 유행어' : '유행어 ➔ 일반어';
+  document.getElementById('trLblIn').textContent = trMode==='toSlang' ? '일반어 입력' : '유행어 입력';
+});
+document.getElementById('trBtn').addEventListener('click', doTranslate);
+
+/* ── 트렌드 테스트 ── */
+var TEST_Q=[
+  {q:'친구가 "나 완전 럭키비키잖아~"라고 했을 때 나의 반응은?', a:'무슨 소리야? 비키가 누구야? (머쓱)', b:'오! 완전 원영적 사고! 긍정적이라 보기 좋아 (맞장구)'},
+  {q:'요즘 핫한 카페에서 인증샷을 찍을 때 나의 포즈는?', a:'정직하게 카메라를 응시하며 V (브이)', b:'거울 샷, 힙한 앵글 등 다양한 각도 활용'},
+  {q:'새로운 밈(Meme)을 접했을 때 나의 행동은?', a:'이게 왜 웃긴 거지? 하며 조용히 넘어간다', b:'바로 손주에게 보여주며 같이 웃는다'}
+];
+var testStep=0, testScore=0;
+function renderTest(){
+  if(testStep>=TEST_Q.length){
+    var title = testScore===3 ? '트렌드 세터 😎' : testScore===2 ? '트렌드 팔로워 😌' : '마이웨이 은둔 고수 👴';
+    var desc = testScore===3 ? '요즘 말도 척척! 손주들과 대화가 즐거우시겠어요.' : testScore===2 ? '유행에 뒤처지진 않지만, 앞장서지도 않는 무난한 타입이에요.' : '유행보다는 나만의 길을 걷는 줏대 있는 분이세요.';
+    document.getElementById('testCard').innerHTML =
+      '<div style="text-align:center"><div class="test-result-badge">'+title+'</div>'
+      +'<p style="font-size:15px;color:#4a3a26;line-height:1.7;margin-bottom:18px">'+desc+'</p>'
+      +'<button class="qz-next" id="testRetry">다시 하기</button></div>';
+    document.getElementById('testRetry').addEventListener('click', function(){ testStep=0; testScore=0; renderTest(); });
+    return;
+  }
+  var q=TEST_Q[testStep];
+  document.getElementById('testCard').innerHTML =
+    '<div class="test-step">Q '+(testStep+1)+' / '+TEST_Q.length+'</div>'
+    +'<div class="test-q">'+esc(q.q)+'</div>'
+    +'<button class="test-opt" data-pt="0">'+esc(q.a)+'</button>'
+    +'<button class="test-opt" data-pt="1">'+esc(q.b)+'</button>';
+  document.querySelectorAll('.test-opt').forEach(function(btn){
+    btn.addEventListener('click', function(){ testScore+=parseInt(this.getAttribute('data-pt'),10); testStep++; renderTest(); });
+  });
+}
+
+/* ── 유행어 운세 ── */
+var FORTUNES=[
+  {word:'럭키비키', desc:'오늘 하루 긍정적인 마인드로 임하면 뜻밖의 행운이 찾아옵니다! 완전 럭키비키잖아~🍀'},
+  {word:'중꺾마', desc:'어려움이 있어도 중요한 건 꺾이지 않는 마음! 포기하지 마세요.🔥'},
+  {word:'오운완', desc:'오늘은 몸을 움직여보세요! 운동이 아니어도 산책으로 에너지를 얻을 수 있습니다.💪'},
+  {word:'폼 미쳤다', desc:'오늘 당신의 컨디션 최상! 어떤 일이든 자신감 있게 추진해보세요.✨'},
+  {word:'디토', desc:'주변 사람들과의 공감대가 형성되는 날입니다. 내 의견에 모두가 디토!🤝'},
+  {word:'알잘딱깔센', desc:'알아서 잘 딱 깔끔하고 센스 있게 일 처리가 되는 기분 좋은 날입니다.👍'}
+];
+function drawFortune(){
+  document.getElementById('fortuneCard').innerHTML='<p style="font-size:16px;color:#8a7560">우주의 기운을 모으는 중...🔮</p>';
+  setTimeout(function(){
+    var f=FORTUNES[Math.floor(Math.random()*FORTUNES.length)];
+    document.getElementById('fortuneCard').innerHTML =
+      '<div class="fortune-word">'+esc(f.word)+'</div>'
+      +'<div class="fortune-desc">'+esc(f.desc)+'</div>'
+      +'<button class="fortune-btn" id="fortuneRetry">다시 뽑기</button>';
+    document.getElementById('fortuneRetry').addEventListener('click', drawFortune);
+  }, 700);
+}
+function renderFortuneInit(){
+  document.getElementById('fortuneCard').innerHTML =
+    '<p style="font-size:15px;color:#6b5a48;margin-bottom:20px">오늘 당신에게 필요한 유행어와 행운의 메시지는?</p>'
+    +'<button class="fortune-btn" id="fortuneDraw">운세 뽑기 🥠</button>';
+  document.getElementById('fortuneDraw').addEventListener('click', drawFortune);
+}
+
 var activeTab='dict';
 function renderActivePane(){
   if(activeTab==='dict') renderDict();
   else if(activeTab==='tl') renderTimeline();
   else if(activeTab==='album') renderAlbum();
   else if(activeTab==='submit') loadSubmissions();
+  else if(activeTab==='test'){ testStep=0; testScore=0; renderTest(); }
+  else if(activeTab==='fortune') renderFortuneInit();
 }
 document.getElementById('tabs').addEventListener('click', function(e){
   var btn=e.target.closest('.tab'); if(!btn) return;
   activeTab=btn.getAttribute('data-tab');
   document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('on', b===btn); });
-  ['dict','tl','quiz','album','submit'].forEach(function(t){
+  ['dict','tl','quiz','album','submit','translate','test','fortune'].forEach(function(t){
     document.getElementById('pane-'+t).style.display = (t===activeTab) ? '' : 'none';
   });
+  document.getElementById('dailyBanner').style.display = (activeTab==='dict') ? '' : 'none';
   if(activeTab==='quiz' && !qz.era) renderQuizPick();
   else renderActivePane();
 });
@@ -431,6 +582,7 @@ function boot(){
   if(!window.TRENDY_WORDS){ setTimeout(boot, 60); return; }
   renderEraChips();
   renderDict();
+  renderDailyBanner();
   syncAlbumFromCloud();
 }
 boot();
