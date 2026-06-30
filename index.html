@@ -1656,29 +1656,27 @@
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
 
-      <!-- 그때그시절 카드 제거(2026-06-26) — 메인에 "오늘의 추억" 직접 노출되므로 카드 불필요. 페이지는 /nostalgia에 그대로 있음.
-      <a class="card card-3" href="/nostalgia" data-reveal="">
+      <a class="card card-3" href="/trendy" data-reveal="">
         <div>
           <div class="top">
-            <span class="idx">— 03 / REMEMBER</span>
-            <span class="tag">옛 추억과 현재의 비교</span>
+            <span class="idx">— 03 / TREND</span>
+            <span class="tag">시대별 유행어 사전</span>
           </div>
-          <h3 class="title">다시보는<br>그때 그 시절</h3>
-          <p class="desc">그리운 골목길부터 찬란했던 청춘의 풍경까지, 멈춰있던 기억을 오늘의 일상으로 소환합니다.</p>
+          <h3 class="title">트렌디<br>딕셔너리</h3>
+          <p class="desc">1970년대부터 요즘 신조어까지, 손주들 말도 술술 이해하는 재미있는 유행어 사전.</p>
         </div>
         <div class="visual">
-          <img src="/img/card3.jpg" alt="오래된 사진첩과 흑백사진" loading="lazy">
-          <div class="ph">추억 여행 떠나기</div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:72px;z-index:1">💬</div>
+          <div class="ph">유행어 구경하기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-      -->
 
       <!-- 게임 카드는 추억의 오락실로 교체(2026-06-26) — 뇌건강게임은 메인 "오늘의 두뇌 운동"이 전부이므로 카드 불필요해짐 -->
       <a class="card card-4" href="/arcade" data-reveal="">
         <div>
           <div class="top">
-            <span class="idx">— 03 / PLAY</span>
+            <span class="idx">— 04 / PLAY</span>
             <span class="tag">무제한 캐주얼 게임</span>
           </div>
           <h3 class="title">추억의<br>오락실</h3>
@@ -1752,6 +1750,7 @@
           <li><a href="/nostalgia">그때 그 시절</a></li>
           <li><a href="/game">오늘의 두뇌 운동</a></li>
           <li><a href="/arcade">추억의 오락실</a></li>
+          <li><a href="/trendy">트렌디 딕셔너리</a></li>
         </ul>
       </div>
       <div>
@@ -2798,9 +2797,10 @@ body.dark .bom-guide-text{color:#c8bba4}
     game:      { face:'bom_cheer.png',  title:'🎮 오늘의 두뇌 운동', text:'간단한 놀이로 즐겁게 머리를 깨워요. 부담 없이 하루 세 판이면 충분해요!' },
     arcade:    { face:'bom_cheer.png',  title:'🕹️ 추억의 오락실', text:'블라스트·3매치·버블슈터 — 제한 없이 마음 편히 즐기는 시간이에요!' },
     library:   { face:'bom_smile.png',  title:'📚 공개 서재',    text:'다른 분들이 공개한 자서전을 함께 읽어보는 공간이에요. 따뜻한 인생 이야기가 가득해요.' },
-    letter:    { face:'bom_calm.png',   title:'💌 마음의 유언',  text:'사랑하는 사람에게 먼 훗날 전할 편지를 미리 적어둘 수 있어요. 천천히 마음을 담아보세요.' }
+    letter:    { face:'bom_calm.png',   title:'💌 마음의 유언',  text:'사랑하는 사람에게 먼 훗날 전할 편지를 미리 적어둘 수 있어요. 천천히 마음을 담아보세요.' },
+    trendy:    { face:'bom_grin.png',   title:'💬 트렌디 딕셔너리', text:'1970년대부터 요즘 신조어까지 시대별 유행어를 모아뒀어요. 퀴즈도 풀고, 마음에 드는 말은 앨범에 담아보세요!' }
   };
-  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter' };
+  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter', '/trendy':'trendy' };
   var ov=document.getElementById('bomGuide');
   var faceEl=document.getElementById('bomGuideFace'), titleEl=document.getElementById('bomGuideTitle'),
       textEl=document.getElementById('bomGuideText'), okBtn=document.getElementById('bomGuideOk');
@@ -3111,7 +3111,8 @@ body.dark .bom-guide-text{color:#c8bba4}
     game:{emoji:'🎮',label:'오늘의 두뇌 운동',href:'/game'},
     arcade:{emoji:'🕹️',label:'추억의 오락실',href:'/arcade'},
     library:{emoji:'📚',label:'공개 서재',href:'/library'},
-    letter:{emoji:'💌',label:'마음의 유언',href:'/letter'}
+    letter:{emoji:'💌',label:'마음의 유언',href:'/letter'},
+    trendy:{emoji:'💬',label:'트렌디 딕셔너리',href:'/trendy'}
   };
   function tutSeen(k){ try{ return !!localStorage.getItem('dasibom_tut_'+k); }catch(e){ return false; } }
   function pickTags(n){

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>트렌디 딕셔너리 — 시대별 유행어 사전 · 다시봄</title>
+<meta name="description" content="1970년대부터 요즘 신조어까지, 시대별 유행어를 한눈에 — 손주들 말도 술술 이해해요.">
+<script src="a11y.js?v=3" defer></script>
+<script src="attend.js?v=3" defer></script>
+<script src="bom_voice.js?v=1" defer></script>
+<script src="bom_guide.js?v=1" defer></script>
+<script>window.BOM_GUIDES={
+  trendy_quiz:{face:'bom_cheer.png',title:'🎯 유행어 퀴즈',text:'시대를 골라서 5문제를 풀어보세요. 뜻을 보고 알맞은 유행어를 맞히면 돼요. 틀려도 괜찮아요, 재미로 즐겨보세요!'},
+  trendy_album:{face:'bom_smile.png',title:'📖 나만의 앨범',text:'마음에 드는 유행어에 하트를 누르면 여기에 모아둘 수 있어요. 손주들에게 써먹어 보세요!'}
+};</script>
+<script src="trendy_data.js" defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#FFFBF4;color:#3A2E22;min-height:100vh}
+.wrap{max-width:600px;margin:0 auto;padding:0 18px 60px}
+header{position:sticky;top:0;z-index:100;background:rgba(255,251,244,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(200,120,74,.14);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:19px;font-weight:800;color:#c8784a;text-decoration:none}
+.back{border:1.5px solid rgba(200,120,74,.3);color:#c8784a;background:none;font-size:14px;font-weight:700;padding:8px 16px;border-radius:50px;cursor:pointer;text-decoration:none}
+.hero{padding:30px 0 8px;text-align:center}
+.hero h1{font-family:'Nanum Myeongjo','Batang',serif;font-size:clamp(24px,6vw,30px);font-weight:800;color:#3A2A18;line-height:1.4}
+.hero p{margin-top:10px;font-size:15px;color:#6b5a48;line-height:1.75}
+
+/* 탭 */
+.tabs{display:flex;gap:8px;margin:24px 0 18px;overflow-x:auto;-ms-overflow-style:none;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{flex-shrink:0;padding:11px 18px;border-radius:50px;border:1.5px solid #EBD9C2;background:#fff;color:#7a6650;font-size:14.5px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(135deg,#c8784a,#d4845a);border-color:transparent;color:#fff;box-shadow:0 6px 16px -6px rgba(200,120,74,.55)}
+
+/* 사전: 검색+시대필터 */
+.search{width:100%;padding:14px 16px;border:1.5px solid #EBD9C2;border-radius:14px;font-size:16px;font-family:inherit;outline:none;background:#fff;color:#3A2E22;margin-bottom:12px}
+.search:focus{border-color:#c8784a}
+.eras{display:flex;gap:7px;overflow-x:auto;margin-bottom:18px;-ms-overflow-style:none;scrollbar-width:none}
+.eras::-webkit-scrollbar{display:none}
+.era-chip{flex-shrink:0;padding:8px 14px;border-radius:50px;border:1.5px solid #EBD9C2;background:#fff;color:#8a7560;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.era-chip.on{background:#3A2A18;border-color:#3A2A18;color:#fff}
+
+.wcard{background:#fff;border:1.5px solid rgba(200,120,74,.14);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:0 3px 14px rgba(120,80,40,.06)}
+.wcard-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.wcard-word{font-family:'Nanum Myeongjo','Batang',serif;font-size:21px;font-weight:800;color:#3A2A18}
+.wcard-era{display:inline-block;font-size:11.5px;font-weight:800;color:#9A6200;background:#FFF4D6;border-radius:50px;padding:3px 10px;margin-left:8px;vertical-align:2px}
+.heart{background:none;border:none;font-size:22px;cursor:pointer;line-height:1;flex-shrink:0;opacity:.35}
+.heart.on{opacity:1}
+.wcard-meaning{font-size:15px;line-height:1.75;color:#4a3a26;margin-bottom:10px}
+.wcard-ex{font-size:13.5px;line-height:1.7;color:#8a7560;background:#FFFBF0;border-radius:10px;padding:10px 13px}
+.wcard-tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+.wtag{font-size:11.5px;color:#b58a4a;background:#FFF6E9;border-radius:50px;padding:3px 10px}
+.empty{text-align:center;color:#8a7560;font-size:14.5px;line-height:2;padding:34px 12px;background:#fff;border:1.5px dashed #EBD9C2;border-radius:18px}
+
+/* 타임라인 */
+.tl-era{font-family:'Nanum Myeongjo','Batang',serif;font-size:22px;font-weight:800;color:#c8784a;margin:26px 0 14px}
+.tl-era:first-child{margin-top:0}
+
+/* 퀴즈 */
+.qz-card{background:#fff;border:1.5px solid rgba(200,120,74,.14);border-radius:20px;padding:22px;box-shadow:0 6px 22px rgba(120,80,40,.08)}
+.qz-pickgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.qz-pick{padding:16px 10px;border-radius:14px;border:1.5px solid #EBD9C2;background:#fff;color:#3A2E22;font-size:14.5px;font-weight:700;cursor:pointer}
+.qz-progress{font-size:12.5px;color:#b58a4a;font-weight:800;margin-bottom:10px}
+.qz-meaning{font-size:16px;line-height:1.75;color:#3A2E22;font-weight:700;margin-bottom:18px}
+.qz-opt{display:block;width:100%;text-align:left;padding:14px 16px;border:1.5px solid #EBD9C2;border-radius:12px;background:#fff;color:#3A2E22;font-size:15px;margin-bottom:9px;cursor:pointer;font-family:inherit}
+.qz-opt.correct{background:#E9F6F0;border-color:#0e9d7d;color:#0e9d7d;font-weight:800}
+.qz-opt.wrong{background:#FDEDEA;border-color:#d9534f;color:#d9534f;font-weight:800}
+.qz-next{margin-top:6px;width:100%;padding:14px 0;border:none;border-radius:50px;background:#3A2A18;color:#fff;font-size:15px;font-weight:800;cursor:pointer}
+.qz-result{text-align:center;padding:20px 0}
+.qz-result .score{font-family:'Nanum Myeongjo','Batang',serif;font-size:46px;font-weight:800;color:#c8784a;margin:10px 0}
+
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#3A2A18;color:#FFFBF4;padding:13px 26px;font-size:14px;z-index:9999;white-space:nowrap;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none}
+body.dark{background:#1c1714;color:#e6d9c5}
+body.dark header{background:rgba(28,23,20,.96);border-color:rgba(200,120,74,.2)}
+body.dark .wcard,body.dark .qz-card,body.dark .empty,body.dark .search,body.dark .tab,body.dark .era-chip,body.dark .qz-opt,body.dark .qz-pick{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
+body.dark .wcard-meaning{color:#d8c9b0}
+body.dark .wcard-ex{background:#1c1714;color:#a8927a}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/?home=1">🌱 다시봄</a>
+  <a class="back" href="/?home=1">‹ 홈으로</a>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>트렌디 딕셔너리<br><span style="font-size:.6em;color:#c8784a;font-weight:700">— 시대별 유행어 사전 —</span></h1>
+    <p>1970년대부터 요즘 신조어까지, 시대를 넘나드는 우리말 유행어.<br>손주들 말도 이제 술술 이해해보세요 💬</p>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-tab="dict">📚 유행어 사전</button>
+    <button class="tab" data-tab="tl">⏱️ 시대별 타임라인</button>
+    <button class="tab" data-tab="quiz" data-bomguide="trendy_quiz">🎯 퀴즈</button>
+    <button class="tab" data-tab="album" data-bomguide="trendy_album">📖 나만의 앨범</button>
+  </div>
+
+  <!-- 사전 -->
+  <div id="pane-dict">
+    <input type="text" id="search" class="search" placeholder="궁금한 유행어를 검색해보세요">
+    <div class="eras" id="eraChips"></div>
+    <div id="dictList"></div>
+  </div>
+
+  <!-- 타임라인 -->
+  <div id="pane-tl" style="display:none"></div>
+
+  <!-- 퀴즈 -->
+  <div id="pane-quiz" style="display:none">
+    <div class="qz-card" id="qzCard"></div>
+  </div>
+
+  <!-- 앨범 -->
+  <div id="pane-album" style="display:none"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var ERAS = ['전체','1970년대','1980년대','1990년대','2000년대','2010년대','2020년대'];
+var LS_ALBUM = 'dasibom_trendy_album';
+function esc(s){ return String(s||'').replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function popToast(m){ var t=document.getElementById('toast'); t.textContent=m; t.style.opacity=1; clearTimeout(t._h); t._h=setTimeout(function(){t.style.opacity=0;},2000); }
+function loadAlbum(){ try{ return JSON.parse(localStorage.getItem(LS_ALBUM))||[]; }catch(e){ return []; } }
+function saveAlbum(arr){ try{ localStorage.setItem(LS_ALBUM, JSON.stringify(arr)); }catch(e){} }
+function isSaved(id){ return loadAlbum().indexOf(id)>-1; }
+function toggleSave(id){
+  var arr=loadAlbum();
+  var i=arr.indexOf(id);
+  if(i>-1){ arr.splice(i,1); popToast('앨범에서 뺐어요'); } else { arr.push(id); popToast('앨범에 담았어요 💛'); }
+  saveAlbum(arr);
+}
+
+function wordCard(w){
+  var saved=isSaved(w.id);
+  return '<div class="wcard">'
+    +'<div class="wcard-head"><div><span class="wcard-word">'+esc(w.word)+'</span><span class="wcard-era">'+esc(w.era)+'</span></div>'
+    +'<button class="heart'+(saved?' on':'')+'" data-id="'+esc(w.id)+'" aria-label="앨범에 저장">'+(saved?'❤️':'🤍')+'</button></div>'
+    +'<div class="wcard-meaning">'+esc(w.meaning)+'</div>'
+    +'<div class="wcard-ex">💬 '+esc(w.example)+'</div>'
+    +'<div class="wcard-tags">'+(w.tags||[]).map(function(t){return '<span class="wtag">#'+esc(t)+'</span>';}).join('')+'</div>'
+    +'</div>';
+}
+
+document.addEventListener('click', function(e){
+  var h=e.target.closest('.heart');
+  if(h){ toggleSave(h.getAttribute('data-id')); renderActivePane(); }
+});
+
+var curEra='전체', curQuery='';
+function renderDict(){
+  var words=(window.TRENDY_WORDS||[]).filter(function(w){
+    if(curEra!=='전체' && w.era!==curEra) return false;
+    if(curQuery && w.word.indexOf(curQuery)===-1 && w.meaning.indexOf(curQuery)===-1) return false;
+    return true;
+  });
+  var box=document.getElementById('dictList');
+  if(!words.length){ box.innerHTML='<div class="empty">조건에 맞는 유행어가 없어요.<br>다른 시대나 검색어로 찾아보세요.</div>'; return; }
+  box.innerHTML=words.map(wordCard).join('');
+}
+function renderEraChips(){
+  var box=document.getElementById('eraChips');
+  box.innerHTML=ERAS.map(function(e){ return '<button class="era-chip'+(e===curEra?' on':'')+'" data-era="'+esc(e)+'">'+esc(e)+'</button>'; }).join('');
+  box.querySelectorAll('.era-chip').forEach(function(btn){
+    btn.addEventListener('click', function(){ curEra=btn.getAttribute('data-era'); renderEraChips(); renderDict(); });
+  });
+}
+document.getElementById('search').addEventListener('input', function(){ curQuery=this.value.trim(); renderDict(); });
+
+function renderTimeline(){
+  var box=document.getElementById('pane-tl');
+  var data=window.TRENDY_WORDS||[];
+  var html='';
+  ['1970년대','1980년대','1990년대','2000년대','2010년대','2020년대'].forEach(function(era){
+    var items=data.filter(function(w){ return w.era===era; });
+    if(!items.length) return;
+    html+='<div class="tl-era">'+era+'</div>'+items.map(wordCard).join('');
+  });
+  box.innerHTML=html || '<div class="empty">데이터를 불러오는 중이에요…</div>';
+}
+
+function renderAlbum(){
+  var box=document.getElementById('pane-album');
+  var saved=loadAlbum();
+  var data=(window.TRENDY_WORDS||[]).filter(function(w){ return saved.indexOf(w.id)>-1; });
+  if(!data.length){ box.innerHTML='<div class="empty">아직 담아둔 유행어가 없어요.<br>📚 유행어 사전에서 🤍 하트를 눌러 모아보세요.</div>'; return; }
+  box.innerHTML=data.map(wordCard).join('');
+}
+
+/* ── 퀴즈 ── */
+var qz={era:null, questions:[], idx:0, score:0, answered:null};
+function genQuiz(era){
+  var data=window.TRENDY_WORDS||[];
+  var pool = era==='전체' ? data : data.filter(function(w){ return w.era===era; });
+  if(pool.length<5) pool=data;
+  var picked=pool.slice().sort(function(){ return Math.random()-0.5; }).slice(0,5);
+  return picked.map(function(target){
+    var wrongs=data.filter(function(w){ return w.id!==target.id; }).sort(function(){ return Math.random()-0.5; }).slice(0,3).map(function(w){ return w.meaning; });
+    var options=[target.meaning].concat(wrongs).sort(function(){ return Math.random()-0.5; });
+    return { word:target.word, meaning:target.meaning, options:options, answer:target.meaning, example:target.example };
+  });
+}
+function renderQuizPick(){
+  var html='<h3 style="font-size:18px;font-weight:800;text-align:center;margin-bottom:6px">어느 시대의 퀴즈를 풀어볼까요?</h3>'
+    +'<div class="qz-pickgrid">'+ERAS.map(function(e){ return '<button class="qz-pick" data-era="'+esc(e)+'">'+esc(e)+'</button>'; }).join('')+'</div>';
+  document.getElementById('qzCard').innerHTML=html;
+  document.querySelectorAll('.qz-pick').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      qz.era=btn.getAttribute('data-era'); qz.questions=genQuiz(qz.era); qz.idx=0; qz.score=0; qz.answered=null;
+      renderQuizQuestion();
+    });
+  });
+}
+function renderQuizQuestion(){
+  if(qz.idx>=qz.questions.length){ renderQuizResult(); return; }
+  var q=qz.questions[qz.idx];
+  var html='<div class="qz-progress">'+(qz.idx+1)+' / '+qz.questions.length+' · '+esc(qz.era)+'</div>'
+    +'<div class="qz-meaning">"'+esc(q.word)+'"의 뜻은 무엇일까요?</div>'
+    +q.options.map(function(opt,i){ return '<button class="qz-opt" data-opt="'+i+'">'+esc(opt)+'</button>'; }).join('')
+    +'<button class="qz-next" id="qzNext" style="display:none">다음 →</button>';
+  document.getElementById('qzCard').innerHTML=html;
+  document.querySelectorAll('.qz-opt').forEach(function(btn,i){
+    btn.addEventListener('click', function(){
+      if(qz.answered!==null) return;
+      qz.answered=i;
+      var picked=q.options[i];
+      document.querySelectorAll('.qz-opt').forEach(function(b,j){
+        if(q.options[j]===q.answer) b.classList.add('correct');
+        else if(j===i) b.classList.add('wrong');
+      });
+      if(picked===q.answer) qz.score++;
+      document.getElementById('qzNext').style.display='block';
+    });
+  });
+  document.getElementById('qzNext').addEventListener('click', function(){ qz.idx++; qz.answered=null; renderQuizQuestion(); });
+}
+function renderQuizResult(){
+  var html='<div class="qz-result"><div style="font-size:15px;color:#8a7560">'+esc(qz.era)+' 결과</div>'
+    +'<div class="score">'+qz.score+' / '+qz.questions.length+'</div>'
+    +'<p style="font-size:15px;color:#4a3a26;margin-bottom:18px">'+(qz.score>=4?'대단해요! 트렌드 마스터예요 🎉':qz.score>=2?'꽤 잘 아시는데요? 😊':'재미로 즐기면 충분해요 🌱')+'</p>'
+    +'<button class="qz-next" id="qzRetry">다시 시대 고르기</button></div>';
+  document.getElementById('qzCard').innerHTML=html;
+  document.getElementById('qzRetry').addEventListener('click', renderQuizPick);
+}
+
+var activeTab='dict';
+function renderActivePane(){
+  if(activeTab==='dict') renderDict();
+  else if(activeTab==='tl') renderTimeline();
+  else if(activeTab==='album') renderAlbum();
+}
+document.getElementById('tabs').addEventListener('click', function(e){
+  var btn=e.target.closest('.tab'); if(!btn) return;
+  activeTab=btn.getAttribute('data-tab');
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.toggle('on', b===btn); });
+  ['dict','tl','quiz','album'].forEach(function(t){
+    document.getElementById('pane-'+t).style.display = (t===activeTab) ? '' : 'none';
+  });
+  if(activeTab==='quiz' && !qz.era) renderQuizPick();
+  else renderActivePane();
+});
+
+function boot(){
+  if(!window.TRENDY_WORDS){ setTimeout(boot, 60); return; }
+  renderEraChips();
+  renderDict();
+}
+boot();
+</script>
+</body>
+</html>

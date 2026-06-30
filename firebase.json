@@ -27,6 +27,8 @@
       { "source": "/arcade/**",          "destination": "/arcade.html" },
       { "source": "/nostalgia",          "destination": "/nostalgia.html" },
       { "source": "/nostalgia/**",       "destination": "/nostalgia.html" },
+      { "source": "/trendy",             "destination": "/trendy.html" },
+      { "source": "/trendy/**",          "destination": "/trendy.html" },
       { "source": "/library",            "destination": "/library.html" },
       { "source": "/library/**",         "destination": "/library.html" },
       { "source": "/letter",             "destination": "/letter.html" },
