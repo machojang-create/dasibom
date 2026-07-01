@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>건강 돋보기</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#E9F6F0;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;}
+#wrap{max-width:420px;margin:0 auto;background:#F6FBF9;min-height:100vh;position:relative;}
+.btn-kakao{width:100%;background:#FEE500;border:none;border-radius:15px;padding:17px;font-size:17px;font-weight:700;color:#191919;cursor:pointer;margin-bottom:9px;display:flex;align-items:center;justify-content:center;gap:9px;}
+.btn-naver{width:100%;background:#03C75A;border:none;border-radius:15px;padding:17px;font-size:17px;font-weight:700;color:white;cursor:pointer;margin-bottom:10px;display:flex;align-items:center;justify-content:center;gap:9px;}
+.btn-ghost{width:100%;background:transparent;border:1.5px solid #C8C4BC;border-radius:15px;padding:13px;font-size:14px;font-weight:600;color:#6B6560;cursor:pointer;}
+#wiz-header{position:sticky;top:0;z-index:100;background:#0A5C49;padding:14px 18px 0;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+#wiz-title-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+#wiz-back{background:rgba(255,255,255,.18);border:none;border-radius:50%;width:34px;height:34px;color:white;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+#wiz-step-title{color:white;font-size:17px;font-weight:700;line-height:1.3;}
+#wiz-step-sub{color:rgba(255,255,255,.92);font-size:13px;margin-top:1px;}
+#pb-wrap{background:rgba(255,255,255,.2);border-radius:99px;height:6px;overflow:hidden;}
+#pb-fill{height:100%;background:white;border-radius:99px;transition:width .4s ease;}
+#pb-steps{display:flex;justify-content:space-between;padding:8px 2px 10px;}
+.pstep{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.pdot{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:rgba(255,255,255,.6);transition:all .3s;}
+.pdot.done{background:#0C7C62;border-color:#0C7C62;color:#0A5C49;}
+.pdot.active{background:white;border-color:white;color:#0C7C62;}
+.plabel{font-size:11.5px;color:rgba(255,255,255,.8);font-weight:600;transition:color .3s;}
+.plabel.active{color:white;font-weight:700;}
+.pline{flex:1;display:flex;align-items:center;padding:0 4px;margin-bottom:14px;}
+.pline-inner{flex:1;height:1px;background:rgba(255,255,255,.25);}
+#wiz-body{overflow-y:auto;padding:16px 16px 0;}
+#wiz-footer{position:sticky;bottom:0;background:#F6FBF9;border-top:1px solid #E8E4DC;padding:12px 16px 76px;z-index:100;} /* 하단 76px = 글씨 바에 버튼이 가려지지 않게 */
+#btn-next{width:100%;background:#0C7C62;color:white;border:none;padding:18px;border-radius:16px;font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(12,124,98,.3);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+#btn-next:disabled{background:#D7CCC8;box-shadow:none;cursor:not-allowed;}
+#btn-guide{width:100%;background:transparent;border:none;color:#6C757D;font-size:13px;cursor:pointer;padding:7px 0 0;text-align:center;display:none;}
+.ibtn{background:white;border:1.5px solid #dee2e6;border-radius:14px;padding:12px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;width:100%;position:relative;transition:transform .18s,box-shadow .18s,border-color .18s;}
+.ibtn:active{transform:scale(.96);}
+.ibtn.on{background:#E9F6F0;border:2.5px solid #0C7C62;box-shadow:0 4px 14px rgba(12,124,98,.2);transform:scale(1.05);}
+.ibtn .chk{display:none;position:absolute;top:4px;right:4px;background:#0C7C62;color:white;border-radius:50%;width:16px;height:16px;font-size:9px;align-items:center;justify-content:center;font-weight:700;}
+.ibtn.on .chk{display:flex;}
+.ibtn-e{font-size:24px;line-height:1;transition:transform .18s;}
+.ibtn.on .ibtn-e{transform:scale(1.2);}
+.ibtn-n{font-size:13px;font-weight:600;text-align:center;line-height:1.25;transition:color .18s;}
+.ibtn.on .ibtn-n{color:#0C7C62;}
+.cat-scroll{display:flex;gap:6px;overflow-x:auto;padding:0 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.cat-scroll::-webkit-scrollbar{display:none;}
+.cbtn{padding:8px 14px;border-radius:50px;font-size:13.5px;cursor:pointer;border:1.5px solid #dee2e6;background:white;color:#4A5550;white-space:nowrap;font-weight:600;transition:all .15s;flex-shrink:0;}
+.cbtn.on{background:#0C7C62;border-color:#0C7C62;color:white;font-weight:700;}
+.sel-tag{background:#E9F6F0;color:#0C7C62;font-size:13px;font-weight:600;padding:5px 11px;border-radius:50px;border:1px solid #0C7C62;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+.sinput{width:100%;padding:11px 14px;font-size:14px;border:1.5px solid #dee2e6;border-radius:13px;background:white;color:#212529;margin-bottom:9px;box-sizing:border-box;outline:none;transition:border-color .15s;}
+.sinput:focus{border-color:#0C7C62;}
+.dc{background:white;border-radius:16px;padding:16px;margin-bottom:9px;border-left:5px solid;box-shadow:0 4px 10px rgba(0,0,0,.03);}
+.dc.safe{border-left-color:#81C784;} .dc.caution{border-left-color:#FF9F1C;} .dc.danger{border-left-color:#E63946;}
+.sch-card{background:white;border-radius:16px;padding:14px 15px;box-shadow:0 4px 10px rgba(0,0,0,.04);border:1px solid #eee;overflow:hidden;position:relative;margin-bottom:9px;}
+.sch-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;}
+.sch-card.empty_fasting::before{background:#22C55E;} .sch-card.morning::before{background:#FF9F1C;} .sch-card.lunch::before{background:#4299E1;} .sch-card.before_meal::before{background:#EF4444;} .sch-card.evening::before{background:#7C3AED;}
+.mcard{border-radius:18px;padding:18px;border:1px solid;box-shadow:0 6px 20px rgba(0,0,0,.05);margin-bottom:9px;}
+.clash-warn{background:#FFF8EC;border:1.5px solid #FFCC7A;border-radius:12px;padding:10px 12px;margin-bottom:8px;font-size:13.5px;color:#7A4600;line-height:1.6;}
+
+/* ── 감성 인트로 ── */
+#sc-intro{background:#F6FBF9;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+#intro-bg-circle1{position:absolute;top:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(12,124,98,.08),transparent 70%);pointer-events:none;}
+#intro-bg-circle2{position:absolute;bottom:-60px;right:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(12,124,98,.06),transparent 70%);pointer-events:none;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-14px);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideUp{to{opacity:0;transform:translateY(-100%);}  }
+#intro-magnifier{animation:float 3.6s ease-in-out infinite;display:inline-block;filter:drop-shadow(0 12px 32px rgba(12,124,98,.18));}
+.intro-fade1{opacity:0;animation:fadeIn .7s ease .2s forwards;}
+.intro-fade2{opacity:0;animation:fadeIn .7s ease .5s forwards;}
+.intro-fade3{opacity:0;animation:fadeIn .7s ease .8s forwards;}
+.intro-fade4{opacity:0;animation:fadeIn .7s ease 1.1s forwards;}
+.intro-fade5{opacity:0;animation:fadeIn .7s ease 1.4s forwards;}
+#sc-intro.leaving{animation:slideUp .55s cubic-bezier(.4,0,.2,1) forwards;}
+#bgm-btn{position:absolute;top:18px;right:18px;background:rgba(12,124,98,.1);border:1px solid rgba(12,124,98,.2);border-radius:50px;padding:7px 14px;font-size:12px;color:#0C7C62;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:600;transition:all .2s;}
+#bgm-btn:hover{background:rgba(12,124,98,.15);}
+#bgm-dot{width:8px;height:8px;border-radius:50%;background:#0C7C62;transition:background .2s;}
+#bgm-dot.off{background:#C8C4BC;}
+.intro-btn-main{width:100%;background:#0A5C49;color:white;border:none;padding:20px;border-radius:18px;font-size:18px;font-weight:700;cursor:pointer;box-shadow:0 8px 28px rgba(10,92,73,.3);letter-spacing:.02em;transition:transform .15s,box-shadow .15s;}
+.intro-btn-main:active{transform:scale(.97);box-shadow:0 4px 16px rgba(12,124,98,.2);}
+.intro-btn-kakao{width:100%;background:#FEE500;border:none;border-radius:15px;padding:15px;font-size:15px;font-weight:700;color:#191919;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px;}
+.intro-btn-naver{width:100%;background:#03C75A;border:none;border-radius:15px;padding:15px;font-size:15px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:9px;}
+.intro-btn-ghost{width:100%;background:transparent;border:1.5px solid #C8C4BC;border-radius:15px;padding:13px;font-size:14px;font-weight:600;color:#8A8580;cursor:pointer;}
+@keyframes spin{to{transform:rotate(360deg)}} .spin{animation:spin 1s linear infinite;display:inline-block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}} .fade-up{animation:fadeUp .38s ease both;}
+#guide-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;}
+.modal-inner{background:white;width:90%;max-width:360px;border-radius:22px;padding:24px;position:relative;max-height:80vh;overflow-y:auto;box-shadow:0 20px 50px rgba(0,0,0,.2);}
+.modal-close{position:absolute;top:13px;right:13px;background:#F0F0F0;border:none;border-radius:50%;width:28px;height:28px;font-size:13px;cursor:pointer;}
+/* 글로벌 탭바 (항상 표시) */
+#global-nav{display:none;position:sticky;top:0;z-index:200;background:white;border-bottom:1px solid #E8E4DC;box-shadow:0 1px 6px rgba(0,0,0,.06);}
+.gnav-btn{flex:1;padding:10px 0 8px;font-size:12.5px;font-weight:600;color:#4A5550;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.gnav-btn.on{color:#0C7C62;border-bottom-color:#0C7C62;font-weight:700;}
+.gnav-icon{font-size:16px;line-height:1;}
+/* 위저드 헤더: 글로벌 탭바 높이만큼 top 조정 */
+#wiz-header{position:sticky;top:42px;z-index:100;background:#0A5C49;padding:14px 18px 0;box-shadow:0 2px 12px rgba(0,0,0,.15);}
+.tab-bar{display:flex;background:white;border-bottom:1px solid #E8E4DC;}
+.tab-btn{flex:1;padding:10px 0;font-size:12.5px;font-weight:600;color:#4A5550;background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;}
+.tab-btn.on{color:#0C7C62;border-bottom-color:#0C7C62;font-weight:700;}
+</style>
+<script src="a11y.js?v=3" defer></script>
+<script src="attend.js?v=3" defer></script>
+</head>
+<body>
+<div id="wrap">
+
+<!-- ══ 글로벌 탭바 (인트로 제외 모든 화면에 항상 표시) ══ -->
+<div id="global-nav">
+  <div style="display:flex;">
+    <button class="gnav-btn on" id="gnav-home" onclick="gnavGo('home')"><span class="gnav-icon">🏠</span>홈</button>
+    <button class="gnav-btn" id="gnav-check" onclick="gnavGo('check')"><span class="gnav-icon">✅</span>안전체크</button>
+    <button class="gnav-btn" id="gnav-search" onclick="gnavGo('search')"><span class="gnav-icon">🔍</span>성분검색</button>
+    <button class="gnav-btn" id="gnav-shop" onclick="openShop()"><span class="gnav-icon">🛒</span>건강샵</button>
+    <button class="gnav-btn" id="gnav-mypage" onclick="gnavGo('mypage')"><span class="gnav-icon">👤</span>내정보</button>
+  </div>
+</div>
+
+<!-- ══ 감성 인트로 ══ -->
+<div id="sc-intro">
+  <div id="intro-bg-circle1"></div>
+  <div id="intro-bg-circle2"></div>
+
+  <!-- 음악 토글 -->
+  <button id="bgm-btn" onclick="toggleBgm()">
+    <span id="bgm-dot"></span>
+    <span id="bgm-label">음악과 함께 읽기</span>
+  </button>
+  <!-- 숨겨진 오디오 — bgm.mp3가 같은 폴더에 있으면 재생 -->
+  <audio id="bgm-audio" loop style="display:none;">
+    <source src="bgm.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- 중앙 콘텐츠 -->
+  <div style="text-align:center;padding:0 28px;width:100%;max-width:380px;">
+
+    <!-- 플로팅 돋보기 -->
+    <div class="intro-fade1" style="margin-bottom:20px;">
+      <span id="intro-magnifier" style="font-size:80px;line-height:1;">🔍</span>
+    </div>
+
+    <!-- 브랜드 뱃지 -->
+    <div class="intro-fade2" style="margin-bottom:16px;">
+      <span style="display:inline-flex;align-items:center;gap:7px;background:rgba(12,124,98,.1);border:1px solid rgba(12,124,98,.2);border-radius:50px;padding:6px 16px;">
+        <span style="font-size:13px;font-weight:700;color:#0C7C62;">건강 돋보기</span>
+        <span style="font-size:10px;background:#0C7C62;color:white;padding:2px 8px;border-radius:50px;font-weight:600;">Beta</span>
+      </span>
+    </div>
+
+    <!-- 메인 타이틀 -->
+    <div class="intro-fade3" style="margin-bottom:14px;">
+      <h1 style="font-size:28px;font-weight:700;color:#1A1A1A;line-height:1.45;margin:0;letter-spacing:-.01em;word-break:keep-all;">작은 글씨 속에 숨겨진<br><span style="color:#0C7C62;">당신의 건강 정보</span></h1>
+    </div>
+
+    <!-- 서브 카피 -->
+    <div class="intro-fade4" style="margin-bottom:36px;">
+      <p style="font-size:15px;color:#6B6560;line-height:1.85;margin:0;word-break:keep-all;">자식의 마음으로 꼼꼼히 들여다보고<br>알기 쉽게 들려드릴게요</p>
+    </div>
+
+    <!-- CTA 버튼 -->
+    <div class="intro-fade5" style="width:100%;margin-bottom:14px;">
+      <button class="intro-btn-main" id="btn-main-cta">내 건강 확인하러 가기 →</button>
+    </div>
+
+    <!-- 소셜 로그인 -->
+    <div class="intro-fade5" style="width:100%;">
+      <button class="intro-btn-kakao" id="btn-kakao">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M11 2C5.925 2 2 5.36 2 9.5c0 2.64 1.65 4.97 4.15 6.37L5.1 19.5l4.58-2.83c.43.06.87.08 1.32.08 5.075 0 9-3.36 9-7.5S16.075 2 11 2z" fill="#191919"/></svg>
+        카카오로 시작하기
+      </button>
+      <button class="intro-btn-naver" id="btn-naver">
+        <svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M12.7 11.3L9.1 6H6v10h3.3V10.7l3.7 5.3H16V6h-3.3v5.3z" fill="white"/></svg>
+        네이버로 시작하기
+      </button>
+      <button class="intro-btn-ghost" id="btn-guest">로그인 없이 먼저 확인하기</button>
+    </div>
+
+  </div>
+
+  <p style="position:absolute;bottom:16px;font-size:11px;color:#C8C4BC;text-align:center;">본 서비스는 의료 진단을 대체하지 않습니다</p>
+</div>
+
+<!-- 위저드 -->
+<div id="sc-wiz" style="display:none;">
+  <div id="wiz-header">
+    <div id="wiz-title-row">
+      <button id="wiz-back" onclick="wizBack()">←</button>
+      <div><div id="wiz-step-title">복용 중인 약 선택</div><div id="wiz-step-sub">현재 드시는 약을 선택해 주세요</div></div>
+      <div style="margin-left:auto;background:rgba(255,255,255,.18);border-radius:50px;padding:4px 10px;"><span id="wiz-step-num" style="font-size:12px;font-weight:700;color:white;">1 / 3</span></div>
+    </div>
+    <div id="pb-wrap"><div id="pb-fill" style="width:17%;"></div></div>
+    <div id="pb-steps">
+      <div class="pstep"><div class="pdot active" id="pd1">1</div><span class="plabel active" id="pl1">약 선택</span></div>
+      <div class="pline"><div class="pline-inner"></div></div>
+      <div class="pstep"><div class="pdot" id="pd2">2</div><span class="plabel" id="pl2">성분 선택</span></div>
+      <div class="pline"><div class="pline-inner"></div></div>
+      <div class="pstep"><div class="pdot" id="pd3">3</div><span class="plabel" id="pl3">결과 확인</span></div>
+    </div>
+  </div>
+  <div id="wiz-body">
+    <!-- Step 1 -->
+    <div id="step1">
+      <input id="drug-search" type="text" placeholder="약 이름 검색 (예: 혈압약, 당뇨약...)" oninput="filterD(this.value)" class="sinput">
+      <div id="drug-cat-btns" class="cat-scroll"></div>
+      <div id="drug-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      <div id="drug-sel-box" style="display:none;background:white;border:1px solid #dee2e6;border-radius:13px;padding:11px;margin-top:12px;">
+        <p style="font-size:12.5px;color:#4A5550;margin:0 0 7px;font-weight:600;">선택된 약물 <span id="drug-sel-cnt" style="color:#0C7C62;"></span></p>
+        <div id="drug-sel-tags" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+      </div>
+      <p style="font-size:14px;color:#4A5550;text-align:center;padding:14px 0 4px;font-weight:600;">복용 중인 약이 없으시면 바로 다음 단계로 넘어가세요</p>
+    </div>
+    <!-- Step 2 -->
+    <div id="step2" style="display:none;">
+      <input id="ing-search" type="text" placeholder="성분명 검색 (예: 루테인, 오메가3...)" oninput="filterI(this.value)" class="sinput">
+      <div id="cat-btns" class="cat-scroll"></div>
+      <div id="ing-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;"></div>
+      <div id="sel-box" style="display:none;background:white;border:1px solid #dee2e6;border-radius:13px;padding:11px;margin-top:12px;">
+        <p style="font-size:12.5px;color:#4A5550;margin:0 0 7px;font-weight:600;">선택된 성분 <span id="sel-cnt" style="color:#0C7C62;"></span></p>
+        <div id="sel-tags" style="display:flex;flex-wrap:wrap;gap:5px;"></div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div id="step3" style="display:none;">
+      <div id="sl" style="display:none;padding:52px 0;text-align:center;">
+        <div class="spin" style="font-size:42px;margin-bottom:14px;">🔍</div>
+        <p style="font-size:16px;font-weight:700;color:#212529;margin:0 0 5px;">선택하신 조합을 정밀하게 분석했습니다.</p>
+        <p style="font-size:13.5px;color:#4A5550;margin:0;">오늘의 복용 스케줄도 만들고 있어요</p>
+      </div>
+      <div id="sr" style="display:none;" class="fade-up">
+        <div id="r-verdict" style="background:white;border-radius:20px;padding:22px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.06);border:1px solid #eee;margin-bottom:14px;">
+          <div id="r-icon" style="font-size:48px;margin-bottom:12px;line-height:1;"></div>
+          <p id="r-lv" style="font-size:13px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin:0 0 7px;"></p>
+          <p id="r-msg" style="font-size:19px;font-weight:700;color:#212529;margin:0 0 9px;line-height:1.4;"></p>
+          <p id="r-rec" style="font-size:14px;font-weight:500;margin:0;line-height:1.5;"></p>
+        </div>
+        <div style="margin-bottom:14px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-size:16px;">⏰</span><p style="font-size:15px;font-weight:700;color:#212529;margin:0;">오늘의 복용 스케줄</p></div><div id="sch-cards"></div></div>
+        <div id="r-mech" style="display:none;margin-bottom:14px;"></div>
+        <div id="r-details" style="margin-bottom:14px;"></div>
+        <div id="r-tip" style="display:none;background:white;border-radius:16px;padding:16px;border:1px solid #eee;margin-bottom:14px;"></div>
+        <div style="background:white;border-radius:12px;padding:11px 13px;border:1px solid #eee;margin-bottom:14px;display:flex;gap:8px;"><span style="font-size:13px;flex-shrink:0;">ℹ️</span><p style="font-size:12.5px;color:#4A5550;line-height:1.65;margin:0;">이 결과는 <strong>참고용</strong>입니다. 식약처 및 약학정보원 데이터를 기반으로 작성되었습니다. 복용 전 반드시 <strong>의사·약사와 상담</strong>하세요.</p></div>
+        <!-- 성분 기반 제품 추천 (소비자용 — 내부 가격 데이터 미노출) -->
+        <div id="smart-commerce" style="border-radius:18px;overflow:hidden;margin-bottom:14px;border:1px solid #E8E4DC;">
+          <!-- 신뢰 문구 고정 -->
+          <div style="background:#F7F4EF;padding:11px 15px;border-bottom:1px solid #E8E4DC;display:flex;align-items:center;gap:8px;">
+            <span style="font-size:15px;flex-shrink:0;">🔬</span>
+            <p style="font-size:11px;color:#5A5550;margin:0;line-height:1.6;font-weight:500;">다시봄은 데이터 기반의 객관적 성분 분석을 통해 사용자에게 가장 적합한 제품을 추천합니다.</p>
+          </div>
+          <!-- 성분명 + 버튼 영역 -->
+          <div style="background:white;padding:13px 14px;">
+            <p id="sc-ing-name" style="font-size:14px;font-weight:700;color:#212529;margin:0 0 11px;"></p>
+            <div id="sc-btn-area"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="height:8px;"></div>
+  </div>
+  <div id="wiz-footer">
+    <button id="btn-next" disabled>복용 중인 약 없음 · 다음으로 →</button>
+    <button id="btn-guide" onclick="openGuide()">📘 복용 가이드 확인하기</button>
+  </div>
+</div>
+
+<!-- 탭 앱 -->
+<div id="sc-app" style="display:none;">
+  <div id="apptab-header" style="background:#0A5C49;padding:16px 18px 20px;border-radius:0 0 20px 20px;box-shadow:0 3px 10px rgba(0,0,0,.1);">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;"><span style="font-size:14px;">🔍</span><span style="color:rgba(255,255,255,.75);font-size:11px;">건강 돋보기</span></div>
+    <h1 id="apptab-header-title" style="color:white;font-size:18px;font-weight:700;margin:0;line-height:1.3;">홈</h1>
+  </div>
+
+  <div id="apptab-home" style="padding:14px;">
+    <div style="background:white;border-radius:16px;padding:16px;margin-bottom:11px;border-left:5px solid #0C7C62;"><p style="font-size:14px;color:#0C7C62;font-weight:700;margin:0 0 5px;">🔍 건강 돋보기란?</p><p style="font-size:13px;color:#6C757D;line-height:1.7;margin:0 0 10px;">50가지 성분의 효능과 약물 상호작용, 최적 복용 시간표를 식약처 데이터 기반으로 알기 쉽게 알려드려요.</p><button onclick="showWiz()" style="width:100%;background:#0C7C62;color:white;border:none;padding:13px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;">🔍 지금 바로 안전 체크하기</button></div>
+    <p style="font-size:14px;font-weight:700;color:#212529;margin:0 0 8px;">자주 찾는 성분</p>
+    <div id="pop-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:11px;"></div>
+    <div style="background:white;border-radius:16px;padding:14px;border-left:5px solid #E63946;"><p style="font-size:13px;font-weight:700;color:#E63946;margin:0 0 7px;">⚠️ 주의가 필요한 조합 TOP 3</p><div style="display:flex;flex-direction:column;gap:5px;"><div style="font-size:12px;color:#7A5000;padding:7px 10px;background:#FFF5E0;border-radius:8px;">🚨 비타민K + 와파린 → 혈전 위험</div><div style="font-size:12px;color:#7A5000;padding:7px 10px;background:#FFF5E0;border-radius:8px;">🚨 철분 + 갑상선약 → 흡수 차단</div><div style="font-size:12px;color:#7A5000;padding:7px 10px;background:#FFF5E0;border-radius:8px;">⚠️ 홍삼 + 와파린 → 출혈 위험</div></div></div>
+  </div>
+  <div id="apptab-search" style="display:none;">
+    <div style="padding:14px 14px 10px;">
+      <p style="font-size:15px;font-weight:700;color:#212529;margin:0 0 2px;">성분 효능 검색</p>
+      <p style="font-size:13.5px;color:#4A5550;margin:0 0 9px;">성분을 선택하면 효능을 크게 보여드려요</p>
+      <input id="eff-q" type="text" placeholder="성분명 검색 (예: 루테인, 홍삼...)" oninput="renderEffGrid(this.value)" class="sinput">
+      <div id="eff-cat-btns" class="cat-scroll" style="margin-bottom:0;"></div>
+    </div>
+    <div id="eff-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px 14px 0;"></div>
+    <!-- 선택된 성분 효능 패널 -->
+    <div id="eff-panel" style="display:none;margin:12px 14px 0;background:white;border-radius:18px;border:2px solid #0C7C62;box-shadow:0 6px 24px rgba(12,124,98,.12);overflow:hidden;">
+      <div style="background:#0C7C62;padding:14px 16px 12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span id="eff-panel-icon" style="font-size:32px;line-height:1;"></span>
+            <div>
+              <p id="eff-panel-name" style="font-size:17px;font-weight:700;color:white;margin:0;"></p>
+              <p id="eff-panel-cat" style="font-size:11px;color:rgba(255,255,255,.75);margin:2px 0 0;"></p>
+            </div>
+          </div>
+          <button onclick="closeEffPanel()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:white;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+      </div>
+      <div style="padding:16px;">
+        <div style="background:#F6FBF9;border-radius:12px;padding:14px 15px;border-left:4px solid #0C7C62;margin-bottom:12px;">
+          <p style="font-size:11px;font-weight:700;color:#0C7C62;margin:0 0 5px;letter-spacing:.04em;">💡 주요 효능</p>
+          <p id="eff-panel-eff" style="font-size:15px;color:#0A5C49;line-height:1.75;margin:0;font-weight:500;"></p>
+        </div>
+        <button id="eff-panel-check-btn" style="width:100%;background:#0C7C62;color:white;border:none;padding:14px;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;">✅ 이 성분 안전체크 하러 가기</button>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+  </div>
+  <div id="apptab-mypage" style="display:none;padding:14px;"><div style="text-align:center;padding:22px 0 14px;"><div style="width:56px;height:56px;border-radius:50%;background:#E9F6F0;display:flex;align-items:center;justify-content:center;margin:0 auto 9px;font-size:24px;border:2px solid #0C7C62;">👤</div><p style="font-size:15px;font-weight:700;color:#212529;margin:0 0 4px;">게스트 이용 중</p><p style="font-size:12px;color:#6C757D;margin:0 0 13px;">로그인하면 내 복용 스케줄을 저장할 수 있어요</p><button onclick="showIntro()" style="background:#0C7C62;color:white;border:none;border-radius:50px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;">로그인 / 회원가입</button></div></div>
+</div>
+
+<!-- 모달 -->
+<div id="guide-modal"><div class="modal-inner" onclick="event.stopPropagation()"><button class="modal-close" onclick="closeGuide()">✕</button><h2 id="guide-title" style="color:#0C7C62;margin:0 0 12px;font-size:17px;"></h2><div id="guide-schedule" style="margin-bottom:12px;"></div><p id="guide-text" style="line-height:1.75;color:#212529;font-size:14px;margin:0 0 12px;"></p><div style="background:#F6FBF9;padding:10px 12px;border-radius:10px;font-size:11px;color:#6C757D;">※ 본 가이드는 식약처 및 약학정보원 데이터를 기반으로 작성되었습니다.</div></div></div>
+
+</div>
+<!-- 자체 결제 모달 (UI 틀) -->
+<div id="pay-modal" onclick="closePayModal()" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.55);z-index:400;align-items:flex-end;justify-content:center;">
+  <div onclick="event.stopPropagation()" style="background:white;width:100%;max-width:420px;border-radius:24px 24px 0 0;padding:24px 22px 32px;box-shadow:0 -8px 32px rgba(0,0,0,.15);">
+    <div style="width:40px;height:4px;background:#E8E4DC;border-radius:50px;margin:0 auto 18px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <h2 id="pm-title" style="font-size:18px;font-weight:700;color:#212529;margin:0;"></h2>
+      <button onclick="closePayModal()" style="background:#F0F0F0;border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;">✕</button>
+    </div>
+    <div style="background:#F6FBF9;border:1px solid #0C7C62;border-radius:14px;padding:16px;text-align:center;margin-bottom:18px;">
+      <p style="font-size:13px;color:#0C7C62;font-weight:600;margin:0 0 4px;">건강 돋보기 자체 구매가</p>
+      <p id="pm-price" style="font-size:28px;font-weight:700;color:#0A5C49;margin:0;"></p>
+    </div>
+    <p style="font-size:13px;font-weight:700;color:#212529;margin:0 0 10px;">결제 수단 선택</p>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:18px;">
+      <button style="width:100%;background:#FEE500;border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:700;color:#191919;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="alertPayDev()"><svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M11 2C5.925 2 2 5.36 2 9.5c0 2.64 1.65 4.97 4.15 6.37L5.1 19.5l4.58-2.83c.43.06.87.08 1.32.08 5.075 0 9-3.36 9-7.5S16.075 2 11 2z" fill="#191919"/></svg>카카오페이로 결제</button>
+      <button style="width:100%;background:#03C75A;border:none;border-radius:13px;padding:15px;font-size:15px;font-weight:700;color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;" onclick="alertPayDev()"><svg width="18" height="18" viewBox="0 0 22 22" fill="none"><path d="M12.7 11.3L9.1 6H6v10h3.3V10.7l3.7 5.3H16V6h-3.3v5.3z" fill="white"/></svg>네이버페이로 결제</button>
+      <button style="width:100%;background:white;border:1.5px solid #dee2e6;border-radius:13px;padding:14px;font-size:14px;font-weight:600;color:#212529;cursor:pointer;" onclick="alertPayDev()">💳 신용카드 / 계좌이체</button>
+    </div>
+    <div style="background:#FFF8EC;border:1px solid #FFCC7A;border-radius:11px;padding:11px 13px;display:flex;gap:8px;"><span style="font-size:14px;flex-shrink:0;">🔧</span><p style="font-size:12.5px;color:#92400E;line-height:1.6;margin:0;">결제 기능은 현재 개발 중입니다. 조만간 편리하게 구매하실 수 있도록 준비할게요.</p></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════
+   스마트 마진 판단 시스템
+   도매가(wholesale) / 시장가(market) 단위: 원
+   마진 > 5000원 → 자체 결제창 | 이하 → 쿠팡 파트너스
+   나중에 외부 API로 교체 예정
+══════════════════════════════ */
+var MARGIN_THRESHOLD = 5000;
+var PRICE_DB = {
+  "omega3":      {wholesale:12000, market:22000, unit:"90캡슐"},
+  "lutein":      {wholesale:9000,  market:18000, unit:"60캡슐"},
+  "vitD":        {wholesale:4000,  market:8000,  unit:"90정"},
+  "vitC":        {wholesale:3500,  market:7500,  unit:"100정"},
+  "vitE":        {wholesale:5000,  market:9500,  unit:"60캡슐"},
+  "vitK":        {wholesale:6000,  market:13000, unit:"60캡슐"},
+  "vitB":        {wholesale:4500,  market:10000, unit:"60정"},
+  "calcium":     {wholesale:5000,  market:11000, unit:"90정"},
+  "magnesium":   {wholesale:6000,  market:14000, unit:"60정"},
+  "iron":        {wholesale:4000,  market:8000,  unit:"60정"},
+  "zinc":        {wholesale:3500,  market:7000,  unit:"60정"},
+  "multivit":    {wholesale:8000,  market:16000, unit:"30포"},
+  "probiotics":  {wholesale:10000, market:22000, unit:"30포"},
+  "redginseng":  {wholesale:18000, market:35000, unit:"30포"},
+  "ginseng":     {wholesale:15000, market:28000, unit:"30캡슐"},
+  "coq10":       {wholesale:14000, market:28000, unit:"60캡슐"},
+  "milkthistle": {wholesale:8000,  market:16000, unit:"60캡슐"},
+  "omega3":      {wholesale:12000, market:22000, unit:"90캡슐"},
+  "krill":       {wholesale:16000, market:32000, unit:"60캡슐"},
+  "curcumin":    {wholesale:7000,  market:13000, unit:"60캡슐"},
+  "berberine":   {wholesale:9000,  market:18000, unit:"60캡슐"},
+  "melatonin":   {wholesale:6000,  market:11000, unit:"60정"},
+  "collagen":    {wholesale:11000, market:24000, unit:"30포"},
+  "glucosamine": {wholesale:10000, market:20000, unit:"90정"},
+  "ginkgo":      {wholesale:7000,  market:15000, unit:"60캡슐"},
+  "vitA":        {wholesale:3000,  market:6500,  unit:"90정"},
+  "biotin":      {wholesale:4000,  market:8500,  unit:"60정"},
+  "hyaluronic":  {wholesale:9000,  market:18000, unit:"60캡슐"}
+};
+/* 가격 미등록 성분 기본값 */
+var PRICE_DEFAULT = {wholesale:8000, market:15000, unit:"1개월분"};
+
+function getPriceInfo(ingId){
+  return PRICE_DB[ingId] || PRICE_DEFAULT;
+}
+function getMargin(ingId){
+  var p = getPriceInfo(ingId);
+  return p.market - p.wholesale;
+}
+function isHighMargin(ingId){
+  return getMargin(ingId) > MARGIN_THRESHOLD;
+}
+
+var INGS=[{id:"astaxanthin",n:"아스타잔틴",e:"🦞",cat:"눈/뇌",eff:"눈의 피로도 개선에 도움을 주는 강력한 항산화 성분입니다."},{id:"vitA",n:"비타민A",e:"🥕",cat:"기초",eff:"눈의 망막 색소 형성과 야맹증 예방, 피부 점막 보호에 필수적입니다."},{id:"vitB",n:"비타민B군",e:"💊",cat:"기초",eff:"에너지 대사와 피로 회복, 신경계 기능을 돕는 활력 비타민입니다."},{id:"vitC",n:"비타민C",e:"🍋",cat:"기초",eff:"항산화 작용으로 세포 손상을 막고 면역력을 높이며 콜라겐 합성을 돕습니다."},{id:"vitD",n:"비타민D",e:"☀️",cat:"기초",eff:"칼슘 흡수를 도와 뼈 건강을 유지하고 면역 세포 활성을 돕습니다."},{id:"vitE",n:"비타민E",e:"🥜",cat:"기초",eff:"세포막을 보호하는 강력한 항산화제로 혈행 개선을 돕습니다."},{id:"vitK",n:"비타민K",e:"🥬",cat:"기초",eff:"혈액 응고를 돕고 뼈의 칼슘 결합을 지원하여 골다공증을 예방합니다."},{id:"biotin",n:"비오틴",e:"💅",cat:"뷰티",eff:"지방·탄수화물 대사에 관여하며 모발과 손톱 건강을 돕습니다."},{id:"cissus",n:"시서스",e:"🪴",cat:"뷰티",eff:"체지방 감소와 렙틴 호르몬 조절을 돕는 허브 추출물입니다."},{id:"elastin",n:"엘라스틴",e:"🧵",cat:"뷰티",eff:"콜라겐 지지대 역할을 하여 피부의 신축성과 탄력을 높여줍니다."},{id:"catechin",n:"카테킨",e:"🍃",cat:"뷰티",eff:"체지방 감소와 항산화, 혈중 콜레스테롤 개선을 돕는 녹차 성분입니다."},{id:"collagen",n:"콜라겐",e:"✨",cat:"뷰티",eff:"피부 진피층을 구성하여 탄력을 유지하고 관절 건강을 돕습니다."},{id:"cla",n:"CLA",e:"🔥",cat:"뷰티",eff:"과체중 성인의 체지방 감소에 도움을 줄 수 있는 불포화지방산입니다."},{id:"pantothenic",n:"판토텐산",e:"🍯",cat:"뷰티",eff:"에너지 생성과 피로 개선, 피부 건강 유지를 돕는 비타민입니다."},{id:"hyaluronic",n:"히알루론산",e:"💧",cat:"뷰티",eff:"피부 속 수분을 유지하여 건조함을 예방하고 보습을 돕습니다."},{id:"garcinia",n:"가르시니아",e:"🍏",cat:"뷰티",eff:"탄수화물이 지방으로 합성되는 것을 억제해 체지방 감소를 돕습니다."},{id:"glucosamine",n:"글루코사민",e:"🦀",cat:"특화",eff:"연골 형성의 기초 성분으로 관절의 부드러운 움직임을 돕습니다."},{id:"gamma",n:"감마리놀렌산",e:"🌸",cat:"면역",eff:"혈중 콜레스테롤 및 혈행 개선에 도움을 줍니다."},{id:"ginkgo",n:"은행잎",e:"🍂",cat:"눈/뇌",eff:"뇌 혈류를 개선하여 기억력 향상 및 혈행 개선에 도움을 줍니다."},{id:"calcium",n:"칼슘",e:"🦴",cat:"기초",eff:"뼈와 치아를 형성하고 신경 조절 및 근육 수축에 관여합니다."},{id:"krill",n:"크릴오일",e:"🦐",cat:"특화",eff:"인지질 형태의 오메가3로 흡수율이 높고 혈행 개선을 돕습니다."},{id:"curcumin",n:"커큐민",e:"🟡",cat:"특화",eff:"강황의 핵심 성분으로 항염증 및 항산화 작용이 뛰어납니다."},{id:"chlorella",n:"클로렐라",e:"🍵",cat:"면역",eff:"항산화와 피부 건강, 면역력 증진에 도움을 주는 미세조류입니다."},{id:"theanine",n:"테아닌",e:"🍵",cat:"눈/뇌",eff:"뇌의 알파파 발생을 도와 스트레스로 인한 긴장 완화에 도움을 줍니다."},{id:"protein",n:"단백질",e:"🥚",cat:"기초",eff:"근육 유지 및 효소·호르몬 구성의 핵심 성분으로 기력 유지에 중요합니다."},{id:"propolis",n:"프로폴리스",e:"🐝",cat:"면역",eff:"천연 항생제로 불리며 항산화 및 구강 내 항균 작용에 탁월합니다."},{id:"probiotics",n:"유산균",e:"🥛",cat:"장",eff:"장내 유익균을 증식시키고 배변 활동 및 면역력 강화에 도움을 줍니다."},{id:"prebiotics",n:"프리바이오틱스",e:"🌾",cat:"장",eff:"유산균의 먹이가 되어 장내 환경 개선 효과를 높여줍니다."},{id:"ps",n:"포스파티딜세린",e:"🧠",cat:"눈/뇌",eff:"뇌세포막 구성 성분으로 인지 능력 및 기억력 개선에 도움을 줍니다."},{id:"plum",n:"매실추출물",e:"🟢",cat:"장",eff:"유기산 성분이 소화액 분비를 촉진하고 장내 살균 작용을 돕습니다."},{id:"fiber",n:"식이섬유",e:"🥗",cat:"장",eff:"배변량을 늘리고 식후 혈당 상승 억제 및 콜레스테롤 조절을 돕습니다."},{id:"msm",n:"MSM",e:"🦴",cat:"특화",eff:"관절과 연골 건강을 돕는 식이유황 성분으로 통증 완화에 기여합니다."},{id:"multivit",n:"멀티비타민",e:"🌈",cat:"기초",eff:"부족하기 쉬운 필수 영양소를 골고루 보충하여 기초 건강을 돕습니다."},{id:"milkthistle",n:"밀크씨슬",e:"🌿",cat:"면역",eff:"실리마린 성분이 간세포를 보호하고 해독 작용을 도와 피로를 개선합니다."},{id:"berberine",n:"베르베린",e:"🌱",cat:"특화",eff:"천연 항생 및 혈당 조절, 콜레스테롤 개선에 도움을 줍니다."},{id:"sawpalmetto",n:"쏘팔메토",e:"🫐",cat:"특화",eff:"남성 전립선 건강 유지에 도움을 주는 야자수 열매 성분입니다."},{id:"spirulina",n:"스피루리나",e:"🧪",cat:"면역",eff:"항산화와 콜레스테롤 개선에 도움을 주는 고단백 해조류입니다."},{id:"psyllium",n:"차전자피",e:"🌿",cat:"장",eff:"수분을 흡수해 팽창하여 원활한 배변 활동을 돕는 식이섬유입니다."},{id:"iron",n:"철분",e:"🔴",cat:"기초",eff:"혈액 내 헤모글로빈 형성을 도와 전신에 산소를 공급합니다."},{id:"coq10",n:"CoQ10",e:"⚡",cat:"면역",eff:"세포 에너지 생성을 돕고 혈압 감소 및 항산화에 도움을 줍니다."},{id:"octacosanol",n:"옥타코사놀",e:"🏃",cat:"특화",eff:"지구력 증진과 체력 보강에 도움을 주는 성분입니다."},{id:"omega3",n:"오메가3",e:"🩸",cat:"기초",eff:"혈행 개선과 중성지방 수치를 낮추고 눈 건조함 개선에 도움을 줍니다."},{id:"enzyme",n:"소화효소",e:"🧬",cat:"장",eff:"음식물 분해를 도와 영양소 흡수를 높이고 속을 편안하게 합니다."},{id:"ginseng",n:"인삼",e:"🪴",cat:"면역",eff:"기력을 보강하고 신체 저항력을 높여주는 전통적인 자양강장 성분입니다."},{id:"zeaxanthin",n:"지아잔틴",e:"✨",cat:"눈/뇌",eff:"황반 중심부 색소를 보충하여 눈 건강을 입체적으로 보호합니다."},{id:"zinc",n:"아연",e:"🐚",cat:"기초",eff:"정상적인 면역 기능과 세포 분열, 상처 회복에 필수적입니다."},{id:"magnesium",n:"마그네슘",e:"🌙",cat:"기초",eff:"에너지 생성 및 신경 안정, 근육 경련 완화에 도움을 줍니다."},{id:"lutein",n:"루테인",e:"👁",cat:"눈/뇌",eff:"황반 색소 밀도를 유지하여 노화로 인한 시력 저하를 예방합니다."},{id:"melatonin",n:"멜라토닌",e:"💤",cat:"특화",eff:"수면 주기 조절을 도와 편안한 잠자리에 들 수 있도록 돕습니다."},{id:"redginseng",n:"홍삼",e:"🌿",cat:"면역",eff:"면역력 증진, 피로 개선, 혈액 흐름 및 기억력 향상을 돕는 보약 성분입니다."}];
+var DRUGS=[{id:"bp",l:"혈압약",e:"🩸",cat:"심혈관"},{id:"statin",l:"콜레스테롤약",e:"🫀",cat:"심혈관"},{id:"diabetes",l:"당뇨약",e:"🍬",cat:"대사"},{id:"insulin",l:"인슐린",e:"💉",cat:"대사"},{id:"warfarin",l:"와파린",e:"💊",cat:"항응고"},{id:"aspirin",l:"아스피린",e:"🔴",cat:"항응고"},{id:"thyroid",l:"갑상선약",e:"🦋",cat:"호르몬"},{id:"hormone",l:"호르몬제",e:"⚗️",cat:"호르몬"},{id:"sleep",l:"수면제",e:"💤",cat:"신경계"},{id:"antidep",l:"항우울제",e:"🧠",cat:"신경계"},{id:"antibiotic",l:"항생제",e:"🦠",cat:"항균"}];
+var DRUG_CATS=["전체","심혈관","대사","항응고","호르몬","신경계","항균"];
+var SCHED_GROUPS=[
+  {key:"empty_fasting",label:"아침 공복",icon:"🌿",time:"기상 직후",bg:"#F6FBF9",tc:"#0C7C62",
+   clockColor:"#22C55E",clockHand:"#0C7C62",clockText:"6",
+   items:["probiotics","prebiotics","psyllium"],
+   reason:"위산이 적은 아침 공복에 물 한 잔과 함께 드셔야 장까지 도달률이 높습니다.",
+   tip:"뜨거운 물보다는 미지근하거나 시원한 물과 함께 드시는 것이 유산균 보호에 좋습니다."},
+  {key:"morning",label:"아침 식후",icon:"☀️",time:"아침 식사 후",bg:"#FFFBEB",tc:"#92400E",
+   clockColor:"#FF9F1C",clockHand:"#92400E",clockText:"8",
+   items:["vitB","pantothenic","biotin","octacosanol","vitC","propolis","redginseng","ginseng","curcumin","chlorella","spirulina","iron"],
+   reason:"에너지 대사를 활성화하여 하루의 활력을 돕습니다.",
+   tip:"수용성 비타민은 아침에 드셔야 밤 사이 수면에 방해를 주지 않습니다."},
+  {key:"before_meal",label:"식전 30분",icon:"🍽",time:"식사 30분 전",bg:"#FFF1F2",tc:"#991B1B",
+   clockColor:"#EF4444",clockHand:"#991B1B",clockText:"12",
+   items:["garcinia","catechin","cissus","cla"],
+   reason:"탄수화물이 지방으로 합성되는 것을 미리 차단하기 위함입니다.",
+   tip:"식사 직전에 깜빡하셨다면 식사 도중에라도 드시는 것이 도움이 됩니다."},
+  {key:"lunch",label:"점심 식후",icon:"🌤",time:"점심 식사 후",bg:"#EFF6FF",tc:"#1E40AF",
+   clockColor:"#4299E1",clockHand:"#1E40AF",clockText:"13",
+   items:["omega3","lutein","zeaxanthin","vitA","vitD","vitE","vitK","coq10","krill","astaxanthin"],
+   reason:"지용성 성분은 식사 중의 지방분과 함께 흡수될 때 효율이 2~3배 높아집니다.",
+   tip:"기름진 식사를 하신 직후에 드시는 것이 가장 좋습니다."},
+  {key:"evening",label:"저녁 식후",icon:"🌙",time:"저녁 식사 후",bg:"#F5F3FF",tc:"#4C1D95",
+   clockColor:"#7C3AED",clockHand:"#4C1D95",clockText:"19",
+   items:["calcium","magnesium","msm","glucosamine","melatonin","protein","collagen","hyaluronic","elastin","gamma","fiber","enzyme","plum","multivit","zinc","theanine","ps","milkthistle","berberine","sawpalmetto","ginkgo"],
+   reason:"마그네슘 등 미네랄은 근육 이완과 신경 안정을 도와 편안한 잠자리를 돕습니다.",
+   tip:"칼슘과 철분은 서로 흡수를 방해하므로 아침/저녁으로 나누어 드세요."}
+];
+var CLASHES=[{a:"calcium",b:"iron",msg:"칼슘과 철분은 서로 흡수를 방해합니다. 아침/저녁으로 나누어 드세요.",aSched:"evening",bSched:"morning"},{a:"vitE",b:"vitK",msg:"비타민E와 비타민K는 항응고 작용이 상충될 수 있습니다. 다른 시간대에 복용하세요.",aSched:"lunch",bSched:"evening"}];
+var MECHS=[{key:"blood_thinning",tag:"혈액 응고 저해",icon:"🩸",ings:["omega3","ginkgo","redginseng","ginseng","vitE","curcumin","krill","gamma"],drugs:["warfarin","aspirin"],lv:"danger",m:"항응고제와 해당 성분은 모두 피를 묽게 만듭니다.",d:"병용 시 혈액이 너무 응고되지 않아 상처 지혈이 안 되거나, 위장관 출혈 및 뇌출혈 위험이 실질적으로 높아집니다.",a:"수술 전후에는 반드시 복용을 중단하고 전문의와 상의하세요."},{key:"hypoglycemia",tag:"혈당 강하 중첩",icon:"🍬",ings:["milkthistle","garcinia","berberine","cissus","psyllium","fiber"],drugs:["diabetes","insulin"],lv:"caution",m:"영양 성분이 인슐린 감수성을 높여 혈당을 추가로 낮춥니다.",d:"당뇨약과 함께 드시면 혈당이 정상치 이하로 떨어져 저혈당 쇼크가 올 수 있습니다.",a:"혈당 수치를 수시로 체크하시고, 이상 증상 시 즉시 당분을 섭취하세요."},{key:"metabolism",tag:"약물 대사 방해",icon:"⚗️",ings:["milkthistle"],drugs:["bp","statin"],lv:"caution",m:"간의 약물 대사 효소(CYP3A4) 활성에 간섭합니다.",d:"간이 약을 분해하는 속도를 늦춰 혈중 약물 농도가 비정상적으로 높아질 수 있습니다.",a:"평소보다 어지러움이나 근육통이 심해진다면 즉시 복용을 중단하세요."},{key:"absorption",tag:"약물 흡수 차단",icon:"🚫",ings:["calcium","magnesium","iron","zinc"],drugs:["thyroid","antibiotic"],lv:"danger",m:"미네랄 이온이 약물 성분을 감싸서 장 흡수를 차단합니다.",d:"약 성분이 몸에 흡수되지 못하고 그대로 배출되어 약효가 거의 사라집니다.",a:"반드시 약 복용 4시간 전후에 영양제를 드세요."},{key:"vitK",tag:"비타민K 길항",icon:"🧬",ings:["vitK","multivit","chlorella"],drugs:["warfarin"],lv:"danger",m:"비타민K가 와파린의 항응고 작용을 정면으로 방해합니다.",d:"와파린 약효가 사라져 혈전(피떡)이 생길 위험이 커집니다.",a:"와파린 복용 중에는 비타민K 함유 영양제를 피하고 식단도 일정하게 유지해야 합니다."}];
+var TV={safe:{bg:"#E9F6F0",bd:"#0C7C62",ac:"#81C784",ic:"✅",lbl:"SAFE · 안심"},caution:{bg:"#FFF8EC",bd:"#FFCC7A",ac:"#D4800A",ic:"⚠️",lbl:"CAUTION · 주의"},danger:{bg:"#FDECEA",bd:"#F5A8A4",ac:"#E63946",ic:"🚨",lbl:"DANGER · 위험"},info:{bg:"#EEF2FF",bd:"#B0BFFF",ac:"#3D4FB5",ic:"📋",lbl:"INFO · 단독 정보"}};
+var CATS=["전체","기초","장","면역","눈/뇌","뷰티","특화"];
+var POPULAR=["omega3","lutein","vitD","redginseng","magnesium","probiotics"];
+var selIngs=[],selDrugs=[],curCat="전체",searchQ="",drugSearchQ="",curDrugCat="전체",curWizStep=1,curIngId=null,curSchedule=null;
+
+function fI(id){for(var i=0;i<INGS.length;i++){if(INGS[i].id===id)return INGS[i];}return null;}
+function fD(id){for(var i=0;i<DRUGS.length;i++){if(DRUGS[i].id===id)return DRUGS[i];}return null;}
+
+function gnavGo(tab){
+  if(tab==="check"){showWiz();return;}
+
+  var doNav = function(){
+    document.getElementById("sc-wiz").style.display="none";
+    document.getElementById("sc-app").style.display="block";
+    showGlobalNav(true);
+
+    // 탭 콘텐츠 전환
+    var ts=["home","search","mypage"];
+    for(var i=0;i<ts.length;i++){
+      var el=document.getElementById("apptab-"+ts[i]);
+      if(el)el.style.display=(ts[i]===tab)?"block":"none";
+    }
+
+    // 성분검색 탭 초기화
+    if(tab==="search"){
+      effCurCat="전체"; effSelId=null;
+      var ep=document.getElementById("eff-panel");
+      if(ep)ep.style.display="none";
+      var eq=document.getElementById("eff-q");
+      if(eq)eq.value="";
+      renderEffGrid(""); renderEffCatBtns();
+    }
+    if(tab==="home"){ renderPopGrid(); }
+
+    gnavSetActive(tab);
+    var titleMap={home:"홈",search:"성분 효능 검색",mypage:"내 정보"};
+    var htEl=document.getElementById("apptab-header-title");
+    if(htEl)htEl.textContent=titleMap[tab]||"";
+  };
+
+  var intro=document.getElementById("sc-intro");
+  if(intro && intro.style.display!=="none"){ introLeave(doNav); } else { doNav(); }
+}
+function openShop(){
+  window.open("dropship.html","_blank");
+}
+function gnavSetActive(tab){
+  var tabs=["home","check","search","shop","mypage"];
+  for(var i=0;i<tabs.length;i++){
+    var b=document.getElementById("gnav-"+tabs[i]);
+    if(b){if(tabs[i]===tab)b.classList.add("on");else b.classList.remove("on");}
+  }
+}
+function showGlobalNav(show){
+  document.getElementById("global-nav").style.display=show?"block":"none";
+  // 글로벌 탭 있을 때 wiz-header top 조정
+  var wh=document.getElementById("wiz-header");
+  if(wh)wh.style.top=show?"42px":"0";
+}
+function showWiz(){
+  var intro = document.getElementById("sc-intro");
+  var doWiz = function(){
+    document.getElementById("sc-app").style.display="none";
+    document.getElementById("sc-wiz").style.display="block";
+    showGlobalNav(true); gnavSetActive("check");
+    curWizStep=1; selIngs=[]; selDrugs=[]; searchQ=""; curCat="전체"; drugSearchQ=""; curDrugCat="전체";
+    renderDrugGrid(); renderDrugCatBtns(); renderDrugSelBox(); updateWiz();
+  };
+  if(intro.style.display!=="none"){ introLeave(doWiz); } else { doWiz(); }
+}
+var bgmOn = false;
+function toggleBgm(){
+  var audio = document.getElementById("bgm-audio");
+  var dot = document.getElementById("bgm-dot");
+  var label = document.getElementById("bgm-label");
+  if(!audio) return;
+  if(bgmOn){
+    audio.pause();
+    bgmOn = false;
+    dot.className = "off";
+    label.textContent = "음악 켜기";
+  } else {
+    var p = audio.play();
+    if(p !== undefined){ p.catch(function(){}); }
+    bgmOn = true;
+    dot.className = "";
+    label.textContent = "음악 끄기";
+  }
+}
+
+function introLeave(cb){
+  var intro = document.getElementById("sc-intro");
+  intro.classList.add("leaving");
+  // BGM 정지
+  var audio = document.getElementById("bgm-audio");
+  if(audio && bgmOn){ audio.pause(); bgmOn = false; }
+  setTimeout(function(){ intro.style.display="none"; intro.classList.remove("leaving"); cb(); }, 520);
+}
+
+function showApp(){
+  var doApp = function(){
+    document.getElementById("sc-wiz").style.display="none";
+    document.getElementById("sc-app").style.display="block";
+    showGlobalNav(true); gnavSetActive("home");
+    renderPopGrid();
+  };
+  var intro = document.getElementById("sc-intro");
+  // 인트로가 실제로 보일 때만 슬라이드업 애니메이션
+  if(intro && intro.style.display !== "none"){ introLeave(doApp); } else { doApp(); }
+}
+function showIntro(){
+  document.getElementById("sc-app").style.display="none";
+  document.getElementById("sc-wiz").style.display="none";
+  document.getElementById("sc-intro").style.display="block";
+  showGlobalNav(false);
+}
+function switchAppTab(t){
+  var ts=["home","search","mypage"];
+  for(var i=0;i<ts.length;i++){
+    var el=document.getElementById("apptab-"+ts[i]);
+    if(el)el.style.display=(ts[i]===t)?"block":"none";
+  }
+  if(t==="search"){effCurCat="전체";effSelId=null;renderEffGrid("");renderEffCatBtns();var ep=document.getElementById("eff-panel");if(ep)ep.style.display="none";}
+}
+
+function updateWiz(){
+  var s=curWizStep;
+  var titles=["","복용 중인 약 선택","영양제 성분 선택","분석 결과"];
+  var subs=["","현재 드시는 약을 선택해 주세요","확인하실 성분을 선택해 주세요","선택하신 조합을 정밀하게 분석했습니다."];
+  document.getElementById("wiz-step-title").textContent=titles[s];
+  document.getElementById("wiz-step-sub").textContent=subs[s];
+  document.getElementById("wiz-step-num").textContent=s+" / 3";
+  var pct=s===1?17:s===2?50:100;
+  document.getElementById("pb-fill").style.width=pct+"%";
+  for(var i=1;i<=3;i++){
+    var dot=document.getElementById("pd"+i);
+    var lbl=document.getElementById("pl"+i);
+    dot.className="pdot"+(i<s?" done":i===s?" active":"");
+    dot.textContent=i<s?"✓":i;
+    lbl.className="plabel"+(i===s?" active":"");
+  }
+  document.getElementById("wiz-back").style.visibility=(s===1)?"hidden":"visible";
+  document.getElementById("step1").style.display=s===1?"block":"none";
+  document.getElementById("step2").style.display=s===2?"block":"none";
+  document.getElementById("step3").style.display=s===3?"block":"none";
+  var btnN=document.getElementById("btn-next");
+  var btnG=document.getElementById("btn-guide");
+  btnN.style.display=(s===3)?"none":"flex";
+  btnG.style.display=(s===3)?"block":"none";
+  if(s===1){
+    btnN.disabled=false;
+    btnN.textContent=selDrugs.length>0?selDrugs.length+"개 약 선택 · 다음으로 →":"복용 중인 약 없음 · 다음으로 →";
+    btnN.style.background="#0C7C62";
+  } else if(s===2){
+    btnN.disabled=selIngs.length===0;
+    btnN.textContent=selIngs.length>0?selIngs.length+"가지 성분 결과 확인하기 🔍":"성분을 1개 이상 선택해 주세요";
+    btnN.style.background=selIngs.length>0?"#0C7C62":"";
+  }
+  document.getElementById("wiz-body").scrollTop=0;
+}
+
+function wizNext(){
+  if(curWizStep===1){curWizStep=2;updateWiz();renderIngGrid();renderCatBtns();renderSelBox();}
+  else if(curWizStep===2){
+    if(selIngs.length===0)return;
+    var res=calcResult(selIngs.slice(),selDrugs.slice());
+    if(res.status==="danger"){if(!confirm("⚠️ 위험 조합 감지\n\n선택하신 조합은 심각한 상호작용이 있을 수 있습니다.\n복용 전 반드시 의사·약사와 상담하세요.\n\n계속 하시겠습니까?"))return;}
+    curIngId=selIngs[0]||null; curWizStep=3; updateWiz();
+    document.getElementById("sl").style.display="block";
+    document.getElementById("sr").style.display="none";
+    setTimeout(function(){document.getElementById("sl").style.display="none";showResult(res,selIngs.slice(),selDrugs.slice());},1000);
+  }
+}
+function wizBack(){
+  if(curWizStep===2){curWizStep=1;updateWiz();}
+  else if(curWizStep===3){curWizStep=2;updateWiz();renderIngGrid();renderCatBtns();renderSelBox();}
+}
+
+function filterD(q){drugSearchQ=q;renderDrugGrid();}
+function getDrugFiltered(){
+  var list=DRUGS.slice();
+  if(curDrugCat!=="전체"){list=list.filter(function(d){return d.cat===curDrugCat;});}
+  if(drugSearchQ){var q=drugSearchQ.toLowerCase();list=list.filter(function(d){return d.l.toLowerCase().indexOf(q)>=0;});}
+  return list;
+}
+function renderDrugCatBtns(){
+  var g=document.getElementById("drug-cat-btns");g.innerHTML="";
+  for(var i=0;i<DRUG_CATS.length;i++){
+    var b=document.createElement("button");b.className="cbtn"+(curDrugCat===DRUG_CATS[i]?" on":"");b.textContent=DRUG_CATS[i];
+    (function(cat){b.onclick=function(){curDrugCat=cat;renderDrugGrid();var grid=document.getElementById("drug-grid");if(grid)grid.scrollIntoView({behavior:"smooth",block:"nearest"});};})(DRUG_CATS[i]);
+    g.appendChild(b);
+  }
+}
+function renderDrugSelBox(){
+  var box=document.getElementById("drug-sel-box"),tags=document.getElementById("drug-sel-tags"),cnt=document.getElementById("drug-sel-cnt");
+  if(selDrugs.length>0){
+    box.style.display="block";tags.innerHTML="";cnt.textContent="("+selDrugs.length+"개)";
+    for(var i=0;i<selDrugs.length;i++){
+      var d=fD(selDrugs[i]);if(!d)continue;
+      var sp=document.createElement("span");sp.className="sel-tag";
+      sp.innerHTML=d.e+" "+d.l+' <span style="font-size:11px;opacity:.6;">✕</span>';
+      (function(did){sp.onclick=function(){var idx=selDrugs.indexOf(did);if(idx>=0)selDrugs.splice(idx,1);renderDrugGrid();renderDrugSelBox();updateWiz();};})(selDrugs[i]);
+      tags.appendChild(sp);
+    }
+  } else box.style.display="none";
+}
+function renderDrugGrid(){
+  var g=document.getElementById("drug-grid");g.innerHTML="";
+  var list=getDrugFiltered();
+  if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:12px 0;">검색 결과가 없습니다</p>';renderDrugCatBtns();return;}
+  for(var i=0;i<list.length;i++){
+    var d=list[i];var on=selDrugs.indexOf(d.id)>=0;
+    var b=document.createElement("button");b.className="ibtn"+(on?" on":"");
+    b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+d.e+'</span><span class="ibtn-n" style="color:'+(on?"#0C7C62":"#212529")+';">'+d.l+'</span>';
+    (function(did){b.onclick=function(){var idx=selDrugs.indexOf(did);if(idx>=0)selDrugs.splice(idx,1);else selDrugs.push(did);renderDrugGrid();renderDrugSelBox();updateWiz();};})(d.id);
+    g.appendChild(b);
+  }
+  renderDrugCatBtns();
+}
+
+function filterI(q){searchQ=q;renderIngGrid();}
+function getFiltered(){
+  var list=INGS.slice();
+  if(curCat!=="전체"){list=list.filter(function(x){return x.cat===curCat;});}
+  if(searchQ){var q=searchQ.toLowerCase();list=list.filter(function(x){return x.n.toLowerCase().indexOf(q)>=0;});}
+  return list.sort(function(a,b){return a.n.localeCompare(b.n,"ko");});
+}
+function renderCatBtns(){
+  var g=document.getElementById("cat-btns");g.innerHTML="";
+  for(var i=0;i<CATS.length;i++){
+    var b=document.createElement("button");b.className="cbtn"+(curCat===CATS[i]?" on":"");b.textContent=CATS[i];
+    (function(cat){b.onclick=function(){curCat=cat;renderIngGrid();var grid=document.getElementById("ing-grid");if(grid)grid.scrollIntoView({behavior:"smooth",block:"nearest"});};})(CATS[i]);
+    g.appendChild(b);
+  }
+}
+function renderSelBox(){
+  var box=document.getElementById("sel-box"),tags=document.getElementById("sel-tags"),cnt=document.getElementById("sel-cnt");
+  if(selIngs.length>0){
+    box.style.display="block";tags.innerHTML="";cnt.textContent="("+selIngs.length+"개)";
+    for(var i=0;i<selIngs.length;i++){
+      var ing=fI(selIngs[i]);if(!ing)continue;
+      var sp=document.createElement("span");sp.className="sel-tag";
+      sp.innerHTML=ing.e+" "+ing.n+' <span style="font-size:11px;opacity:.6;">✕</span>';
+      (function(id){sp.onclick=function(){var idx=selIngs.indexOf(id);if(idx>=0)selIngs.splice(idx,1);renderIngGrid();renderSelBox();updateWiz();};})(selIngs[i]);
+      tags.appendChild(sp);
+    }
+  } else box.style.display="none";
+}
+function renderIngGrid(){
+  var g=document.getElementById("ing-grid");g.innerHTML="";
+  var list=getFiltered();
+  if(!list.length){g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:12px 0;">검색 결과가 없습니다</p>';renderCatBtns();return;}
+  for(var i=0;i<list.length;i++){
+    var ing=list[i];var on=selIngs.indexOf(ing.id)>=0;
+    var b=document.createElement("button");b.className="ibtn"+(on?" on":"");
+    b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+ing.e+'</span><span class="ibtn-n" style="color:'+(on?"#0C7C62":"#212529")+';">'+ing.n+'</span>';
+    (function(id){b.onclick=function(){var idx=selIngs.indexOf(id);if(idx>=0)selIngs.splice(idx,1);else selIngs.push(id);renderIngGrid();renderSelBox();updateWiz();};})(ing.id);
+    g.appendChild(b);
+  }
+  renderCatBtns();
+}
+
+function findMechs(ingIds,drugIds){
+  var found=[];
+  for(var mi=0;mi<MECHS.length;mi++){
+    var m=MECHS[mi];var iM=false,dM=false;
+    for(var i=0;i<ingIds.length;i++){if(m.ings.indexOf(ingIds[i])>=0){iM=true;break;}}
+    for(var j=0;j<drugIds.length;j++){if(m.drugs.indexOf(drugIds[j])>=0){dM=true;break;}}
+    if(iM&&dM)found.push(m);
+  }
+  return found;
+}
+function calcResult(ingIds,drugIds){
+  if(ingIds.length===0)return{status:"info",msg:"성분을 선택해 주세요",rec:"",consult:false,mechs:[],details:[]};
+  var mechs=findMechs(ingIds,drugIds);
+  var lvls=mechs.map(function(m){return m.lv;});
+  var st=lvls.indexOf("danger")>=0?"danger":lvls.indexOf("caution")>=0?"caution":"safe";
+  var names=ingIds.map(function(id){var i=fI(id);return i?i.n:id;}).join(", ");
+  // 약을 선택했는지 여부에 따라 메시지 분기
+  var hasDrugs = drugIds.length > 0;
+  var MSG={
+    safe: hasDrugs
+      ? names+" — 선택하신 약과 심각한 상호작용 정보가 없습니다."
+      : names+" — 단독 복용 시 특별한 주의사항이 없습니다.",
+    caution: "이 조합은 주의가 필요해요. 복용 전 꼭 확인해 보세요.",
+    danger: "이 조합은 위험할 수 있어요. 전문가와 반드시 상담하세요."
+  };
+  var REC={
+    safe: hasDrugs
+      ? "데이터베이스에 등록된 상호작용이 없지만, 복용 전 약사·의사에게 한 번 확인해 보시면 더 안심이 돼요."
+      : "복용 전 개인 건강 상태에 따라 전문가 상담을 권장해 드려요.",
+    caution: "복용 전 반드시 의사나 약사와 상담하세요.",
+    danger: "혼자 결정하지 마세요. 전문가 상담이 꼭 필요합니다."
+  };
+  var details=[];
+  if(drugIds.length>0){
+    for(var mi=0;mi<MECHS.length;mi++){
+      var m=MECHS[mi];var mIngs=[];
+      for(var ii=0;ii<ingIds.length;ii++){if(m.ings.indexOf(ingIds[ii])>=0)mIngs.push(ingIds[ii]);}
+      for(var di=0;di<drugIds.length;di++){if(m.drugs.indexOf(drugIds[di])>=0&&mIngs.length>0){var dr=fD(drugIds[di]);details.push({n:dr?dr.l:drugIds[di],lv:m.lv,mech:m,ings:mIngs});}}
+    }
+  }
+  return{status:st,msg:MSG[st],rec:REC[st],consult:st==="danger",mechs:mechs,details:details};
+}
+function buildSched(ingIds){
+  var ov={};
+  for(var ci=0;ci<CLASHES.length;ci++){var c=CLASHES[ci];if(ingIds.indexOf(c.a)>=0&&ingIds.indexOf(c.b)>=0){ov[c.a]=c.aSched;ov[c.b]=c.bSched;}}
+  var s={};
+  for(var ii=0;ii<ingIds.length;ii++){
+    var id=ingIds[ii];var ing=fI(id);if(!ing)continue;
+    var key=ov[id]||null;
+    if(!key){for(var gi=0;gi<SCHED_GROUPS.length;gi++){if(SCHED_GROUPS[gi].items.indexOf(id)>=0){key=SCHED_GROUPS[gi].key;break;}}}
+    if(!key)key="evening";
+    if(!s[key])s[key]=[];
+    s[key].push({id:id,n:ing.n,e:ing.e});
+  }
+  return s;
+}
+function showResult(res,ingIds,drugIds){
+  var t=TV[res.status]||TV.info;
+  var firstIng=fI(ingIds[0]||"");
+  var vc=document.getElementById("r-verdict");vc.style.background=t.bg;vc.style.border="1px solid "+t.bd;
+  document.getElementById("r-icon").textContent=t.ic;
+  document.getElementById("r-lv").style.color=t.ac;document.getElementById("r-lv").textContent=t.lbl;
+  document.getElementById("r-msg").textContent=res.msg;
+  document.getElementById("r-rec").style.color=t.ac;document.getElementById("r-rec").textContent=res.rec;
+  var sched=buildSched(ingIds);curSchedule=sched;
+  var sc=document.getElementById("sch-cards");sc.innerHTML="";
+  for(var ci=0;ci<CLASHES.length;ci++){if(ingIds.indexOf(CLASHES[ci].a)>=0&&ingIds.indexOf(CLASHES[ci].b)>=0){var cw=document.createElement("div");cw.className="clash-warn";cw.innerHTML="⚡ <strong>충돌 감지!</strong> "+CLASHES[ci].msg;sc.appendChild(cw);}}
+  var schO=["empty_fasting","morning","before_meal","lunch","evening"];
+  for(var si=0;si<schO.length;si++){
+    var key=schO[si];if(!sched[key]||sched[key].length===0)continue;
+    var grp=null;for(var gi=0;gi<SCHED_GROUPS.length;gi++){if(SCHED_GROUPS[gi].key===key){grp=SCHED_GROUPS[gi];break;}}
+    if(!grp)continue;
+    var items=sched[key];
+    var card=document.createElement("div");card.className="sch-card "+key;card.style.background=grp.bg;
+    // 원형 시계 SVG
+    var cc=grp.clockColor||"#888";
+    var ch=grp.clockHand||"#444";
+    var ct=grp.clockText||"";
+    var clockSvg='<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
+      +'<circle cx="20" cy="20" r="18" fill="white" stroke="'+cc+'" stroke-width="2.5"/>'
+      +'<circle cx="20" cy="20" r="14" fill="'+cc+'" opacity=".15"/>'
+      +'<line x1="20" y1="20" x2="20" y2="8" stroke="'+ch+'" stroke-width="2.5" stroke-linecap="round"/>'
+      +'<line x1="20" y1="20" x2="28" y2="20" stroke="'+ch+'" stroke-width="2" stroke-linecap="round"/>'
+      +'<circle cx="20" cy="20" r="2" fill="'+ch+'"/>'
+      +'<text x="20" y="35" text-anchor="middle" font-size="7" font-weight="700" fill="'+ch+'" font-family="sans-serif">'+ct+'시</text>'
+      +'</svg>';
+    card.innerHTML='<div style="display:flex;align-items:flex-start;gap:12px;">'
+      +'<div style="flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:4px;">'+clockSvg
+      +'<p style="font-size:10px;font-weight:700;color:'+grp.tc+';margin:0;white-space:nowrap;">'+grp.label+'</p></div>'
+      +'<div style="flex:1;min-width:0;">'
+      +'<p style="font-size:16px;margin:0 0 3px;">'+items.map(function(x){return x.e;}).join(" ")+'</p>'
+      +'<p style="font-size:13px;font-weight:700;color:#212529;margin:0 0 4px;line-height:1.4;">'+items.map(function(x){return x.n;}).join(" · ")+'</p>'
+      +'<p style="font-size:11px;color:'+grp.tc+';line-height:1.55;margin:0;">'+grp.reason+'</p>'
+      +'</div></div>';
+    sc.appendChild(card);
+  }
+  var mechBox=document.getElementById("r-mech");mechBox.innerHTML="";
+  if(res.mechs&&res.mechs.length>0){
+    mechBox.style.display="block";
+    var mh=document.createElement("p");mh.style.cssText="font-size:15px;font-weight:700;color:#212529;margin:0 0 9px;";mh.textContent="의학적 상세 근거";mechBox.appendChild(mh);
+    for(var mi=0;mi<res.mechs.length;mi++){
+      var m=res.mechs[mi];var iD=m.lv==="danger";
+      var mbg=iD?"#FDECEA":"#FFF8EC";var mbd=iD?"#F5A8A4":"#FFCC7A";var mac=iD?"#E63946":"#D4800A";
+      var div=document.createElement("div");div.className="mcard";div.style.background=mbg;div.style.borderColor=mbd;
+      div.innerHTML='<div style="display:inline-flex;align-items:center;gap:6px;background:'+mac+';color:white;border-radius:50px;padding:4px 12px;margin-bottom:10px;font-size:12px;font-weight:700;">'+m.icon+' '+m.tag+'</div><p style="font-size:17px;font-weight:700;color:#212529;line-height:1.45;margin:0 0 8px;">'+m.m+'</p><p style="font-size:13px;color:'+mac+';line-height:1.8;margin:0 0 11px;">'+m.d+'</p><div style="background:white;border-radius:10px;padding:10px 13px;border:1px solid '+mbd+';"><p style="font-size:11px;font-weight:700;color:'+mac+';margin:0 0 3px;">📌 지금 바로 하셔야 할 일</p><p style="font-size:14px;font-weight:700;color:#212529;line-height:1.65;margin:0;">'+m.a+'</p></div>';
+      mechBox.appendChild(div);
+    }
+  } else if(res.status==="safe"&&drugIds.length>0){
+    mechBox.style.display="block";mechBox.innerHTML='<div style="background:#F1F8E9;border:1px solid #AED581;border-radius:16px;padding:18px;text-align:center;"><div style="font-size:34px;margin-bottom:8px;">😊</div><p style="font-size:17px;font-weight:700;color:#558B2F;margin:0 0 6px;">안심하셔도 좋습니다</p><p style="font-size:13px;color:#558B2F;line-height:1.75;margin:0;">선택하신 조합에서 알려진 심각한 상호작용이 없습니다.</p></div>';
+  } else mechBox.style.display="none";
+  var det=document.getElementById("r-details");det.innerHTML="";
+  if(res.details&&res.details.length>0){
+    var dh=document.createElement("p");dh.style.cssText="font-size:15px;font-weight:700;color:#212529;margin:0 0 9px;";dh.textContent="약별 분석 결과";det.appendChild(dh);
+    for(var di=0;di<res.details.length;di++){
+      var r=res.details[di];var lv=r.lv||"safe";var bt=TV[lv]||TV.safe;
+      var mN=r.ings?r.ings.map(function(id){var x=fI(id);return x?x.n:id;}).join(", "):"";
+      var c2=document.createElement("div");c2.className="dc "+lv;
+      c2.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;"><div><span style="font-size:14px;font-weight:700;color:#212529;">'+r.n+'</span>'+(mN?'<p style="font-size:11px;color:#6C757D;margin:2px 0 0;">↔ '+mN+'</p>':'')+'</div><span style="color:'+bt.ac+';font-size:12px;font-weight:700;">● '+{safe:"안전",caution:"주의",danger:"위험"}[lv]+'</span></div>'+(r.mech?'<p style="font-size:12px;color:#6C757D;line-height:1.7;margin:0;">'+r.mech.d+'</p>':'');
+      det.appendChild(c2);
+    }
+  }
+  var tipBox=document.getElementById("r-tip");tipBox.innerHTML="";
+  var tips=[];var schO2=["empty_fasting","morning","before_meal","lunch","evening"];
+  for(var si2=0;si2<schO2.length;si2++){var k=schO2[si2];if(sched[k]&&sched[k].length>0){for(var gi2=0;gi2<SCHED_GROUPS.length;gi2++){if(SCHED_GROUPS[gi2].key===k&&SCHED_GROUPS[gi2].tip){tips.push({icon:SCHED_GROUPS[gi2].icon,tip:SCHED_GROUPS[gi2].tip});break;}}}}
+  if(tips.length>0){
+    tipBox.style.display="block";var tth=document.createElement("p");tth.style.cssText="font-size:14px;font-weight:700;color:#212529;margin:0 0 10px;";tth.innerHTML="🔍 돋보기 한마디";tipBox.appendChild(tth);
+    for(var ti=0;ti<tips.length;ti++){var td=document.createElement("div");td.style.cssText="display:flex;align-items:flex-start;gap:8px;padding:9px 10px;background:#F6FBF9;border-radius:10px;margin-bottom:7px;";td.innerHTML='<span style="font-size:15px;flex-shrink:0;">'+tips[ti].icon+'</span><p style="font-size:13px;color:#212529;line-height:1.65;margin:0;">'+tips[ti].tip+'</p>';tipBox.appendChild(td);}
+  } else tipBox.style.display="none";
+  var iN=(firstIng?firstIng.n:"건강기능식품")+(ingIds.length>1?" 외 "+(ingIds.length-1)+"가지":"");
+  renderSmartCommerce(curIngId, iN);
+  document.getElementById("sr").style.display="block";
+  updateWiz();
+}
+function openCoupang(ingName){
+  var kw = ingName || (fI(curIngId||"")?fI(curIngId||"").n:"건강기능식품");
+  window.open("https://www.coupang.com/np/search?q="+encodeURIComponent(kw)+"&channel=user","_blank");
+}
+
+function openPayModal(ingName, price){
+  var modal = document.getElementById("pay-modal");
+  var mTitle = document.getElementById("pm-title");
+  var mPrice = document.getElementById("pm-price");
+  if(mTitle) mTitle.textContent = ingName + " 구매하기";
+  if(mPrice) mPrice.textContent = price.toLocaleString()+"원";
+  if(modal) modal.style.display = "flex";
+}
+function closePayModal(){
+  var modal = document.getElementById("pay-modal");
+  if(modal) modal.style.display = "none";
+}
+
+/* ══════════════════════════════════════
+   renderSmartCommerce (소비자 화면)
+   - wholesale_price / margin 은 내부 분기 연산에만 사용
+   - 소비자 화면에 가격·마진 일절 노출 없음
+   - 백엔드 API 연동 시 getPriceInfo() 교체만으로 확장 가능
+══════════════════════════════════════ */
+function renderSmartCommerce(ingId, ingName){
+  var p = getPriceInfo(ingId||"");
+  /* 내부 마진 판단 — UI 렌더링 없음 */
+  var high = (p.market - p.wholesale) > MARGIN_THRESHOLD;
+
+  /* 성분명 */
+  var nameEl = document.getElementById("sc-ing-name");
+  if(nameEl) nameEl.textContent = ingName + " 관련 제품 안내";
+
+  /* 버튼 영역 — 문구에 광고성 단어 없음 */
+  var btnArea = document.getElementById("sc-btn-area");
+  if(!btnArea) return;
+  btnArea.innerHTML = "";
+
+  if(high){
+    /* 자체 구매 경로 (메인) */
+    var b1 = document.createElement("button");
+    b1.style.cssText = "width:100%;background:#0C7C62;color:white;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:9px;box-shadow:0 4px 14px rgba(12,124,98,.22);display:flex;align-items:center;justify-content:center;gap:8px;";
+    b1.innerHTML = "📋 성분 분석 결과 확인 및 구매";
+    (function(n, pr){ b1.onclick = function(){ openPayModal(n, pr); }; })(ingName, p.market);
+    btnArea.appendChild(b1);
+
+    var b2 = document.createElement("button");
+    b2.style.cssText = "width:100%;background:white;color:#5A5550;border:1.5px solid #dee2e6;padding:13px;border-radius:13px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;";
+    b2.innerHTML = "🔗 타 쇼핑몰 정보 확인";
+    (function(n){ b2.onclick = function(){ openCoupang(n); }; })(ingName);
+    btnArea.appendChild(b2);
+
+  } else {
+    /* 외부 경로 (메인) */
+    var b3 = document.createElement("button");
+    b3.style.cssText = "width:100%;background:#1A1A2E;color:white;border:none;padding:17px;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;margin-bottom:9px;box-shadow:0 4px 14px rgba(26,26,46,.2);display:flex;align-items:center;justify-content:center;gap:8px;";
+    b3.innerHTML = "🔗 타 쇼핑몰 정보 확인";
+    (function(n){ b3.onclick = function(){ openCoupang(n); }; })(ingName);
+    btnArea.appendChild(b3);
+
+    var b4 = document.createElement("button");
+    b4.style.cssText = "width:100%;background:white;color:#5A5550;border:1.5px solid #dee2e6;padding:13px;border-radius:13px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;";
+    b4.innerHTML = "📋 성분 분석 결과 확인 및 구매";
+    (function(n, pr){ b4.onclick = function(){ openPayModal(n, pr); }; })(ingName, p.market);
+    btnArea.appendChild(b4);
+  }
+}
+function openGuide(){
+  if(selIngs.length===0)return;
+  var names=selIngs.map(function(id){var i=fI(id);return i?i.e+" "+i.n:id;}).join(", ");
+  document.getElementById("guide-title").textContent="🌿 오늘의 복용 가이드";
+  var gs=document.getElementById("guide-schedule");gs.innerHTML="";
+  if(curSchedule){var order=["empty_fasting","morning","before_meal","lunch","evening"];for(var i=0;i<order.length;i++){var key=order[i];if(!curSchedule[key]||curSchedule[key].length===0)continue;var grp=null;for(var gi=0;gi<SCHED_GROUPS.length;gi++){if(SCHED_GROUPS[gi].key===key){grp=SCHED_GROUPS[gi];break;}}var row=document.createElement("div");row.style.cssText="display:flex;align-items:center;gap:9px;padding:8px 10px;background:#F6FBF9;border-radius:10px;margin-bottom:6px;";row.innerHTML='<span style="font-size:17px;">'+grp.icon+'</span><div><p style="font-size:12px;font-weight:700;color:#212529;margin:0;">'+grp.label+'</p><p style="font-size:12px;color:#6C757D;margin:0;">'+curSchedule[key].map(function(x){return x.n;}).join(", ")+'</p></div>';gs.appendChild(row);}}
+  document.getElementById("guide-text").textContent="선택하신 성분: "+names;
+  document.getElementById("guide-modal").style.display="flex";
+}
+function closeGuide(){document.getElementById("guide-modal").style.display="none";}
+/* 성분검색 탭 — 그리드 + 하단 패널 */
+var effCurCat="전체", effSelId=null;
+
+function renderEffCatBtns(){
+  var g=document.getElementById("eff-cat-btns");if(!g)return;g.innerHTML="";
+  for(var i=0;i<CATS.length;i++){
+    var b=document.createElement("button");
+    b.className="cbtn"+(effCurCat===CATS[i]?" on":"");
+    b.textContent=CATS[i];
+    (function(cat){
+      b.onclick=function(){
+        effCurCat=cat;
+        renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");
+      };
+    })(CATS[i]);
+    g.appendChild(b);
+  }
+}
+
+function renderEffGrid(q){
+  var list=INGS.slice().sort(function(a,b){return a.n.localeCompare(b.n,"ko");});
+  if(effCurCat!=="전체"){list=list.filter(function(x){return x.cat===effCurCat;});}
+  if(q){var lq=q.toLowerCase();list=list.filter(function(x){return x.n.toLowerCase().indexOf(lq)>=0;});}
+  var g=document.getElementById("eff-grid");if(!g)return;g.innerHTML="";
+  if(!list.length){
+    g.innerHTML='<p style="grid-column:1/-1;text-align:center;font-size:12px;color:#6C757D;padding:14px 0;">검색 결과가 없습니다</p>';
+    renderEffCatBtns();return;
+  }
+  for(var i=0;i<list.length;i++){
+    var ing=list[i];
+    var on=effSelId===ing.id;
+    var b=document.createElement("button");
+    b.className="ibtn"+(on?" on":"");
+    b.innerHTML='<div class="chk">✓</div><span class="ibtn-e">'+ing.e+'</span><span class="ibtn-n" style="color:'+(on?"#0C7C62":"#212529")+';">'+ing.n+'</span>';
+    (function(ingObj){
+      b.onclick=function(){
+        if(effSelId===ingObj.id){effSelId=null;closeEffPanel();}
+        else{effSelId=ingObj.id;openEffPanel(ingObj);}
+        renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");
+      };
+    })(ing);
+    g.appendChild(b);
+  }
+  renderEffCatBtns();
+}
+
+function openEffPanel(ing){
+  var panel=document.getElementById("eff-panel");if(!panel)return;
+  document.getElementById("eff-panel-icon").textContent=ing.e;
+  document.getElementById("eff-panel-name").textContent=ing.n;
+  document.getElementById("eff-panel-cat").textContent=ing.cat+" 계열";
+  document.getElementById("eff-panel-eff").textContent=ing.eff||"효능 정보를 준비 중입니다.";
+  var checkBtn=document.getElementById("eff-panel-check-btn");
+  if(checkBtn){
+    checkBtn.onclick=function(){
+      gnavGo("check");
+      setTimeout(function(){
+        curWizStep=2;updateWiz();
+        selIngs=[ing.id];renderIngGrid();renderCatBtns();renderSelBox();updateWiz();
+        var panel2=document.getElementById("eff-panel");if(panel2)panel2.style.display="none";
+        effSelId=null;
+      },50);
+    };
+  }
+  panel.style.display="block";
+  setTimeout(function(){panel.scrollIntoView({behavior:"smooth",block:"nearest"});},80);
+}
+
+function closeEffPanel(){
+  var panel=document.getElementById("eff-panel");if(panel)panel.style.display="none";
+  effSelId=null;
+  renderEffGrid(document.getElementById("eff-q")?document.getElementById("eff-q").value:"");
+}
+
+function renderEffList(q){renderEffGrid(q);}
+function tgE(id){var ing=fI(id);if(ing){if(effSelId===id){effSelId=null;closeEffPanel();}else{effSelId=id;openEffPanel(ing);renderEffGrid("");}}}
+function renderPopGrid(){
+  var g=document.getElementById("pop-grid");if(!g)return;g.innerHTML="";
+  for(var i=0;i<POPULAR.length;i++){
+    var ing=fI(POPULAR[i]);if(!ing)continue;
+    var card=document.createElement("div");card.style.cssText="background:white;border:1px solid #eee;border-radius:14px;padding:11px;display:flex;align-items:center;gap:8px;cursor:pointer;";
+    card.innerHTML='<span style="font-size:19px;">'+ing.e+'</span><div><p style="font-size:13px;font-weight:700;color:#212529;margin:0;">'+ing.n+'</p><p style="font-size:11px;color:#6C757D;margin:0;">'+ing.cat+'</p></div>';
+    (function(ingObj){card.onclick=function(){showWiz();setTimeout(function(){curWizStep=2;updateWiz();selIngs=[ingObj.id];renderIngGrid();renderCatBtns();renderSelBox();updateWiz();},50);};})(ing);
+    g.appendChild(card);
+  }
+}
+function alertPayDev(){ alert("결제 기능은 현재 개발 중입니다. 조만간 이용하실 수 있어요!"); }
+
+window.onload=function(){
+  document.getElementById("btn-main-cta").onclick=showApp;
+  document.getElementById("btn-kakao").onclick=showApp;
+  document.getElementById("btn-naver").onclick=showApp;
+  document.getElementById("btn-guest").onclick=showApp;
+  document.getElementById("btn-next").onclick=wizNext;
+  document.getElementById("guide-modal").onclick=closeGuide;
+};
+</script>
+</body>
+</html>
