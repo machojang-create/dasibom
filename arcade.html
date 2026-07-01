@@ -418,12 +418,13 @@
             }
         }
     </style>
+<script src="/logo.js"></script>
 </head>
 <body>
 
     <!-- Lobby Screen -->
     <div id="lobby" class="screen active">
-        <a href="/?home=1" class="arcade-exit">← 다시봄</a>
+        <a href="/?home=1" class="arcade-exit" data-dasibom-logo></a>
         <h1 class="title">추억의 오락실</h1>
         <button class="game-btn" onclick="startGame('blast')">블라스트<br><span class="game-desc">같은 색 블럭 누르기</span><br><span id="lobby-high-blast" class="lobby-high-score">최고 점수: 0</span></button>
         <button class="game-btn" onclick="startGame('match3')">3매치<br><span class="game-desc">자리 바꿔서 3개 맞추기</span><br><span id="lobby-high-match3" class="lobby-high-score">최고 점수: 0</span></button>

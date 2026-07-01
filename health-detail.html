@@ -302,6 +302,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 </style>
 <script src="a11y.js?v=3" defer></script>
 <script src="attend.js?v=3" defer></script>
+<script src="/logo.js"></script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -318,23 +319,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 
 <!-- ── GNB ── -->
 <header>
-  <a class="logo" href="/?home=1">
-    <svg width="40" height="40" viewBox="0 0 44 44" fill="none">
-      <rect width="44" height="44" rx="12" fill="#F5F8F0"/>
-      <circle cx="22" cy="13" r="5" fill="#83CBB2"/>
-      <line x1="22" y1="5" x2="22" y2="3" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
-      <line x1="22" y1="23" x2="22" y2="21" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
-      <line x1="14" y1="13" x2="12" y2="13" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
-      <line x1="32" y1="13" x2="30" y2="13" stroke="#83CBB2" stroke-width="2" stroke-linecap="round"/>
-      <line x1="22" y1="38" x2="22" y2="26" stroke="#81C784" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M22 32 C18 30 15 27 17 24 C19 21 22 26 22 28" fill="#81C784"/>
-      <path d="M22 30 C26 28 29 25 27 22 C25 19 22 24 22 26" fill="#A5D6A7"/>
-    </svg>
-    <div>
-      <div class="logo-text">다시봄</div>
-      <div class="logo-sub">DASIBOM</div>
-    </div>
-  </a>
+  <a class="logo" href="/?home=1" data-dasibom-logo></a>
   <button class="back-btn" onclick="location.href='/?home=1'">
     <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M9.5 12L5.5 7.5 9.5 3" stroke="#0C7C62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     돌아가기
