@@ -57,13 +57,18 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .modal-close-btn{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;border:1.5px solid #CFE5DB;background:#fff;font-size:16px;color:#4A6A58;cursor:pointer;display:flex;align-items:center;justify-content:center}
 
 /* 중복복용 체크 */
-.check-card{background:#fff;border:1.5px solid #E0EDE8;border-radius:20px;padding:18px;margin-bottom:14px}
-.check-card-title{font-size:13.5px;font-weight:800;color:#143D2E;margin-bottom:12px}
-.check-list{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
-.check-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:12px;border:1.5px solid #E0EDE8;background:#FBFEFD;cursor:pointer;transition:border-color .15s}
-.check-item.selected{border-color:#0C7C62;background:#EBF7F2}
-.check-item input[type=checkbox]{accent-color:#0C7C62;width:17px;height:17px;flex-shrink:0}
-.check-item-label{font-size:14px;color:#1F2A1A;font-weight:600}
+.check-section-hd{display:flex;align-items:center;gap:8px;padding:16px 0 10px}
+.check-section-icon{font-size:24px;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.check-section-icon.drug{background:#FFF0F0}
+.check-section-icon.ing{background:#EBF7F2}
+.check-section-txt{flex:1}
+.check-section-name{font-size:16px;font-weight:800;color:#143D2E}
+.check-section-hint{font-size:12px;color:#7A9A88;margin-top:1px}
+.chip-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px;padding-bottom:18px;border-bottom:1.5px dashed #E0EDE8}
+.chip-grid:last-of-type{border-bottom:none}
+.chip-btn{padding:9px 15px;border-radius:50px;border:1.5px solid #CFE5DB;background:#fff;font-size:13.5px;font-weight:700;color:#4A6A58;cursor:pointer;white-space:nowrap;transition:all .15s;line-height:1.3;display:flex;align-items:center;gap:5px}
+.chip-btn.sel-drug{background:#FFF0F0;border-color:#EF9A9A;color:#C62828;box-shadow:0 0 0 2px rgba(198,40,40,.12)}
+.chip-btn.sel-ing{background:#EBF7F2;border-color:#0C7C62;color:#0C7C62;box-shadow:0 0 0 2px rgba(12,124,98,.12)}
 .btn-check{width:100%;padding:17px 0;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;margin:18px 0 6px;box-shadow:0 8px 22px -8px rgba(14,157,125,.5)}
 .result-empty{text-align:center;color:#56705F;font-size:15px;padding:28px;background:#EBF7F2;border-radius:16px;line-height:1.8;margin-top:16px}
 .result-card{border-radius:16px;padding:16px;margin-bottom:12px;border:1.5px solid}
@@ -125,7 +130,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 
   <!-- ① 성분 브라우저 -->
   <div class="sec active" id="sec-browse">
-    <div class="notice-box">💡 건강기능식품 성분 정보를 쉽게 확인하세요. 식약처 기능성 기준을 바탕으로 한 참고 자료입니다.</div>
+    <div class="notice-box">궁금하신 성분을 눌러보세요 💚 어떤 효능이 있는지, 언제 드시면 좋은지 친절하게 알려드릴게요.</div>
     <div class="search-bar">
       <input type="text" id="ingSearch" placeholder="성분 검색 (예: 루테인, 오메가3…)" oninput="filterIng(this.value)">
     </div>
@@ -135,23 +140,31 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 
   <!-- ② 중복복용 체크 -->
   <div class="sec" id="sec-check">
-    <div class="notice-box">⚠️ 복용 중인 약과 영양제를 선택하면 주의가 필요한 조합을 알려드립니다. 의사·약사 상담을 대체하지 않습니다.</div>
-    <div class="check-card">
-      <div class="check-card-title">💊 복용 중인 약 <span style="font-size:12px;font-weight:500;color:#7A9A88">(해당되는 것 모두 선택)</span></div>
-      <div class="check-list" id="drugList"></div>
+    <div class="notice-box">약이랑 영양제, 같이 드실 때 주의할 점이 있을 수 있어요. 해당하시는 것을 눌러주시면 확인해 드릴게요.<br><span style="font-size:12.5px;color:#56705F">자세한 건 반드시 의사·약사 선생님과 상의해 주세요 💚</span></div>
+    <div class="check-section-hd">
+      <div class="check-section-icon drug">💊</div>
+      <div class="check-section-txt">
+        <div class="check-section-name">지금 드시는 약</div>
+        <div class="check-section-hint">해당하는 것 모두 눌러주세요</div>
+      </div>
     </div>
-    <div class="check-card">
-      <div class="check-card-title">🌿 복용 중인 영양제 성분 <span style="font-size:12px;font-weight:500;color:#7A9A88">(해당되는 것 모두 선택)</span></div>
-      <div class="check-list" id="ingList"></div>
+    <div class="chip-grid" id="drugChips"></div>
+    <div class="check-section-hd">
+      <div class="check-section-icon ing">🌿</div>
+      <div class="check-section-txt">
+        <div class="check-section-name">드시는 영양제 성분</div>
+        <div class="check-section-hint">해당하는 것 모두 눌러주세요</div>
+      </div>
     </div>
-    <button class="btn-check" onclick="runCheck()">안전 체크하기</button>
+    <div class="chip-grid" id="ingChips"></div>
+    <button class="btn-check" onclick="runCheck()">확인해 주세요 ✔</button>
     <div id="checkResult"></div>
   </div>
 
   <!-- ③ 내 정보 -->
   <div class="sec" id="sec-myinfo">
     <div class="myinfo-card">
-      <div class="myinfo-label">💊 복용 중인 약</div>
+      <div class="myinfo-label">💊 지금 드시는 약</div>
       <div class="myinfo-tags" id="myDrugTags"></div>
       <div class="myinfo-add-row">
         <select id="addDrugSel"><option value="">-- 약 선택 --</option></select>
@@ -159,7 +172,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
       </div>
     </div>
     <div class="myinfo-card">
-      <div class="myinfo-label">🌿 복용 중인 영양제</div>
+      <div class="myinfo-label">🌿 지금 드시는 영양제</div>
       <div class="myinfo-tags" id="myIngTags"></div>
       <div class="myinfo-add-row">
         <select id="addIngSel"><option value="">-- 성분 선택 --</option></select>
@@ -167,28 +180,28 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
       </div>
     </div>
     <div style="margin-top:6px">
-      <div class="section-title">⏰ 복용 알람</div>
+      <div class="section-title">⏰ 복용 알람 설정</div>
       <div class="alarm-form">
-        <label>알람 항목 선택</label>
-        <select id="alarmTarget"><option value="">-- 내 정보에서 불러옴 --</option></select>
-        <label>복용 시간</label>
+        <label>어떤 것의 알람을 설정하실까요?</label>
+        <select id="alarmTarget"><option value="">-- 위에서 추가하신 것이 나타납니다 --</option></select>
+        <label>몇 시에 드세요?</label>
         <input type="time" id="alarmTime" value="08:00">
-        <button class="btn-alarm-add" onclick="addAlarm()">알람 추가</button>
+        <button class="btn-alarm-add" onclick="addAlarm()">알람 설정하기</button>
       </div>
       <div id="alarmList"></div>
-      <p style="font-size:12px;color:#7A9A88;line-height:1.6;margin-top:8px">※ 브라우저가 열려 있을 때 알림이 울립니다. 처음 사용 시 알림 허용이 필요해요.</p>
+      <p style="font-size:12px;color:#7A9A88;line-height:1.6;margin-top:8px">브라우저가 열려 있는 동안 알려드려요. 처음엔 '알림 허용'을 눌러주세요 🔔</p>
     </div>
   </div>
 
   <!-- ④ 건강샵 -->
   <div class="sec" id="sec-shop">
     <div class="shop-notice">
-      🌿 아래 제품을 구입하지 않으셔도 됩니다.<br>
-      <b>성분명과 함량을 반드시 확인</b>하신 후 선택하세요.<br>
-      <span style="font-size:12px;color:#56705F">이 정보는 참고용이며 의료적 조언이 아닙니다.</span>
+      꼭 구입하지 않으셔도 괜찮아요 💚<br>
+      드시기 전에 <b>성분명과 함량</b>은 꼭 확인해 보세요.<br>
+      <span style="font-size:12px;color:#56705F">더 좋은 제품이 있을 수 있으니 다양하게 비교해 보세요.</span>
     </div>
     <div class="shop-grid" id="shopGrid"></div>
-    <div class="shop-disclaimer">※ 이 페이지의 링크는 제휴 링크를 포함할 수 있습니다.</div>
+    <div class="shop-disclaimer">링크를 통해 구매하시면 다시봄이 소정의 수수료를 받을 수 있어요.</div>
   </div>
 </div>
 
@@ -203,7 +216,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
     <p class="modal-eff" id="mEff"></p>
     <div class="modal-tip-lbl">📌 복용 포인트</div>
     <div class="modal-tip" id="mTip"></div>
-    <div class="modal-disclaimer">이 제품을 구입하지 않으셔도 됩니다. 구매 전 <b>성분명과 함량을 반드시 확인</b>해주세요.</div>
+    <div class="modal-disclaimer">꼭 구입하지 않으셔도 괜찮아요. 드시기 전에 <b>성분명과 함량</b>은 꼭 확인해 보세요 💚</div>
     <button class="btn-coupang" id="mCoupangBtn">🔍 쿠팡에서 검색하기</button>
     <a class="btn-shop-link" id="mShopLink" href="#" style="display:none">🛒 다시봄 건강샵에서 보기</a>
   </div>
@@ -288,25 +301,35 @@ function closeModal(e){
 }
 
 /* ── ② 중복복용 체크 ── */
-function renderCheckLists(){
-  document.getElementById('drugList').innerHTML=DRUGS.map(function(d){
-    return '<label class="check-item" id="ci_d_'+d.id+'"><input type="checkbox" value="'+d.id+'" onchange="toggleCI(this,\'d\')"><span style="font-size:18px;width:24px;text-align:center">'+d.e+'</span><span class="check-item-label">'+d.l+'</span></label>';
+var _selDrugs={};
+var _selIngs={};
+function renderCheckChips(){
+  document.getElementById('drugChips').innerHTML=DRUGS.map(function(d){
+    return '<button class="chip-btn" id="cp_d_'+d.id+'" onclick="toggleChip(\'d\',\''+d.id+'\')">'+d.e+' '+d.l+'</button>';
   }).join('');
-  document.getElementById('ingList').innerHTML=INGS.map(function(i){
-    return '<label class="check-item" id="ci_i_'+i.id+'"><input type="checkbox" value="'+i.id+'" onchange="toggleCI(this,\'i\')"><span style="font-size:18px;width:24px;text-align:center">'+i.e+'</span><span class="check-item-label">'+i.n+'</span></label>';
+  document.getElementById('ingChips').innerHTML=INGS.map(function(i){
+    return '<button class="chip-btn" id="cp_i_'+i.id+'" onclick="toggleChip(\'i\',\''+i.id+'\')">'+i.e+' '+i.n+'</button>';
   }).join('');
 }
-function toggleCI(cb,t){document.getElementById('ci_'+t+'_'+cb.value).classList.toggle('selected',cb.checked);}
+function toggleChip(t,id){
+  if(t==='d'){
+    _selDrugs[id]=!_selDrugs[id];
+    document.getElementById('cp_d_'+id).classList.toggle('sel-drug',!!_selDrugs[id]);
+  } else {
+    _selIngs[id]=!_selIngs[id];
+    document.getElementById('cp_i_'+id).classList.toggle('sel-ing',!!_selIngs[id]);
+  }
+}
 function runCheck(){
-  var sd=Array.from(document.querySelectorAll('#drugList input:checked')).map(function(c){return c.value;});
-  var si=Array.from(document.querySelectorAll('#ingList input:checked')).map(function(c){return c.value;});
-  if(!sd.length&&!si.length){popToast('약 또는 영양제를 하나 이상 선택해주세요');return;}
+  var sd=Object.keys(_selDrugs).filter(function(k){return _selDrugs[k];});
+  var si=Object.keys(_selIngs).filter(function(k){return _selIngs[k];});
+  if(!sd.length&&!si.length){popToast('약 또는 영양제를 하나 이상 눌러주세요');return;}
   var hits=MECHS.filter(function(m){return m.drugs.some(function(d){return sd.indexOf(d)>=0;})&&m.ings.some(function(i){return si.indexOf(i)>=0;});});
   var el=document.getElementById('checkResult');
-  if(!hits.length){el.innerHTML='<div class="result-empty">✅ 선택하신 조합에서 주요 주의 사항이 발견되지 않았습니다.<br>그래도 복용 전 약사·의사와 상의하시면 더 안전합니다.</div>';return;}
-  el.innerHTML='<div class="section-title" style="margin:16px 0 12px">⚠️ 주의가 필요한 조합 '+hits.length+'건</div>'
+  if(!hits.length){el.innerHTML='<div class="result-empty">😊 선택하신 조합에서 특별히 주의할 점은 보이지 않아요.<br><br>그래도 드시기 전에 의사·약사 선생님께 한 번 여쭤보시면 훨씬 안심이 된답니다.</div>';return;}
+  el.innerHTML='<div class="section-title" style="margin:16px 0 12px">⚠️ 확인이 필요한 조합 '+hits.length+'건</div>'
     +hits.map(function(r){
-      return '<div class="result-card '+r.lv+'"><div class="result-lv '+r.lv+'">'+(r.lv==='danger'?'🚨 위험':'⚠️ 주의')+'</div><div class="result-tag">'+r.icon+' '+r.tag+'</div><div class="result-body">'+r.m+'<br><br>'+r.d+'</div><div class="result-action">💡 '+r.a+'</div></div>';
+      return '<div class="result-card '+r.lv+'"><div class="result-lv '+r.lv+'">'+(r.lv==='danger'?'🚨 주의가 꼭 필요해요':'⚠️ 조심해서 드세요')+'</div><div class="result-tag">'+r.icon+' '+r.tag+'</div><div class="result-body">'+r.m+'<br><br>'+r.d+'</div><div class="result-action">💡 '+r.a+'</div></div>';
     }).join('');
 }
 
@@ -351,7 +374,7 @@ function updateAlarmTarget(){
 }
 function renderAlarmList(){
   var el=document.getElementById('alarmList');
-  if(!MY.alarms.length){el.innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 0">등록된 알람이 없습니다</div>';return;}
+  if(!MY.alarms.length){el.innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 0">아직 등록된 알람이 없어요</div>';return;}
   el.innerHTML=MY.alarms.map(function(a,i){
     return '<div class="alarm-item"><div><div class="alarm-name">'+a.label+'</div><div class="alarm-time">⏰ 매일 '+a.time+'</div></div><button class="alarm-del" onclick="removeAlarm('+i+')">삭제</button></div>';
   }).join('');
@@ -395,7 +418,7 @@ function popToast(msg){var el=document.getElementById('toast');el.textContent=ms
 
 (function(){
   renderCatBtns();filterIng('');
-  renderCheckLists();
+  renderCheckChips();
   populateMySelects();renderMyTags();renderAlarmList();
   renderShop();
 })();
