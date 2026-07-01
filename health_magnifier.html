@@ -76,7 +76,8 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .chip-btn{padding:9px 15px;border-radius:50px;border:1.5px solid #CFE5DB;background:#fff;font-size:13.5px;font-weight:700;color:#4A6A58;cursor:pointer;white-space:nowrap;transition:all .15s;line-height:1.3}
 .chip-btn.sel-drug{background:#FFF0F0;border-color:#EF9A9A;color:#C62828;box-shadow:0 0 0 2px rgba(198,40,40,.12)}
 .chip-btn.sel-ing{background:#EBF7F2;border-color:#0C7C62;color:#0C7C62;box-shadow:0 0 0 2px rgba(12,124,98,.12)}
-.btn-check{width:100%;padding:17px 0;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;margin:22px 0 6px;box-shadow:0 8px 22px -8px rgba(14,157,125,.5)}
+.btn-check{width:100%;padding:17px 0;border:none;border-radius:50px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;margin:22px 0 6px;box-shadow:0 8px 22px -8px rgba(14,157,125,.5);transition:all .2s}
+.btn-check:disabled{background:#D0DDD8;color:#9ABAA8;box-shadow:none;cursor:default;font-size:14px}
 .result-empty{text-align:center;color:#56705F;font-size:15px;padding:28px;background:#EBF7F2;border-radius:16px;line-height:1.8;margin-top:16px}
 .result-card{border-radius:16px;padding:16px;margin-bottom:12px;border:1.5px solid}
 .result-card.danger{background:#FFF5F5;border-color:#FFCDD2}
@@ -167,7 +168,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
       <div class="cat-scroll" id="checkCatBtns" style="margin-bottom:12px"></div>
       <div class="chip-grid" id="ingChips"></div>
     </div>
-    <button class="btn-check" onclick="runCheck()">확인해 주세요 ✔</button>
+    <button class="btn-check" id="btnCheck" onclick="runCheck()" disabled>약과 영양제를 각각 하나씩 눌러주세요</button>
     <div id="checkResult"></div>
   </div>
 
@@ -375,6 +376,16 @@ function toggleChip(t,id){
     if(btn) btn.classList.toggle('sel-ing',!!_selIngs[id]);
   }
   updateSubCounts();
+  updateCheckBtn();
+}
+function updateCheckBtn(){
+  var hasDrug=Object.keys(_selDrugs).some(function(k){return _selDrugs[k];});
+  var hasIng=Object.keys(_selIngs).some(function(k){return _selIngs[k];});
+  var btn=document.getElementById('btnCheck');
+  btn.disabled=!(hasDrug&&hasIng);
+  btn.textContent=(hasDrug&&hasIng)?'확인해 주세요 ✔'
+    :(!hasDrug&&!hasIng)?'약과 영양제를 각각 하나씩 눌러주세요'
+    :!hasDrug?'💊 약 탭에서도 선택해 주세요':'🌿 영양제 탭에서도 선택해 주세요';
 }
 function runCheck(){
   var sd=Object.keys(_selDrugs).filter(function(k){return _selDrugs[k];});
