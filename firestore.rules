@@ -42,10 +42,15 @@ service cloud.firestore {
     }
 
     // 오늘의 지혜 — 한 줄 공감(커뮤니티). 누구나 읽기 / 인증 사용자가 짧은 글 작성 / 본인·운영자 삭제
+    // 운영자는 봇 uid(bot_*)로도 작성 가능(봇 심기)
     match /wisdom_comments/{cid} {
+      function isMasterWC() {
+        return request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
       allow read: if true;
       allow create: if request.auth != null
-        && request.resource.data.uid == request.auth.uid
+        && (request.resource.data.uid == request.auth.uid
+            || (isMasterWC() && request.resource.data.uid.matches('bot_.*')))
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
         && request.resource.data.text.size() <= 30
@@ -58,11 +63,15 @@ service cloud.firestore {
     }
 
     // 공용 한 줄 공감(서재·그때그시절·게임 등) — comments.js, scope 필드로 스레드 구분
-    //   누구나 읽기 / 인증 사용자가 짧은 글 작성(본인 uid) / 본인·운영자 삭제
+    // 운영자는 봇 uid(bot_*)로도 작성 가능(봇 심기)
     match /comments/{cid} {
+      function isMasterC() {
+        return request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
       allow read: if true;
       allow create: if request.auth != null
-        && request.resource.data.uid == request.auth.uid
+        && (request.resource.data.uid == request.auth.uid
+            || (isMasterC() && request.resource.data.uid.matches('bot_.*')))
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
         && request.resource.data.text.size() <= 30
