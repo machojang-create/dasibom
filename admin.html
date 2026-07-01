@@ -785,6 +785,7 @@ function init(){
     databaseURL: 'https://mylife-650f0-default-rtdb.firebaseio.com'
   });
   _auth = firebase.auth();
+  _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
   _db   = firebase.firestore();
   _rtdb = firebase.database();
   _fn   = firebase.app().functions('asia-northeast3');
