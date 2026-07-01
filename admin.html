@@ -103,6 +103,36 @@ td{padding:14px 16px;font-size:13px;vertical-align:middle}
 .qa-a{font-size:14px;color:#e0e0e0;line-height:1.7;background:#12151f;border-radius:8px;padding:10px 12px;white-space:pre-wrap}
 .qa-empty{font-size:12px;color:#444;font-style:italic;padding:6px 12px}
 
+/* ── 자서전 열람 탭 ── */
+.memoir-tabs{display:flex;gap:0;border-bottom:1px solid #22253a;margin-bottom:18px}
+.memoir-tab{padding:9px 16px;font-size:13px;font-weight:600;color:#666;cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+.memoir-tab.active{color:#7c9cff;border-bottom-color:#7c9cff}
+.memoir-tab-pane{display:none}
+.memoir-tab-pane.active{display:block}
+/* Q&A 수정 */
+.qa-item{position:relative}
+.qa-item:hover .qa-edit-btn{opacity:1}
+.qa-edit-btn{position:absolute;top:6px;right:6px;background:#1e2235;border:1px solid #3a3d55;color:#7c9cff;font-size:11px;padding:3px 9px;border-radius:6px;cursor:pointer;opacity:0;transition:opacity .15s}
+.qa-edit-area{display:none;margin-top:6px}
+.qa-edit-area textarea{width:100%;background:#0d1018;border:1px solid #3a3d55;border-radius:8px;color:#e0e0e0;font-size:13.5px;line-height:1.7;padding:10px 12px;resize:vertical;font-family:inherit;min-height:80px}
+.qa-edit-area textarea:focus{border-color:#7c9cff;outline:none}
+.qa-save-row{display:flex;gap:8px;margin-top:6px}
+.qa-save-btn{background:#7c9cff;border:none;border-radius:7px;color:#fff;font-size:12.5px;font-weight:700;padding:7px 16px;cursor:pointer}
+.qa-cancel-btn{background:transparent;border:1px solid #3a3d55;border-radius:7px;color:#888;font-size:12.5px;padding:7px 14px;cursor:pointer}
+/* AI 원고 */
+.memoir-chapter-block{margin-bottom:24px}
+.memoir-ch-name{font-size:11px;font-weight:700;color:#7c9cff;letter-spacing:1px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid #22253a}
+.memoir-para{font-size:14px;color:#d4d8e8;line-height:1.85;background:#12151f;border-radius:8px;padding:14px 16px;white-space:pre-wrap;margin-bottom:8px}
+.memoir-no-text{color:#555;font-size:13.5px;padding:32px 0;text-align:center}
+/* 관리자 메모 */
+.admin-memo-wrap{display:flex;flex-direction:column;gap:10px}
+.admin-memo-wrap textarea{width:100%;background:#0d1018;border:1px solid #3a3d55;border-radius:10px;color:#e0e0e0;font-size:13.5px;line-height:1.7;padding:12px 14px;resize:vertical;font-family:inherit;min-height:120px}
+.admin-memo-wrap textarea:focus{border-color:#7c9cff;outline:none}
+.admin-memo-save{align-self:flex-end;background:#7c9cff;border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:700;padding:9px 22px;cursor:pointer}
+.admin-memo-hint{font-size:11.5px;color:#555;line-height:1.6}
+.admin-memo-log{font-size:12px;color:#666;margin-top:6px;line-height:1.8}
+.save-flash{font-size:12px;color:#6ee7b7;margin-left:10px}
+
 /* ── 로딩 ── */
 .loading-wrap{display:flex;align-items:center;justify-content:center;padding:80px;flex-direction:column;gap:16px}
 .spinner{width:36px;height:36px;border:3px solid #2a2d3a;border-top-color:#7c9cff;border-radius:50%;animation:spin .8s linear infinite}
@@ -832,7 +862,10 @@ async function loadData(){
         lastActiveDay: u.lastActiveDay || null,
         careLogs:    u.careLogs || [],
         isPublic:    !!m.isPublic,
-        visitCount:  u.visitCount || 0
+        visitCount:  u.visitCount || 0,
+        chapters:    m.chapters || null,
+        adminMemo:   m.adminMemo || '',
+        adminMemoAt: m.adminMemoAt || null
       });
     });
 
@@ -1068,14 +1101,20 @@ function openDetail(uid){
 
   document.getElementById('detailName').textContent =
     r.name + (r.bookTitle ? ' · 『'+r.bookTitle+'』' : '');
-
   document.getElementById('detailMeta').innerHTML =
-    (PKG_LABEL[r.pkg]||r.pkg) + ' · ' + r.answerCount + '문항 · ' + r.estimatedPages + '페이지 예상' +
-    (r.generatedAt ? ' · AI생성완료' : '') + '<br>' +
-    '최초작성: ' + fmtDateFull(r.createdAt) + '<br>' +
-    '최종수정: ' + fmtDateFull(r.updatedAt);
+    (PKG_LABEL[r.pkg]||r.pkg) + ' · ' + r.answerCount + '문항' +
+    (r.generatedAt ? ' · <span style="color:#6ee7b7">AI원고 있음</span>' : '') + '<br>' +
+    '최초작성: ' + fmtDateFull(r.createdAt) + ' · 최종수정: ' + fmtDateFull(r.updatedAt);
 
-  // 챕터별 Q&A 렌더링 — v3 질문풀(QPOOL) 기준 답변 인덱스→질문 매핑 (구 QS_MAP는 폴백)
+  // ── 탭 렌더 ──
+  var tabHtml =
+    '<div class="memoir-tabs">' +
+    '<button class="memoir-tab active" onclick="switchDetailTab(\'qa\',this)">📝 Q&amp;A 답변</button>' +
+    '<button class="memoir-tab" onclick="switchDetailTab(\'ai\',this)">📖 AI 원고</button>' +
+    '<button class="memoir-tab" onclick="switchDetailTab(\'memo\',this)">📋 관리자 메모</button>' +
+    '</div>';
+
+  // ── 탭1: Q&A (수정 가능) ──
   var chData = {}, chOrder = [];
   function _pushQA(title, q, a, idx){ if(!chData[title]){ chData[title]=[]; chOrder.push(title); } chData[title].push({q:q, a:a, idx:idx}); }
   var _qlist = (typeof buildAdminQList==='function') ? buildAdminQList(r.pkg) : null;
@@ -1084,52 +1123,88 @@ function openDetail(uid){
   } else {
     QS_MAP.forEach(function(qs, i){ _pushQA(STORY_NAMES[qs.ch]||('챕터 '+qs.ch), qs.q, (r.answers && r.answers[i]) || null, i); });
   }
-
-  var html = '';
+  var qaHtml = '';
   chOrder.forEach(function(title){
     var items = chData[title];
     var answered = items.filter(function(x){ return x.a; });
     if(!answered.length) return;
-    html += '<div class="detail-chapter">';
-    html += '<div class="ch-title">'+esc(title)+'</div>';
+    qaHtml += '<div class="detail-chapter"><div class="ch-title">'+esc(title)+'</div>';
     answered.forEach(function(x){
-      html += '<div class="qa-item">';
-      html += '<div class="qa-q">Q'+(x.idx+1)+'. '+esc(x.q)+'</div>';
-      html += '<div class="qa-a">'+esc(x.a)+'</div>';
-      html += '</div>';
+      qaHtml += '<div class="qa-item" id="qaItem_'+x.idx+'">' +
+        '<div class="qa-q">Q'+(x.idx+1)+'. '+esc(x.q)+'</div>' +
+        '<div class="qa-a" id="qaText_'+x.idx+'">'+esc(x.a)+'</div>' +
+        '<button class="qa-edit-btn" onclick="toggleQAEdit(\''+uid+'\','+x.idx+')">수정</button>' +
+        '<div class="qa-edit-area" id="qaEdit_'+x.idx+'">' +
+          '<textarea id="qaTA_'+x.idx+'" rows="4">'+esc(x.a)+'</textarea>' +
+          '<div class="qa-save-row">' +
+            '<button class="qa-save-btn" onclick="saveQA(\''+uid+'\','+x.idx+')">저장</button>' +
+            '<button class="qa-cancel-btn" onclick="toggleQAEdit(\''+uid+'\','+x.idx+',true)">취소</button>' +
+            '<span class="save-flash" id="qaFlash_'+x.idx+'"></span>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
     });
-    html += '</div>';
+    qaHtml += '</div>';
   });
+  if(!qaHtml) qaHtml = '<div style="color:#555;padding:32px;text-align:center">작성된 답변이 없습니다</div>';
 
-  if(!html) html = '<div style="color:#555;padding:32px;text-align:center">작성된 답변이 없습니다</div>';
+  // ── 탭2: AI 원고 ──
+  var aiHtml = '';
+  if(r.chapters && (Array.isArray(r.chapters) ? r.chapters.length : Object.keys(r.chapters).length)){
+    var chs = Array.isArray(r.chapters) ? r.chapters : Object.keys(r.chapters).map(function(k){ return r.chapters[k]; });
+    chs.forEach(function(ch){
+      var name = ch.storyName || ch.name || ch.title || ('챕터');
+      var content = ch.content || ch.text || '';
+      if(!content) return;
+      aiHtml += '<div class="memoir-chapter-block">' +
+        '<div class="memoir-ch-name">'+esc(name)+'</div>' +
+        '<div class="memoir-para">'+esc(content)+'</div>' +
+        '</div>';
+    });
+  }
+  if(!aiHtml) aiHtml = '<div class="memoir-no-text">AI 원고가 없습니다.<br><span style="font-size:12px;color:#444">공개서재에 게시하거나 공유링크를 만들면 원고가 저장됩니다.</span></div>';
 
-  // 안부 안전망(B2G) — 안부대상 플래그 설정 박스 (회원·기관 연결의 시작점)
-  // 최근 조치기록 3건 (안부 탭에서 기록한 careLogs를 회원 상세에서도 바로 확인)
+  // ── 탭3: 관리자 메모 ──
+  var memoAt = r.adminMemoAt ? ' · 마지막 저장: ' + fmtDateFull(r.adminMemoAt) : '';
+  var memoHtml = '<div class="admin-memo-wrap">' +
+    '<div class="admin-memo-hint">클레임·수정 요청·특이사항 등 내부 메모입니다. 회원에게 노출되지 않습니다.' + memoAt + '</div>' +
+    '<textarea id="adminMemoTA" placeholder="메모를 입력하세요...">'+esc(r.adminMemo)+'</textarea>' +
+    '<div style="display:flex;align-items:center">' +
+      '<button class="admin-memo-save" onclick="saveAdminMemo(\''+uid+'\')">저장</button>' +
+      '<span class="save-flash" id="memoFlash"></span>' +
+    '</div>' +
+    (r.adminMemo ? '<div class="admin-memo-log">저장된 메모: '+r.adminMemo.length+'자</div>' : '') +
+    '</div>';
+
+  // ── 안부 박스 ──
   var _recentLogs = (r.careLogs || []).slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); }).slice(0,3);
   var logsHtml = '';
   if(r.careTarget){
     logsHtml = _recentLogs.length
       ? '<div class="care-logs-recent"><div class="care-logs-recent-t">📋 최근 조치기록 ('+_recentLogs.length+'/'+(r.careLogs||[]).length+')</div>'
         + _recentLogs.map(function(l){
-            var ic = (l.type&&l.type.indexOf('방문')>=0)?'🏠':((l.type&&l.type.indexOf('이상')>=0)?'✅':'📞');
+            var ic=(l.type&&l.type.indexOf('방문')>=0)?'🏠':((l.type&&l.type.indexOf('이상')>=0)?'✅':'📞');
             return '<div class="care-log-item"><span class="cli-date">'+esc(l.date||'')+'</span> '+ic+' '+esc(l.type||'')+(l.memo?' — <span class="cli-memo">'+esc(l.memo)+'</span>':'')+'</div>';
-          }).join('')
-        + '</div>'
-      : '<div class="care-logs-empty">📋 아직 조치기록이 없습니다. (안부 탭에서 전화·방문 기록을 남길 수 있어요)</div>';
+          }).join('')+'</div>'
+      : '<div class="care-logs-empty">📋 아직 조치기록이 없습니다.</div>';
   }
-  var careBox = '<div class="care-box">'
-    + '<div class="care-box-title">💚 안부 안전망 (B2G)</div>'
-    + '<div class="care-box-row">'
-    + '<button type="button" class="care-toggle'+(r.careTarget?' on':'')+'" id="careToggle">'+(r.careTarget?'안부대상 ✓':'안부대상 아님')+'</button>'
-    + '<input type="text" id="careOrgInput" class="care-org-input" placeholder="관리 기관 (예: 노원구청)" value="'+esc(r.careOrg)+'" maxlength="30">'
-    + '<button type="button" class="care-save" id="careSave">저장</button>'
-    + '<span class="care-msg" id="careMsg"></span>'
-    + '</div>'
-    + '<div class="care-box-hint">안부대상 = 지자체 돌봄 명단 회원 (일반 회원과 구분). 접속 활동이 출석(안부 신호)으로 기록됩니다.'
-    + ' · 최근 활동: <b>'+(r.lastActiveDay || '기록 없음')+'</b></div>'
-    + logsHtml
-    + '</div>';
-  document.getElementById('detailBody').innerHTML = careBox + html;
+  var careBox = '<div class="care-box">' +
+    '<div class="care-box-title">💚 안부 안전망 (B2G)</div>' +
+    '<div class="care-box-row">' +
+      '<button type="button" class="care-toggle'+(r.careTarget?' on':'')+'" id="careToggle">'+(r.careTarget?'안부대상 ✓':'안부대상 아님')+'</button>' +
+      '<input type="text" id="careOrgInput" class="care-org-input" placeholder="관리 기관 (예: 노원구청)" value="'+esc(r.careOrg)+'" maxlength="30">' +
+      '<button type="button" class="care-save" id="careSave">저장</button>' +
+      '<span class="care-msg" id="careMsg"></span>' +
+    '</div>' +
+    '<div class="care-box-hint">최근 활동: <b>'+(r.lastActiveDay || '기록 없음')+'</b></div>' +
+    logsHtml + '</div>';
+
+  document.getElementById('detailBody').innerHTML =
+    careBox + tabHtml +
+    '<div class="memoir-tab-pane active" id="dtPane_qa">' + qaHtml + '</div>' +
+    '<div class="memoir-tab-pane" id="dtPane_ai">' + aiHtml + '</div>' +
+    '<div class="memoir-tab-pane" id="dtPane_memo">' + memoHtml + '</div>';
+
   document.getElementById('careToggle').addEventListener('click', function(){
     this.classList.toggle('on');
     this.textContent = this.classList.contains('on') ? '안부대상 ✓' : '안부대상 아님';
@@ -1138,6 +1213,65 @@ function openDetail(uid){
 
   document.getElementById('overlay').classList.add('show');
   document.getElementById('detailPanel').classList.add('show');
+}
+
+function switchDetailTab(name, btn){
+  document.querySelectorAll('.memoir-tab').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.memoir-tab-pane').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  var pane = document.getElementById('dtPane_'+name);
+  if(pane) pane.classList.add('active');
+}
+
+function toggleQAEdit(uid, idx, cancel){
+  var editArea = document.getElementById('qaEdit_'+idx);
+  var textEl   = document.getElementById('qaText_'+idx);
+  var ta       = document.getElementById('qaTA_'+idx);
+  if(cancel || editArea.style.display==='block'){
+    editArea.style.display='none'; textEl.style.display='';
+    var r = _allRows.find(function(x){ return x.uid===uid; });
+    if(r && ta) ta.value = r.answers[idx] || '';
+  } else {
+    editArea.style.display='block'; textEl.style.display='none';
+    if(ta) ta.focus();
+  }
+}
+
+function saveQA(uid, idx){
+  var ta    = document.getElementById('qaTA_'+idx);
+  var flash = document.getElementById('qaFlash_'+idx);
+  var val   = ta ? ta.value.trim() : '';
+  if(!val){ flash.textContent='내용을 입력하세요'; return; }
+  flash.textContent='저장 중...';
+  var update = {};
+  update['answers.'+idx] = val;
+  _db.collection('memoirs').doc(uid).update(update)
+    .then(function(){
+      var r = _allRows.find(function(x){ return x.uid===uid; });
+      if(r){ r.answers[idx]=val; }
+      document.getElementById('qaText_'+idx).textContent = val;
+      flash.textContent='✓ 저장됨';
+      setTimeout(function(){ toggleQAEdit(uid,idx,true); flash.textContent=''; }, 1200);
+    })
+    .catch(function(e){ flash.textContent='실패: '+e.message; });
+}
+
+function saveAdminMemo(uid){
+  var ta    = document.getElementById('adminMemoTA');
+  var flash = document.getElementById('memoFlash');
+  var val   = ta ? ta.value : '';
+  flash.textContent='저장 중...';
+  _db.collection('memoirs').doc(uid).set({
+    adminMemo: val,
+    adminMemoAt: firebase.firestore.FieldValue.serverTimestamp()
+  }, {merge:true})
+    .then(function(){
+      var r = _allRows.find(function(x){ return x.uid===uid; });
+      if(r){ r.adminMemo=val; }
+      flash.textContent='✓ 저장됨';
+      setTimeout(function(){ flash.textContent=''; }, 2000);
+    })
+    .catch(function(e){ flash.textContent='실패: '+e.message; });
 }
 
 function closeDetail(){
