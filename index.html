@@ -3193,26 +3193,18 @@ body.dark .bom-guide-text{color:#c8bba4}
       : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸';
     var h = bomMsgRow(greet, 'bom_smile');
 
-    // 2) 안부·날씨
-    var pool2 = (BOM_GREET2[_season]||[]).concat(BOM_GREET2_COMMON);
+    // 2) 안부·날씨·잡담 중 랜덤 하나
+    var pool2 = (BOM_GREET2[_season]||[]).concat(BOM_GREET2_COMMON).concat(BOM_CHAT5);
     h += bomMsgRow(_rndOne(pool2), 'bom_think');
 
-    // 3) 자서전 다음 질문
+    // 3) 자서전 질문 / 콘텐츠 유도 / 잡담 중 랜덤 하나
     var qi = nextQuestions();
     if(qi.list.length){
       h += bomMsgRow('<a class="bcp-qprev" href="/memoir?continue=1" style="text-decoration:none;color:inherit;display:block">'+esc(qi.list[0])+'<span class="bcp-qarrow"> ›</span></a>', 'bom_wink');
-    } else if(qi.capped){
-      h += bomMsgRow('오늘 이야기는 다 들었어요. 내일 또 들려주세요! 🌸', 'bom_calm');
     } else {
-      h += bomMsgRow('자서전 다 완성하셨네요! 멋져요 🎉 언제든 다시 시작하실 수 있어요.', 'bom_cheer');
+      var cMsg = bomContentMsg();
+      h += bomMsgRow(cMsg || _rndOne(BOM_CHAT5), cMsg ? 'bom_wink' : bomFaceFor('?'));
     }
-
-    // 4) 콘텐츠 유도
-    var cMsg = bomContentMsg();
-    if(cMsg) h += bomMsgRow(cMsg, 'bom_wink');
-
-    // 5) 잡담
-    h += bomMsgRow(_rndOne(BOM_CHAT5), bomFaceFor('?'));
 
     b.innerHTML = h;
     b.scrollTop = b.scrollHeight;
