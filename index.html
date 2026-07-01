@@ -3138,55 +3138,81 @@ body.dark .bom-guide-text{color:#c8bba4}
   }
   var _bomChatStarted=false;
   // 챗봇 = 봄이의 창구(정해진 인사·진행상황·자서전으로 안내). ★고정 스크립트 — AI 생성 응답 아님. 실제 답변 입력은 자서전(memoir)에서.
-  // 봄이 두 번째 말풍선 — 랜덤 안부/날씨/질문
-  var BOM_FOLLOW = [
-    '오늘 기분은 어떠세요? 😊',
-    '오늘 하루도 건강하게 보내셨나요?',
-    '오늘 날씨가 어때요? 잘 챙겨 입으셨어요?',
-    '요즘 어떻게 지내세요? 궁금했어요 🌸',
-    '오늘 맛있는 거 드셨어요?',
-    '잠은 잘 주무셨어요? 푹 쉬는 것도 중요해요.',
-    '오늘 산책은 다녀오셨나요? 🌿',
-    '가까운 분들과 연락은 자주 하시나요?'
+  // ── 말풍선 풀 ──────────────────────────────────────────────
+  function _rndOne(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  // 2) 안부·날씨·건강 (계절 반영)
+  var _season = (function(){ var m=new Date().getMonth()+1; return m>=6&&m<=8?'summer':m===12||m<=2?'winter':m>=3&&m<=5?'spring':'fall'; })();
+  var BOM_GREET2 = {
+    spring:['오늘 날씨가 참 좋죠? 가볍게 나들이라도 다녀오셨나요? 🌸','봄바람이 기분 좋은 날이에요. 잠깐 창문 열어 두셨나요?','요즘 꽃들이 한창이에요. 가까운 공원 산책 어떠세요? 🌷'],
+    summer:['오늘 많이 더운데, 물은 자주 드시고 계세요? 💧','더운 날엔 나들이보다 시원한 실내가 좋죠. 어떻게 지내셨어요?','한낮엔 좀 쉬시고, 저녁 산책은 어떠세요? 🌿'],
+    fall:['아침저녁으로 쌀쌀해졌죠? 겉옷 하나 꼭 챙기세요 🍂','단풍 구경 다녀오셨어요? 요즘 딱 좋은 계절이잖아요.','환절기라 몸 관리 잘 하셔야 해요. 요즘 어떠세요?'],
+    winter:['오늘 꽤 춥죠? 따뜻하게 입고 계세요? 🧣','찬바람에 나가기 싫은 날이에요. 오늘 뭐 하고 계세요?','실내에서 따뜻한 차 한잔 하기 좋은 날이에요 ☕']
+  };
+  var BOM_GREET2_COMMON = ['오늘 기분은 어떠세요? 😊','잠은 잘 주무셨어요? 푹 쉬는 것도 중요해요.','오늘 밥은 맛있게 드셨어요?','가까운 분들과 연락은 자주 하시나요?','몸은 괜찮으세요? 오늘도 건강한 하루이길 바라요 🌿'];
+
+  // 4) 콘텐츠 유도 — 안 가본 것 우선, 다 가봤으면 랜덤
+  function bomContentMsg(){
+    var tags = pickTags(1);
+    if(!tags.length) return null;
+    var c = CONTENT_TAGS[tags[0]];
+    var sentences = [
+      '참, '+c.emoji+' <a class="bcp-tag-inline" href="'+c.href+'"><b>'+c.label+'</b></a> 해보셨어요? 한번 들러보세요!',
+      c.emoji+' <a class="bcp-tag-inline" href="'+c.href+'"><b>'+c.label+'</b></a>도 있어요. 오늘 한번 어때요? 😄',
+      '오늘 시간 되시면 '+c.emoji+' <a class="bcp-tag-inline" href="'+c.href+'"><b>'+c.label+'</b></a> 구경해 보세요!',
+      c.emoji+' <a class="bcp-tag-inline" href="'+c.href+'"><b>'+c.label+'</b></a>, 어르신들이 많이 좋아하세요. 한번 해보실래요?'
+    ];
+    return _rndOne(sentences);
+  }
+
+  // 5) 잡담 — 날씨·건강·옛날 이야기·나들이·산보 등
+  var BOM_CHAT5 = [
+    '어릴 때 좋아하셨던 음식이 있으세요? 저도 듣고 싶어요 😊',
+    '요즘 자주 생각나는 옛날 기억이 있으신가요?',
+    '살면서 가장 행복했던 순간이 언제였어요?',
+    '젊었을 때 가장 좋아하셨던 노래가 뭐예요?',
+    '자주 가시던 단골 가게나 동네가 있으셨나요?',
+    '산책 자주 하세요? 어느 코스가 제일 좋으세요?',
+    '요즘 즐겨 보시는 TV 프로그램이 있어요?',
+    '가장 맛있게 드셨던 음식이 뭐예요? 📝',
+    '옛날이랑 제일 많이 달라진 게 뭐라고 느끼세요?',
+    '가족 중에 제일 자주 연락하는 분이 누구세요?',
+    '요즘 가장 즐거운 일이 뭐예요?',
+    '나들이 가고 싶은 곳이 있으세요? 어디가 좋을 것 같아요? 🌳'
   ];
-  // 봄이 세 번째 말풍선 — 콘텐츠 자연스럽게 소개
-  var BOM_SUGGEST = [
-    function(tags){ return tags.length ? '참, '+tags[0].emoji+' <b>'+tags[0].label+'</b> 해보셨어요? 오늘 한번 들러보세요!' : null; },
-    function(tags){ return tags.length>1 ? tags[1].emoji+' <b>'+tags[1].label+'</b>도 재밌어요. 한번 구경해 보실래요? 😄' : null; },
-    function(){ return '자서전 쓰다가 막히면 언제든 말 걸어주세요. 같이 생각해 볼게요 📖'; },
-    function(){ return '두뇌 운동 게임도 있어요. 오늘 한 판 어떠세요? 🎮'; },
-    function(){ return '요즘 신조어, 궁금하지 않으세요? 말동무 사전에서 배워드릴게요 😄'; }
-  ];
+
   function render(){
     var b=document.getElementById('bcpBody'); if(!b) return;
     _bomChatStarted=false; _bomFaceIdx=0;
     var ma={}; try{ ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); }catch(e){}
     var answered=Object.keys(ma).filter(function(k){ return String(ma[k]||'').trim()!==''; }).length;
 
-    // 1) 인사 말풍선
+    // 1) 인사
     var greet = answered>0
       ? '다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸'
       : '안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸';
     var h = bomMsgRow(greet, 'bom_smile');
 
-    // 2) 안부/날씨 랜덤 말풍선
-    var follow = BOM_FOLLOW[Math.floor(Math.random()*BOM_FOLLOW.length)];
-    h += bomMsgRow(follow, 'bom_think');
+    // 2) 안부·날씨
+    var pool2 = (BOM_GREET2[_season]||[]).concat(BOM_GREET2_COMMON);
+    h += bomMsgRow(_rndOne(pool2), 'bom_think');
 
-    // 3) 자서전 다음 질문 or 콘텐츠 추천 말풍선
+    // 3) 자서전 다음 질문
     var qi = nextQuestions();
     if(qi.list.length){
-      h += bomMsgRow('<a class="bcp-qprev" href="/memoir?continue=1" style="text-decoration:none;color:inherit;display:block">'+esc(qi.list[0])+' <span class="bcp-qarrow">›</span></a>', 'bom_wink');
+      h += bomMsgRow('<a class="bcp-qprev" href="/memoir?continue=1" style="text-decoration:none;color:inherit;display:block">'+esc(qi.list[0])+'<span class="bcp-qarrow"> ›</span></a>', 'bom_wink');
     } else if(qi.capped){
       h += bomMsgRow('오늘 이야기는 다 들었어요. 내일 또 들려주세요! 🌸', 'bom_calm');
     } else {
-      var tags = pickTags(2).map(function(k){ return CONTENT_TAGS[k]; });
-      var sugFns = BOM_SUGGEST.slice().sort(function(){ return Math.random()-.5; });
-      for(var i=0;i<sugFns.length;i++){
-        var msg = sugFns[i](tags);
-        if(msg){ h += bomMsgRow(msg, bomFaceFor(msg)); break; }
-      }
+      h += bomMsgRow('자서전 다 완성하셨네요! 멋져요 🎉 언제든 다시 시작하실 수 있어요.', 'bom_cheer');
     }
+
+    // 4) 콘텐츠 유도
+    var cMsg = bomContentMsg();
+    if(cMsg) h += bomMsgRow(cMsg, 'bom_wink');
+
+    // 5) 잡담
+    h += bomMsgRow(_rndOne(BOM_CHAT5), bomFaceFor('?'));
 
     b.innerHTML = h;
     b.scrollTop = b.scrollHeight;
