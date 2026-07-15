@@ -511,20 +511,38 @@ exports.chatBom = functions
       return { text: BOM_RISKY_REPLY, blocked: true };
     }
 
-    // 남용 방지: uid당 하루 채팅 상한
-    const DAILY_CHAT_CAP = 100;
+    /* ── 하루 대화 상한 (무료/구독 차등) ──
+       대화량이 곧 원가(Haiku 토큰)라 무제한이면 헤비 유저에서 마진이 사라짐.
+       구독 상품의 레버이자 남용 방지.
+       ★FREE_CHAT_CAP은 결제(PortOne) 붙기 전까진 넉넉하게 둔다 —
+         지금 조이면 업그레이드 경로가 없어 그냥 서비스 악화가 됨. 결제 나가면 낮출 것. */
+    const FREE_CHAT_CAP = 30;   // 무료
+    const PAID_CHAT_CAP = 100;  // 구독(기존 남용방지 상한 유지)
     const _uid = context.auth.uid;
     const _day = new Date().toISOString().slice(0, 10);
+
+    let _subscribed = false;
+    try {
+      const u = await admin.firestore().collection('users').doc(_uid).get();
+      _subscribed = !!(u.exists && u.data().subscribed === true);
+    } catch (e) { /* 조회 실패 시 무료로 취급 */ }
+    const CAP = _subscribed ? PAID_CHAT_CAP : FREE_CHAT_CAP;
+
     const usageRef = admin.firestore().collection('usage_chat_daily').doc(_uid + '_' + _day);
     const allowed = await admin.firestore().runTransaction(async (tx) => {
       const snap = await tx.get(usageRef);
       const n = (snap.exists ? (snap.data().n || 0) : 0) + 1;
-      if (n > DAILY_CHAT_CAP) return false;
-      tx.set(usageRef, { n, uid: _uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      if (n > CAP) return false;
+      tx.set(usageRef, { n, uid: _uid, subscribed: _subscribed, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
       return true;
     });
     if (!allowed) {
-      throw new functions.https.HttpsError('resource-exhausted', '오늘 봄이와 대화를 너무 많이 나눴어요. 내일 다시 이야기해요!');
+      // 어르신이 '차단당했다'고 느끼지 않게 — 봄이가 아쉬워하는 말투로.
+      // 무료 사용자에겐 더 이야기할 방법이 있다는 것만 조용히 알림(강매 X).
+      throw new functions.https.HttpsError('resource-exhausted',
+        _subscribed
+          ? '오늘은 이야기를 참 많이 나눴네요 🌱 저도 좀 쉬었다가, 내일 또 만나요!'
+          : '오늘은 여기까지 이야기 나눴어요 🌱 내일 또 오시면 제가 기다리고 있을게요. (더 오래 이야기하고 싶으시면 봄이랑 함께하기를 살펴봐 주세요)');
     }
 
     const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL;
