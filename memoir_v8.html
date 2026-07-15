@@ -897,13 +897,16 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   <!-- ★공유로 들어온 자식용 제안 — 본문을 '다 읽은 뒤'에만 나옴.
        가격표를 먼저 보여주면 "비싼데?"가 되고, 엄마 글을 먼저 읽으면 "더 듣고 싶다"가 됨. -->
   <div class="sh-cta" id="shCta" style="display:none">
+    <!-- ★문구 원칙(Macho 지적): 무료본을 깎아내리면 미끼가 된다.
+         "15가지뿐이에요"(부족함 강조) → "한 권으로 엮었습니다"(완결 인정) 후 '더'를 제안.
+         무료본은 그대로 남는다는 안심을 반드시 함께. -->
     <div class="shc-orn">❦</div>
-    <div class="shc-h" id="shCtaH">여기까지가 지금까지의 이야기입니다</div>
+    <div class="shc-h" id="shCtaH">여기까지가 한 권입니다</div>
     <div class="shc-p" id="shCtaP">
-      봄이가 여쭤본 건 <b>15가지</b>뿐이에요.<br>
-      아직 들려주실 이야기가 훨씬 많습니다.
+      봄이가 <b>열다섯 번</b> 여쭈어 이렇게 엮었어요.<br>
+      아직 여쭙지 못한 이야기가 많이 남아 있습니다.
     </div>
-    <button class="shc-btn" id="btnShBuy">이야기를 더 여쭤보고, 책으로 만들어 드릴게요</button>
+    <button class="shc-btn" id="btnShBuy">더 여쭤보고, 책을 두껍게 만들어 드릴게요</button>
     <div class="shc-note" id="shCtaNote"></div>
   </div>
 
@@ -2313,8 +2316,9 @@ function showPreview(shared){
       if(cta){
         cta.style.display='block';
         var n=m.answered||0;
-        if(n) el('shCtaP').innerHTML='봄이가 여쭤본 건 <b>'+n+'가지</b>뿐이에요.<br>아직 들려주실 이야기가 훨씬 많습니다.';
-        el('shCtaNote').textContent='더 여쭤본 이야기는 '+(who||'어르신')+'께서 직접 답하시게 되고, 완성되면 책으로 보내드려요.';
+        // '뿐이에요'(부족함) 대신 '여쭈어 엮었어요'(완결) — 무료본을 깎아내리지 않는다
+        if(n) el('shCtaP').innerHTML='봄이가 <b>'+n+'번</b> 여쭈어 이렇게 엮었어요.<br>아직 여쭙지 못한 이야기가 많이 남아 있습니다.';
+        el('shCtaNote').textContent='지금 책은 그대로 남습니다. 더 여쭤본 이야기는 '+(who||'어르신')+'께서 직접 답하시고, 그만큼 책이 두꺼워져요.';
       }
     } else {
       shc.style.display='none';
