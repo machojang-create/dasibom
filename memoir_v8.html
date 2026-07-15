@@ -7,7 +7,8 @@
 <!-- PortOne (아임포트) PG SDK -->
 <script src="https://cdn.iamport.kr/v1/iamport.js"></script>
 <script src="/social-login.js"></script>
-<script src="questions_v3.js"></script>
+<script src="/questions_v3.js?v=6"></script>
+<script src="/bom_voice.js?v=11"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 .no-copy{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none}
@@ -422,8 +423,8 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .lm-teaser-text::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,var(--warm))}
 .lm-teaser-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia);margin-top:10px;opacity:.7}
 </style>
-<script src="a11y.js?v=3" defer></script>
-<script src="attend.js?v=3" defer></script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/attend.js?v=3" defer></script>
 </head>
 <body>
 <!-- 시니어 글씨 크기 조절 -->
@@ -593,11 +594,12 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   </div>
   <div class="q-body">
     <div class="bom-row">
-      <img class="bom-face" id="bomFace" src="img/bom_think.png" alt="봄이" onerror="this.style.display='none'">
+      <img class="bom-face" id="bomFace" src="/img/bom_think.png" alt="봄이" onerror="this.style.display='none'">
       <div class="bom-bubble"><div class="q-txt" id="qTxt"></div></div>
     </div>
     <div class="q-hint" id="qHint"></div>
     <div class="q-ex" id="qEx"></div>
+    <div id="qRecall" style="display:none"></div>
     <div class="q-private" id="qPrivate" style="display:none">
       <span class="q-private-lbl">🔒 이 이야기는</span>
       <button type="button" class="q-private-btn" id="qpPrivate">나만 보기</button>
@@ -655,7 +657,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 <!-- ════ 오늘 완료 (하루 3문항 스케줄) ════ -->
 <div class="screen" id="s-daydone">
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;gap:16px">
-    <img src="img/bom_smile.png" alt="봄이" style="width:150px;height:auto;filter:drop-shadow(0 12px 24px rgba(180,120,80,.2))" onerror="this.style.display='none'">
+    <img src="/img/bom_smile.png" alt="봄이" style="width:150px;height:auto;filter:drop-shadow(0 12px 24px rgba(180,120,80,.2))" onerror="this.style.display='none'">
     <div id="ddTitle" style="font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(26px * var(--ts,1));font-weight:800;color:#1F2A1A"></div>
     <div id="ddMsg" style="font-size:calc(17px * var(--ts,1));line-height:1.7;color:#2D3A2A"></div>
     <div id="ddProgress" style="font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:calc(14px * var(--ts,1));font-weight:700;color:#0e9d7d"></div>
@@ -673,11 +675,64 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 </style>
 <div class="screen" id="s-surprise">
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;gap:18px;position:relative;z-index:2">
-    <img id="spBom" src="img/bom_smile.png" alt="봄이" onerror="this.src='img/bom_calm.png'">
+    <img id="spBom" src="/img/bom_smile.png" alt="봄이" onerror="this.src='/img/bom_calm.png'">
     <div id="spTitle" style="font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(27px * var(--ts,1));font-weight:800;color:#F0D483;text-shadow:0 2px 18px rgba(200,140,60,.35)"></div>
     <div id="spMsg" style="font-size:calc(17px * var(--ts,1));line-height:1.75;color:#EDE3D0;max-width:360px"></div>
     <button id="spBtn" style="margin-top:10px;max-width:320px;width:100%;padding:17px 24px;border:none;border-radius:50px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:calc(16.5px * var(--ts,1));font-weight:800;cursor:pointer;display:none">내 자서전 열어보기 ✦</button>
     <button id="spHome" style="background:none;border:none;color:#bba883;font-size:14px;text-decoration:underline;cursor:pointer">홈으로</button>
+  </div>
+</div>
+
+<!-- ════ 책 펼침 연출 — 서프라이즈에서 '열어보기' 후, 표지가 실제 책처럼 펼쳐진다 ════ -->
+<style>
+#bookFx{position:fixed;inset:0;z-index:400;display:none;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 38%,rgba(200,140,70,.25) 0%,transparent 62%),linear-gradient(180deg,#0a0805,#1c0e06 55%,#0a0805);opacity:0;transition:opacity .7s ease}
+#bookFx.on{display:flex}
+#bookFx.lit{opacity:1}
+.bkf-stage{perspective:1800px;text-align:center;padding:20px}
+.bkf-book{position:relative;width:min(72vw,320px);aspect-ratio:5/7;margin:0 auto;transform-style:preserve-3d;animation:bkfRise 1.4s cubic-bezier(.2,.8,.3,1) both}
+@keyframes bkfRise{0%{transform:translateY(46px) scale(.82);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+.bkf-page{position:absolute;inset:0;background:linear-gradient(135deg,#FBF6EA,#F3EAD5);border-radius:6px 14px 14px 6px;box-shadow:0 18px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px 22px;text-align:center}
+.bkf-ded-flower{font-size:26px}
+.bkf-ded-title{font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(21px * var(--ts,1));font-weight:800;color:#4E3B22;line-height:1.5;word-break:keep-all}
+.bkf-ded-msg{font-size:calc(14.5px * var(--ts,1));color:#7c6b50;line-height:1.9}
+.bkf-ded-from{font-size:calc(12.5px * var(--ts,1));color:#a4906c;margin-top:6px}
+.bkf-leaf{position:absolute;inset:0;background:linear-gradient(120deg,#FDFAF2,#F6EEDC);border-radius:6px 14px 14px 6px;transform-origin:left center;transition:transform 1.5s cubic-bezier(.55,.06,.28,.99);backface-visibility:hidden;box-shadow:2px 6px 18px rgba(0,0,0,.18)}
+.bkf-cover{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.9s cubic-bezier(.6,.04,.26,1)}
+.bkf-cover-front,.bkf-cover-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:6px 14px 14px 6px}
+.bkf-cover-front{background:linear-gradient(150deg,#2d4226,#1F2A1A 70%);box-shadow:0 22px 60px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.bkf-cover-back{background:linear-gradient(200deg,#20301c,#182315);transform:rotateY(180deg)}
+.bkf-frame{border:2px solid rgba(240,212,131,.75);border-radius:8px;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px 14px;position:relative}
+.bkf-frame:before{content:'';position:absolute;inset:5px;border:1px solid rgba(240,212,131,.3);border-radius:5px}
+.bkf-cimg{width:60%;aspect-ratio:1/1.05;object-fit:cover;border-radius:6px;border:2px solid rgba(240,212,131,.55);display:none}
+.bkf-title{font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(22px * var(--ts,1));font-weight:800;color:#F0D483;line-height:1.5;text-shadow:0 2px 14px rgba(0,0,0,.4);word-break:keep-all;padding:0 6px}
+.bkf-author{font-size:calc(13px * var(--ts,1));color:rgba(240,212,131,.8);letter-spacing:2px}
+.bkf-open .bkf-cover{transform:rotateY(-178deg)}
+.bkf-open .bkf-leaf{transform:rotateY(-172deg);transition-delay:.9s}
+.bkf-hint{margin-top:26px;color:#bba883;font-size:calc(14px * var(--ts,1));animation:bkfPulse 1.6s ease-in-out infinite;min-height:20px}
+@keyframes bkfPulse{0%,100%{opacity:.45}50%{opacity:1}}
+</style>
+<div id="bookFx">
+  <div class="bkf-stage">
+    <div class="bkf-book" id="bkfBook">
+      <div class="bkf-page">
+        <div class="bkf-ded-flower">🌸</div>
+        <div class="bkf-ded-title" id="bkfDedTitle"></div>
+        <div class="bkf-ded-msg" id="bkfDedMsg"></div>
+        <div class="bkf-ded-from" id="bkfDedFrom"></div>
+      </div>
+      <div class="bkf-leaf"></div>
+      <div class="bkf-cover">
+        <div class="bkf-cover-front">
+          <div class="bkf-frame">
+            <img class="bkf-cimg" id="bkfCoverImg" alt="표지 사진">
+            <div class="bkf-title" id="bkfTitle"></div>
+            <div class="bkf-author" id="bkfAuthor"></div>
+          </div>
+        </div>
+        <div class="bkf-cover-back"></div>
+      </div>
+    </div>
+    <div class="bkf-hint" id="bkfHint">책을 살짝 눌러보세요</div>
   </div>
 </div>
 
@@ -749,12 +804,20 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   </div>
   <div class="cta" id="pvCta" style="display:none">
     <div class="bom-row" style="margin-bottom:18px">
-      <img class="bom-face" src="img/bom_smile.png" alt="봄이">
+      <img class="bom-face" src="/img/bom_smile.png" alt="봄이">
       <div class="bom-bubble"><div class="q-txt">더 들려주실 이야기가 있으신가요?</div></div>
     </div>
     <div class="cta-s">더 깊은 이야기로 자서전을 채워드릴게요</div>
     <div class="prod-cards" id="prodCards"></div>
     <button class="btn-pkg" id="btnBuy">더 써볼게요</button>
+  </div>
+  <!-- 베타 기간 완성 인사 — 유료 유도 대신 (BETA_MODE) -->
+  <div class="cta" id="pvBetaEnd" style="display:none">
+    <div class="bom-row" style="margin-bottom:14px">
+      <img class="bom-face" src="/img/bom_smile.png" alt="봄이">
+      <div class="bom-bubble"><div class="q-txt">이 책은 세상에 단 한 권,<br>당신의 이야기로 만든 책이에요 🌸</div></div>
+    </div>
+    <div class="cta-s" style="line-height:1.8">소중히 간직해 주세요.<br>봄이는 언제나 여기서 기다리고 있을게요.</div>
   </div>
 </div>
 
@@ -793,27 +856,12 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 <div class="modal-bg" id="surveyBg">
   <div class="modal-box" style="padding-bottom:40px">
     <div class="modal-t" style="font-size:18px;margin-bottom:6px">봄이가 여쭤볼게요 🌸</div>
-    <div class="modal-s" style="margin-bottom:22px">자서전을 받아보셨나요? 딱 세 가지만요 😊</div>
+    <div class="modal-s" style="margin-bottom:22px">자서전을 받아보셨나요? 딱 하나만 여쭤볼게요 😊</div>
     <div id="sq1" class="sq-group">
       <div class="sq-q">더 많은 이야기를 남기고 싶으세요?</div>
       <div class="sq-opts">
         <button class="sq-btn" data-q="1" data-v="yes">네, 더 쓰고 싶어요</button>
         <button class="sq-btn" data-q="1" data-v="no">지금은 괜찮아요</button>
-      </div>
-    </div>
-    <div id="sq2" class="sq-group" style="display:none">
-      <div class="sq-q">PDF나 인쇄책으로도 받고 싶으세요?</div>
-      <div class="sq-opts">
-        <button class="sq-btn" data-q="2" data-v="print">네, 손에 들고 싶어요</button>
-        <button class="sq-btn" data-q="2" data-v="digital">앱에서 보는 것으로 충분해요</button>
-      </div>
-    </div>
-    <div id="sq3" class="sq-group" style="display:none">
-      <div class="sq-q">어떤 패키지가 더 끌리세요?</div>
-      <div class="sq-opts">
-        <button class="sq-btn" data-q="3" data-v="basic" style="line-height:1.6">나의 자서전<br><span style="font-size:12.5px;opacity:.75">45문항 · 35~45쪽 · 10만원</span></button>
-        <button class="sq-btn" data-q="3" data-v="premium" style="line-height:1.6">나의 인생 전집<br><span style="font-size:12.5px;opacity:.75">75문항 · 65~80쪽 · 20만원</span></button>
-        <button class="sq-btn" data-q="3" data-v="idk">잘 모르겠어요</button>
       </div>
     </div>
     <button class="btn btn-ghost" id="btnSurveySkip" style="margin-top:18px;width:100%">다음에 할게요</button>
@@ -854,30 +902,31 @@ function initFirebase(){
       'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
       'https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js'
     ];
-    var loaded = 0;
-    scripts.forEach(function(src){
+    // ★순차 로드 필수: 병렬로 붙이면 functions-compat가 app-compat보다 먼저 실행돼
+    //   firebase.INTERNAL 미정의로 .functions()가 등록 안 됨(봄이 음성/AI생성 깨짐). 하나씩 순서대로 로드.
+    (function loadNext(i){
+      if(i >= scripts.length){
+        firebase.initializeApp({
+          apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+          authDomain:"mylife-650f0.firebaseapp.com",
+          projectId:"mylife-650f0",
+          storageBucket:"mylife-650f0.firebasestorage.app",
+          messagingSenderId:"512010655611",
+          appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+        });
+        _auth      = firebase.auth();
+        _db        = firebase.firestore();
+        _functions = firebase.app().functions('asia-northeast3'); // 서울 리전
+        _fbReady   = true;
+        resolve();
+        return;
+      }
       var s = document.createElement('script');
-      s.src = src;
-      s.onload = function(){
-        loaded++;
-        if(loaded === scripts.length){
-          firebase.initializeApp({
-            apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
-            authDomain:"mylife-650f0.firebaseapp.com",
-            projectId:"mylife-650f0",
-            storageBucket:"mylife-650f0.firebasestorage.app",
-            messagingSenderId:"512010655611",
-            appId:"1:512010655611:web:32b153b836b23ae96a8fde"
-          });
-          _auth      = firebase.auth();
-          _db        = firebase.firestore();
-          _functions = firebase.app().functions('asia-northeast3'); // 서울 리전
-          _fbReady   = true;
-          resolve();
-        }
-      };
+      s.src = scripts[i];
+      s.onload  = function(){ loadNext(i+1); };
+      s.onerror = function(){ loadNext(i+1); }; // 실패해도 진행(안전)
       document.head.appendChild(s);
-    });
+    })(0);
   });
 }
 
@@ -1636,18 +1685,31 @@ function renderDash(){
     el('db1').addEventListener('click',resumeJourney);
     el('db2').addEventListener('click',confirmReset);
   }else{
-    var html=APP.preview?'<button class="btn btn-orange" id="db1">내 자서전 보기 ✦</button>':'<button class="btn btn-orange" id="db1">자서전 만들기 →</button>';
-    html+='<button class="btn btn-ghost" id="db2" style="margin-top:4px">처음부터 다시 시작</button>';
-    if(APP.preview){
-      var libLbl = APP.libPublished ? '✓ 공개 서재 공개됨 — 내리기' : '📚 공개 서재에 올리기';
-      html+='<button class="btn btn-ghost" id="db3" style="margin-top:4px;border-color:#0e9d7d;color:#0e9d7d">'+libLbl+'</button>';
-      html+='<button class="btn btn-ghost" id="db4" style="margin-top:4px;border-color:#f5c842;color:#f5c842">🏅 완성 뱃지 · 인증서 보기</button>';
+    // 무료 완성본이 '익일 서프라이즈 배송' 전이면 미리 열람 금지 → '준비 중'으로 잠금(2026-07-12 누수 수정)
+    var _sp = (typeof getSurprise==='function' ? (getSurprise()||{}) : {});
+    var pendingSurprise = isFreeTier() && APP.preview && _sp.readyAt && !_sp.delivered;
+    if(pendingSurprise){
+      el('progSt').textContent='봄이가 자서전을 엮고 있어요 🌱 곧 깜짝 선물로 보내드릴게요';
+      var html='<button class="btn btn-orange" id="db1" style="opacity:.6;cursor:default">🌱 봄이가 준비하고 있어요</button>';
+      html+='<button class="btn btn-ghost" id="db2" style="margin-top:4px">처음부터 다시 시작</button>';
+      btns.innerHTML=html;
+      el('db1').addEventListener('click',function(){ popToast('봄이가 정성껏 엮고 있어요. 완성되면 깜짝 선물로 보내드릴게요 🌸'); });
+      el('db2').addEventListener('click',confirmReset);
+    }else{
+      if(APP.preview) el('progSt').textContent='봄이가 엮은 자서전이 도착했어요 🌸 언제든 다시 펼쳐보세요';
+      var html=APP.preview?'<button class="btn btn-orange" id="db1">내 자서전 보기 ✦</button>':'<button class="btn btn-orange" id="db1">자서전 만들기 →</button>';
+      html+='<button class="btn btn-ghost" id="db2" style="margin-top:4px">처음부터 다시 시작</button>';
+      if(APP.preview){
+        var libLbl = APP.libPublished ? '✓ 공개 서재 공개됨 — 내리기' : '📚 공개 서재에 올리기';
+        html+='<button class="btn btn-ghost" id="db3" style="margin-top:4px;border-color:#0e9d7d;color:#0e9d7d">'+libLbl+'</button>';
+        html+='<button class="btn btn-ghost" id="db4" style="margin-top:4px;border-color:#f5c842;color:#f5c842">🏅 완성 뱃지 · 인증서 보기</button>';
+      }
+      btns.innerHTML=html;
+      el('db1').addEventListener('click',APP.preview?showPreview:goTitleScreen);
+      el('db2').addEventListener('click',confirmReset);
+      if(APP.preview && el('db3')) el('db3').addEventListener('click',toggleLibraryPublish);
+      if(APP.preview && el('db4')) el('db4').addEventListener('click',showBadge);
     }
-    btns.innerHTML=html;
-    el('db1').addEventListener('click',APP.preview?showPreview:goTitleScreen);
-    el('db2').addEventListener('click',confirmReset);
-    if(APP.preview && el('db3')) el('db3').addEventListener('click',toggleLibraryPublish);
-    if(APP.preview && el('db4')) el('db4').addEventListener('click',showBadge);
   }
 
   var list=el('chList'); list.innerHTML='';
@@ -1679,6 +1741,8 @@ function confirmReset(){
 }
 function startNew(){
   APP.curQ=0;APP.answers={};APP.preview=null;APP.bookTitle='';APP.qDates={};APP.qPrivate={};buildQuestionList();saveState();
+  // 챕터 인트로(2.3초) 동안 첫 질문 음성 미리 받아둠 → 질문 뜰 때 타이핑과 함께 재생
+  if(window.BomVoice && QS[0] && QS[0].q) BomVoice.prefetch(QS[0].q);
   showStory(QS[0].ch,function(){renderQ(0);go('s-q');});
 }
 function resumeJourney(){
@@ -1687,6 +1751,8 @@ function resumeJourney(){
   var keys=Object.keys(APP.answers).map(Number).filter(function(k){return k<maxQ;});
   var last=keys.length?Math.max.apply(null,keys):-1;
   var next=Math.min(last+1,maxQ-1);
+  // 이어하기 진입 즉시 다음 질문 음성 예열(firebase 준비되는 대로 받아둠)
+  if(window.BomVoice && QS[next] && QS[next].q) BomVoice.prefetch(QS[next].q);
   // 게스트가 이미 5문항 이상 답변한 경우 게이트 표시
   if(!isSocialUser() && next >= GUEST_LIMIT){
     _pendingQAdvance = true;
@@ -1730,6 +1796,55 @@ function dsbTypeBubble(elm, text){
   _bomTypeTimer=setTimeout(step,260); // 말풍선이 먼저 보이고 나서 차분하게 타이핑 시작(기존 2배로 느리게: 34→68ms)
   elm.onclick=function(){ if(_bomTypeTimer){ clearTimeout(_bomTypeTimer); _bomTypeTimer=null; elm.textContent=text; elm.classList.remove('dsb-typing'); } };
 }
+// ── 홈 챗봇에서 나눈 잡담(memoir_chatlog, 기기 로컬) 중 이 질문과 관련된 이야기 찾기 ──
+var CAT_KW = {
+  '뿌리':['태어','고향','동네','골목','마당','우물','어릴','어렸','놀이','냄새','소리','시골','산골','집'],
+  '가족':['부모','아버지','어머니','엄마','아빠','형제','누나','오빠','언니','동생','가족','명절','소풍'],
+  '청춘·사랑·우정':['꿈','첫사랑','사랑','연애','짝','친구','벗','우정','노래','가수','젊','청춘','학교','학창'],
+  '일·삶':['일','직장','회사','가게','장사','사업','보람','고생','자랑','돈','월급','직업'],
+  '지금·유산':['요즘','손주','손자','손녀','행복','즐거','소중','감사'],
+  '유년·성장':['어릴','어렸','고향','동네','집','놀이','부모'],
+  '학창·청년':['학교','학창','친구','선생','젊','청춘'],
+  '사랑·연애':['사랑','첫사랑','연애','짝','설레'],
+  '일·생계·돈':['일','직장','가게','장사','돈','월급','보람'],
+  '결혼·가정·양육':['결혼','신혼','아이','자녀','가족','살림'],
+  '취향·열정':['노래','가수','여행','취미','운동','단골'],
+  '물건·장소·음식':['음식','물건','장소','가게','맛']
+};
+function _rcEsc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function _qKeywords(q){
+  if(CAT_KW[q.cat]) return CAT_KW[q.cat];
+  return (String(q.gist||q.h||'').match(/[가-힣]{2,}/g)||[]).slice(0,6);
+}
+function findRecall(q){
+  var log; try{ log=JSON.parse(localStorage.getItem('memoir_chatlog')||'[]'); }catch(e){ return null; }
+  if(!log || !log.length) return null;
+  var kws=_qKeywords(q), best=null, bestScore=0;
+  log.forEach(function(item){
+    var t=String(item.t||''); if(t.length<6) return;
+    var score=0; kws.forEach(function(k){ if(t.indexOf(k)>-1) score++; });
+    if(score>bestScore){ bestScore=score; best=t; }
+  });
+  return bestScore>0 ? best : null;
+}
+function renderRecall(i,q){
+  var rc=el('qRecall'); if(!rc) return;
+  var already=(APP.answers[i]&&String(APP.answers[i]).trim());
+  var rec = already ? null : findRecall(q); // 이미 답을 쓰셨으면 방해하지 않음
+  if(!rec){ rc.style.display='none'; rc.innerHTML=''; return; }
+  rc.style.display='';
+  rc.innerHTML='<div style="background:#F2F8F0;border:1.5px solid #cfe6c8;border-radius:14px;padding:12px 14px;margin:2px 0 12px">'
+    +'<div style="font-size:calc(13px*var(--ts,1));font-weight:800;color:#3d5c3a;margin-bottom:6px">💬 저번에 이런 이야기를 들려주셨어요</div>'
+    +'<div style="font-size:calc(14px*var(--ts,1));color:#33402E;line-height:1.6;margin-bottom:10px">&ldquo;'+_rcEsc(rec.slice(0,120))+'&rdquo;</div>'
+    +'<button type="button" id="qrBtn" style="border:none;background:linear-gradient(135deg,#13d3a6,#0e9d7d);color:#fff;font-size:calc(13.5px*var(--ts,1));font-weight:800;padding:9px 16px;border-radius:50px;cursor:pointer;font-family:inherit">이 이야기 담기 ↓</button></div>';
+  el('qrBtn').onclick=function(){
+    setMode('text');
+    var ta=el('tArea'); var cur=(ta.value||'').trim();
+    ta.value = cur ? (cur+'\n'+rec) : rec;
+    rc.style.display='none';
+    try{ ta.focus(); }catch(e){}
+  };
+}
 function renderQ(i){
   var q=QS[i]; var maxQ=APP.maxQ;
   var pct=Math.round(i/maxQ*100);
@@ -1739,10 +1854,16 @@ function renderQ(i){
   el('qCnt').textContent = isFreeTier()
     ? dayNumber()+'일차 · 오늘 '+consumedToday()+'/'+DAILY_CAP
     : (i+1)+' / '+maxQ;
+  // 타이핑은 즉시 시작(기다리지 않음). 봄이 음성은 준비되는 대로 재생 —
+  // 진입 전 prewarm/prefetch로 미리 받아둬서 대개 타이핑 시작과 함께 나옴.
   dsbTypeBubble(el('qTxt'), q.q);
+  if(window.BomVoice){
+    BomVoice.say(q.q);                                        // 준비됐으면 즉시(캐시), 아니면 되는대로
+    if(QS[i+1] && QS[i+1].q) BomVoice.prefetch(QS[i+1].q);    // 다음 질문 미리 받기
+  }
   el('qHint').textContent=q.h;
   var _ex=el('qEx'); if(_ex){ if(q.hint){ _ex.style.display='none'; } else { _ex.style.display=''; _ex.textContent = q.ex ? ('💡 예) '+q.ex) : '💡 떠오르는 대로 편하게. 한 줄만 적어도 봄이가 풀어드려요.'; } }
-  var _bf=el('bomFace'); if(_bf){ _bf.src='img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
+  var _bf=el('bomFace'); if(_bf){ _bf.src='/img/'+(q.sensitive?'bom_calm':q.hint?'bom_grin':'bom_think')+'.png'; _bf.style.display=''; }
   var _qp=el('qPrivate');
   if(_qp){ if(q.sensitive){ _qp.style.display='';
       var _priv=(APP.qPrivate&&APP.qPrivate[i]!==undefined)?APP.qPrivate[i]:true; // 기본 나만보기
@@ -1751,6 +1872,7 @@ function renderQ(i){
   // 이전 답변 복원 (이전/다음 이동 시 데이터 유지)
   el('tArea').value=APP.answers[i]||'';
   el('vArea').value=APP.answers[i]||'';
+  renderRecall(i,q); // 홈 대화 중 관련 이야기가 있으면 봄이가 되살려 제안
   // 다음 버튼 텍스트
   el('btnNext').innerHTML=i<maxQ-1?'기억 저장하고<br>다음으로 →':'기억 저장하고<br>제목 정하기 →';
   // 첫 번째 질문이면 이전 버튼 숨김
@@ -1770,6 +1892,7 @@ function commit(){
   if(v){APP.answers[APP.curQ]=v;saveState();el('qSaveLbl').textContent='저장됨 ✓';setTimeout(function(){el('qSaveLbl').textContent='';},2000);}
 }
 var GUEST_LIMIT = 15; // 무료 15문항 (index 0~14)
+var BETA_MODE = true; // [조정] 베타 기간: 결제 체계 없으므로 완성본 유료 유도(pvCta) 숨김 — 결제 오픈 시 false
 var _pendingQAdvance = false; // 소셜 로그인 후 자동 진행 플래그
 
 // ─────────────────────────────────────────────────────────────
@@ -1807,7 +1930,7 @@ function scheduleSurprise(){
 }
 // 완료 안내 — 봄이가 "준비할게요"만, 전달 시점은 비밀(예고 금지)
 function showPrepAck(){
-  if(el('spBom')) el('spBom').src='img/bom_smile.png';
+  if(el('spBom')) el('spBom').src='/img/bom_smile.png';
   el('spTitle').textContent='이야기를 다 들려주셨어요';
   el('spMsg').innerHTML=_hsafe()+'께서 들려주신 이야기로,<br>봄이가 정성껏 <b>자서전</b>을 준비할게요 🌸';
   var b=el('spBtn'); b.style.display=''; b.textContent='확인'; b.onclick=function(){ renderDash(); go('s-dash'); };
@@ -1815,7 +1938,7 @@ function showPrepAck(){
 }
 // 익일 10시 이후 첫 진입 — 깜짝 공개(연출)
 function surpriseReveal(){
-  if(el('spBom')){ el('spBom').src='img/bom_wink.png'; el('spBom').style.animation='none'; void el('spBom').offsetWidth; el('spBom').style.animation=''; }
+  if(el('spBom')){ el('spBom').src='/img/bom_wink.png'; el('spBom').style.animation='none'; void el('spBom').offsetWidth; el('spBom').style.animation=''; }
   el('spTitle').textContent='🎉 자서전이 도착했어요!';
   el('spMsg').innerHTML=_hsafe()+'의 이야기가 한 권의 책이 되었어요.<br>봄이가 정성껏 엮었답니다 🌸';
   var b=el('spBtn'); b.style.display=''; b.textContent='내 자서전 열어보기 ✦'; b.onclick=openDeliveredBook;
@@ -1824,7 +1947,42 @@ function surpriseReveal(){
 }
 function openDeliveredBook(){
   var s=getSurprise()||{}; s.delivered=true; setSurprise(s);
-  if(APP.preview){ showPreview(); } else { renderDash(); go('s-dash'); }
+  if(APP.preview){ bookReveal(); } else { renderDash(); go('s-dash'); }
+}
+// ── 책 펼침 연출: 표지(제목·지음·표지사진) → 표지가 넘어가며 헌정 페이지 → 본문(미리보기) ──
+function bookReveal(){
+  var fx=el('bookFx');
+  if(!fx){ showPreview(); return; }
+  var t=(APP.bookTitle||'').trim() || (_hsafe()+'의 이야기');
+  el('bkfTitle').textContent=t;
+  el('bkfAuthor').textContent='— '+_hsafe()+' 지음 —';
+  var ci=el('bkfCoverImg');
+  if(APP.coverPhoto){ ci.src=APP.coverPhoto; ci.style.display='block'; } else { ci.style.display='none'; }
+  el('bkfDedTitle').textContent=t;
+  el('bkfDedMsg').innerHTML=_hsafe()+'께서 살아오신 날들이<br>한 권의 책이 되었습니다.';
+  var d=new Date();
+  el('bkfDedFrom').textContent=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 · 봄이 드림 🌱';
+  el('bkfBook').classList.remove('bkf-open');
+  el('bkfHint').textContent='책을 살짝 눌러보세요';
+  fx.classList.add('on');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ fx.classList.add('lit'); }); });
+  var opened=false, done=false, autoT, finT;
+  function openIt(){
+    if(opened) return; opened=true;
+    clearTimeout(autoT);
+    el('bkfHint').textContent='';
+    el('bkfBook').classList.add('bkf-open');
+    if(window.BomVoice) BomVoice.say(_honorific()+'께서 살아오신 날들이, 한 권의 책이 되었습니다'); // 봄이 프리미엄 음성
+    finT=setTimeout(finish, 5200); // 헌정 페이지 감상 시간
+  }
+  function finish(){
+    if(done) return; done=true;
+    clearTimeout(finT);
+    fx.classList.remove('lit');
+    setTimeout(function(){ fx.classList.remove('on'); fx.onclick=null; showPreview(); }, 750);
+  }
+  fx.onclick=function(){ if(opened){ finish(); } else { openIt(); } };
+  autoT=setTimeout(openIt, 2800); // 안 누르셔도 저절로 펼쳐짐
 }
 // 부팅/재진입 시: 익일 10시가 '지난' 예약만 깜짝 공개. 그 전엔 아무것도 안 띄움(서프라이즈라 미리 안 보여줌).
 function maybeShowSurprise(){
@@ -2070,11 +2228,13 @@ function showPreview(shared){
   });
 
   // 봄이의 "더 쓰시겠어요?" 제안은 무료 완성본에서만(유료는 이미 다 쓴 것). 공유 보기 모드는 숨김.
-  el('pvCta').style.display = (shared || !isFree) ? 'none' : 'block';
+  // BETA_MODE: 결제 체계가 없으므로 유료 유도 대신 따뜻한 마무리 인사(pvBetaEnd)로 대체.
+  el('pvCta').style.display = (shared || !isFree || BETA_MODE) ? 'none' : 'block';
+  var _be=el('pvBetaEnd'); if(_be) _be.style.display = (!shared && isFree && BETA_MODE) ? 'block' : 'none';
   var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = shared ? 'none' : '';
   var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '✓ 서재에 공개됨 — 내리기' : '📚 공개 서재에 올리기';
   var _back=el('btnPvBack'); if(_back) _back.style.display = shared ? 'none' : '';
-  if(!shared && isFree) renderProds();
+  if(!shared && isFree && !BETA_MODE) renderProds();
   go('s-preview');
 
   // 복사 방지
@@ -2196,7 +2356,7 @@ function _shouldShowSurvey(){
 }
 function showSurveyModal(){
   _surveyAns = {};
-  ['sq1','sq2','sq3'].forEach(function(id,i){ el(id).style.display = i===0?'':'none'; });
+  el('sq1').style.display='';
   el('surveyBg').querySelectorAll('.sq-btn').forEach(function(b){ b.classList.remove('on'); });
   el('surveyBg').classList.add('open');
 }
@@ -2222,9 +2382,7 @@ function _saveSurvey(){
         this.classList.add('on');
         _surveyAns['q'+q] = v;
         setTimeout(function(){
-          if(q==='1'){ el('sq1').style.display='none'; el('sq2').style.display=''; }
-          else if(q==='2'){ el('sq2').style.display='none'; el('sq3').style.display=''; }
-          else if(q==='3'){ _saveSurvey(); closeSurveyModal(); popToast('소중한 의견 감사해요 🌸'); }
+          _saveSurvey(); closeSurveyModal(); popToast('소중한 의견 감사해요 🌸');
         },260);
       });
     });
@@ -2240,8 +2398,26 @@ function unlockPaidContinue(pkgId){
 
 // ── 이벤트 바인딩 ──
 document.addEventListener('DOMContentLoaded',function(){
-  var _shareId=new URLSearchParams(location.search).get('share');
+  var _qp=new URLSearchParams(location.search);
+  var _shareId=_qp.get('share');
   if(_shareId){ loadShared(_shareId); return; } // 공유 보기 모드: 일반 초기화 건너뜀
+  // 키오스크 세션(공용 태블릿): 자서전은 키오스크 대화 경로로만 — 홈 자서전(기기저장)은 다음 어르신과 섞이므로 차단.
+  // (데모 진입 ?bookdemo=1 은 예외로 허용)
+  if(_qp.get('bookdemo')!=='1'){
+    try{ if(sessionStorage.getItem('dasibom_kiosk_browse')){ location.replace('/kiosk'); return; } }catch(e){}
+  }
+  // 책 펼침 연출 데모(?bookdemo=1) — 시연·품질 확인용 숨은 진입로(데이터 저장 안 함)
+  if(_qp.get('bookdemo')==='1'){
+    setTimeout(function(){
+      try{
+        if(!APP.bookTitle) APP.bookTitle='다시 오는 봄';
+        var _origShow=window.showPreview;
+        window.showPreview=function(){ window.showPreview=_origShow; location.href='/memoir'; }; // 데모 끝나면 원위치
+        bookReveal();
+      }catch(e){}
+    }, 600);
+    return;
+  }
   // 홈 "봄이의 오늘 질문" 직진입(?continue=1): 기존 답변이 있으면 인트로 없이 바로 이어서 작성
   if(new URLSearchParams(location.search).get('continue')==='1'){
     setTimeout(function(){ try{ if(Object.keys(APP.answers||{}).length){ resumeJourney(); } }catch(e){} }, 450);

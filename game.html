@@ -445,6 +445,17 @@ body.shake{animation:bShake .35s}
 </style>
 <script src="/a11y.js?v=6" defer></script>
 <script src="/attend.js?v=3" defer></script>
+<script src="/bom_voice.js?v=11" defer></script>
+<script src="/bom_tutorial.js?v=3" defer></script>
+<script>window.BOM_TUT={
+  key:'game', face:'bom_fab.png', name:'오늘의 뇌 건강',
+  welcome:'{호칭}, 오늘도 머리 한번 깨워볼까요? 어렵지 않아요. 저랑 놀이하듯 편하게 하시면 돼요.',
+  action:'오늘의 놀이를 하나 골라보세요.',
+  tour:[
+    {text:'오늘의 놀이를 하나씩 하시면 포인트가 쌓여요.', sel:'.mission-cards'},
+    {text:'하루하루 이어가시면 여기 연속 일수가 올라가요.', sel:'.daily-strip'}
+  ]
+};</script>
 <script src="/dasibom-header.js"></script>
 </head>
 <body>

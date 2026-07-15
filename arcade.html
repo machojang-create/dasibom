@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>추억의 오락실 — 다시봄</title>
     <style>
-        @import url('https://webfontworld.github.io/gmarket/GmarketSans.css');
         @import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+        @import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap');
 
         /* CSS reset */
         * { box-sizing: border-box; touch-action: manipulation; font-family: 'NanumSquareRound', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
-        body { margin: 0; padding: 0; background-color: #2D1E16; color: #FFF8E1; overflow: hidden; font-weight: 700; }
+        body { margin: 0; padding: 0; background-color: #F5F1E8; color: #1F2A1A; overflow: hidden; font-weight: 700; }
 
         :root {
-            /* Highly Saturated Game Colors */
-            --color-0: #FF1A0D; /* Red - Strawberry (High Saturation) */
-            --color-1: #FFFF00; /* Yellow - Banana (Highly Saturated Pure Yellow) */
-            --color-2: #00E600; /* Green - Apple (Highly Saturated Rich Green) */
-            --color-3: #C400FF; /* Purple - Grape (High Saturation) */
-            --color-4: #0022FF; /* Blue (Highly Saturated Deep Blue) */
+            /* Game item colors — 게임성 유지를 위해 그대로 둠 */
+            --color-0: #FF1A0D; /* Red - Strawberry */
+            --color-1: #FFFF00; /* Yellow - Banana */
+            --color-2: #00E600; /* Green - Apple */
+            --color-3: #C400FF; /* Purple - Grape */
+            --color-4: #0022FF; /* Blue */
 
             --border-0: #C20000;
             --border-1: #C2A000;
@@ -26,14 +26,30 @@
             --border-3: #8200B3;
             --border-4: #0011B3;
 
-            --btn-grad: linear-gradient(to bottom, #FFD54F, #FF8F00);
-            --btn-border: #E65100;
-            --btn-text: #3E2723;
+            /* 다시봄 브랜드 톤 */
+            --cream: #F5F1E8;
+            --cream-2: #EDE7D7;
+            --paper: #FBF8F0;
+            --ink: #1F2A1A;
+            --ink-2: #2D3A2A;
+            --muted: #6B6B5C;
+            --sage: #5C7A4A;
+            --sage-deep: #3F5A30;
+            --gold: #C9A961;
+            --gold-soft: #E0C988;
+
+            --btn-grad: linear-gradient(to bottom, #6E9257, #4B6B3B);
+            --btn-border: #3F5A30;
+            --btn-text: #FBF8F0;
         }
 
         /* Modern typography helpers for titles, buttons, headers */
-        .title, .game-btn, .game-header, .back-btn, .modal-content h2, .modal-btn, .bouncing-text, .score-box, .time-box, .combo-box {
-            font-family: 'GmarketSans', 'NanumSquareRound', sans-serif;
+        .title, .modal-content h2, .bouncing-text {
+            font-family: 'Nanum Myeongjo', 'NanumSquareRound', serif;
+            font-weight: 800;
+        }
+        .game-btn, .game-header, .back-btn, .modal-btn, .score-box, .time-box, .combo-box {
+            font-family: 'NanumSquareRound', sans-serif;
             font-weight: 700;
         }
 
@@ -49,17 +65,17 @@
         @keyframes highScorePulse {
             0%, 100% {
                 transform: scale(1);
-                background-color: #3E2723;
-                border-color: #5D4037;
-                color: #FFD54F;
-                box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+                background-color: var(--paper);
+                border-color: var(--gold-soft);
+                color: var(--sage-deep);
+                box-shadow: inset 0 2px 5px rgba(0,0,0,0.08);
             }
             50% {
                 transform: scale(1.05);
-                background-color: #5D4037;
-                border-color: #FFD54F;
-                color: #FFF;
-                box-shadow: 0 0 15px #FFD54F, inset 0 2px 5px rgba(0,0,0,0.2);
+                background-color: var(--gold-soft);
+                border-color: var(--gold);
+                color: var(--ink);
+                box-shadow: 0 0 15px var(--gold-soft), inset 0 2px 5px rgba(0,0,0,0.06);
             }
         }
         .high-score-glow {
@@ -75,29 +91,38 @@
         .screen.active { opacity: 1; pointer-events: auto; }
 
         /* Lobby */
-        #lobby { justify-content: center; gap: 25px; padding: 20px; text-align: center; background-image: radial-gradient(circle at center, #4E342E, #2D1E16); }
-        .title { font-size: 3.5rem; color: #FFD54F; margin-bottom: 30px; word-break: keep-all; letter-spacing: 1px; text-shadow: 2px 4px 4px rgba(0,0,0,0.5); }
+        #lobby { justify-content: center; gap: 12px; padding: 16px; text-align: center; background-image: radial-gradient(circle at center, var(--paper), var(--cream)); overflow-y: auto; }
+        .title { font-size: 2.2rem; color: var(--sage-deep); margin-bottom: 6px; word-break: keep-all; letter-spacing: 1px; text-shadow: 1px 2px 0 rgba(255,255,255,0.6); }
         .game-btn {
-            background: var(--btn-grad); border: 4px solid var(--btn-border); border-radius: 20px;
-            padding: 20px 30px; font-size: 2.2rem; color: var(--btn-text);
-            cursor: pointer; box-shadow: 0 8px 0 #BF360C, 0 15px 20px rgba(0,0,0,0.4); width: 100%; max-width: 400px;
-            transition: transform 0.1s, box-shadow 0.1s; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            background: var(--btn-grad); border: 3px solid var(--btn-border); border-radius: 16px;
+            padding: 0 0 10px; font-size: 1.4rem; color: var(--btn-text);
+            cursor: pointer; box-shadow: 0 5px 0 var(--sage-deep), 0 10px 14px rgba(63,90,48,0.2); width: 100%; max-width: 280px;
+            transition: transform 0.1s, box-shadow 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            display: flex; flex-direction: column; align-items: stretch; overflow: hidden;
+            flex-shrink: 0;
         }
-        .game-btn:active { transform: translateY(8px); box-shadow: 0 0 0 #BF360C, 0 5px 10px rgba(0,0,0,0.4); }
+        .game-btn:active { transform: translateY(5px); box-shadow: 0 0 0 var(--sage-deep), 0 4px 8px rgba(63,90,48,0.2); }
+        .game-thumb {
+            display: flex; align-items: center; justify-content: center; gap: 4px;
+            width: 100%; height: 56px; padding: 6px 12px 2px;
+            background: rgba(255,255,255,0.4); box-sizing: content-box;
+            font-size: 2.1rem; line-height: 1;
+        }
+        .game-btn-body { display: block; padding: 3px 14px 0; }
         .game-desc {
-            font-size: 1.2rem;
+            font-size: 0.85rem;
             font-weight: 700;
             display: block;
-            margin-top: 6px;
-            opacity: 0.97;
+            margin-top: 3px;
+            opacity: 0.9;
         }
         .lobby-high-score {
-            font-size: 1.1rem;
+            font-size: 0.8rem;
             font-weight: bold;
-            color: #FFF8E1;
+            color: var(--sage-deep);
             display: block;
             margin-top: 8px;
-            background: rgba(0,0,0,0.35);
+            background: rgba(255,255,255,0.55);
             border-radius: 12px;
             padding: 6px 0;
         }
@@ -108,28 +133,75 @@
 
         .arcade-exit {
             position: absolute; top: 16px; left: 16px; z-index: 5;
-            background: rgba(0,0,0,0.3); color: #FFF8E1; text-decoration: none;
+            background: rgba(255,255,255,0.55); color: var(--sage-deep); text-decoration: none;
             font-size: 0.95rem; font-weight: 700; padding: 8px 16px;
-            border-radius: 14px; border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 14px; border: 1px solid rgba(63,90,48,0.25);
         }
+        .ranking-fab {
+            position: absolute; top: 14px; right: 16px; z-index: 5;
+            background: rgba(255,255,255,0.7); color: var(--sage-deep);
+            border: 1.5px solid rgba(63,90,48,0.25); border-radius: 50%;
+            width: 42px; height: 42px; font-size: 20px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* 랭킹 / 명예의 전당 / 닉네임 모달 */
+        .rk-overlay {
+            position: fixed; inset: 0; background: rgba(31,42,26,0.7); z-index: 300;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        .rk-overlay.active { opacity: 1; pointer-events: auto; }
+        .rk-box {
+            background: var(--paper); border-radius: 22px; width: 90%; max-width: 420px;
+            max-height: 82vh; overflow-y: auto; padding: 22px 20px 26px; position: relative;
+            box-shadow: 0 20px 50px rgba(31,42,26,0.35);
+        }
+        .rk-close {
+            position: absolute; top: 14px; right: 14px; width: 32px; height: 32px;
+            border-radius: 50%; border: 1.5px solid var(--cream-2); background: #fff;
+            font-size: 15px; color: var(--muted); cursor: pointer;
+        }
+        .rk-title { font-family: 'Nanum Myeongjo', serif; font-size: 1.5rem; font-weight: 800; color: var(--sage-deep); margin-bottom: 14px; text-align: center; }
+        .rk-gametabs { display: flex; gap: 6px; margin-bottom: 10px; }
+        .rk-gametab { flex: 1; padding: 8px 4px; border-radius: 10px; border: 1.5px solid var(--cream-2); background: #fff; font-size: 0.85rem; font-weight: 700; color: var(--muted); cursor: pointer; }
+        .rk-gametab.active { background: var(--sage); border-color: var(--sage-deep); color: #fff; }
+        .rk-viewtabs { display: flex; gap: 6px; margin-bottom: 14px; }
+        .rk-viewtab { flex: 1; padding: 9px 4px; border-radius: 10px; border: none; background: var(--cream); font-size: 0.9rem; font-weight: 800; color: var(--muted); cursor: pointer; }
+        .rk-viewtab.active { background: var(--gold-soft); color: var(--ink); }
+        .rk-list { display: flex; flex-direction: column; gap: 6px; min-height: 60px; }
+        .rk-item { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; background: #fff; border: 1px solid var(--cream-2); font-size: 0.92rem; }
+        .rk-item.me { background: #EAF3E4; border-color: var(--sage); }
+        .rk-rank { width: 26px; font-weight: 800; color: var(--sage-deep); text-align: center; flex-shrink: 0; }
+        .rk-rank.top1 { color: #C9A961; font-size: 1.1rem; }
+        .rk-name { flex: 1; color: var(--ink); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rk-score { font-weight: 800; color: var(--sage-deep); flex-shrink: 0; }
+        .rk-empty { text-align: center; color: var(--muted); font-size: 0.9rem; padding: 24px 0; }
+        .rk-week-label { text-align: center; font-size: 0.82rem; color: var(--muted); margin-bottom: 10px; }
+        .rk-week-nav { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .rk-week-btn { border: none; background: var(--cream); color: var(--sage-deep); border-radius: 8px; padding: 6px 12px; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+        .rk-hof-link { display: block; text-align: center; margin-top: 14px; font-size: 0.85rem; color: var(--sage-deep); font-weight: 700; cursor: pointer; text-decoration: underline; }
+        .nick-box { text-align: center; }
+        .nick-box input { width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--cream-2); font-size: 1rem; text-align: center; margin: 10px 0 14px; font-family: inherit; }
+        .nick-box button { width: 100%; padding: 12px; border: none; border-radius: 12px; background: var(--sage); color: #fff; font-size: 1rem; font-weight: 800; cursor: pointer; }
 
         /* Game Header */
         .game-header {
             width: 100%; display: flex; flex-direction: column; gap: 8px;
-            padding: 10px 20px; background-color: #1E120D; border-bottom: 4px solid #5D4037;
-            z-index: 10; color: #FFF8E1; position: relative;
+            padding: 10px 20px; background-color: var(--paper); border-bottom: 4px solid var(--cream-2);
+            z-index: 10; color: var(--ink); position: relative;
         }
         .header-row { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         .score-box, .time-box {
-            background: #3E2723; padding: 6px 15px; border-radius: 20px;
-            border: 3px solid #5D4037; color: #FFD54F; box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            background: var(--cream); padding: 6px 15px; border-radius: 20px;
+            border: 3px solid var(--gold-soft); color: var(--sage-deep); box-shadow: inset 0 2px 5px rgba(0,0,0,0.06);
             font-size: 1.3rem; font-weight: bold;
         }
         .header-guide-box {
-            font-size: 1.2rem; font-weight: bold; color: #FFF;
+            font-size: 1.2rem; font-weight: bold; color: var(--ink);
             white-space: nowrap; text-align: center;
-            background: rgba(0,0,0,0.3); padding: 8px 20px;
-            border-radius: 20px; width: 100%; border: 2px solid #5D4037;
+            background: var(--cream); padding: 8px 20px;
+            border-radius: 20px; width: 100%; border: 2px solid var(--cream-2);
             box-sizing: border-box;
             overflow: hidden; text-overflow: ellipsis;
         }
@@ -138,14 +210,14 @@
         .game-board-container {
             flex: 1; width: 100%; display: flex; justify-content: center; align-items: center;
             overflow: hidden; padding: 15px; position: relative;
-            background-image: radial-gradient(circle at center, #3E2723, #1E120D);
+            background-image: radial-gradient(circle at center, var(--cream-2), var(--cream));
         }
         .game-board {
-            position: relative; background-color: #2D1E16;
-            border-radius: 20px; border: 8px solid #5D4037;
+            position: relative; background-color: var(--ink-2);
+            border-radius: 20px; border: 8px solid var(--sage-deep);
             touch-action: none; /* Prevent scrolling inside board */
             overflow: hidden; box-sizing: content-box;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.8);
+            box-shadow: 0 10px 30px rgba(63,90,48,0.35), inset 0 0 20px rgba(0,0,0,0.4);
         }
 
         /* Items */
@@ -167,7 +239,7 @@
             transition: transform 0.4s cubic-bezier(0.25, 1.45, 0.45, 1.15), opacity 0.25s ease;
         }
         .item.bubble { border-radius: 50%; border-width: 2px; }
-        .item.selected { filter: brightness(1.3) contrast(1.2); box-shadow: 0 0 0 4px #FFF8E1, 0 0 15px #FFF8E1; z-index: 10; }
+        .item.selected { filter: brightness(1.3) contrast(1.2); box-shadow: 0 0 0 4px var(--gold-soft), 0 0 15px var(--gold-soft); z-index: 10; }
 
         .color-0 { background-color: var(--color-0); border-color: var(--border-0); }
         .color-1 { background-color: var(--color-1); border-color: var(--border-1); }
@@ -175,57 +247,65 @@
         .color-3 { background-color: var(--color-3); border-color: var(--border-3); }
         .color-4 { background-color: var(--color-4); border-color: var(--border-4); }
 
+        /* 색맹·색약 어르신도 구분할 수 있게 색깔마다 모양 기호를 함께 표시 */
+        .item.color-0::before { content: '♥'; }
+        .item.color-1::before { content: '★'; }
+        .item.color-2::before { content: '♣'; }
+        .item.color-3::before { content: '♦'; }
+        .item.color-4::before { content: '▲'; }
+        .item::before { color: rgba(0,0,0,0.35); line-height: 1; z-index: 1; }
+
         /* Game Footer */
         .game-footer {
             width: 100%; height: 100px; display: flex; justify-content: center; align-items: center; padding: 15px;
-            background-color: #1E120D; border-top: 4px solid #5D4037; gap: 20px;
+            background-color: var(--paper); border-top: 4px solid var(--cream-2); gap: 20px;
         }
         .back-btn {
-            background: linear-gradient(to bottom, #795548, #4E342E); border: 3px solid #3E2723; border-radius: 20px;
-            padding: 15px 40px; font-size: 1.6rem; color: #FFF8E1;
-            cursor: pointer; width: 100%; max-width: 300px; box-shadow: 0 6px 0 #2A1B14;
+            background: linear-gradient(to bottom, #8A9E7E, var(--sage)); border: 3px solid var(--sage-deep); border-radius: 20px;
+            padding: 15px 40px; font-size: 1.6rem; color: #FBF8F0;
+            cursor: pointer; width: 100%; max-width: 300px; box-shadow: 0 6px 0 #33492A;
             transition: transform 0.1s, box-shadow 0.1s;
         }
-        .back-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #2A1B14; }
+        .back-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #33492A; }
 
         .bgm-btn {
-            background: linear-gradient(to bottom, #FFB300, #FF8F00); border: 3px solid #FF6F00; border-radius: 20px;
-            padding: 12px 24px; font-size: 1.4rem; color: #3E2723; font-weight: 700;
-            cursor: pointer; box-shadow: 0 5px 0 #D84315, 0 8px 12px rgba(0,0,0,0.3); width: 100%; max-width: 250px;
+            background: linear-gradient(to bottom, var(--gold-soft), var(--gold)); border: 3px solid #B08F4E; border-radius: 20px;
+            padding: 12px 24px; font-size: 1.4rem; color: var(--ink); font-weight: 700;
+            cursor: pointer; box-shadow: 0 5px 0 #9A7B3F, 0 8px 12px rgba(0,0,0,0.12); width: 100%; max-width: 250px;
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             transition: transform 0.1s, box-shadow 0.1s;
             margin-top: 15px;
-            font-family: 'GmarketSans', 'NanumSquareRound', sans-serif;
+            font-family: 'NanumSquareRound', sans-serif;
             text-shadow: 0 1px 0 rgba(255,255,255,0.4);
         }
-        .bgm-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #D84315; }
+        .bgm-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #9A7B3F; }
 
         /* Modal */
         #modal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center;
+            background: rgba(31,42,26,0.7); display: flex; justify-content: center; align-items: center;
             opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100;
         }
         #modal.active { opacity: 1; pointer-events: auto; }
         .modal-content {
-            background: #F5E6CC; padding: 40px 30px; border-radius: 20px; text-align: center;
-            width: 85%; max-width: 400px; border: 8px solid #5D4037;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(139,69,19,0.2);
+            background: var(--paper); padding: 40px 30px; border-radius: 20px; text-align: center;
+            width: 85%; max-width: 400px; border: 6px solid var(--gold-soft);
+            box-shadow: 0 10px 40px rgba(31,42,26,0.3), inset 0 0 20px rgba(201,169,97,0.12);
             position: relative;
         }
         .modal-content::before {
             content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
-            border: 2px dashed #8D6E63; border-radius: 10px; pointer-events: none;
+            border: 2px dashed var(--gold-soft); border-radius: 10px; pointer-events: none;
         }
-        .modal-content h2 { margin: 0 0 15px 0; font-size: 3.5rem; color: #D84315; text-shadow: 1px 1px 0px rgba(255,255,255,0.5); }
-        .modal-content p { margin: 0 0 30px 0; font-size: 2rem; color: #4E342E; }
+        .modal-content h2 { margin: 0 0 15px 0; font-size: 3.5rem; color: var(--sage-deep); text-shadow: 1px 1px 0px rgba(255,255,255,0.6); }
+        .modal-content p { margin: 0 0 30px 0; font-size: 2rem; color: var(--ink-2); }
         .modal-btn {
             background: var(--btn-grad); border: 4px solid var(--btn-border); border-radius: 20px;
             padding: 15px; font-size: 1.8rem; color: var(--btn-text);
-            cursor: pointer; width: 100%; box-shadow: 0 6px 0 #BF360C;
-            transition: transform 0.1s, box-shadow 0.1s; position: relative; z-index: 1; text-shadow: 1px 1px 0px rgba(255,255,255,0.5);
+            cursor: pointer; width: 100%; box-shadow: 0 6px 0 var(--sage-deep);
+            transition: transform 0.1s, box-shadow 0.1s; position: relative; z-index: 1; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
         }
-        .modal-btn:active { transform: translateY(6px); box-shadow: 0 0 0 #BF360C; }
+        .modal-btn:active { transform: translateY(6px); box-shadow: 0 0 0 var(--sage-deep); }
 
         /* Header Guide Box Removed */
 
@@ -245,10 +325,10 @@
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, #FF6F00, #FFD54F);
+            background: linear-gradient(135deg, var(--gold), var(--gold-soft));
             padding: 8px 18px; border-radius: 20px;
-            border: 3px solid #FFF8E1; color: #1E120D; font-weight: 900;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.6);
+            border: 3px solid #FBF8F0; color: var(--ink); font-weight: 900;
+            box-shadow: 0 4px 10px rgba(31,42,26,0.3), inset 0 2px 4px rgba(255,255,255,0.6);
             font-size: 1.5rem; text-align: center;
             text-shadow: 0 1px 1px rgba(255,255,255,0.4);
             transition: transform 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -265,7 +345,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(30, 18, 13, 0.88);
+            background: rgba(31, 42, 26, 0.85);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -284,11 +364,10 @@
             display: inline-flex;
             font-size: 3.2rem;
             font-weight: 900;
-            color: #FFD54F;
-            text-shadow: -2px -2px 0 #1E120D, 2px -2px 0 #1E120D, -2px 2px 0 #1E120D, 2px 2px 0 #1E120D, 0 4px 12px rgba(0,0,0,0.8);
+            color: var(--gold-soft);
+            text-shadow: -2px -2px 0 #2D3A2A, 2px -2px 0 #2D3A2A, -2px 2px 0 #2D3A2A, 2px 2px 0 #2D3A2A, 0 4px 12px rgba(0,0,0,0.5);
             letter-spacing: 0.4rem;
             margin-bottom: 12px;
-            font-family: var(--font-sans);
         }
         .bouncing-text span {
             display: inline-block;
@@ -297,12 +376,12 @@
         @keyframes bounce-letter {
             0%, 100% {
                 transform: translateY(0);
-                color: #FFD54F;
+                color: var(--gold-soft);
             }
             50% {
                 transform: translateY(-24px);
-                color: #FF1744;
-                text-shadow: -2px -2px 0 #1E120D, 2px -2px 0 #1E120D, -2px 2px 0 #1E120D, 2px 2px 0 #1E120D, 0 0 15px rgba(255, 23, 68, 0.8);
+                color: #E8C97A;
+                text-shadow: -2px -2px 0 #2D3A2A, 2px -2px 0 #2D3A2A, -2px 2px 0 #2D3A2A, 2px 2px 0 #2D3A2A, 0 0 15px rgba(232, 201, 122, 0.7);
             }
         }
         .bouncing-text span:nth-child(1) { animation-delay: 0.0s; }
@@ -313,11 +392,11 @@
         .bouncing-text span:nth-child(6) { animation-delay: 0.5s; }
 
         .ready-subtext {
-            color: #FFF8E1;
+            color: #FBF8F0;
             font-size: 1.25rem;
             opacity: 0.9;
             font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
             animation: pulse-ready-text 1.2s infinite alternate;
         }
         @keyframes pulse-ready-text {
@@ -376,7 +455,7 @@
                 padding: 10px 24px;
                 font-size: 1.25rem;
                 border-radius: 16px;
-                box-shadow: 0 4px 0 #2A1B14;
+                box-shadow: 0 4px 0 #33492A;
             }
             .back-btn:active {
                 transform: translateY(4px);
@@ -385,28 +464,32 @@
                 padding: 8px 16px;
                 font-size: 1.1rem;
                 border-radius: 16px;
-                box-shadow: 0 3px 0 #D84315;
+                box-shadow: 0 3px 0 #9A7B3F;
                 margin-top: 10px;
             }
             .bgm-btn:active {
                 transform: translateY(3px);
             }
             .title {
-                font-size: 2.5rem;
-                margin-bottom: 20px;
+                font-size: 1.8rem;
+                margin-bottom: 4px;
             }
             .game-btn {
-                padding: 14px 20px;
-                font-size: 1.6rem;
-                border-radius: 16px;
-                box-shadow: 0 6px 0 #BF360C, 0 10px 15px rgba(0,0,0,0.4);
+                padding: 0 0 8px;
+                font-size: 1.2rem;
+                border-radius: 14px;
+                max-width: 240px;
+                box-shadow: 0 4px 0 var(--sage-deep), 0 6px 10px rgba(63,90,48,0.2);
             }
+            .game-thumb { height: 44px; padding: 5px 12px 2px; font-size: 1.6rem; }
+            .game-btn-body { padding: 2px 12px 0; }
             .game-desc {
-                font-size: 1rem;
-                margin-top: 3px;
+                font-size: 0.75rem;
+                margin-top: 2px;
             }
             .lobby-high-score {
-                font-size: 0.95rem;
+                font-size: 0.7rem;
+                padding: 4px 0;
             }
             .header-guide-box {
                 font-size: 1.05rem;
@@ -424,11 +507,21 @@
 
     <!-- Lobby Screen -->
     <div id="lobby" class="screen active">
-        <a href="/?home=1" class="arcade-exit" data-dasibom-logo></a>
+        <a href="/?home=1" class="arcade-exit" onclick="stopBgm()">← 홈으로</a>
+        <button class="ranking-fab" onclick="openRanking()" aria-label="랭킹 보기">🏆</button>
         <h1 class="title">추억의 오락실</h1>
-        <button class="game-btn" onclick="startGame('blast')">블라스트<br><span class="game-desc">같은 색 블럭 누르기</span><br><span id="lobby-high-blast" class="lobby-high-score">최고 점수: 0</span></button>
-        <button class="game-btn" onclick="startGame('match3')">3매치<br><span class="game-desc">자리 바꿔서 3개 맞추기</span><br><span id="lobby-high-match3" class="lobby-high-score">최고 점수: 0</span></button>
-        <button class="game-btn" onclick="startGame('bubble')">버블슈터<br><span class="game-desc">방울 쏘아올려 맞추기</span><br><span id="lobby-high-bubble" class="lobby-high-score">최고 점수: 0</span></button>
+        <button class="game-btn" onclick="startGame('blast')">
+            <span class="game-thumb">🍓🍋🍏🍇</span>
+            <span class="game-btn-body">블라스트<br><span class="game-desc">같은 색 블럭 누르기</span><br><span id="lobby-high-blast" class="lobby-high-score">최고 점수: 0</span></span>
+        </button>
+        <button class="game-btn" onclick="startGame('match3')">
+            <span class="game-thumb">🍒↔️🍑</span>
+            <span class="game-btn-body">3매치<br><span class="game-desc">자리 바꿔서 3개 맞추기</span><br><span id="lobby-high-match3" class="lobby-high-score">최고 점수: 0</span></span>
+        </button>
+        <button class="game-btn" onclick="startGame('bubble')">
+            <span class="game-thumb">🔫🫧🎈</span>
+            <span class="game-btn-body">버블슈터<br><span class="game-desc">방울 쏘아올려 맞추기</span><br><span id="lobby-high-bubble" class="lobby-high-score">최고 점수: 0</span></span>
+        </button>
         <button class="bgm-btn" id="bgm-toggle-lobby" onclick="toggleBgm()">
             <span id="bgm-icon-lobby">🎵</span>
         </button>
@@ -445,11 +538,11 @@
             <div class="header-row" style="margin-top: 4px; justify-content: center;">
                 <div id="header-guide" class="header-guide-box">게임 설명</div>
             </div>
-            <div id="combo-display" class="combo-box" style="visibility: hidden; text-align: center; font-size: 1rem; color: #FF5722;">0 Combo!</div>
+            <div id="combo-display" class="combo-box" style="visibility: hidden; text-align: center; font-size: 1rem; color: #3F5A30;">0 Combo!</div>
         </div>
         <div class="game-board-container" id="board-container">
-            <div id="ready-overlay" class="ready-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); flex-direction: column; justify-content: center; align-items: center; z-index: 20;">
-                <div id="countdown-timer" class="bouncing-text" style="font-size: 8rem; color: #FFD54F; font-weight: bold; text-shadow: 0 0 20px #000;">3</div>
+            <div id="ready-overlay" class="ready-overlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(31,42,26,0.75); flex-direction: column; justify-content: center; align-items: center; z-index: 20;">
+                <div id="countdown-timer" class="bouncing-text" style="font-size: 8rem; color: #E0C988; font-weight: bold; text-shadow: 0 0 20px #000;">3</div>
                 <div id="countdown-guide" style="color: #FFF; font-size: 1.8rem; margin-top: 20px; text-align: center; font-weight: bold;"></div>
             </div>
 
@@ -470,9 +563,35 @@
         <div class="modal-content">
             <h2>수고하셨습니다!</h2>
             <p style="margin-bottom: 8px;">최종 점수: <span id="final-score"></span>점</p>
-            <p style="margin-bottom: 20px; font-size: 1.6rem; color: #8D6E63;">최고 점수: <span id="popup-high-score"></span>점</p>
-            <div id="new-high-score-badge" style="display: none; color: #D84315; font-size: 1.4rem; margin-bottom: 25px; font-weight: bold; font-family: 'GmarketSans', sans-serif;">🎉 최고 기록 달성!</div>
+            <p style="margin-bottom: 20px; font-size: 1.6rem; color: var(--muted);">최고 점수: <span id="popup-high-score"></span>점</p>
+            <div id="new-high-score-badge" style="display: none; color: var(--sage-deep); font-size: 1.4rem; margin-bottom: 25px; font-weight: bold; font-family: 'Nanum Myeongjo', serif;">🎉 최고 기록 달성!</div>
+            <div id="rk-submit-status" style="font-size:0.85rem;color:var(--muted);margin:-14px 0 20px"></div>
             <button class="modal-btn" onclick="returnToLobby()">확인</button>
+            <button class="rk-hof-link" onclick="returnToLobby();openRanking()">🏆 이번주 랭킹 보러가기</button>
+        </div>
+    </div>
+
+    <!-- 닉네임 입력 모달 -->
+    <div class="rk-overlay" id="nickOverlay">
+        <div class="rk-box nick-box">
+            <div class="rk-title">닉네임을 알려주세요</div>
+            <p style="font-size:0.88rem;color:var(--muted);line-height:1.6">랭킹에 표시될 이름이에요.<br>최대 10자까지 가능해요.</p>
+            <input type="text" id="nickInput" maxlength="10" placeholder="예) 오락실왕할배">
+            <button onclick="submitNickname()">등록하고 랭킹 도전하기</button>
+        </div>
+    </div>
+
+    <!-- 랭킹 / 명예의 전당 모달 -->
+    <div class="rk-overlay" id="rkOverlay">
+        <div class="rk-box">
+            <button class="rk-close" onclick="closeRanking()">✕</button>
+            <div class="rk-title" id="rkTitle">🏆 랭킹</div>
+            <div class="rk-gametabs" id="rkGameTabs"></div>
+            <div class="rk-viewtabs" id="rkViewTabs"></div>
+            <div class="rk-week-nav" id="rkWeekNav" style="display:none"></div>
+            <div class="rk-week-label" id="rkWeekLabel"></div>
+            <div class="rk-list" id="rkList"><div class="rk-empty">불러오는 중…</div></div>
+            <div class="rk-hof-link" id="rkHofToggle" onclick="toggleHallOfFame()">🏛 명예의 전당 (역대 주간 챔피언) 보기</div>
         </div>
     </div>
 
@@ -480,120 +599,27 @@
         // Sound Synthesis
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // BGM Sequencer Setup
-        const chordProgression = [
-            // C Major 9
-            { bass: 130.81, treble: [329.63, 392.00, 587.33] }, // C3, E4, G4, D5
-            // A Minor 7
-            { bass: 110.00, treble: [261.63, 329.63, 392.00] }, // A2, C4, E4, G4
-            // F Major 9
-            { bass: 87.31,  treble: [329.63, 349.23, 392.00] }, // F2, E4, F4, G4
-            // G Major 6
-            { bass: 98.00,  treble: [293.66, 392.00, 440.00] }  // G2, D4, G4, A4
-        ];
-
-        let bgmIntervalId = null;
-        let bgmStep = 0;
+        // BGM (mp3 파일 루프 재생)
+        const bgmAudio = new Audio('/audio/arcade_bgm.mp3');
+        bgmAudio.loop = true;
+        bgmAudio.volume = 0.35;
         let bgmEnabled = false;
-        let activeBgmNodes = [];
-
-        function playBgmNote(freq, type, volume, attack, decay, delay = 0) {
-            if (!bgmEnabled || audioCtx.state === 'closed') return;
-            try {
-                const now = audioCtx.currentTime + delay;
-
-                const osc = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
-                const filter = audioCtx.createBiquadFilter();
-
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, now);
-
-                filter.type = 'lowpass';
-                filter.frequency.setValueAtTime(800, now);
-
-                osc.connect(filter);
-                filter.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                // Gentle envelope
-                gainNode.gain.setValueAtTime(0, now);
-                gainNode.gain.linearRampToValueAtTime(volume, now + attack);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, now + attack + decay);
-
-                osc.start(now);
-                osc.stop(now + attack + decay);
-
-                const nodeInfo = { osc, gainNode };
-                activeBgmNodes.push(nodeInfo);
-                setTimeout(() => {
-                    activeBgmNodes = activeBgmNodes.filter(n => n !== nodeInfo);
-                }, (attack + decay + delay + 0.1) * 1000);
-            } catch (err) {
-                console.error('Error playing BGM note:', err);
-            }
-        }
 
         function startBgm() {
-            if (bgmIntervalId) return;
-            bgmStep = 0;
-            bgmTick();
-            bgmIntervalId = setInterval(bgmTick, 400);
+            bgmAudio.play().catch(err => console.error('BGM 재생 실패:', err));
         }
 
         function stopBgm() {
-            if (bgmIntervalId) {
-                clearInterval(bgmIntervalId);
-                bgmIntervalId = null;
-            }
-            activeBgmNodes.forEach(node => {
-                try {
-                    node.osc.stop();
-                } catch (e) {}
-                try {
-                    node.gainNode.disconnect();
-                } catch (e) {}
-            });
-            activeBgmNodes = [];
+            bgmAudio.pause();
         }
 
-        function bgmTick() {
-            if (!bgmEnabled) return;
-
-            const chordIdx = Math.floor(bgmStep / 8) % chordProgression.length;
-            const stepInChord = bgmStep % 8;
-            const currentChord = chordProgression[chordIdx];
-
-            // 1. Play deep bass note on step 0
-            if (stepInChord === 0) {
-                playBgmNote(currentChord.bass, 'triangle', 0.08, 0.2, 2.5);
-                currentChord.treble.forEach((freq, idx) => {
-                    playBgmNote(freq, 'sine', 0.04, 0.3, 2.0, idx * 0.05);
-                });
-            }
-
-            // 2. Play melody on specific steps
-            const melodyPattern = [0, 2, 4, 6, 7];
-            if (melodyPattern.includes(stepInChord)) {
-                const trebleNotes = currentChord.treble;
-                let note;
-                if (stepInChord === 0) {
-                    note = trebleNotes[0];
-                } else if (stepInChord === 2) {
-                    note = trebleNotes[1];
-                } else if (stepInChord === 4) {
-                    note = trebleNotes[2];
-                } else if (stepInChord === 6) {
-                    note = trebleNotes[1] * 1.5;
-                } else {
-                    note = trebleNotes[0] * 2.0;
-                }
-
-                playBgmNote(note, 'sine', 0.03, 0.08, 0.4);
-            }
-
-            bgmStep++;
-        }
+        // 앱을 벗어나면(다른 탭으로 전환/백그라운드/페이지 이탈) 배경음도 함께 끔
+        document.addEventListener('visibilitychange', function(){
+            if(document.hidden) bgmAudio.pause();
+            else if(bgmEnabled) bgmAudio.play().catch(function(){});
+        });
+        window.addEventListener('pagehide', function(){ bgmAudio.pause(); });
+        window.addEventListener('beforeunload', function(){ bgmAudio.pause(); });
 
         function toggleBgm() {
             if (audioCtx.state === 'suspended') {
@@ -921,6 +947,10 @@
             } else {
                 badge.style.display = 'none';
             }
+
+            const rkStatus = document.getElementById('rk-submit-status');
+            if (rkStatus) rkStatus.textContent = '';
+            submitScore(currentGame, score);
 
             document.getElementById('modal').classList.add('active');
 
@@ -1606,8 +1636,218 @@
             document.getElementById('lobby-high-bubble').innerText = `최고 점수: ${getHighScore('bubble')}`;
         }
 
+        /* ══════════════════════════════════════════════════════════
+           랭킹 / 명예의 전당 (Firestore arcade_scores)
+           ══════════════════════════════════════════════════════════ */
+        const FB_CFG = {
+            apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+            authDomain:"mylife-650f0.firebaseapp.com",
+            projectId:"mylife-650f0",
+            storageBucket:"mylife-650f0.firebasestorage.app",
+            messagingSenderId:"512010655611",
+            appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+        };
+        const GAME_LABELS = { blast:'💊 블라스트', match3:'🍒 3매치', bubble:'🔫 버블슈터' };
+        let _fbReady=false, _auth=null, _db=null, _uid=null;
+        function initFB(){
+            return new Promise(function(res){
+                if(_fbReady){ res(); return; }
+                var srcs=['https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+                          'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+                          'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'];
+                var loaded=0;
+                srcs.forEach(function(src){
+                    var s=document.createElement('script'); s.src=src;
+                    s.onload=function(){
+                        if(++loaded===srcs.length){
+                            try{
+                                if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+                                _auth=firebase.auth(); _db=firebase.firestore();
+                            }catch(e){}
+                            _fbReady=true; res();
+                        }
+                    };
+                    s.onerror=function(){ if(++loaded===srcs.length){ _fbReady=true; res(); } };
+                    document.head.appendChild(s);
+                });
+            });
+        }
+        function ensureAuth(){
+            return new Promise(function(res,rej){
+                if(!_auth){ rej(new Error('firebase 준비 안됨')); return; }
+                if(_auth.currentUser){ _uid=_auth.currentUser.uid; res(_uid); return; }
+                _auth.signInAnonymously().then(function(r){ _uid=r.user.uid; res(_uid); }).catch(rej);
+            });
+        }
+
+        // 월요일 기준 주차 번호(2025-01-06=월요일을 0주차로 고정) + 라벨(예: 6/30~7/6)
+        const WEEK_EPOCH = new Date(2025,0,6).getTime();
+        function weekNumOf(d){ return Math.floor(((d||new Date()).getTime()-WEEK_EPOCH)/(7*86400000)); }
+        function weekLabelOf(weekNum){
+            var start=new Date(WEEK_EPOCH + weekNum*7*86400000);
+            var end=new Date(start.getTime()+6*86400000);
+            function f(d){ return (d.getMonth()+1)+'/'+d.getDate(); }
+            return f(start)+' ~ '+f(end);
+        }
+
+        function getNick(){ try{ return localStorage.getItem('arcade_nick')||''; }catch(e){ return ''; } }
+        function setNick(n){ try{ localStorage.setItem('arcade_nick', n); }catch(e){} }
+
+        let _pendingScoreSubmit=null;
+        function submitScore(game, scoreVal){
+            if(!scoreVal || scoreVal<=0) return;
+            var nick=getNick();
+            // 돌봄 키오스크(공용 태블릿) 구경 모드: 닉네임 입력 없이 자동 표시명
+            if(!nick){
+                try{ if(sessionStorage.getItem('dasibom_kiosk_browse')){ nick='새로 온 손님'; setNick(nick); } }catch(e){}
+            }
+            if(!nick){
+                _pendingScoreSubmit={game:game, score:scoreVal};
+                document.getElementById('nickOverlay').classList.add('active');
+                return;
+            }
+            _doSubmitScore(game, scoreVal, nick);
+        }
+        function submitNickname(){
+            var v=(document.getElementById('nickInput').value||'').trim().slice(0,10);
+            if(!v){ return; }
+            setNick(v);
+            document.getElementById('nickOverlay').classList.remove('active');
+            if(_pendingScoreSubmit){
+                _doSubmitScore(_pendingScoreSubmit.game, _pendingScoreSubmit.score, v);
+                _pendingScoreSubmit=null;
+            }
+        }
+        function _doSubmitScore(game, scoreVal, nick){
+            var statusEl=document.getElementById('rk-submit-status');
+            if(statusEl) statusEl.textContent='랭킹 등록 중…';
+            initFB().then(ensureAuth).then(function(uid){
+                var wk=weekNumOf();
+                var id=wk+'_'+game+'_'+uid;
+                var ref=_db.collection('arcade_scores').doc(id);
+                return ref.get().then(function(snap){
+                    var prev=snap.exists?(snap.data().score||0):0;
+                    if(scoreVal<=prev){ if(statusEl) statusEl.textContent='이번주 내 최고 점수는 '+prev+'점이에요.'; return; }
+                    return ref.set({ weekNum:wk, game:game, uid:uid, name:nick, score:scoreVal, ts:firebase.firestore.FieldValue.serverTimestamp() })
+                        .then(function(){ if(statusEl) statusEl.textContent='🏆 이번주 랭킹에 '+scoreVal+'점으로 등록했어요!'; });
+                });
+            }).catch(function(e){ if(statusEl) statusEl.textContent='랭킹 등록에 실패했어요. 잠시 후 다시 시도해 주세요.'; });
+        }
+
+        /* ── 랭킹 모달 ── */
+        var _rkGame='blast', _rkView='mine', _rkHof=false, _rkHofWeek=null;
+        function openRanking(){
+            document.getElementById('rkOverlay').classList.add('active');
+            _rkHof=false;
+            renderRkTabs();
+            loadRanking();
+        }
+        function closeRanking(){ document.getElementById('rkOverlay').classList.remove('active'); }
+        function renderRkTabs(){
+            var gt=document.getElementById('rkGameTabs');
+            gt.innerHTML=Object.keys(GAME_LABELS).map(function(g){
+                return '<button class="rk-gametab'+(g===_rkGame?' active':'')+'" onclick="setRkGame(\''+g+'\')">'+GAME_LABELS[g]+'</button>';
+            }).join('');
+            var vt=document.getElementById('rkViewTabs');
+            if(_rkHof){ vt.style.display='none'; }
+            else{
+                vt.style.display='flex';
+                vt.innerHTML=
+                    '<button class="rk-viewtab'+(_rkView==='mine'?' active':'')+'" onclick="setRkView(\'mine\')">내 기록</button>'+
+                    '<button class="rk-viewtab'+(_rkView==='all'?' active':'')+'" onclick="setRkView(\'all\')">전체 랭킹</button>';
+            }
+            document.getElementById('rkTitle').textContent = _rkHof ? '🏛 명예의 전당' : '🏆 이번주 랭킹';
+            document.getElementById('rkHofToggle').textContent = _rkHof ? '← 이번주 랭킹으로 돌아가기' : '🏛 명예의 전당 (역대 주간 챔피언) 보기';
+        }
+        function setRkGame(g){ _rkGame=g; renderRkTabs(); loadRanking(); }
+        function setRkView(v){ _rkView=v; renderRkTabs(); loadRanking(); }
+        function toggleHallOfFame(){
+            _rkHof=!_rkHof;
+            renderRkTabs();
+            loadRanking();
+        }
+        function loadRanking(){
+            var listEl=document.getElementById('rkList');
+            var weekLabelEl=document.getElementById('rkWeekLabel');
+            var navEl=document.getElementById('rkWeekNav');
+            listEl.innerHTML='<div class="rk-empty">불러오는 중…</div>';
+
+            if(_rkHof){
+                navEl.style.display='none';
+                weekLabelEl.textContent='매주 1등만 모은 역대 명예의 전당';
+                initFB().then(function(){
+                    return _db.collection('arcade_scores')
+                        .where('game','==',_rkGame).where('weekNum','<',weekNumOf())
+                        .orderBy('weekNum','desc').orderBy('score','desc').limit(300).get();
+                }).then(function(snap){ renderHofChampions(snap, listEl); })
+                .catch(function(){ listEl.innerHTML='<div class="rk-empty">기록을 불러오지 못했어요.</div>'; });
+                return;
+            }
+
+            navEl.style.display='none';
+            weekLabelEl.textContent='이번주 '+weekLabelOf(weekNumOf())+' (매주 월요일 초기화)';
+
+            if(_rkView==='mine'){
+                listEl.innerHTML =
+                    '<div class="rk-item"><div class="rk-rank">📱</div><div class="rk-name">기기 최고 기록(현재)</div><div class="rk-score">'+getHighScore(_rkGame)+'점</div></div>';
+                initFB().then(ensureAuth).then(function(uid){
+                    return _db.collection('arcade_scores').doc(weekNumOf()+'_'+_rkGame+'_'+uid).get();
+                }).then(function(snap){
+                    var mine=snap.exists?snap.data():null;
+                    listEl.innerHTML =
+                        '<div class="rk-item"><div class="rk-rank">📱</div><div class="rk-name">기기 최고 기록(현재)</div><div class="rk-score">'+getHighScore(_rkGame)+'점</div></div>'+
+                        '<div class="rk-item me"><div class="rk-rank">🏆</div><div class="rk-name">이번주 랭킹 등록 점수'+(mine?' ('+esc(mine.name)+')':'')+'</div><div class="rk-score">'+(mine?mine.score:0)+'점</div></div>';
+                }).catch(function(){});
+                return;
+            }
+
+            // 전체 랭킹(이번주)
+            initFB().then(function(){
+                return _db.collection('arcade_scores')
+                    .where('weekNum','==',weekNumOf()).where('game','==',_rkGame)
+                    .orderBy('score','desc').limit(20).get();
+            }).then(function(snap){ renderRkList(snap, listEl); })
+            .catch(function(){ listEl.innerHTML='<div class="rk-empty">아직 랭킹이 없어요. 첫 기록의 주인공이 되어보세요!</div>'; });
+        }
+        function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+        // 주차별 1등만 뽑아 "역대 챔피언 명예의 전당"으로 렌더링 (문서는 weekNum desc, score desc로 이미 정렬돼 있음)
+        function renderHofChampions(snap, listEl){
+            if(snap.empty){ listEl.innerHTML='<div class="rk-empty">아직 지난주 기록이 없어요. 이번주가 지나면 첫 챔피언이 탄생해요!</div>'; return; }
+            var seenWeeks={}; var rows=[];
+            snap.forEach(function(d){
+                var x=d.data();
+                if(seenWeeks[x.weekNum]) return; // 주차당 1등(첫 항목)만 채택
+                seenWeeks[x.weekNum]=true;
+                rows.push('<div class="rk-item"><div class="rk-rank top1">🏆</div><div class="rk-name">'+esc(x.name)+' <span style="color:var(--muted);font-weight:400;font-size:0.78rem">('+weekLabelOf(x.weekNum)+')</span></div><div class="rk-score">'+x.score+'점</div></div>');
+            });
+            listEl.innerHTML = rows.length ? rows.join('') : '<div class="rk-empty">아직 지난주 기록이 없어요. 이번주가 지나면 첫 챔피언이 탄생해요!</div>';
+        }
+        function renderRkList(snap, listEl){
+            if(snap.empty){ listEl.innerHTML='<div class="rk-empty">아직 랭킹이 없어요. 첫 기록의 주인공이 되어보세요!</div>'; return; }
+            var rows=[]; var rank=0;
+            snap.forEach(function(d){
+                rank++;
+                var x=d.data();
+                var isMe = _uid && x.uid===_uid;
+                rows.push('<div class="rk-item'+(isMe?' me':'')+'"><div class="rk-rank'+(rank===1?' top1':'')+'">'+(rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank)+'</div><div class="rk-name">'+esc(x.name)+'</div><div class="rk-score">'+x.score+'점</div></div>');
+            });
+            listEl.innerHTML=rows.join('');
+        }
+
         updateBgmButtons();
         updateLobbyHighScores();
     </script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/bom_voice.js?v=11" defer></script>
+<script src="/bom_tutorial.js?v=3" defer></script>
+<script>window.BOM_TUT={
+  key:'arcade', face:'bom_cheer.png', name:'추억의 오락실',
+  welcome:'{호칭}, 여기는 마음 편히 즐기는 오락실이에요. 시간 제한도, 점수 부담도 없으니 그냥 재미있게 놀다 가세요 🕹️',
+  action:'마음에 드는 게임을 하나 골라 가볍게 눌러봐요.',
+  tour:[
+    {text:'게임 목록에서 마음에 드는 걸 하나 골라요.', sel:'.game-btn'},
+    '지든 이기든 괜찮아요, 언제든 편하게 그만둬도 돼요!'
+  ]
+};</script>
 </body>
 </html>
