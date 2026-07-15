@@ -11,12 +11,31 @@
   --cream:#F5F1E8; --paper:#FBF8F0; --ink:#1A2416; --muted:#5C6152;
   --sage:#4B6B3B; --sage-deep:#33492A; --gold:#C9A961; --line:#E0DAC9;
   --danger:#B23A2E; --warn:#B8860B;
+
+  /* ── 데이터 시각화 토큰 ─────────────────────────────────────────────
+     리포트 실제 배경(--paper #FBF8F0) 기준으로 검증 스크립트를 돌려 확정한 값.
+     눈대중 금지 — 바꿀 땐 dataviz 스킬의 validate_palette.js 재실행할 것.
+       · 마크 단색  #4B6B3B  5.71:1 (충분)
+       · 세이지 5단 램프(달력 히트맵): 밝은 끝 #9CBA86 2.02:1 로 배경과 분리, 단일색상(편차 5°)
+       · 눈금/축은 chrome이라 의도적으로 옅음(1.32:1) — 데이터 마크 아님 */
+  --viz-mark:#4B6B3B;          /* 단일 계열 마크(막대·컬럼) — 값에 따라 색을 바꾸지 않는다 */
+  --viz-mark-strong:#33492A;   /* 강조 1개(이번 달 등) */
+  --viz-1:#9CBA86; --viz-2:#7CA063; --viz-3:#5C8347; --viz-4:#456834; --viz-5:#33492A;
+  --viz-grid:#E7E1D2;          /* hairline 격자(recessive) */
+  --viz-axis:#D6CFBC;
+  --viz-empty:#EFEADD;         /* 값 없음(0) */
+  --up:#2F6B2A; --dn:#9a5a20;
 }
 body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);font-weight:600;-webkit-font-smoothing:antialiased}
-.wrap{max-width:900px;margin:0 auto;padding:26px 20px 80px}
+.wrap{max-width:960px;margin:0 auto;padding:26px 20px 80px}
 header{display:flex;align-items:center;gap:10px;margin-bottom:22px}
 header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
-.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px}
+/* 카드: 두꺼운 테두리 대신 얇은 링 + 옅은 그림자(인쇄에선 테두리로 전환) */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:24px;margin-bottom:20px;
+      box-shadow:0 1px 2px rgba(26,36,22,.04), 0 8px 24px -12px rgba(26,36,22,.14)}
+.sec-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:0 0 14px}
+.sec-h h2{font-size:15px;font-weight:800;color:var(--ink);letter-spacing:-.2px}
+.sec-h .note{font-size:12px;color:var(--muted);font-weight:700}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
 .field{display:flex;flex-direction:column;gap:6px}
 .field label{font-size:13px;font-weight:800;color:var(--muted)}
@@ -35,6 +54,49 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
 .sess{border:2px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px;background:#fff}
 .sess .d{font-size:13px;color:var(--muted);font-weight:800;margin-bottom:6px}
 .sess .sum{font-size:15.5px;line-height:1.6;margin-bottom:8px}
+/* ══ 차트 공통 ══
+   규칙(dataviz): 마크는 얇게, 격자·축은 hairline으로 물러나게, 값 라벨은 선별적으로.
+   외부 라이브러리 없이 인라인 SVG — 인쇄(PDF)에서도 그대로 나옴. */
+.chart{position:relative;margin:6px 0 4px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart .grid line{stroke:var(--viz-grid);stroke-width:1}      /* 실선 hairline — 점선 금지 */
+.chart .axis line{stroke:var(--viz-axis);stroke-width:1}
+.chart .tick{fill:#8b8778;font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums}
+.chart .bar{fill:var(--viz-mark)}
+.chart .bar.is-current{fill:var(--viz-mark-strong)}
+.chart .bar-hit{fill:transparent;cursor:pointer}
+.chart .bar-hit:hover + .bar, .chart .bar-hit:focus + .bar{fill:var(--viz-mark-strong)}
+.chart .val{fill:var(--ink);font-size:11px;font-weight:800}
+/* 툴팁: 값을 여기서만 볼 수 있게 하면 안 됨 → 표 보기와 라벨이 항상 함께 있음 */
+.tip{position:absolute;pointer-events:none;opacity:0;transform:translate(-50%,-118%);transition:opacity .12s;
+     background:var(--ink);color:#fff;font-size:12px;font-weight:700;padding:7px 10px;border-radius:8px;white-space:nowrap;z-index:5;
+     box-shadow:0 6px 18px -6px rgba(0,0,0,.5)}
+.tip.on{opacity:1}
+.tip b{color:#DDE9D2}
+
+/* ── 방문 달력 히트맵 (세이지 5단 램프 — 검증 통과분) ── */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:340px}
+.cal .cd{aspect-ratio:1;border-radius:6px;background:var(--viz-empty);display:flex;align-items:center;justify-content:center;
+         font-size:10.5px;font-weight:700;color:#9b9788;font-variant-numeric:tabular-nums}
+.cal .cd.l1{background:var(--viz-1);color:#2b3a22}
+.cal .cd.l2{background:var(--viz-2);color:#fff}
+.cal .cd.l3{background:var(--viz-3);color:#fff}
+.cal .cd.l4{background:var(--viz-4);color:#fff}
+.cal .cd.l5{background:var(--viz-5);color:#fff}
+.cal .cd.pad{background:transparent}
+.cal-hd{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:340px;margin-bottom:5px}
+.cal-hd span{text-align:center;font-size:10.5px;font-weight:800;color:#8b8778}
+.cal-lg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-weight:700;margin-top:9px}
+.cal-lg i{width:13px;height:13px;border-radius:4px;display:inline-block}
+
+/* ── 표 보기 (색·차트 없이도 모든 값을 읽을 수 있어야 함) ── */
+.tbl-toggle{background:none;border:none;font-size:12px;font-weight:800;color:var(--sage-deep);cursor:pointer;text-decoration:underline;padding:4px 0;font-family:inherit}
+.dtable{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+.dtable th,.dtable td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left}
+.dtable th{font-size:11.5px;color:var(--muted);font-weight:800}
+.dtable td{font-variant-numeric:tabular-nums}
+.dtable td:not(:first-child),.dtable th:not(:first-child){text-align:right}
+
 /* ── 콘텐츠 이용 막대(실측값) ── */
 .usage-h{font-weight:800;margin:16px 0 10px}
 /* 지표 타일 보조 표기 — 단위/증감 */
@@ -42,12 +104,15 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
 .dl{display:inline-block;font-size:11px;font-weight:800;padding:1px 6px;border-radius:50px;margin-left:4px;background:rgba(0,0,0,.06);color:#6b6b6b}
 .dl.up{background:rgba(75,107,59,.16);color:#3F5A30}
 .dl.dn{background:rgba(190,120,60,.16);color:#9a5a20}
-.u-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.u-name{flex:0 0 118px;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.u-bar{flex:1;height:14px;background:rgba(75,107,59,.1);border-radius:50px;overflow:hidden}
-.u-bar span{display:block;height:100%;background:linear-gradient(90deg,#8FAE79,#4B6B3B);border-radius:50px}
-.u-val{flex:0 0 auto;font-size:13.5px;font-weight:800;color:var(--sage-deep);white-space:nowrap}
-.u-val .u-sub{font-weight:600;opacity:.65}
+/* 카드(콘텐츠)는 자연스러운 순서가 없는 항목 → 막대는 '전부 같은 색'.
+   값에 따라 색을 진하게 하면 길이가 이미 보여주는 정보를 색에 중복 인코딩하는 것(안티패턴). */
+.u-row{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.u-name{flex:0 0 116px;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.u-bar{flex:1;height:10px;background:var(--viz-empty);border-radius:5px;overflow:hidden}
+.u-bar span{display:block;height:100%;background:var(--viz-mark);border-radius:5px;transition:width .4s cubic-bezier(.2,.8,.3,1)}
+.u-row:hover .u-bar span{background:var(--viz-mark-strong)}
+.u-val{flex:0 0 auto;font-size:13px;font-weight:800;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.u-val .u-sub{font-weight:600;color:var(--muted)}
 /* ── AI 메모: 측정값과 시각적으로 확실히 분리(이건 추측이 섞일 수 있는 영역) ── */
 .ai-note{border:1px dashed rgba(75,107,59,.35);border-radius:12px;padding:10px 12px;margin:8px 0;background:rgba(75,107,59,.04)}
 .ai-note-h{font-size:12px;font-weight:800;color:#7a7060;margin-bottom:6px}
@@ -65,22 +130,38 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
 .empty{text-align:center;color:var(--muted);padding:40px 16px}
 .footnote{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6;border-top:1px solid var(--line);padding-top:12px}
 
-.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px}
-.stat-tile{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
-.stat-tile .n{font-size:26px;font-weight:800;color:var(--sage-deep)}
-.stat-tile .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+/* ── 스탯 타일: 숫자가 주인공. 왼쪽 정렬(스캔하기 쉬움), 값은 비례숫자 ── */
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:10px;margin-bottom:18px}
+.stat-tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;text-align:left}
+.stat-tile .n{font-size:27px;font-weight:800;color:var(--ink);line-height:1.15;letter-spacing:-.5px}
+.stat-tile .l{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.stat-tile.hero{grid-column:span 2;background:linear-gradient(135deg,#F2F6EC,#fff)}
+.stat-tile.hero .n{font-size:38px;color:var(--sage-deep)}
 .stat-tile.warn .n{color:var(--danger)}
-.watch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:2px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;background:#fff;cursor:pointer}
-.watch-row:hover{border-color:var(--sage)}
+@media(max-width:520px){ .stat-tile.hero{grid-column:span 2} .stat-tile.hero .n{font-size:32px} }
+.watch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:8px;background:#fff;cursor:pointer;transition:border-color .15s,background .15s}
+.watch-row:hover{border-color:var(--sage);background:#fff}
 .watch-row .who{font-weight:800}
 .watch-row .why{font-size:12.5px;color:var(--muted);margin-top:2px}
 .watch-row .go{font-size:13px;color:var(--sage-deep);font-weight:800;white-space:nowrap}
 
 @media print{
+  /* 센터 리포트는 결국 PDF·종이로 나감 — 차트 색이 빠지면 막대·달력이 전부 백지가 됨 */
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff}
   .no-print{display:none!important}
-  .card{border:none;padding:0;box-shadow:none}
-  .sess{break-inside:avoid}
+  .card{border:none;padding:0;box-shadow:none;background:#fff}
+  .sess,.chart,.cal,.stat-grid,.dtable{break-inside:avoid}
+  .stat-tile{border:1px solid #ccc}
+  .stat-tile.hero{background:#fff}
+  .tip{display:none}
+  .tbl-toggle{display:none}
+  .dtable{display:table!important}   /* 인쇄본엔 표를 항상 함께 — 색 없이도 값이 남도록 */
+}
+/* 고대비/강제색 모드: 색만으로 구분되지 않도록 테두리를 살림 */
+@media (forced-colors: active){
+  .cal .cd{border:1px solid CanvasText}
+  .u-bar span,.chart .bar{forced-color-adjust:none}
 }
 </style>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -106,8 +187,17 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
   <div class="card no-print" id="overviewCard" style="display:none">
     <div class="rp-head"><div class="who" id="ovTitle">이번 달 센터 현황</div><div class="meta" id="ovMeta"></div></div>
     <div class="stat-grid" id="ovStats"></div>
-    <div id="ovWatchWrap">
-      <div style="font-weight:800;margin-bottom:8px" id="ovWatchTitle">👀 요즘 안 오시는 어르신</div>
+
+    <div class="sec-h" style="margin-top:22px">
+      <h2>최근 6개월 활동 추이</h2>
+      <span class="note">대화 + 콘텐츠 이용 시간</span>
+    </div>
+    <div class="chart" id="ovTrend"></div>
+    <button class="tbl-toggle" data-tbl="ovTrendTable">표로 보기</button>
+    <div id="ovTrendTable" style="display:none"></div>
+
+    <div id="ovWatchWrap" style="margin-top:22px">
+      <div class="sec-h"><h2 id="ovWatchTitle">👀 요즘 안 오시는 어르신</h2></div>
       <div id="ovWatchList"></div>
     </div>
   </div>
@@ -134,10 +224,22 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
       <div class="who" id="rpWho"></div>
       <div class="meta" id="rpMeta"></div>
     </div>
-    <!-- ① 측정값 요약  ② 콘텐츠 이용  ③ 대화 기록(+AI 메모) -->
+    <!-- ① 측정값 요약  ② 방문 달력  ③ 콘텐츠 이용  ④ 대화 기록(+AI 메모) -->
     <div id="rpFacts"></div>
+
+    <div id="rpCalWrap" style="display:none">
+      <div class="sec-h" style="margin-top:20px">
+        <h2>방문 달력</h2>
+        <span class="note">색이 진할수록 오래 계신 날</span>
+      </div>
+      <div id="rpCal"></div>
+    </div>
+
     <div id="rpUsage"></div>
-    <div class="usage-h" style="margin-top:18px">💬 대화 기록</div>
+    <button class="tbl-toggle no-print" data-tbl="rpUsageTable">표로 보기</button>
+    <div id="rpUsageTable" style="display:none"></div>
+
+    <div class="sec-h" style="margin-top:20px"><h2>💬 대화 기록</h2></div>
     <div id="sessList"></div>
     <!-- ★2026-07-15: 감정점수·인지 관찰 지표는 생성 자체를 중단했으므로 문구도 사실에 맞게 교체.
          남은 AI 산출물은 '대화 메모(요약·언급된 말)' 뿐이고, 그건 본문에서 점선 박스로 분리 표시됨. -->
@@ -205,6 +307,15 @@ document.getElementById('btnLogin').onclick=function(){
 };
 function show(id){ ['loginCard','pickCard'].forEach(function(s){ document.getElementById(s).style.display = s===id?'block':'none'; }); if(id==='loginCard') document.getElementById('overviewCard').style.display='none'; }
 
+/* 표 보기 — 차트의 값을 색·마우스 없이도 읽을 수 있는 통로(툴팁이 유일한 통로가 되면 안 됨) */
+document.addEventListener('click', function(e){
+  var b=e.target.closest && e.target.closest('.tbl-toggle'); if(!b) return;
+  var t=document.getElementById(b.dataset.tbl); if(!t) return;
+  var open=t.style.display!=='none';
+  t.style.display=open?'none':'block';
+  b.textContent=open?'표로 보기':'표 닫기';
+});
+
 function enter(){
   show('pickCard');
   document.getElementById('overviewCard').style.display='block';
@@ -228,12 +339,16 @@ function loadOverview(seniorArr){
     var now=new Date(), y=now.getFullYear(), mo=now.getMonth()+1;
     // 이번 달 + 지난달을 함께 모음 — '지난달 대비' 증감(성장 지표)을 내기 위함
     var prev=new Date(y, mo-2, 1), py=prev.getFullYear(), pmo=prev.getMonth()+1;
-    var cur=[], prv=[];
+    var cur=[], prv=[], byMonth={};                        // byMonth: 최근 6개월 추이용
     snap.forEach(function(d){
       var s=d.data();
       var t = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate() : null;
       if(!t || !countableSession(s)) return;              // ★종료 여부가 아니라 '대화가 있었나'로 판정
       var o=Object.assign({id:d.id,_date:t}, s);
+      var key=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0');
+      if(!byMonth[key]) byMonth[key]={sec:0, people:{}};
+      byMonth[key].sec += sessionSeconds(o);
+      if(o.seniorId) byMonth[key].people[o.seniorId]=1;
       if(t.getFullYear()===y && (t.getMonth()+1)===mo) cur.push(o);
       else if(t.getFullYear()===py && (t.getMonth()+1)===pmo) prv.push(o);
     });
@@ -245,10 +360,13 @@ function loadOverview(seniorArr){
       var uCur=[], uPrev=[];
       usnap.forEach(function(d){
         var u=d.data(), m=String(u.day||'').slice(0,7);
+        if(!byMonth[m]) byMonth[m]={sec:0, people:{}};
+        byMonth[m].sec += (u.seconds||0);                  // 추이 = 대화 + 콘텐츠 (실제 활동량)
+        if(u.seniorId) byMonth[m].people[u.seniorId]=1;
         if(m===ymCur) uCur.push(u); else if(m===ymPrev) uPrev.push(u);
       });
-      renderOverview(seniorArr, cur, prv, uCur, uPrev);
-    }).catch(function(){ renderOverview(seniorArr, cur, prv, [], []); });
+      renderOverview(seniorArr, cur, prv, uCur, uPrev, byMonth);
+    }).catch(function(){ renderOverview(seniorArr, cur, prv, [], [], byMonth); });
   }).catch(function(e){ console.error('현황 불러오기 실패', e); });
 }
 
@@ -319,7 +437,7 @@ function delta(cur, prev){
   return '<span class="dl '+(p>0?'up':'dn')+'">지난달 대비 '+(p>0?'+':'')+p+'%</span>';
 }
 
-function renderOverview(seniorArr, sessions, prevSessions, usage, prevUsage){
+function renderOverview(seniorArr, sessions, prevSessions, usage, prevUsage, byMonth){
   document.getElementById('ovMeta').textContent = (new Date()).getFullYear()+'년 '+((new Date()).getMonth()+1)+'월 기준';
 
   var A=aggMonth(sessions, usage||[]), P=aggMonth(prevSessions||[], prevUsage||[]);
@@ -327,15 +445,33 @@ function renderOverview(seniorArr, sessions, prevSessions, usage, prevUsage){
   var perPerson = A.people ? A.seconds/A.people : 0;
 
   /* ★센터·공단에 보여줄 '활동 실적' — 전부 측정값.
-     총 활동시간 = 대화 시간 + 콘텐츠 이용 시간(방치 제외분). 대화만 세면 실제 활동을 과소평가함. */
+     총 활동시간 = 대화 시간 + 콘텐츠 이용 시간(방치 제외분). 대화만 세면 실제 활동을 과소평가함.
+     '총 활동 시간'은 이 리포트가 이끄는 숫자라 hero 타일로(차트 아님 — 숫자 하나가 곧 답). */
   var stats=document.getElementById('ovStats');
   stats.innerHTML =
-    '<div class="stat-tile"><div class="n">'+fmtMin(A.seconds)+'</div><div class="l">총 활동 시간 '+delta(A.seconds,P.seconds)+'</div></div>'
-   +'<div class="stat-tile"><div class="n">'+A.people+'<span class="n-sub">/'+seniorArr.length+'</span></div><div class="l">이용 어르신 (참여율 '+rate+'%)</div></div>'
+    '<div class="stat-tile hero"><div class="n">'+fmtMin(A.seconds)+'</div><div class="l">이번 달 총 활동 시간 '+delta(A.seconds,P.seconds)+'</div></div>'
+   +'<div class="stat-tile"><div class="n">'+A.people+'<span class="n-sub">/'+seniorArr.length+'</span></div><div class="l">이용 어르신 · 참여율 '+rate+'%</div></div>'
    +'<div class="stat-tile"><div class="n">'+fmtMin(perPerson)+'</div><div class="l">1인당 평균 활동</div></div>'
    +'<div class="stat-tile"><div class="n">'+A.visitDays+'</div><div class="l">방문 연인원(명·일) '+delta(A.visitDays,P.visitDays)+'</div></div>'
    +'<div class="stat-tile"><div class="n">'+A.sessions+'</div><div class="l">대화 횟수 '+delta(A.sessions,P.sessions)+'</div></div>'
    +'<div class="stat-tile"><div class="n">'+A.chars.toLocaleString()+'<span class="n-sub">자</span></div><div class="l">어르신 말씀량 '+delta(A.chars,P.chars)+'</div></div>';
+
+  /* ── 최근 6개월 활동 추이 (단일 계열 컬럼 · 이번 달 강조) ── */
+  var now=new Date(), rows=[];
+  for(var i=5;i>=0;i--){
+    var d=new Date(now.getFullYear(), now.getMonth()-i, 1);
+    var key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+    var m=byMonth&&byMonth[key] ? byMonth[key] : {sec:0, people:{}};
+    var np=Object.keys(m.people).length;
+    rows.push({ label:(d.getMonth()+1)+'월', value:Math.round(m.sec), sub:'이용 어르신 '+np+'명',
+                isCurrent:i===0, _people:np, _key:key });
+  }
+  columnChart(document.getElementById('ovTrend'), rows, function(v){ return fmtMin(v); });
+  // 표 보기(색·마우스 없이도 값이 읽혀야 함)
+  document.getElementById('ovTrendTable').innerHTML =
+    '<table class="dtable"><thead><tr><th>월</th><th>총 활동 시간</th><th>이용 어르신</th></tr></thead><tbody>'
+    + rows.map(function(r){ return '<tr><td>'+r.label+'</td><td>'+fmtMin(r.value)+'</td><td>'+r._people+'명</td></tr>'; }).join('')
+    + '</tbody></table>';
 
   // ── 요즘 안 오시는 분 (팩트: 마지막 방문일 경과) ──
   var lastBy={};
@@ -408,16 +544,117 @@ function loadReport(seniorId, ym){
 
 function fmtDate(d){ return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0'); }
 
+/* ════ 차트 (인라인 SVG · 외부 라이브러리 없음 · 인쇄에서도 그대로) ════
+   dataviz 규칙 요약:
+     · 단일 계열이므로 범례 없음(제목이 계열명을 말함)
+     · 값 라벨은 '선별적으로'만(최댓값·이번 달) — 모든 막대에 숫자를 붙이면 읽히지 않음
+     · 툴팁은 보조 수단. 모든 값은 '표 보기'에도 있어야 함(색·마우스 없이도 읽힘)
+     · 격자·축은 hairline 실선(점선 금지), 마크는 얇게, 데이터 끝만 4px 라운드 */
+function svgEl(tag, attrs){
+  var e=document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for(var k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+// 위쪽만 둥근 막대(바닥은 baseline에 붙임)
+function barPath(x,y,w,h,r){
+  r=Math.min(r, w/2, h);
+  if(h<=0.5) return '';
+  return 'M'+x+','+(y+h)+' V'+(y+r)+' Q'+x+','+y+' '+(x+r)+','+y+
+         ' H'+(x+w-r)+' Q'+(x+w)+','+y+' '+(x+w)+','+(y+r)+' V'+(y+h)+' Z';
+}
+/* rows: [{label, value, sub, isCurrent}] · fmtV: 값 → 표시문자열 */
+function columnChart(host, rows, fmtV){
+  host.innerHTML='';
+  if(!rows.length){ host.innerHTML='<div class="empty" style="padding:14px">표시할 기간이 없어요.</div>'; return; }
+  var W=640, H=190, padT=22, padB=26, padX=6;
+  var plotH=H-padT-padB;
+  var max=Math.max.apply(null, rows.map(function(r){ return r.value; })); if(max<=0) max=1;
+  var band=(W-padX*2)/rows.length;
+  var bw=Math.min(44, band*0.52);
+
+  var svg=svgEl('svg',{viewBox:'0 0 '+W+' '+H, role:'img', 'aria-label':'월별 추이'});
+  // 격자 3줄(0/중간/최대) — 물러나 있게
+  var g=svgEl('g',{class:'grid'});
+  [0,0.5,1].forEach(function(t){
+    var y=padT+plotH*(1-t);
+    g.appendChild(svgEl('line',{x1:padX,y1:y,x2:W-padX,y2:y}));
+  });
+  svg.appendChild(g);
+
+  var maxIdx=rows.reduce(function(bi,r,i){ return r.value>rows[bi].value?i:bi; },0);
+  rows.forEach(function(r,i){
+    var x=padX+band*i+(band-bw)/2;
+    var h=Math.max(r.value>0?2:0, plotH*(r.value/max));
+    var y=padT+plotH-h;
+    // 넓은 히트영역(마크보다 크게) — 손가락·마우스 모두
+    var hit=svgEl('rect',{x:padX+band*i, y:padT, width:band, height:plotH, class:'bar-hit', tabindex:'0',
+                          'aria-label':r.label+' '+fmtV(r.value)});
+    var p=svgEl('path',{d:barPath(x,y,bw,h,4), class:'bar'+(r.isCurrent?' is-current':'')});
+    svg.appendChild(hit); svg.appendChild(p);
+    // 라벨은 선별적으로: 최댓값과 이번 달만
+    if(i===maxIdx || r.isCurrent){
+      var t=svgEl('text',{x:x+bw/2, y:y-6, 'text-anchor':'middle', class:'val'});
+      t.textContent=fmtV(r.value); svg.appendChild(t);
+    }
+    var lb=svgEl('text',{x:padX+band*i+band/2, y:H-8, 'text-anchor':'middle', class:'tick'});
+    lb.textContent=r.label; svg.appendChild(lb);
+
+    function showTip(){
+      tip.innerHTML='<b>'+esc(r.label)+'</b> · '+esc(fmtV(r.value))+(r.sub?('<br>'+esc(r.sub)):'');
+      tip.classList.add('on');
+      var hostRect=host.getBoundingClientRect();
+      tip.style.left=((padX+band*i+band/2)/W*hostRect.width)+'px';
+      tip.style.top=((y/H)*hostRect.height)+'px';
+    }
+    hit.addEventListener('mouseenter', showTip);
+    hit.addEventListener('focus', showTip);
+    hit.addEventListener('mouseleave', function(){ tip.classList.remove('on'); });
+    hit.addEventListener('blur', function(){ tip.classList.remove('on'); });
+  });
+  // 바닥 축
+  var ax=svgEl('g',{class:'axis'});
+  ax.appendChild(svgEl('line',{x1:padX,y1:padT+plotH,x2:W-padX,y2:padT+plotH}));
+  svg.appendChild(ax);
+
+  host.appendChild(svg);
+  var tip=document.createElement('div'); tip.className='tip'; host.appendChild(tip);
+}
+
+/* 방문 달력 — 그날 활동량을 5단계 명암으로. 값 없는 날은 빈 칸(옅은 회색). */
+function calendarHeatmap(host, ym, secByDay){
+  var p=ym.split('-'), y=+p[0], mo=+p[1];
+  var first=new Date(y, mo-1, 1), lead=first.getDay(), dim=new Date(y, mo, 0).getDate();
+  var vals=Object.keys(secByDay).map(function(k){ return secByDay[k]; });
+  var max=vals.length?Math.max.apply(null, vals):0;
+  function lvl(s){
+    if(!s) return 0;
+    if(!max) return 1;
+    var r=s/max;
+    return r>0.8?5 : r>0.6?4 : r>0.35?3 : r>0.15?2 : 1;
+  }
+  var html='<div class="cal-hd">'+['일','월','화','수','목','금','토'].map(function(d){ return '<span>'+d+'</span>'; }).join('')+'</div>'
+          +'<div class="cal">';
+  for(var i=0;i<lead;i++) html+='<div class="cd pad"></div>';
+  for(var d=1;d<=dim;d++){
+    var key=y+'-'+String(mo).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    var s=secByDay[key]||0, L=lvl(s);
+    html+='<div class="cd'+(L?' l'+L:'')+'" title="'+key+' — '+(s?fmtMin(s):'이용 없음')+'">'+d+'</div>';
+  }
+  html+='</div><div class="cal-lg">적음 <i style="background:var(--viz-empty)"></i><i style="background:var(--viz-1)"></i><i style="background:var(--viz-2)"></i><i style="background:var(--viz-3)"></i><i style="background:var(--viz-4)"></i><i style="background:var(--viz-5)"></i> 많음'
+       +(max?('<span style="margin-left:8px">· 가장 오래 계신 날 '+fmtMin(max)+'</span>'):'')+'</div>';
+  host.innerHTML=html;
+}
+
 /* ── 콘텐츠 이용(care_usage) — dasibom-kiosk-usage.js가 태블릿에서 실측한 값 ──
    카드별 체류시간·진입횟수. 화면이 보이는 상태 + 최근 60초 내 조작이 있을 때만 적립된 시간이라
    '켜두고 방치한 시간'은 빠져 있음. 추측 없음. */
-function loadUsage(seniorId, ym, dialogSec){
+function loadUsage(seniorId, ym, dialogSec, dialogByDay){
   var el=document.getElementById('rpUsage');
   el.innerHTML='<div class="kw">이용 기록 불러오는 중…</div>';
   var q=_db.collection('care_usage').where('seniorId','==',seniorId);
   if(!CTX.isMaster) q=q.where('centerId','==',CTX.orgId||'__none__');
   q.get().then(function(snap){
-    var agg={}, totalSec=0, dayset={};
+    var agg={}, totalSec=0, dayset={}, byDay=Object.assign({}, dialogByDay||{});
     snap.forEach(function(d){
       var u=d.data();
       if(String(u.day||'').slice(0,7)!==ym) return;      // 해당 월만
@@ -425,7 +662,15 @@ function loadUsage(seniorId, ym, dialogSec){
       if(!agg[c]) agg[c]={sec:0,visits:0};
       agg[c].sec += (u.seconds||0); agg[c].visits += (u.visits||0);
       totalSec += (u.seconds||0); dayset[u.day]=1;
+      byDay[u.day]=(byDay[u.day]||0)+(u.seconds||0);
     });
+
+    // 방문 달력 — 그날 활동량(대화+콘텐츠)
+    var calWrap=document.getElementById('rpCalWrap');
+    if(Object.keys(byDay).length){
+      calWrap.style.display='block';
+      calendarHeatmap(document.getElementById('rpCal'), ym, byDay);
+    } else calWrap.style.display='none';
     // ★총 활동 시간 = 대화 + 콘텐츠 (센터·공단에 보여줄 실제 활동량)
     var combined=(dialogSec||0)+totalSec;
     var tot=document.getElementById('rpTotalAct');
@@ -435,20 +680,26 @@ function loadUsage(seniorId, ym, dialogSec){
 
     var cards=Object.keys(agg).sort(function(a,b){ return agg[b].sec-agg[a].sec; });
     if(!cards.length){
-      el.innerHTML='<div class="usage-h">🧩 콘텐츠 이용</div>'
+      el.innerHTML='<div class="sec-h" style="margin-top:20px"><h2>🧩 콘텐츠 이용</h2></div>'
         +'<div class="empty" style="padding:14px">이 기간엔 대화 외 콘텐츠 이용 기록이 없어요.</div>';
+      document.getElementById('rpUsageTable').innerHTML='';
       return;
     }
     var max=agg[cards[0]].sec||1;
-    el.innerHTML='<div class="usage-h">🧩 콘텐츠 이용 — 총 '+fmtMin(totalSec)+' · '+cards.length+'종 · '+Object.keys(dayset).length+'일</div>'
+    el.innerHTML='<div class="sec-h" style="margin-top:20px"><h2>🧩 콘텐츠 이용</h2>'
+        +'<span class="note">총 '+fmtMin(totalSec)+' · '+cards.length+'종 · '+Object.keys(dayset).length+'일</span></div>'
       + cards.map(function(c){
-          var pct=Math.max(4, Math.round(agg[c].sec/max*100));
+          var pct=Math.max(3, Math.round(agg[c].sec/max*100));
           return '<div class="u-row">'
             +'<div class="u-name">'+esc(c)+'</div>'
             +'<div class="u-bar"><span style="width:'+pct+'%"></span></div>'
-            +'<div class="u-val">'+fmtMin(agg[c].sec)+' <span class="u-sub">('+agg[c].visits+'회)</span></div>'
+            +'<div class="u-val">'+fmtMin(agg[c].sec)+' <span class="u-sub">'+agg[c].visits+'회</span></div>'
             +'</div>';
         }).join('');
+    document.getElementById('rpUsageTable').innerHTML=
+      '<table class="dtable"><thead><tr><th>콘텐츠</th><th>이용 시간</th><th>이용 횟수</th></tr></thead><tbody>'
+      + cards.map(function(c){ return '<tr><td>'+esc(c)+'</td><td>'+fmtMin(agg[c].sec)+'</td><td>'+agg[c].visits+'회</td></tr>'; }).join('')
+      + '</tbody></table>';
   }).catch(function(e){
     el.innerHTML='<div class="kw">이용 기록 불러오기 실패: '+esc(e.code||e.message)+'</div>';
   });
@@ -479,8 +730,8 @@ function renderReport(seniorId, ym, arr){
 
   document.getElementById('rpFacts').innerHTML = !arr.length ? '' :
      '<div class="stat-grid">'
-    +'<div class="stat-tile"><div class="n" id="rpTotalAct">'+fmtMin(totalSec)+'</div><div class="l">총 활동 시간</div></div>'
-    +'<div class="stat-tile"><div class="n">'+Object.keys(days).length+'<span class="n-sub">일</span></div><div class="l">방문 일수 (최다 '+best+'일 연속)</div></div>'
+    +'<div class="stat-tile hero"><div class="n" id="rpTotalAct">'+fmtMin(totalSec)+'</div><div class="l">총 활동 시간</div></div>'
+    +'<div class="stat-tile"><div class="n">'+Object.keys(days).length+'<span class="n-sub">일</span></div><div class="l">방문 일수 · 최다 '+best+'일 연속</div></div>'
     +'<div class="stat-tile"><div class="n">'+arr.length+'</div><div class="l">대화 횟수</div></div>'
     +'<div class="stat-tile"><div class="n">'+turnAgg.chars.toLocaleString()+'<span class="n-sub">자</span></div><div class="l">말씀량 ('+turnAgg.count+'회)</div></div>'
     +'</div>'
@@ -490,9 +741,15 @@ function renderReport(seniorId, ym, arr){
       +(last?(' · 마지막 방문 '+fmtDate(last)+(sinceDays===0?' (오늘)':' ('+sinceDays+'일 전)')):'')
     +'</div>';
 
-  /* ── ② 콘텐츠 이용(care_usage — 실제 측정된 체류시간) ──
-     콘텐츠 시간이 도착하면 위 '총 활동 시간'을 대화+콘텐츠 합으로 갱신 */
-  loadUsage(seniorId, ym, totalSec);
+  /* ── ② 방문 달력 + ③ 콘텐츠 이용(care_usage — 실제 측정된 체류시간) ──
+     콘텐츠 시간이 도착하면 위 '총 활동 시간'을 대화+콘텐츠 합으로 갱신하고 달력도 함께 그림
+     (달력의 하루 = 그날 대화 시간 + 콘텐츠 이용 시간) */
+  var dialogByDay={};
+  arr.forEach(function(s){
+    var k=s._date.getFullYear()+'-'+String(s._date.getMonth()+1).padStart(2,'0')+'-'+String(s._date.getDate()).padStart(2,'0');
+    dialogByDay[k]=(dialogByDay[k]||0)+sessionSeconds(s);
+  });
+  loadUsage(seniorId, ym, totalSec, dialogByDay);
 
   /* ── ③ 대화 기록 — 요약은 '측정값'이 아니라 AI가 정리한 메모임을 명확히 표시 ── */
   var list=document.getElementById('sessList');
