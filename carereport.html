@@ -145,9 +145,46 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
 .watch-row .why{font-size:12.5px;color:var(--muted);margin-top:2px}
 .watch-row .go{font-size:13px;color:var(--sage-deep);font-weight:800;white-space:nowrap}
 
+/* ── 제출용 문서: 입력 폼 ── */
+.doc-form .df-row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px}
+.doc-form .field{flex:1;min-width:150px}
+.btn-mini{background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 12px;font-size:12.5px;font-weight:800;
+          color:var(--sage-deep);cursor:pointer;font-family:inherit}
+.staff-row{display:flex;gap:8px;align-items:center;margin-bottom:7px}
+.staff-row input{flex:1;min-height:40px;padding:0 10px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px}
+.staff-row .del{background:none;border:none;color:var(--danger);font-weight:800;cursor:pointer;font-size:16px;padding:0 6px}
+
+/* ── 제출용 문서: 본문 (공문서 관례에 맞춘 격식 — 공식 서식을 사칭하지는 않음) ── */
+.gov-doc{background:#fff;color:#000;font-family:'Pretendard','Malgun Gothic',sans-serif;font-weight:500;
+         padding:14mm 12mm;max-width:210mm;margin:0 auto}
+.gov-doc .gd-title{text-align:center;font-size:21px;font-weight:800;letter-spacing:6px;padding-bottom:12px;
+                   border-bottom:3px double #000;margin-bottom:4px}
+.gov-doc .gd-sub{text-align:center;font-size:12px;color:#333;margin-bottom:16px}
+.gov-doc h3{font-size:14px;font-weight:800;margin:16px 0 7px;padding-left:4px;border-left:4px solid #000}
+.gov-doc table{width:100%;border-collapse:collapse;font-size:11.5px}
+.gov-doc th,.gov-doc td{border:1px solid #444;padding:6px 8px;text-align:center;vertical-align:middle}
+.gov-doc th{background:#EDEDE8;font-weight:800}
+.gov-doc td.l{text-align:left}
+.gov-doc td.num{text-align:right;font-variant-numeric:tabular-nums}
+.gov-doc .gd-note{font-size:10.5px;color:#444;margin-top:6px;line-height:1.6}
+.gov-doc .gd-sign{margin-top:22px;text-align:center;font-size:12.5px;line-height:2.1}
+.gov-doc .gd-sign .date{margin-bottom:10px;letter-spacing:1px}
+.gov-doc .gd-sign .who{display:inline-block;text-align:left;min-width:270px}
+.gov-doc .gd-sign .who b{display:inline-block;min-width:76px}
+.gov-doc .gd-foot{margin-top:18px;padding-top:8px;border-top:1px solid #999;font-size:10px;color:#555;text-align:center}
+.gov-doc .gd-stamp{display:inline-block;border:1px solid #999;border-radius:50%;width:52px;height:52px;line-height:52px;
+                   text-align:center;font-size:9.5px;color:#999;margin-left:10px;vertical-align:middle}
+
 @media print{
   /* 센터 리포트는 결국 PDF·종이로 나감 — 차트 색이 빠지면 막대·달력이 전부 백지가 됨 */
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* 제출용 문서 인쇄 모드: 문서만 남기고 화면 UI는 전부 숨김 */
+  body.doc-print .wrap > *{display:none!important}
+  body.doc-print #docOut{display:block!important}
+  body.doc-print .gov-doc{padding:0}
+  body.doc-print .gov-doc table{break-inside:auto}
+  body.doc-print .gov-doc tr{break-inside:avoid}
+  @page{size:A4 portrait;margin:14mm 12mm}
   body{background:#fff}
   .no-print{display:none!important}
   .card{border:none;padding:0;box-shadow:none;background:#fff}
@@ -216,6 +253,36 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
     </div>
     <div class="hint">이 리포트의 숫자는 실제 이용 기록에서 계산한 값입니다. 어르신의 건강·기분·인지 상태를 평가하지 않습니다.</div>
   </div>
+
+  <!-- ═══ 지자체 제출용 실적 보고서 ═══
+       공식 서식(서식 제N호)을 사칭하지 않는다. 센터가 '우리 서비스 이용 실적'을 첨부·보고할 때
+       쓰는 자기 문서이고, 다만 공문서 관례(총괄표 → 대상자별 명세 → 인력 현황 → 확인란)에 맞춰
+       격식을 갖춘 것. 기관·작성자·인력은 우리가 알 수 없는 값이라 센터가 직접 입력(기기에 저장). -->
+  <div class="card no-print" id="docCard" style="display:none">
+    <div class="sec-h"><h2>📄 지자체 제출용 실적 보고서</h2><span class="note">A4 인쇄 · PDF 저장</span></div>
+    <div class="doc-form">
+      <div class="df-row">
+        <div class="field"><label>기관명</label><input type="text" id="dfOrg" placeholder="예: 노원구 상계동 ○○노인복지센터"></div>
+        <div class="field"><label>사업명</label><input type="text" id="dfBiz" placeholder="예: AI 말동무 돌봄 시범사업"></div>
+      </div>
+      <div class="df-row">
+        <div class="field"><label>작성자 직위</label><input type="text" id="dfPos" placeholder="예: 사회복지사"></div>
+        <div class="field"><label>작성자 성명</label><input type="text" id="dfName" placeholder="예: 홍길동"></div>
+        <div class="field"><label>기관장 성명</label><input type="text" id="dfHead" placeholder="예: 김관장"></div>
+      </div>
+      <div class="sec-h" style="margin:16px 0 8px"><h2 style="font-size:13.5px">인력 현황</h2>
+        <span class="note">이용 기록과 달리 시스템이 알 수 없는 값이라 직접 입력합니다</span></div>
+      <div id="dfStaff"></div>
+      <button class="btn-mini" id="dfAddStaff" type="button">+ 인력 추가</button>
+      <div class="df-row" style="margin-top:16px">
+        <button class="btn btn-primary" id="btnMakeDoc">보고서 만들기</button>
+        <span class="hint" id="dfSaved"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인쇄 전용 문서 본문 -->
+  <div id="docOut" style="display:none"></div>
 
   <div class="warn-banner no-print" id="warnBanner">⚠️ 아직 복지사 확인이 안 된 항목이 있어요. 확인 후 인쇄하시는 걸 권장해요.</div>
 
@@ -307,6 +374,15 @@ document.getElementById('btnLogin').onclick=function(){
 };
 function show(id){ ['loginCard','pickCard'].forEach(function(s){ document.getElementById(s).style.display = s===id?'block':'none'; }); if(id==='loginCard') document.getElementById('overviewCard').style.display='none'; }
 
+/* 제출용 보고서 — 버튼 연결 */
+document.getElementById('btnMakeDoc').onclick=buildDoc;
+document.getElementById('dfAddStaff').onclick=function(){
+  var rows=collectStaff(); rows.push({role:'',n:''}); renderStaffRows(rows);
+};
+['dfOrg','dfBiz','dfPos','dfName','dfHead'].forEach(function(id){
+  var el=document.getElementById(id); if(el) el.addEventListener('change', saveDocMeta);
+});
+
 /* 표 보기 — 차트의 값을 색·마우스 없이도 읽을 수 있는 통로(툴팁이 유일한 통로가 되면 안 됨) */
 document.addEventListener('click', function(e){
   var b=e.target.closest && e.target.closest('.tbl-toggle'); if(!b) return;
@@ -319,6 +395,7 @@ document.addEventListener('click', function(e){
 function enter(){
   show('pickCard');
   document.getElementById('overviewCard').style.display='block';
+  loadDocMeta();   // 기관·작성자·인력은 센터가 입력한 값을 기기에 보관 → 매달 다시 안 적게
   var m=new Date(); document.getElementById('monthSel').value = m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0');
   var q=_db.collection('seniors');
   q = CTX.isMaster ? q : q.where('centerId','==',CTX.orgId||'__none__');
@@ -439,6 +516,11 @@ function delta(cur, prev){
 
 function renderOverview(seniorArr, sessions, prevSessions, usage, prevUsage, byMonth){
   document.getElementById('ovMeta').textContent = (new Date()).getFullYear()+'년 '+((new Date()).getMonth()+1)+'월 기준';
+  // 제출용 문서가 '전체 대상자 명세'를 뽑을 수 있도록 이번 달 원본을 보관
+  var _n=new Date();
+  window._OV={ seniorArr:seniorArr, sessions:sessions, usage:usage||[],
+               ym:_n.getFullYear()+'-'+String(_n.getMonth()+1).padStart(2,'0') };
+  document.getElementById('docCard').style.display='block';
 
   var A=aggMonth(sessions, usage||[]), P=aggMonth(prevSessions||[], prevUsage||[]);
   var rate = seniorArr.length ? Math.round(A.people/seniorArr.length*100) : 0;
@@ -543,6 +625,146 @@ function loadReport(seniorId, ym){
 }
 
 function fmtDate(d){ return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0'); }
+
+/* ════════ 지자체 제출용 실적 보고서 ════════
+   ★중요(경계선): 이건 센터가 자기 서비스 이용 실적을 정리해 '첨부'하는 자체 문서다.
+     공식 서식(서식 제N호)을 사칭하지 않는다 — 서식 번호·부처 로고·승인 문구를 넣지 말 것.
+     격식만 공문서 관례를 따름: 총괄표 → 대상자별 명세 → 인력 현황 → 작성자·기관장 확인란.
+   ※ 조사 결과(2026 노인맞춤돌봄서비스 사업안내 215p): 지자체 제출용 '실적보고 서식'은 없고
+     실적은 노인맞춤돌봄시스템에 입력하는 구조. 그래서 이 문서는 '증빙 첨부물' 위치.
+   ※ 기관명·작성자·인력은 시스템이 알 수 없는 값이라 센터가 입력(기기 localStorage에 보관). */
+var DOC_KEY='dasibom_doc_meta_';
+function docKey(){ return DOC_KEY + (CTX.orgId||'master'); }
+function loadDocMeta(){
+  var m={}; try{ m=JSON.parse(localStorage.getItem(docKey())||'{}'); }catch(e){}
+  ['dfOrg','dfBiz','dfPos','dfName','dfHead'].forEach(function(id){
+    var el=document.getElementById(id); if(el && m[id]) el.value=m[id];
+  });
+  renderStaffRows(m.staff||[{role:'',n:''}]);
+}
+function saveDocMeta(){
+  var m={};
+  ['dfOrg','dfBiz','dfPos','dfName','dfHead'].forEach(function(id){ m[id]=(document.getElementById(id)||{}).value||''; });
+  m.staff=collectStaff();
+  try{ localStorage.setItem(docKey(), JSON.stringify(m)); }catch(e){}
+  var s=document.getElementById('dfSaved'); if(s){ s.textContent='저장됨'; setTimeout(function(){ s.textContent=''; },1500); }
+}
+function renderStaffRows(rows){
+  var w=document.getElementById('dfStaff'); if(!w) return;
+  w.innerHTML = rows.map(function(r){
+    return '<div class="staff-row">'
+      +'<input type="text" class="s-role" placeholder="직종 (예: 사회복지사)" value="'+esc(r.role||'')+'">'
+      +'<input type="number" class="s-n" min="0" placeholder="인원" value="'+esc(r.n||'')+'" style="max-width:96px">'
+      +'<button type="button" class="del" title="삭제">×</button></div>';
+  }).join('');
+  w.querySelectorAll('.del').forEach(function(b){
+    b.onclick=function(){ var rows=collectStaff(); var i=[].indexOf.call(w.querySelectorAll('.del'), b);
+      rows.splice(i,1); renderStaffRows(rows.length?rows:[{role:'',n:''}]); saveDocMeta(); };
+  });
+  w.querySelectorAll('input').forEach(function(i){ i.addEventListener('change', saveDocMeta); });
+}
+function collectStaff(){
+  var w=document.getElementById('dfStaff'); if(!w) return [];
+  return [].map.call(w.querySelectorAll('.staff-row'), function(r){
+    return { role:(r.querySelector('.s-role')||{}).value||'', n:(r.querySelector('.s-n')||{}).value||'' };
+  });
+}
+
+function buildDoc(){
+  var O=window._OV; if(!O){ alert('현황을 먼저 불러와 주세요.'); return; }
+  saveDocMeta();
+  var ym=O.ym, p=ym.split('-'), y=+p[0], mo=+p[1];
+  var meta={}; ['dfOrg','dfBiz','dfPos','dfName','dfHead'].forEach(function(id){ meta[id]=(document.getElementById(id)||{}).value||''; });
+
+  // 대상자별 집계 — 전부 실측값
+  var per={};
+  O.seniorArr.forEach(function(s){ per[s.id]={ s:s, days:{}, sess:0, dialog:0, content:0, chars:0, cards:{} }; });
+  O.sessions.forEach(function(x){
+    var r=per[x.seniorId]; if(!r) return;
+    r.sess++; r.dialog+=sessionSeconds(x);
+    r.days[fmtDate(x._date)]=1; r.chars+=seniorTurnStats(x).chars;
+  });
+  (O.usage||[]).forEach(function(u){
+    var r=per[u.seniorId]; if(!r) return;
+    r.content+=(u.seconds||0); r.days[u.day]=1;
+    if(u.card) r.cards[u.card]=(r.cards[u.card]||0)+(u.seconds||0);
+  });
+  var rows=Object.keys(per).map(function(k){ return per[k]; })
+            .sort(function(a,b){ return (b.dialog+b.content)-(a.dialog+a.content); });
+  var used=rows.filter(function(r){ return (r.dialog+r.content)>0 || r.sess>0; });
+
+  var T={ sess:0, dialog:0, content:0, chars:0, days:0 };
+  rows.forEach(function(r){ T.sess+=r.sess; T.dialog+=r.dialog; T.content+=r.content; T.chars+=r.chars; T.days+=Object.keys(r.days).length; });
+  var rate = O.seniorArr.length ? Math.round(used.length/O.seniorArr.length*100) : 0;
+
+  function topCard(r){
+    var ks=Object.keys(r.cards).sort(function(a,b){ return r.cards[b]-r.cards[a]; });
+    return ks.length ? ks[0]+' ('+fmtMin(r.cards[ks[0]])+')' : '-';
+  }
+  var staff=collectStaff().filter(function(s){ return s.role && s.n; });
+  var staffTotal=staff.reduce(function(a,s){ return a+(+s.n||0); },0);
+  var today=new Date();
+
+  var html='<div class="gov-doc">'
+    +'<div class="gd-title">이용 실적 보고서</div>'
+    +'<div class="gd-sub">'+esc(meta.dfBiz||'AI 말동무 돌봄 서비스')+' · '+y+'년 '+mo+'월</div>'
+
+    +'<h3>1. 사업 개요</h3>'
+    +'<table><tbody>'
+      +'<tr><th style="width:22%">기 관 명</th><td class="l">'+esc(meta.dfOrg||'-')+'</td><th style="width:16%">보고 기간</th><td class="l">'+y+'. '+String(mo).padStart(2,'0')+'. 01 ~ '+y+'. '+String(mo).padStart(2,'0')+'. '+new Date(y,mo,0).getDate()+'</td></tr>'
+      +'<tr><th>사 업 명</th><td class="l">'+esc(meta.dfBiz||'-')+'</td><th>서비스 내용</th><td class="l">AI 말동무 대화 및 인지·여가 콘텐츠 제공</td></tr>'
+    +'</tbody></table>'
+
+    +'<h3>2. 총괄 실적</h3>'
+    +'<table><tbody>'
+      +'<tr><th>등록 대상자</th><td class="num">'+O.seniorArr.length+' 명</td><th>이용 대상자</th><td class="num">'+used.length+' 명</td><th>참여율</th><td class="num">'+rate+' %</td></tr>'
+      +'<tr><th>총 활동 시간</th><td class="num">'+fmtMin(T.dialog+T.content)+'</td><th>· 대화</th><td class="num">'+fmtMin(T.dialog)+'</td><th>· 콘텐츠</th><td class="num">'+fmtMin(T.content)+'</td></tr>'
+      +'<tr><th>대화 횟수</th><td class="num">'+T.sess+' 회</td><th>방문 연인원</th><td class="num">'+T.days+' 명·일</td><th>1인 평균 활동</th><td class="num">'+fmtMin(used.length?(T.dialog+T.content)/used.length:0)+'</td></tr>'
+    +'</tbody></table>'
+
+    +'<h3>3. 대상자별 이용 실적</h3>'
+    +'<table><thead><tr>'
+      +'<th style="width:7%">연번</th><th style="width:14%">성명</th><th style="width:8%">성별</th><th style="width:11%">출생연도</th>'
+      +'<th style="width:11%">방문일수</th><th style="width:10%">대화횟수</th><th style="width:13%">대화시간</th><th style="width:13%">콘텐츠시간</th><th>주 이용 콘텐츠</th>'
+    +'</tr></thead><tbody>'
+    + (rows.length ? rows.map(function(r,i){
+        return '<tr><td>'+(i+1)+'</td><td>'+esc(r.s.name||'-')+'</td><td>'+esc(r.s.gender||'-')+'</td><td>'+(r.s.birthYear||'-')+'</td>'
+          +'<td class="num">'+Object.keys(r.days).length+'</td><td class="num">'+r.sess+'</td>'
+          +'<td class="num">'+fmtMin(r.dialog)+'</td><td class="num">'+fmtMin(r.content)+'</td><td class="l">'+esc(topCard(r))+'</td></tr>';
+      }).join('') : '<tr><td colspan="9">해당 기간 등록된 대상자가 없습니다.</td></tr>')
+    + (rows.length ? '<tr><th colspan="4">합 계</th><th>'+T.days+'</th><th>'+T.sess+'</th><th>'+fmtMin(T.dialog)+'</th><th>'+fmtMin(T.content)+'</th><th>-</th></tr>' : '')
+    +'</tbody></table>'
+
+    +'<h3>4. 인력 현황</h3>'
+    + (staff.length
+        ? '<table><thead><tr><th style="width:12%">연번</th><th>직 종</th><th style="width:22%">인원(명)</th></tr></thead><tbody>'
+          + staff.map(function(s,i){ return '<tr><td>'+(i+1)+'</td><td class="l">'+esc(s.role)+'</td><td class="num">'+esc(s.n)+'</td></tr>'; }).join('')
+          + '<tr><th colspan="2">합 계</th><th>'+staffTotal+'</th></tr></tbody></table>'
+        : '<table><tbody><tr><td class="l" style="padding:14px;color:#666">인력 현황이 입력되지 않았습니다. (보고서 만들기 화면에서 직종·인원을 입력해 주세요)</td></tr></tbody></table>')
+
+    +'<h3>5. 비고</h3>'
+    +'<table><tbody><tr><td class="l" style="height:52px;vertical-align:top">'
+      +'· 상기 실적은 서비스 이용 기록에서 산출한 측정값입니다.<br>'
+      +'· 활동 시간은 화면 조작이 있었던 시간만 집계하며, 기기를 켜둔 채 이용하지 않은 시간은 제외합니다.'
+    +'</td></tr></tbody></table>'
+
+    +'<div class="gd-note">※ 본 보고서는 어르신의 건강·기분·인지 상태에 대한 평가나 의학적 진단을 포함하지 않습니다.'
+      +' 서비스 이용 사실과 이용량만을 기재합니다.</div>'
+
+    +'<div class="gd-sign">'
+      +'<div class="date">'+today.getFullYear()+'년 '+(today.getMonth()+1)+'월 '+today.getDate()+'일</div>'
+      +'<div class="who"><b>작성자</b> '+esc(meta.dfPos||'')+' '+esc(meta.dfName||'')+' <span style="color:#999">(서명)</span></div><br>'
+      +'<div class="who"><b>확인</b> '+esc(meta.dfOrg||'')+' 기관장 '+esc(meta.dfHead||'')+' <span class="gd-stamp">(직인)</span></div>'
+    +'</div>'
+    +'<div class="gd-foot">'+esc(meta.dfOrg||'')+' · '+esc(meta.dfBiz||'')+' 이용 실적 보고서 · '+y+'.'+String(mo).padStart(2,'0')+'</div>'
+    +'</div>';
+
+  var out=document.getElementById('docOut');
+  out.innerHTML=html; out.style.display='block';
+  document.body.classList.add('doc-print');
+  window.print();
+  setTimeout(function(){ document.body.classList.remove('doc-print'); out.style.display='none'; }, 500);
+}
 
 /* ════ 차트 (인라인 SVG · 외부 라이브러리 없음 · 인쇄에서도 그대로) ════
    dataviz 규칙 요약:
