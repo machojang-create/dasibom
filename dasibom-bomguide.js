@@ -151,9 +151,34 @@
   }
   function dismiss() { var g = cfg(); if (g) markSeen(g.key); stopVoice(); clearSpot(); collapse(); }
 
+  // ── 파일럿 홈 버튼 표준화 (2026-07-14) ────────────────────────────────
+  // 카드 헤더 규칙(왼쪽=홈으로)은 네이티브가 dasibom-header.js로 맞춤. 파일럿은 React 빌드라
+  // 소스를 다시 빌드해야 해서, 실측상 이미 '왼쪽 홈으로'인 건 그대로 두고 어긋난 것만 여기서 교정:
+  //   · 터치 높이 40px → 44px (어르신 손가락 기준. dream/gag/maeum이 미달이었음)
+  //   · 문구 '←홈으로'(gag) → '← 홈으로' 로 통일
+  // React가 다시 그리면 지워질 수 있어 잠시 반복 적용.
+  function normalizeHome() {
+    var els = document.querySelectorAll('a,button');
+    for (var i = 0; i < els.length; i++) {
+      var e = els[i], t = (e.textContent || '').trim();
+      if (/^←\s*홈(으로)?$/.test(t)) {
+        if (t !== '← 홈으로') e.textContent = '← 홈으로';
+        var s = e.style;
+        s.minHeight = '44px'; s.display = 'inline-flex'; s.alignItems = 'center';
+        return true;
+      }
+    }
+    return false;
+  }
+  function watchHome() {
+    var n = 0;
+    var iv = setInterval(function () { normalizeHome(); if (++n > 20) clearInterval(iv); }, 500); // 10초간
+  }
+
   function start() {
     var g = cfg(); if (!g || !g.key) return;
     ensure(); ensureVoice();
+    watchHome();
     if (!seen(g.key)) prefetch((g.name ? g.name + '. ' : '') + g.welcome); // 환영 대사 미리 받아두기(음성-텍스트 최대한 함께)
     if (seen(g.key)) collapse(); else setTimeout(openWelcome, 900);
   }
