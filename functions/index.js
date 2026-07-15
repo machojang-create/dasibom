@@ -1200,13 +1200,7 @@ exports.createCenterAccount = functions.region('asia-northeast3').https.onCall(a
   return { ok: true, uid: r.uid, email: r.email, orgId: r.orgId };
 });
 
-// 임시 시드(테스트 001 계정 생성용) — 토큰 가드. 테스트 후 삭제 예정.
-exports.seedTestCenter = functions.region('asia-northeast3').https.onRequest(async (req, res) => {
-  if ((req.query.token || '') !== 'dasibom-seed-9f3a') { res.status(403).send('forbidden'); return; }
-  try {
-    const centerId = String(req.query.id || '001').toLowerCase();
-    const pw = String(req.query.pw || '001');
-    const r = await upsertCenterAccount(centerId, pw, '테스트센터(' + centerId + ')');
-    res.json({ ok: true, uid: r.uid, email: r.email, orgId: r.orgId });
-  } catch (e) { res.status(500).json({ error: e.message }); }
-});
+/* seedTestCenter(임시 시드) 삭제됨 — 2026-07-15.
+   001 테스트 계정을 만들려고 급히 붙였던 HTTP 엔드포인트. 토큰이 코드에 박혀 깃에 올라가는
+   구조라, URL+토큰만 알면 누구나 센터 계정을 만들 수 있었음(배포본도 functions:delete로 제거).
+   ★센터 계정 발급은 createCenterAccount(master 전용 onCall)로만 할 것. 다시 만들지 말 것. */
