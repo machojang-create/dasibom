@@ -37,6 +37,11 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
 .sess .sum{font-size:15.5px;line-height:1.6;margin-bottom:8px}
 /* ── 콘텐츠 이용 막대(실측값) ── */
 .usage-h{font-weight:800;margin:16px 0 10px}
+/* 지표 타일 보조 표기 — 단위/증감 */
+.stat-tile .n-sub{font-size:.55em;font-weight:700;opacity:.6;margin-left:1px}
+.dl{display:inline-block;font-size:11px;font-weight:800;padding:1px 6px;border-radius:50px;margin-left:4px;background:rgba(0,0,0,.06);color:#6b6b6b}
+.dl.up{background:rgba(75,107,59,.16);color:#3F5A30}
+.dl.dn{background:rgba(190,120,60,.16);color:#9a5a20}
 .u-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .u-name{flex:0 0 118px;font-size:14.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .u-bar{flex:1;height:14px;background:rgba(75,107,59,.1);border-radius:50px;overflow:hidden}
@@ -221,15 +226,29 @@ function loadOverview(seniorArr){
   if(!CTX.isMaster) q=q.where('centerId','==',CTX.orgId||'__none__');
   q.get().then(function(snap){
     var now=new Date(), y=now.getFullYear(), mo=now.getMonth()+1;
-    var monthSessions=[];
+    // 이번 달 + 지난달을 함께 모음 — '지난달 대비' 증감(성장 지표)을 내기 위함
+    var prev=new Date(y, mo-2, 1), py=prev.getFullYear(), pmo=prev.getMonth()+1;
+    var cur=[], prv=[];
     snap.forEach(function(d){
       var s=d.data();
       var t = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate() : null;
-      if(t && t.getFullYear()===y && (t.getMonth()+1)===mo && s.status==='ended'){
-        monthSessions.push(Object.assign({id:d.id,_date:t}, s));
-      }
+      if(!t || !countableSession(s)) return;              // ★종료 여부가 아니라 '대화가 있었나'로 판정
+      var o=Object.assign({id:d.id,_date:t}, s);
+      if(t.getFullYear()===y && (t.getMonth()+1)===mo) cur.push(o);
+      else if(t.getFullYear()===py && (t.getMonth()+1)===pmo) prv.push(o);
     });
-    renderOverview(seniorArr, monthSessions);
+    // 콘텐츠 이용(care_usage)도 함께 — '총 이용 시간'은 대화+콘텐츠 합이라야 실제 활동량이 됨
+    var uq=_db.collection('care_usage');
+    if(!CTX.isMaster) uq=uq.where('centerId','==',CTX.orgId||'__none__');
+    uq.get().then(function(usnap){
+      var ymCur=y+'-'+String(mo).padStart(2,'0'), ymPrev=py+'-'+String(pmo).padStart(2,'0');
+      var uCur=[], uPrev=[];
+      usnap.forEach(function(d){
+        var u=d.data(), m=String(u.day||'').slice(0,7);
+        if(m===ymCur) uCur.push(u); else if(m===ymPrev) uPrev.push(u);
+      });
+      renderOverview(seniorArr, cur, prv, uCur, uPrev);
+    }).catch(function(){ renderOverview(seniorArr, cur, prv, [], []); });
   }).catch(function(e){ console.error('현황 불러오기 실패', e); });
 }
 
@@ -241,11 +260,33 @@ function loadOverview(seniorArr){
      · 총 대화 시간 = startedAt~endedAt 합
      · '요즘 안 오시는 분' = 마지막 방문일로부터 경과일(팩트) — 센터가 실제로 원하는 안부 신호 */
 function fmtMin(sec){ var m=Math.round((sec||0)/60); return m>=60 ? (Math.floor(m/60)+'시간 '+(m%60)+'분') : (m+'분'); }
+
+/* ★대화 시간 계산 (2026-07-15 보정)
+   문제였던 것: endedAt이 있어야만 시간을 셌는데, 어르신이 '대화 종료'를 안 누르고 그냥
+   자리를 뜨면 endedAt이 안 찍혀 20분 대화해도 0분으로 기록됐음(실적 과소집계).
+   보정: endedAt이 없으면 '마지막 발화 시각'까지를 대화 시간으로 봄.
+        — 추측이 아니라 '그 시각에 말씀하신 기록이 실제로 있다'는 팩트에 근거. */
 function sessionSeconds(s){
-  var a = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate().getTime() : 0;
-  var b = s.endedAt && s.endedAt.toDate ? s.endedAt.toDate().getTime() : 0;
-  if(!a || !b || b<=a) return 0;
-  return Math.min((b-a)/1000, 4*3600);   // 4시간 넘는 건 종료 안 하고 방치된 값 → 제외
+  // 발화가 오간 간격만 더함. 15분 넘게 말이 없던 구간은 '대화한 시간'으로 치지 않음.
+  //   · 종료를 안 누른 대화도 제대로 잡힘(예전엔 0분)
+  //   · 태블릿을 켜둔 채 몇 시간 방치돼도 부풀지 않음(단순히 시작~끝을 빼면 9시간이 4시간 대화로 둔갑했었음)
+  //   → 공단·센터가 근거를 물어도 "발화 기록 사이 간격의 합"이라고 답할 수 있는 값.
+  var turns = (Array.isArray(s.turns)?s.turns:[]).filter(function(t){ return t && t.ts; })
+                .sort(function(a,b){ return a.ts-b.ts; });
+  if(!turns.length) return 0;
+  var start = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate().getTime() : turns[0].ts;
+  var GAP_CAP = 15*60000;
+  var total=0, prev=start;
+  turns.forEach(function(t){ total += Math.min(Math.max(t.ts-prev, 0), GAP_CAP); prev=t.ts; });
+  var end = s.endedAt && s.endedAt.toDate ? s.endedAt.toDate().getTime() : 0;
+  if(end>prev) total += Math.min(end-prev, GAP_CAP);   // 마지막 발화~종료도 최대 15분까지만
+  return total/1000;
+}
+/* 리포트에 셀 대화인가 — '종료 눌렀는지'가 아니라 '실제로 대화가 있었는지'로 판정.
+   예전엔 status==='ended'만 세서, 종료를 안 누른 대화가 통째로 사라졌음. */
+function countableSession(s){
+  if(s.status==='ended') return true;
+  return Array.isArray(s.turns) && s.turns.some(function(t){ return t.role==='senior'; });
 }
 function seniorTurnStats(s){
   var t = Array.isArray(s.turns) ? s.turns.filter(function(x){ return x.role==='senior'; }) : [];
@@ -253,20 +294,48 @@ function seniorTurnStats(s){
   return { count:t.length, chars:chars };
 }
 
-function renderOverview(seniorArr, sessions){
+/* 이용 어르신 수 / 총 활동시간(대화+콘텐츠) / 방문 연인원 — 한 달치 집계 */
+function aggMonth(sessions, usage){
+  var ids={}, days={}, sec=0, chars=0, cards={};
+  sessions.forEach(function(s){
+    if(s.seniorId) ids[s.seniorId]=1;
+    sec += sessionSeconds(s);
+    days[s.seniorId+'|'+fmtDate(s._date)]=1;
+    chars += seniorTurnStats(s).chars;
+  });
+  usage.forEach(function(u){
+    if(u.seniorId) ids[u.seniorId]=1;
+    sec += (u.seconds||0);
+    days[u.seniorId+'|'+(u.day||'')]=1;
+    if(u.card) cards[u.card]=1;
+  });
+  return { people:Object.keys(ids).length, seconds:sec, visitDays:Object.keys(days).length,
+           chars:chars, sessions:sessions.length, cardKinds:Object.keys(cards).length };
+}
+function delta(cur, prev){
+  if(!prev) return cur>0 ? '<span class="dl up">신규</span>' : '';
+  var p=Math.round((cur-prev)/prev*100);
+  if(p===0) return '<span class="dl">지난달과 같음</span>';
+  return '<span class="dl '+(p>0?'up':'dn')+'">지난달 대비 '+(p>0?'+':'')+p+'%</span>';
+}
+
+function renderOverview(seniorArr, sessions, prevSessions, usage, prevUsage){
   document.getElementById('ovMeta').textContent = (new Date()).getFullYear()+'년 '+((new Date()).getMonth()+1)+'월 기준';
 
-  var reviewed=sessions.filter(function(s){ return s.extraction && s.extraction.reviewed; }).length;
-  var usedIds={}; sessions.forEach(function(s){ if(s.seniorId) usedIds[s.seniorId]=1; });
-  var usedCount=Object.keys(usedIds).length;
-  var totalSec=sessions.reduce(function(a,s){ return a+sessionSeconds(s); },0);
+  var A=aggMonth(sessions, usage||[]), P=aggMonth(prevSessions||[], prevUsage||[]);
+  var rate = seniorArr.length ? Math.round(A.people/seniorArr.length*100) : 0;
+  var perPerson = A.people ? A.seconds/A.people : 0;
 
+  /* ★센터·공단에 보여줄 '활동 실적' — 전부 측정값.
+     총 활동시간 = 대화 시간 + 콘텐츠 이용 시간(방치 제외분). 대화만 세면 실제 활동을 과소평가함. */
   var stats=document.getElementById('ovStats');
   stats.innerHTML =
-    '<div class="stat-tile"><div class="n">'+seniorArr.length+'</div><div class="l">등록 어르신</div></div>'
-   +'<div class="stat-tile"><div class="n">'+usedCount+'</div><div class="l">이번 달 이용 어르신</div></div>'
-   +'<div class="stat-tile"><div class="n">'+sessions.length+'</div><div class="l">이번 달 대화</div></div>'
-   +'<div class="stat-tile"><div class="n">'+fmtMin(totalSec)+'</div><div class="l">총 대화 시간</div></div>';
+    '<div class="stat-tile"><div class="n">'+fmtMin(A.seconds)+'</div><div class="l">총 활동 시간 '+delta(A.seconds,P.seconds)+'</div></div>'
+   +'<div class="stat-tile"><div class="n">'+A.people+'<span class="n-sub">/'+seniorArr.length+'</span></div><div class="l">이용 어르신 (참여율 '+rate+'%)</div></div>'
+   +'<div class="stat-tile"><div class="n">'+fmtMin(perPerson)+'</div><div class="l">1인당 평균 활동</div></div>'
+   +'<div class="stat-tile"><div class="n">'+A.visitDays+'</div><div class="l">방문 연인원(명·일) '+delta(A.visitDays,P.visitDays)+'</div></div>'
+   +'<div class="stat-tile"><div class="n">'+A.sessions+'</div><div class="l">대화 횟수 '+delta(A.sessions,P.sessions)+'</div></div>'
+   +'<div class="stat-tile"><div class="n">'+A.chars.toLocaleString()+'<span class="n-sub">자</span></div><div class="l">어르신 말씀량 '+delta(A.chars,P.chars)+'</div></div>';
 
   // ── 요즘 안 오시는 분 (팩트: 마지막 방문일 경과) ──
   var lastBy={};
@@ -325,7 +394,8 @@ function loadReport(seniorId, ym){
     snap.forEach(function(d){
       var s=d.data();
       var t = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate() : null;
-      if(t && t.getFullYear()===y && (t.getMonth()+1)===mo && s.status==='ended'){
+      // ★'종료 눌렀는지'가 아니라 '실제 대화가 있었는지'로 — 종료 안 누른 대화도 실적에 포함
+      if(t && t.getFullYear()===y && (t.getMonth()+1)===mo && countableSession(s)){
         arr.push(Object.assign({id:d.id, _date:t}, s));
       }
     });
@@ -341,7 +411,7 @@ function fmtDate(d){ return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(
 /* ── 콘텐츠 이용(care_usage) — dasibom-kiosk-usage.js가 태블릿에서 실측한 값 ──
    카드별 체류시간·진입횟수. 화면이 보이는 상태 + 최근 60초 내 조작이 있을 때만 적립된 시간이라
    '켜두고 방치한 시간'은 빠져 있음. 추측 없음. */
-function loadUsage(seniorId, ym){
+function loadUsage(seniorId, ym, dialogSec){
   var el=document.getElementById('rpUsage');
   el.innerHTML='<div class="kw">이용 기록 불러오는 중…</div>';
   var q=_db.collection('care_usage').where('seniorId','==',seniorId);
@@ -356,6 +426,13 @@ function loadUsage(seniorId, ym){
       agg[c].sec += (u.seconds||0); agg[c].visits += (u.visits||0);
       totalSec += (u.seconds||0); dayset[u.day]=1;
     });
+    // ★총 활동 시간 = 대화 + 콘텐츠 (센터·공단에 보여줄 실제 활동량)
+    var combined=(dialogSec||0)+totalSec;
+    var tot=document.getElementById('rpTotalAct');
+    if(tot) tot.textContent=fmtMin(combined);
+    var sub=document.getElementById('rpFactSub');
+    if(sub) sub.innerHTML = '대화 '+fmtMin(dialogSec||0)+' + 콘텐츠 '+fmtMin(totalSec)+' = 총 '+fmtMin(combined)+' · '+sub.innerHTML.split(' · ').slice(1).join(' · ');
+
     var cards=Object.keys(agg).sort(function(a,b){ return agg[b].sec-agg[a].sec; });
     if(!cards.length){
       el.innerHTML='<div class="usage-h">🧩 콘텐츠 이용</div>'
@@ -390,20 +467,32 @@ function renderReport(seniorId, ym, arr){
   var today=new Date(); today.setHours(0,0,0,0);
   var sinceDays = last ? Math.floor((today-new Date(last.getFullYear(),last.getMonth(),last.getDate()))/86400000) : null;
 
+  // 최다 연속 방문일(꾸준함 — 팩트)
+  var dayKeys=Object.keys(days).sort();
+  var streak=0, best=0, prevD=null;
+  dayKeys.forEach(function(k){
+    var p=k.split('.'), d=new Date(+p[0], +p[1]-1, +p[2]);
+    streak = (prevD && (d-prevD)===86400000) ? streak+1 : 1;
+    if(streak>best) best=streak;
+    prevD=d;
+  });
+
   document.getElementById('rpFacts').innerHTML = !arr.length ? '' :
      '<div class="stat-grid">'
+    +'<div class="stat-tile"><div class="n" id="rpTotalAct">'+fmtMin(totalSec)+'</div><div class="l">총 활동 시간</div></div>'
+    +'<div class="stat-tile"><div class="n">'+Object.keys(days).length+'<span class="n-sub">일</span></div><div class="l">방문 일수 (최다 '+best+'일 연속)</div></div>'
     +'<div class="stat-tile"><div class="n">'+arr.length+'</div><div class="l">대화 횟수</div></div>'
-    +'<div class="stat-tile"><div class="n">'+Object.keys(days).length+'</div><div class="l">방문 일수</div></div>'
-    +'<div class="stat-tile"><div class="n">'+fmtMin(totalSec)+'</div><div class="l">총 대화 시간</div></div>'
-    +'<div class="stat-tile"><div class="n">'+turnAgg.count+'</div><div class="l">어르신 말씀 횟수</div></div>'
+    +'<div class="stat-tile"><div class="n">'+turnAgg.chars.toLocaleString()+'<span class="n-sub">자</span></div><div class="l">말씀량 ('+turnAgg.count+'회)</div></div>'
     +'</div>'
-    +'<div class="kw" style="margin-top:10px">'
-      +'평균 대화 '+fmtMin(arr.length?totalSec/arr.length:0)+' · 말씀 1회당 평균 '+(turnAgg.count?Math.round(turnAgg.chars/turnAgg.count):0)+'자'
+    +'<div class="kw" style="margin-top:10px" id="rpFactSub">'
+      +'대화 '+fmtMin(totalSec)+' · 회당 평균 '+fmtMin(arr.length?totalSec/arr.length:0)
+      +' · 말씀 1회당 평균 '+(turnAgg.count?Math.round(turnAgg.chars/turnAgg.count):0)+'자'
       +(last?(' · 마지막 방문 '+fmtDate(last)+(sinceDays===0?' (오늘)':' ('+sinceDays+'일 전)')):'')
     +'</div>';
 
-  /* ── ② 콘텐츠 이용(care_usage — 실제 측정된 체류시간) ── */
-  loadUsage(seniorId, ym);
+  /* ── ② 콘텐츠 이용(care_usage — 실제 측정된 체류시간) ──
+     콘텐츠 시간이 도착하면 위 '총 활동 시간'을 대화+콘텐츠 합으로 갱신 */
+  loadUsage(seniorId, ym, totalSec);
 
   /* ── ③ 대화 기록 — 요약은 '측정값'이 아니라 AI가 정리한 메모임을 명확히 표시 ── */
   var list=document.getElementById('sessList');
