@@ -4,9 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>건강 돋보기 — 다시봄</title>
-<script src="a11y.js?v=3" defer></script>
-<script src="attend.js?v=3" defer></script>
-<script src="/logo.js"></script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/attend.js?v=3" defer></script>
+<script src="/bom_voice.js?v=9" defer></script>
+<script src="/bom_tutorial.js?v=3" defer></script>
+<script>window.BOM_TUT={
+  key:'health', face:'bom_think.png', name:'건강돋보기',
+  welcome:'{호칭}, 여기서는 드시는 영양제나 약의 성분을 큰 글씨로 쉽게 살펴봐요. 무엇에 좋은지, 같이 드셔도 괜찮은지 제가 곁에서 알려드릴게요.',
+  action:'궁금한 영양제나 성분을 눌러보면 자세히 알려드려요.',
+  tour:[
+    {text:'궁금한 영양제나 성분을 하나 눌러 자세히 살펴봐요.', sel:'#ingGrid'},
+    '큰 글씨로 어떤 성분인지 편하게 읽어요.',
+    '같이 드셔도 되는지, 봄이가 중복도 짚어드려요.'
+  ]
+};</script>
+<script src="/dasibom-header.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;overflow-x:hidden}
@@ -45,8 +57,8 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .modal-bg.open{display:flex}
 .modal{background:#F6FBF9;border-radius:28px 28px 0 0;width:100%;max-width:600px;max-height:88vh;overflow-y:auto;padding:28px 20px 40px;position:relative}
 .modal-handle{width:44px;height:5px;background:#D0DDD8;border-radius:50px;margin:0 auto 20px}
-.modal-icon{font-size:36px;margin-bottom:8px}
-.modal-name{font-size:22px;font-weight:800;color:#143D2E;margin-bottom:4px}
+.modal-icon{font-size:44px;margin-bottom:8px;text-align:center}
+.modal-name{font-size:22px;font-weight:800;color:#143D2E;margin-bottom:4px;text-align:center}
 .modal-cat-badge{display:inline-block;background:#EBF7F2;color:#0C7C62;font-size:12px;font-weight:800;padding:3px 12px;border-radius:50px;margin-bottom:14px}
 .modal-eff{font-size:15px;color:#2A3A30;line-height:1.8;margin-bottom:20px}
 .modal-tip-lbl{font-size:11px;font-weight:800;color:#7A9A88;letter-spacing:1px;margin-bottom:10px}
@@ -70,6 +82,8 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .sub-tab.ing-active .stab-label{color:#0C7C62}
 .sub-tab.ing-active .stab-tag{background:#BFE5D6;color:#0C7C62}
 .stab-hint{font-size:11px;color:#B0C4B8;margin-top:1px}
+.ing-search-inp{width:100%;box-sizing:border-box;padding:12px 16px;border-radius:50px;border:1.5px solid #CFE5DB;background:#fff;font-size:14.5px;font-family:inherit;color:#2A3A30;margin-bottom:12px}
+.ing-search-inp:focus{outline:none;border-color:#0C7C62}
 .chip-panel{display:none}
 .chip-panel.active{display:block}
 .chip-grid{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
@@ -85,16 +99,23 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .checking-step .cs-spin{width:18px;height:18px;border:2.5px solid #E0EDE8;border-top-color:#0C7C62;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 .checking-step .cs-done{color:#0C7C62;font-size:16px;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.result-empty{text-align:center;color:#56705F;font-size:15px;padding:28px;background:#EBF7F2;border-radius:16px;line-height:1.8;margin-top:16px}
-.result-card{border-radius:16px;padding:16px;margin-bottom:12px;border:1.5px solid}
-.result-card.danger{background:#FFF5F5;border-color:#FFCDD2}
-.result-card.caution{background:#FFFBEA;border-color:#FFE082}
-.result-lv{font-size:11.5px;font-weight:800;letter-spacing:.5px;margin-bottom:6px}
-.result-lv.danger{color:#C62828}
-.result-lv.caution{color:#E65100}
-.result-tag{font-size:15px;font-weight:800;color:#143D2E;margin-bottom:6px}
-.result-body{font-size:13.5px;color:#3E5548;line-height:1.7}
-.result-action{font-size:12.5px;font-weight:700;color:#0C7C62;margin-top:8px;padding-top:8px;border-top:1px solid rgba(12,124,98,.15)}
+.result-empty{text-align:center;color:#56705F;font-size:16px;padding:28px;background:#EBF7F2;border-radius:16px;line-height:1.8;margin-top:16px}
+.result-card{border-radius:20px;padding:20px 18px;margin-bottom:14px;border:1.5px solid}
+.result-card.danger{background:#FFFBF0;border-color:#FFD180}
+.result-card.caution{background:#F0FAF5;border-color:#A5D6B8}
+.result-hero{font-size:48px;text-align:center;line-height:1;margin-bottom:10px}
+.result-lv{font-size:13px;font-weight:800;letter-spacing:.3px;margin-bottom:8px;text-align:center}
+.result-lv.danger{color:#B45309}
+.result-lv.caution{color:#0C7C62}
+.result-tag{font-size:18px;font-weight:800;color:#143D2E;margin-bottom:8px;text-align:center}
+.result-trigger{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-bottom:12px;padding:8px 10px;background:rgba(255,255,255,.7);border-radius:10px;font-size:13.5px;font-weight:700;color:#4A6A58}
+.result-trigger .tr-plus{color:#A0B8AC;font-weight:400;align-self:center}
+.result-body{font-size:15px;color:#3E5548;line-height:1.75;margin-bottom:0}
+.result-action{font-size:14px;font-weight:700;color:#0C7C62;margin-top:10px;padding-top:10px;border-top:1px solid rgba(12,124,98,.15)}
+.btn-share{display:block;width:100%;margin-top:12px;padding:14px 0;border-radius:50px;border:1.5px solid #0C7C62;background:#fff;color:#0C7C62;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+.history-item{background:#fff;border:1.5px solid #E0EDE8;border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.history-date{font-size:13px;font-weight:800;color:#143D2E;margin-bottom:4px}
+.history-detail{font-size:12.5px;color:#56705F;line-height:1.6}
 
 /* 내 정보 */
 .myinfo-card{background:#fff;border:1.5px solid #E0EDE8;border-radius:20px;padding:18px;margin-bottom:14px}
@@ -130,17 +151,14 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 </head>
 <body>
 
-<header>
-  <a href="/?home=1" data-dasibom-logo></a>
-  <a class="back" href="/?home=1">‹ 홈으로</a>
-</header>
+<header data-dasibom-header data-title="건강 돋보기" data-accent="#0C7C62"></header>
 
 <div class="wrap">
   <div class="sec-tabs">
     <button class="sec-tab active" onclick="switchSec('browse',this)">🔍 성분 정보</button>
     <button class="sec-tab" onclick="switchSec('check',this)">⚠️ 중복체크</button>
     <button class="sec-tab" onclick="switchSec('myinfo',this)">👤 내 정보</button>
-    <button class="sec-tab" onclick="switchSec('shop',this)">🛒 건강샵</button>
+    <button class="sec-tab" style="opacity:.4" onclick="popToast('건강샵은 준비 중이에요. 조금만 기다려 주세요 🙏')">🛒 건강샵</button>
   </div>
 
   <!-- ① 성분 브라우저 -->
@@ -172,6 +190,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
       <div class="chip-grid" id="drugChips"></div>
     </div>
     <div class="chip-panel" id="panel-ing">
+      <input type="text" id="ingSearchInp" class="ing-search-inp" placeholder="🔍 성분 이름으로 찾아보세요" oninput="setCheckSearch(this.value)">
       <div class="cat-scroll" id="checkCatBtns" style="margin-bottom:12px"></div>
       <div class="chip-grid" id="ingChips"></div>
     </div>
@@ -209,6 +228,10 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
       <div id="alarmList"></div>
       <p style="font-size:12px;color:#7A9A88;line-height:1.6;margin-top:8px">브라우저가 열려 있는 동안 알려드려요. 처음엔 '알림 허용'을 눌러주세요 🔔</p>
     </div>
+    <div style="margin-top:22px">
+      <div class="section-title">📋 최근 확인 이력</div>
+      <div id="historyList"></div>
+    </div>
   </div>
 
   <!-- ④ 건강샵 -->
@@ -230,13 +253,10 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
     <button class="modal-close-btn" onclick="closeModal()">✕</button>
     <div class="modal-icon" id="mIcon"></div>
     <div class="modal-name" id="mName"></div>
-    <div><span class="modal-cat-badge" id="mCat"></span></div>
+    <div style="text-align:center"><span class="modal-cat-badge" id="mCat"></span></div>
     <p class="modal-eff" id="mEff"></p>
     <div class="modal-tip-lbl">📌 복용 포인트</div>
     <div class="modal-tip" id="mTip"></div>
-    <div class="modal-disclaimer">꼭 구입하지 않으셔도 괜찮아요. 드시기 전에 <b>성분명과 함량</b>은 꼭 확인해 보세요 💚</div>
-    <button class="btn-coupang" id="mCoupangBtn">🔍 쿠팡에서 검색하기</button>
-    <a class="btn-shop-link" id="mShopLink" href="#" style="display:none">🛒 다시봄 건강샵에서 보기</a>
   </div>
 </div>
 
@@ -246,7 +266,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 /* ── 데이터 ── */
 var INGS=[{id:"astaxanthin",n:"아스타잔틴",e:"🦞",cat:"눈/뇌",eff:"눈의 피로도 개선에 도움을 주는 강력한 항산화 성분입니다.",tip:"식사와 함께 복용하면 흡수율이 높아집니다. 1일 4~12mg 권장."},{id:"vitA",n:"비타민A",e:"🥕",cat:"기초",eff:"눈의 망막 색소 형성과 야맹증 예방, 피부 점막 보호에 필수적입니다.",tip:"지용성이라 식사 후 복용이 좋습니다. 과잉 복용 시 독성 위험이 있으니 용량을 지키세요."},{id:"vitB",n:"비타민B군",e:"💊",cat:"기초",eff:"에너지 대사와 피로 회복, 신경계 기능을 돕는 활력 비타민입니다.",tip:"수용성이라 식전·식후 모두 가능합니다. 아침 복용이 에너지에 도움이 돼요."},{id:"vitC",n:"비타민C",e:"🍋",cat:"기초",eff:"항산화 작용으로 세포 손상을 막고 면역력을 높이며 콜라겐 합성을 돕습니다.",tip:"식후 복용을 권장합니다. 고용량(1000mg↑)은 위장 자극이 있을 수 있어요."},{id:"vitD",n:"비타민D",e:"☀️",cat:"기초",eff:"칼슘 흡수를 도와 뼈 건강을 유지하고 면역 세포 활성을 돕습니다.",tip:"지용성이라 식사 중·식후 복용이 최적입니다. 실내 생활이 많으신 분께 특히 중요해요."},{id:"vitE",n:"비타민E",e:"🥜",cat:"기초",eff:"세포막을 보호하는 강력한 항산화제로 혈행 개선을 돕습니다.",tip:"지용성. 식사 후 복용하세요. 항응고제 복용 중이라면 전문의와 상의 필요."},{id:"vitK",n:"비타민K",e:"🥬",cat:"기초",eff:"혈액 응고를 돕고 뼈의 칼슘 결합을 지원하여 골다공증을 예방합니다.",tip:"와파린 복용자는 반드시 의사에게 먼저 확인하세요."},{id:"biotin",n:"비오틴",e:"💅",cat:"뷰티",eff:"지방·탄수화물 대사에 관여하며 모발과 손톱 건강을 돕습니다.",tip:"공복 복용도 무방합니다. 생달걀 흰자와 함께 드시면 흡수가 방해될 수 있어요."},{id:"cissus",n:"시서스",e:"🪴",cat:"뷰티",eff:"체지방 감소와 렙틴 호르몬 조절을 돕는 허브 추출물입니다.",tip:"식전 30분 복용을 권장합니다."},{id:"elastin",n:"엘라스틴",e:"🧵",cat:"뷰티",eff:"콜라겐 지지대 역할을 하여 피부의 신축성과 탄력을 높여줍니다.",tip:"콜라겐과 함께 복용 시 시너지 효과가 좋습니다."},{id:"catechin",n:"카테킨",e:"🍃",cat:"뷰티",eff:"체지방 감소와 항산화, 혈중 콜레스테롤 개선을 돕는 녹차 성분입니다.",tip:"카페인이 포함될 수 있으니 저녁보다는 오전 복용을 추천합니다."},{id:"collagen",n:"콜라겐",e:"✨",cat:"뷰티",eff:"피부 진피층을 구성하여 탄력을 유지하고 관절 건강을 돕습니다.",tip:"비타민C와 함께 복용하면 콜라겐 합성에 도움이 됩니다."},{id:"cla",n:"CLA",e:"🔥",cat:"뷰티",eff:"과체중 성인의 체지방 감소에 도움을 줄 수 있는 불포화지방산입니다.",tip:"식사와 함께 복용하세요."},{id:"hyaluronic",n:"히알루론산",e:"💧",cat:"뷰티",eff:"피부 속 수분을 유지하여 건조함을 예방하고 보습을 돕습니다.",tip:"충분한 수분 섭취와 함께할 때 효과가 좋습니다."},{id:"garcinia",n:"가르시니아",e:"🍏",cat:"뷰티",eff:"탄수화물이 지방으로 합성되는 것을 억제해 체지방 감소를 돕습니다.",tip:"식전 30~60분 복용을 권장합니다."},{id:"glucosamine",n:"글루코사민",e:"🦀",cat:"특화",eff:"연골 형성의 기초 성분으로 관절의 부드러운 움직임을 돕습니다.",tip:"효과가 나타나는 데 4~8주 정도 꾸준히 복용해야 합니다."},{id:"gamma",n:"감마리놀렌산",e:"🌸",cat:"면역",eff:"혈중 콜레스테롤 및 혈행 개선에 도움을 줍니다.",tip:"식사 후 복용하세요."},{id:"ginkgo",n:"은행잎",e:"🍂",cat:"눈/뇌",eff:"뇌 혈류를 개선하여 기억력 향상 및 혈행 개선에 도움을 줍니다.",tip:"항응고제와 병용 시 출혈 위험이 높아질 수 있으니 주의하세요."},{id:"calcium",n:"칼슘",e:"🦴",cat:"기초",eff:"뼈와 치아를 형성하고 신경 조절 및 근육 수축에 관여합니다.",tip:"한 번에 500mg 이하로 나눠 복용해야 흡수율이 높습니다. 갑상선약과 4시간 간격 필수."},{id:"krill",n:"크릴오일",e:"🦐",cat:"특화",eff:"인지질 형태의 오메가3로 흡수율이 높고 혈행 개선을 돕습니다.",tip:"식사와 함께 복용하세요. 새우 알레르기가 있으신 분은 주의가 필요합니다."},{id:"curcumin",n:"커큐민",e:"🟡",cat:"특화",eff:"강황의 핵심 성분으로 항염증 및 항산화 작용이 뛰어납니다.",tip:"지방과 함께 복용하면 흡수율이 높아집니다. 피페린(후추 추출물) 함유 제품이 유리해요."},{id:"chlorella",n:"클로렐라",e:"🍵",cat:"면역",eff:"항산화와 피부 건강, 면역력 증진에 도움을 주는 미세조류입니다.",tip:"와파린 복용 중이라면 비타민K 함량이 높아 주의가 필요합니다."},{id:"theanine",n:"테아닌",e:"🍵",cat:"눈/뇌",eff:"뇌의 알파파 발생을 도와 스트레스로 인한 긴장 완화에 도움을 줍니다.",tip:"카페인과 함께 복용하면 집중력 향상에 시너지가 납니다."},{id:"protein",n:"단백질",e:"🥚",cat:"기초",eff:"근육 유지 및 효소·호르몬 구성의 핵심 성분으로 기력 유지에 중요합니다.",tip:"운동 후 30분 이내 복용이 근육 합성에 효과적입니다."},{id:"propolis",n:"프로폴리스",e:"🐝",cat:"면역",eff:"천연 항생제로 불리며 항산화 및 구강 내 항균 작용에 탁월합니다.",tip:"벌 관련 알레르기가 있으신 분은 주의하세요."},{id:"probiotics",n:"유산균",e:"🥛",cat:"장",eff:"장내 유익균을 증식시키고 배변 활동 및 면역력 강화에 도움을 줍니다.",tip:"공복이나 식전 30분 복용이 생존율에 유리합니다."},{id:"prebiotics",n:"프리바이오틱스",e:"🌾",cat:"장",eff:"유산균의 먹이가 되어 장내 환경 개선 효과를 높여줍니다.",tip:"유산균과 함께 복용하면 시너지 효과가 납니다."},{id:"ps",n:"포스파티딜세린",e:"🧠",cat:"눈/뇌",eff:"뇌세포막 구성 성분으로 인지 능력 및 기억력 개선에 도움을 줍니다.",tip:"혈액희석제 복용 중이라면 전문의에게 확인하세요."},{id:"plum",n:"매실추출물",e:"🟢",cat:"장",eff:"유기산 성분이 소화액 분비를 촉진하고 장내 살균 작용을 돕습니다.",tip:"식전 복용이 소화 효과에 좋습니다."},{id:"fiber",n:"식이섬유",e:"🥗",cat:"장",eff:"배변량을 늘리고 식후 혈당 상승 억제 및 콜레스테롤 조절을 돕습니다.",tip:"충분한 수분과 함께 복용해야 장 운동에 도움이 됩니다."},{id:"msm",n:"MSM",e:"🦴",cat:"특화",eff:"관절과 연골 건강을 돕는 식이유황 성분으로 통증 완화에 기여합니다.",tip:"글루코사민과 함께 복용하면 관절 건강에 시너지가 납니다."},{id:"multivit",n:"멀티비타민",e:"🌈",cat:"기초",eff:"부족하기 쉬운 필수 영양소를 골고루 보충하여 기초 건강을 돕습니다.",tip:"식후 복용을 권장합니다. 철분이 포함된 경우 커피·차와 간격을 두세요."},{id:"milkthistle",n:"밀크씨슬",e:"🌿",cat:"면역",eff:"실리마린 성분이 간세포를 보호하고 해독 작용을 도와 피로를 개선합니다.",tip:"공복 복용도 가능하지만 위장이 약하신 분은 식후를 권장합니다."},{id:"berberine",n:"베르베린",e:"🌱",cat:"특화",eff:"천연 항생 및 혈당 조절, 콜레스테롤 개선에 도움을 줍니다.",tip:"혈당강하제 복용 중이라면 반드시 의사와 상의 후 복용하세요."},{id:"sawpalmetto",n:"쏘팔메토",e:"🫐",cat:"특화",eff:"남성 전립선 건강 유지에 도움을 주는 야자수 열매 성분입니다.",tip:"식사와 함께 복용하면 소화 부작용을 줄일 수 있습니다."},{id:"spirulina",n:"스피루리나",e:"🧪",cat:"면역",eff:"항산화와 콜레스테롤 개선에 도움을 주는 고단백 해조류입니다.",tip:"혈액희석제 복용 시 주의가 필요합니다."},{id:"psyllium",n:"차전자피",e:"🌿",cat:"장",eff:"수분을 흡수해 팽창하여 원활한 배변 활동을 돕는 식이섬유입니다.",tip:"반드시 충분한 물(200ml 이상)과 함께 복용하세요."},{id:"iron",n:"철분",e:"🔴",cat:"기초",eff:"혈액 내 헤모글로빈 형성을 도와 전신에 산소를 공급합니다.",tip:"비타민C와 함께 복용하면 흡수율이 높아집니다. 변비가 생기면 복용 시간을 조정해 보세요."},{id:"coq10",n:"CoQ10",e:"⚡",cat:"면역",eff:"세포 에너지 생성을 돕고 혈압 감소 및 항산화에 도움을 줍니다.",tip:"지용성이라 식사 후 복용이 좋습니다."},{id:"octacosanol",n:"옥타코사놀",e:"🏃",cat:"특화",eff:"지구력 증진과 체력 보강에 도움을 주는 성분입니다.",tip:"식사 후 복용을 권장합니다."},{id:"omega3",n:"오메가3",e:"🩸",cat:"기초",eff:"혈행 개선과 중성지방 수치를 낮추고 눈 건조함 개선에 도움을 줍니다.",tip:"식사와 함께 복용하면 흡수율과 소화에 좋습니다. 항응고제와 병용 시 주의."},{id:"enzyme",n:"소화효소",e:"🧬",cat:"장",eff:"음식물 분해를 도와 영양소 흡수를 높이고 속을 편안하게 합니다.",tip:"식사 직전이나 식사 중 복용이 효과적입니다."},{id:"ginseng",n:"인삼",e:"🪴",cat:"면역",eff:"기력을 보강하고 신체 저항력을 높여주는 전통적인 자양강장 성분입니다.",tip:"아침 식전 복용을 권장합니다. 혈압약·혈액희석제 복용 중이라면 주의."},{id:"zeaxanthin",n:"지아잔틴",e:"✨",cat:"눈/뇌",eff:"황반 중심부 색소를 보충하여 눈 건강을 입체적으로 보호합니다.",tip:"루테인과 함께 복용하면 시너지 효과가 납니다."},{id:"zinc",n:"아연",e:"🐚",cat:"기초",eff:"정상적인 면역 기능과 세포 분열, 상처 회복에 필수적입니다.",tip:"공복 복용 시 속이 불편할 수 있으니 식후 복용을 권장합니다."},{id:"magnesium",n:"마그네슘",e:"🌙",cat:"기초",eff:"에너지 생성 및 신경 안정, 근육 경련 완화에 도움을 줍니다.",tip:"저녁 복용이 수면과 근육 이완에 특히 도움이 됩니다."},{id:"lutein",n:"루테인",e:"👁",cat:"눈/뇌",eff:"황반 색소 밀도를 유지하여 노화로 인한 시력 저하를 예방합니다.",tip:"지용성이라 식사 후 복용이 좋습니다. 지아잔틴과 함께 복용을 추천합니다."},{id:"melatonin",n:"멜라토닌",e:"💤",cat:"특화",eff:"수면 주기 조절을 도와 편안한 잠자리에 들 수 있도록 돕습니다.",tip:"취침 30분 전 복용하세요. 장기 복용보다 단기 사용이 적합합니다."},{id:"redginseng",n:"홍삼",e:"🌿",cat:"면역",eff:"면역력 증진, 피로 개선, 혈액 흐름 및 기억력 향상을 돕는 보약 성분입니다.",tip:"아침 공복 복용이 흡수에 좋습니다. 수술 전 2주는 중단을 권장합니다."}];
 
-var DRUGS=[{id:"bp",l:"혈압약",e:"🩸",cat:"심혈관"},{id:"statin",l:"콜레스테롤약",e:"🫀",cat:"심혈관"},{id:"diabetes",l:"당뇨약",e:"🍬",cat:"대사"},{id:"insulin",l:"인슐린",e:"💉",cat:"대사"},{id:"warfarin",l:"와파린",e:"💊",cat:"항응고"},{id:"aspirin",l:"아스피린",e:"🔴",cat:"항응고"},{id:"thyroid",l:"갑상선약",e:"🦋",cat:"호르몬"},{id:"hormone",l:"호르몬제",e:"⚗️",cat:"호르몬"},{id:"sleep",l:"수면제",e:"💤",cat:"신경계"},{id:"antidep",l:"항우울제",e:"🧠",cat:"신경계"},{id:"antibiotic",l:"항생제",e:"🦠",cat:"항균"}];
+var DRUGS=[{id:"bp",l:"혈압약",e:"🩸",cat:"심혈관"},{id:"statin",l:"콜레스테롤약",e:"🫀",cat:"심혈관"},{id:"arrhythmia",l:"부정맥약",e:"💓",cat:"심혈관"},{id:"diuretic",l:"이뇨제",e:"💧",cat:"심혈관"},{id:"diabetes",l:"당뇨약",e:"🍬",cat:"대사"},{id:"insulin",l:"인슐린",e:"💉",cat:"대사"},{id:"gout",l:"통풍약",e:"🦶",cat:"대사"},{id:"warfarin",l:"와파린",e:"💊",cat:"항응고"},{id:"aspirin",l:"아스피린",e:"🔴",cat:"항응고"},{id:"thyroid",l:"갑상선약",e:"🦋",cat:"호르몬"},{id:"hormone",l:"호르몬제",e:"⚗️",cat:"호르몬"},{id:"steroid",l:"스테로이드",e:"🔥",cat:"호르몬"},{id:"sleep",l:"수면제",e:"💤",cat:"신경계"},{id:"antidep",l:"항우울제",e:"🧠",cat:"신경계"},{id:"anxiety",l:"항불안제(신경안정제)",e:"😌",cat:"신경계"},{id:"parkinson",l:"파킨슨약",e:"🧓",cat:"신경계"},{id:"dementia",l:"치매약",e:"🧩",cat:"신경계"},{id:"epilepsy",l:"항경련제",e:"⚡",cat:"신경계"},{id:"muscle",l:"근육이완제",e:"💪",cat:"신경계"},{id:"antibiotic",l:"항생제",e:"🦠",cat:"항균"},{id:"osteo",l:"골다공증약",e:"🦴",cat:"뼈"},{id:"nsaid",l:"소염진통제",e:"💊",cat:"진통"},{id:"ppi",l:"위산억제제",e:"🧪",cat:"소화기"},{id:"laxative",l:"변비약",e:"🚽",cat:"소화기"},{id:"antiemetic",l:"소화제/구토억제제",e:"🍵",cat:"소화기"},{id:"prostate",l:"전립선약",e:"🚹",cat:"비뇨기"},{id:"incontinence",l:"요실금약",e:"🚻",cat:"비뇨기"},{id:"glaucoma",l:"녹내장 안약",e:"👁",cat:"안과"},{id:"asthma",l:"천식/COPD 흡입기",e:"🌬️",cat:"호흡기"},{id:"antihistamine",l:"항히스타민제(알레르기약)",e:"🤧",cat:"알레르기"}];
 
 /* ── 상호작용 규칙 (NIH PMC·식약처·약학정보원·유유제약 임상 데이터 기반) ── */
 var MECHS=[
@@ -335,10 +355,10 @@ var MECHS=[
      근거: NIH PMC12526737 */
   {key:"cns_sedation",tag:"진정 작용 중첩",icon:"💤",
    ings:["melatonin","theanine","magnesium"],
-   drugs:["sleep","antidep"],lv:"caution",
-   m:"수면제·항우울제와 멜라토닌·테아닌·마그네슘은 모두 중추신경 진정 작용을 합니다.",
+   drugs:["sleep","antidep","anxiety","muscle","antihistamine"],lv:"caution",
+   m:"수면제·항불안제·근육이완제·알레르기약(항히스타민제) 등은 멜라토닌·테아닌·마그네슘과 함께 모두 중추신경 진정 작용을 합니다.",
    d:"과도한 졸림·낮 무기력함·집중력 저하·반응 속도 감소가 나타나고 낙상 위험이 높아집니다.",
-   a:"멜라토닌은 수면제와 절대 함께 드시지 마세요. 복용 전 반드시 전문의와 상의하세요."},
+   a:"멜라토닌은 이런 약과 절대 함께 드시지 마세요. 복용 전 반드시 전문의와 상의하세요."},
 
   /* ⑪ 메트포르민 + 비타민B12 흡수 방해
      근거: 대한당뇨병학회, 약학정보원 */
@@ -365,7 +385,141 @@ var MECHS=[
    drugs:["warfarin"],lv:"danger",
    m:"글루코사민은 와파린의 항응고 효과를 직접적으로 증폭시킵니다.",
    d:"임상 보고에서 글루코사민 복용 시 INR(혈액 응고 수치)이 크게 상승했습니다. 출혈 위험이 실질적으로 높아집니다.",
-   a:"관절 영양제를 드시기 전 반드시 의사에게 먼저 알리고 INR 모니터링을 강화하세요."}
+   a:"관절 영양제를 드시기 전 반드시 의사에게 먼저 알리고 INR 모니터링을 강화하세요."},
+
+  /* ⑭ 와파린 + CoQ10 (항응고 효과 약화)
+     근거: Drugs.com interaction; J Thromb Haemost 임상 보고; Natural Medicines DB */
+  {key:"warfarin_coq10",tag:"항응고 효과 약화",icon:"⚡",
+   ings:["coq10"],
+   drugs:["warfarin"],lv:"caution",
+   m:"코엔자임Q10(CoQ10)은 화학 구조가 비타민K와 유사하여 와파린의 항응고 작용을 방해합니다.",
+   d:"임상 보고에서 CoQ10 복용 시 INR(응고 수치)이 낮아져 혈전 위험이 높아진 사례가 있습니다. 일부 환자에서는 반대로 출혈이 늘기도 해 반응이 개인마다 다릅니다.",
+   a:"와파린 드시는 분은 CoQ10 시작·중단 시 반드시 의사에게 알리고, 2~4주 간격으로 INR을 확인하세요."},
+
+  /* ⑮ 혈압약(칼슘채널차단제) + 칼슘 (약효 저하)
+     근거: Augusta Health 임상약학 자료; Supplementsciences.com; 식약처 의약품 상호작용 */
+  {key:"bp_calcium",tag:"혈압약 효과 감소",icon:"🧲",
+   ings:["calcium","vitD"],
+   drugs:["bp"],lv:"danger",
+   m:"칼슘 채널 차단제(암로디핀·노르바스크 등)는 세포 안으로 들어오는 칼슘을 막아 혈압을 낮추는 약입니다. 칼슘 보충제를 동시에 드시면 약의 작용점을 방해합니다.",
+   d:"혈중 칼슘 농도가 높아지면 약이 채널을 차단하는 효과가 줄어들어 혈압이 충분히 내려가지 않을 수 있습니다. 비타민D가 동반되면 칼슘 흡수가 더 늘어나 영향이 커집니다.",
+   a:"혈압약과 칼슘 보충제는 최소 2시간 이상 간격을 두고 드세요. 복용 전 담당 의사에게 꼭 알려주세요."},
+
+  /* ⑯ 스타틴 + 베르베린 (CYP3A4 저해 → 근육 독성)
+     근거: Clin Pharmacol Ther 2009; NIH PMC 임상시험; 식약처 허가사항 */
+  {key:"statin_berberine",tag:"근육 독성 위험",icon:"💪",
+   ings:["berberine"],
+   drugs:["statin"],lv:"danger",
+   m:"베르베린은 간의 CYP3A4 효소를 억제합니다. 이 효소로 분해되는 심바스타틴·로수바스타틴 등은 혈중 농도가 비정상적으로 높아집니다.",
+   d:"스타틴 혈중 농도가 오르면 근육 세포가 손상되는 근육병증(myopathy), 심한 경우 횡문근융해증(rhabdomyolysis)이 발생할 수 있습니다. 소변이 갈색으로 변하면 즉시 병원에 가세요.",
+   a:"혈당 관리용 베르베린을 드신다면 담당 의사에게 스타틴과의 병용 여부를 먼저 확인하세요. 자의로 둘 다 드시지 마세요."},
+
+  /* ⑰ 혈압약 + 인삼/홍삼 (혈압 예측 불가)
+     근거: J Ethnopharmacol 2009 review; Drugs.com interaction; 약학정보원 */
+  {key:"bp_ginseng",tag:"혈압 반응 예측 불가",icon:"🌀",
+   ings:["ginseng","redginseng"],
+   drugs:["bp"],lv:"caution",
+   m:"인삼·홍삼의 진세노사이드 성분은 혈압에 복합적으로 작용합니다. 종류에 따라 혈압을 올리기도, 내리기도 해서 혈압약과의 상호작용이 일관되지 않습니다.",
+   d:"혈압이 갑자기 너무 많이 내려가거나(저혈압), 반대로 약효가 줄어 혈압이 오르는 상황이 모두 보고된 바 있습니다.",
+   a:"혈압 조절 중이시라면 홍삼·인삼 드시기 전 의사에게 먼저 여쭤보세요. 드시는 경우 혈압을 더 자주 재어보시는 게 좋습니다."},
+
+  /* ⑱ 수면제/항우울제 + 인삼/홍삼 (자극 vs 진정)
+     근거: Phytomedicine 2010; Natural Medicines DB; 약학정보원 임상 자료 */
+  {key:"sleep_ginseng",tag:"수면·안정 방해",icon:"☕",
+   ings:["ginseng","redginseng"],
+   drugs:["sleep","antidep"],lv:"caution",
+   m:"인삼·홍삼은 중추신경을 자극하고 각성 효과가 있습니다. 수면제나 항우울제처럼 신경을 안정시키는 약의 효과를 줄일 수 있습니다.",
+   d:"수면의 질이 떨어지거나, 항우울제의 안정 효과가 약해질 수 있습니다. 또한 일부 세로토닌 유사 작용으로 인해 두통·불안 등 부작용이 생길 수 있습니다.",
+   a:"수면제·신경안정제를 드신다면 저녁 홍삼 복용은 피하고, 가능하면 복용 여부를 주치의에게 알려주세요."},
+
+  /* ⑲ 항우울제(SSRI) + 오메가3/크릴/은행잎 (혈소판 억제 중첩)
+     근거: Psychother Psychosom 2019; Clin Nutr 2017; J Clin Psychiatry 임상 리뷰 */
+  {key:"antidep_antiplatelet",tag:"혈소판 억제 중첩",icon:"🩹",
+   ings:["omega3","krill","ginkgo","gamma"],
+   drugs:["antidep"],lv:"caution",
+   m:"SSRI 계열 항우울제는 혈소판 내 세로토닌을 줄여 혈소판 응집을 억제합니다. 오메가3·크릴오일·은행잎 추출물도 같은 방향으로 작용합니다.",
+   d:"단독 복용 시에는 문제없어도 둘이 합쳐지면 출혈 경향이 강해질 수 있습니다. 특히 아스피린 또는 혈압약과 함께 드신다면 위험이 더 커집니다.",
+   a:"우울증 약을 드신다면 오메가3 고용량(하루 2g 이상) 복용은 미리 의사에게 알리세요. 소량은 대부분 괜찮지만 멍이 자주 든다면 확인이 필요합니다."},
+
+  /* ⑳ 호르몬제 + 비타민C (에스트로겐 수치 증가)
+     근거: Contraception 1981; NHS Clinical Reference; 식약처 의약품 상호작용 자료 */
+  {key:"hormone_vitc",tag:"에스트로겐 수치 상승",icon:"🌸",
+   ings:["vitC","multivit"],
+   drugs:["hormone"],lv:"caution",
+   m:"고용량 비타민C(하루 1,000mg 이상)는 에스트로겐의 간 대사를 늦춰 혈중 에스트로겐 농도를 높일 수 있습니다.",
+   d:"호르몬제(경구피임약·갱년기 호르몬 치료)와 함께 복용하면 에스트로겐 부작용(오심·두통·혈전 위험)이 커질 수 있습니다.",
+   a:"호르몬 치료 중이시라면 비타민C를 하루 200mg 이하로 드시거나, 복용 전 의사와 적정량을 상의해 주세요."},
+
+  /* ㉑ 아스피린 + 철분 (위장관 출혈 중첩)
+     근거: Gut 2003; Ann Intern Med GI bleeding review; 식약처 상호작용 안내 */
+  {key:"aspirin_iron",tag:"위장 출혈 위험 중첩",icon:"🔴",
+   ings:["iron"],
+   drugs:["aspirin"],lv:"caution",
+   m:"아스피린은 위 점막을 자극하고 혈소판 기능을 억제합니다. 철분 보충제도 위장관 점막을 자극해 복통·속쓰림을 유발합니다.",
+   d:"둘을 함께 드시면 위 자극이 겹쳐 속쓰림·위통이 심해지고, 심한 경우 위장관 출혈 위험이 높아집니다. 특히 빈속에 드실 때 더 위험합니다.",
+   a:"철분 보충제는 반드시 식후에, 아스피린과 1~2시간 간격을 두고 드세요. 속쓰림이 지속된다면 의사에게 알려주세요."},
+
+  /* ㉒ 당뇨약/인슐린 + 은행잎 (혈당 과도한 하강)
+     근거: Diabetes Res Clin Pract 2003; Phytomedicine 2004; 식약처 임상약학 자료 */
+  {key:"diabetes_ginkgo",tag:"혈당 과도한 하강",icon:"🍃",
+   ings:["ginkgo"],
+   drugs:["diabetes","insulin"],lv:"caution",
+   m:"은행잎 추출물(징코빌로바)은 인슐린 감수성을 높여 혈당을 낮추는 효과가 있습니다.",
+   d:"당뇨약·인슐린과 함께 복용하면 혈당이 너무 많이 내려가 어지럼증·식은땀·손 떨림 등 저혈당 증상이 나타날 수 있습니다.",
+   a:"혈당약을 드신다면 은행잎 복용 전 의사에게 알리고, 드시는 동안 혈당을 더 자주 측정해 주세요."},
+
+  /* ㉓ 골다공증약 + 칼슘/철분/마그네슘/아연 (흡수 방해)
+     근거: 식약처 의약품 안전사용 매뉴얼; Mayo Clinic 골다공증약 복용지침 */
+  {key:"osteo_mineral",tag:"약 흡수 방해",icon:"🦴",
+   ings:["calcium","iron","magnesium","zinc"],
+   drugs:["osteo"],lv:"caution",
+   m:"골다공증약(비스포스포네이트 계열)은 미네랄과 결합하면 몸에 흡수되지 않고 그대로 빠져나갑니다.",
+   d:"칼슘·철분·마그네슘·아연과 같이 드시면 약효가 거의 사라질 수 있습니다. 뼈를 위해 드시는 약이 오히려 무용지물이 될 수 있어요.",
+   a:"골다공증약은 아침 공복에 물과 함께 드시고, 미네랄 영양제는 최소 30분~1시간 뒤에 드세요."},
+
+  /* ㉔ 소염진통제(NSAID) + 항응고제 (위장출혈+항응고 중첩)
+     근거: FDA Drug Safety Communication; 식약처 병용금기 성분 */
+  {key:"nsaid_anticoag",tag:"위장 출혈 위험 중첩",icon:"🚨",
+   ings:[],drugs:["nsaid"],drugs2:["warfarin","aspirin"],lv:"danger",
+   m:"소염진통제(이부프로펜·나프록센 등)는 위 점막을 얇게 만들고 혈소판 기능도 함께 억제합니다.",
+   d:"와파린·아스피린과 함께 드시면 위장관 출혈 위험이 크게 높아집니다. 검은 변, 어지럼증이 있으면 바로 병원에 가야 합니다.",
+   a:"진통제가 필요하면 반드시 의사·약사에게 항응고제 복용 사실을 먼저 알려주세요."},
+
+  /* ㉕ 소염진통제(NSAID) + 오메가3/크릴/은행잎/감마리놀렌산 (출혈 위험 중첩)
+     근거: Natural Medicines DB; Clin Pharmacol 리뷰 */
+  {key:"nsaid_bleeding_herb",tag:"출혈 위험 중첩",icon:"🩸",
+   ings:["omega3","krill","ginkgo","gamma"],
+   drugs:["nsaid"],lv:"caution",
+   m:"오메가3·크릴오일·은행잎 성분은 혈소판이 뭉치는 것을 억제합니다. 소염진통제도 비슷한 작용을 더합니다.",
+   d:"함께 드시면 멍이 잘 들고, 코피·잇몸 출혈이 잦아질 수 있습니다.",
+   a:"진통제를 자주 드시는 편이라면 오메가3 고용량 복용 전 의사와 상의해 주세요."},
+
+  /* ㉖ 위산억제제(PPI) + 칼슘/철분/비타민B/마그네슘 (흡수 저하)
+     근거: NIH Office of Dietary Supplements; JAMA Intern Med PPI 장기복용 연구 */
+  {key:"ppi_absorption",tag:"영양소 흡수 저하",icon:"🧪",
+   ings:["calcium","iron","vitB","magnesium"],
+   drugs:["ppi"],lv:"caution",
+   m:"위산억제제는 위산 분비를 크게 줄이는데, 칼슘·철분·비타민B12는 위산이 있어야 잘 흡수됩니다.",
+   d:"장기간 함께 드시면 영양소 흡수가 줄어 골절 위험이나 빈혈, 신경계 증상으로 이어질 수 있습니다.",
+   a:"위산억제제를 오래 드신다면 정기적으로 철분·비타민B12·뼈 밀도 검사를 받아보시는 게 좋습니다."},
+
+  /* ㉗ 이뇨제 + 마그네슘 (전해질 손실 중첩)
+     근거: NIH Office of Dietary Supplements 이뇨제-미네랄 상호작용 자료 */
+  {key:"diuretic_magnesium",tag:"전해질 손실 중첩",icon:"💧",
+   ings:["magnesium"],
+   drugs:["diuretic"],lv:"caution",
+   m:"이뇨제(특히 루프이뇨제)는 소변으로 마그네슘·칼륨을 함께 배출시킵니다.",
+   d:"마그네슘 보충제와 병용해도 몸에 쌓이기 어렵고, 반대로 이뇨제로 인한 저마그네슘혈증(근육 경련·부정맥 위험)을 놓치기 쉽습니다.",
+   a:"이뇨제를 오래 드신다면 정기적으로 전해질(마그네슘·칼륨) 검사를 받아보시는 게 좋습니다."},
+
+  /* ㉘ 항경련제 + 비타민D/칼슘 (골밀도 저하)
+     근거: Epilepsy Currents; NIH Office of Dietary Supplements 항경련제-비타민D 대사 연구 */
+  {key:"epilepsy_vitd",tag:"뼈 건강 저하 위험",icon:"🦴",
+   ings:["vitD","calcium"],
+   drugs:["epilepsy"],lv:"caution",
+   m:"일부 항경련제는 간에서 비타민D 분해를 촉진시켜 몸속 비타민D 농도를 낮춥니다.",
+   d:"장기간 복용하면 칼슘 흡수가 줄어 골밀도가 낮아지고 골절 위험이 높아질 수 있습니다.",
+   a:"항경련제를 오래 드신다면 비타민D·칼슘 보충과 함께 정기적인 골밀도 검사를 의사와 상의하세요."}
 ];
 
 var CATS=["전체","기초","장","면역","눈/뇌","뷰티","특화"];
@@ -421,12 +575,6 @@ function openModal(id){
   document.getElementById('mCat').textContent=ing.cat;
   document.getElementById('mEff').textContent=ing.eff;
   document.getElementById('mTip').textContent=ing.tip||'식품의약품안전처 기준에 따라 섭취하세요.';
-  var q=ing.n+' 영양제';
-  document.getElementById('mCoupangBtn').onclick=function(){window.open('https://www.coupang.com/np/search?q='+encodeURIComponent(q)+'&channel=user','_blank');};
-  var si=SHOP_ITEMS.find(function(s){return s.ing===id;});
-  var sl=document.getElementById('mShopLink');
-  if(si){sl.style.display='block';sl.onclick=function(e){e.preventDefault();closeModal();switchSec('shop',document.querySelectorAll('.sec-tab')[3]);};}
-  else{sl.style.display='none';}
   document.getElementById('modalBg').classList.add('open');
   document.body.style.overflow='hidden';
 }
@@ -440,6 +588,8 @@ function closeModal(e){
 var _selDrugs={};
 var _selIngs={};
 var _checkCat='전체';
+var _checkSearch='';
+function setCheckSearch(v){_checkSearch=v.trim();renderIngChips();}
 function renderCheckChips(){
   document.getElementById('drugChips').innerHTML=DRUGS.map(function(d){
     return '<button class="chip-btn" id="cp_d_'+d.id+'" onclick="toggleChip(\'d\',\''+d.id+'\')">'+d.e+' '+d.l+'</button>';
@@ -458,6 +608,8 @@ function setCheckCat(cat,btn){
 }
 function renderIngChips(){
   var list=_checkCat==='전체'?INGS:INGS.filter(function(i){return i.cat===_checkCat;});
+  if(_checkSearch){list=list.filter(function(i){return i.n.indexOf(_checkSearch)>=0;});}
+  if(!list.length){document.getElementById('ingChips').innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 4px">검색 결과가 없어요</div>';return;}
   document.getElementById('ingChips').innerHTML=list.map(function(i){
     var sel=!!_selIngs[i.id];
     return '<button class="chip-btn'+(sel?' sel-ing':'')+'" id="cp_i_'+i.id+'" onclick="toggleChip(\'i\',\''+i.id+'\')">'+i.e+' '+i.n+'</button>';
@@ -521,14 +673,12 @@ function runCheck(){
   btn.disabled=true;
 
   var steps=[
-    {icon:'💊',text:'복용약 정보 확인 중…'},
-    {icon:'🌿',text:'영양제 성분 대조 중…'},
-    {icon:'🔬',text:'상호작용 규칙 검사 중…'},
+    {icon:'🔬',text:'복용약·영양제 상호작용 검사 중…'},
     {icon:'📋',text:'결과 정리 중…'}
   ];
 
   // 단계별 로딩 표시
-  el.innerHTML='<div class="checking-box">'+steps.map(function(s,i){
+  el.innerHTML='<div class="checking-box"><div style="text-align:center;margin-bottom:14px"><img src="/img/bom_think.png" alt="봄이" style="width:56px"><div style="font-size:13.5px;color:#7A9A88;margin-top:4px">봄이가 꼼꼼히 살펴보고 있어요</div></div>'+steps.map(function(s,i){
     return '<div class="checking-step" id="cstep'+i+'"><span class="cs-icon">'+s.icon+'</span><span style="flex:1">'+s.text+'</span><div class="cs-spin"></div></div>';
   }).join('')+'</div>';
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -547,34 +697,105 @@ function runCheck(){
       // 모든 단계 완료 후 결과 출력
       setTimeout(function(){
         var hits=MECHS.filter(function(m){
-          return m.drugs.some(function(d){return sd.indexOf(d)>=0;})
-            &&m.ings.some(function(ii){return si.indexOf(ii)>=0;});
+          var drugHit=m.drugs.some(function(d){return sd.indexOf(d)>=0;});
+          if(!drugHit)return false;
+          if(m.drugs2)return m.drugs2.some(function(d){return sd.indexOf(d)>=0;});
+          return m.ings.some(function(ii){return si.indexOf(ii)>=0;});
         });
+        var worst=hits.some(function(h){return h.lv==='danger';})?'danger':(hits.length?'caution':'safe');
+        var bomImg=worst==='danger'?'bom_sulk_worry':worst==='caution'?'bom_calm':'bom_smile';
         if(!hits.length){
-          el.innerHTML='<div class="result-empty">😊 선택하신 조합에서 특별히 주의할 점은 보이지 않아요.<br><br>그래도 드시기 전에 의사·약사 선생님께 한 번 여쭤보시면 훨씬 안심이 된답니다.</div>';
+          el.innerHTML='<div class="result-empty"><img src="/img/'+bomImg+'.png" alt="봄이" style="width:60px;margin-bottom:8px">😊 선택하신 조합에서 특별히 주의할 점은 보이지 않아요.<br><br>그래도 드시기 전에 의사·약사 선생님께 한 번 여쭤보시면 훨씬 안심이 된답니다.</div>';
         } else {
-          el.innerHTML='<div class="section-title" style="margin:16px 0 12px">⚠️ 확인이 필요한 조합 '+hits.length+'건</div>'
+          el.innerHTML='<div style="text-align:center;margin-bottom:10px"><img src="/img/'+bomImg+'.png" alt="봄이" style="width:64px"></div>'
+            +'<div class="section-title" style="margin:0 0 12px;text-align:center">💬 확인이 필요한 조합 '+hits.length+'가지</div>'
             +hits.map(function(r){
-              return '<div class="result-card '+r.lv+'"><div class="result-lv '+r.lv+'">'+(r.lv==='danger'?'🚨 주의가 꼭 필요해요':'⚠️ 조심해서 드세요')+'</div><div class="result-tag">'+r.icon+' '+r.tag+'</div><div class="result-body">'+r.m+'<br><br>'+r.d+'</div><div class="result-action">💡 '+r.a+'</div></div>';
-            }).join('');
+              var mDrugs=sd.filter(function(d){return r.drugs.indexOf(d)>=0||(r.drugs2&&r.drugs2.indexOf(d)>=0);});
+              var mIngs=si.filter(function(i){return r.ings.indexOf(i)>=0;});
+              var dNames=mDrugs.map(function(d){var x=DRUGS.find(function(x){return x.id===d;});return x?'<span>'+x.e+' '+x.l+'</span>':'';}).join('<span class="tr-plus">·</span>');
+              var iNames=mIngs.map(function(i){var x=INGS.find(function(x){return x.id===i;});return x?'<span>'+x.e+' '+x.n+'</span>':'';}).join('<span class="tr-plus">·</span>');
+              var hero=r.lv==='danger'?'⚠️':'💛';
+              return '<div class="result-card '+r.lv+'">'
+                +'<div class="result-hero">'+hero+'</div>'
+                +'<div class="result-lv '+r.lv+'">'+(r.lv==='danger'?'상담이 필요한 조합이에요':'조심해서 드세요')+'</div>'
+                +'<div class="result-tag">'+r.icon+' '+r.tag+'</div>'
+                +'<div class="result-trigger">💊 '+dNames+(iNames?'<span class="tr-plus" style="padding:0 4px">＋</span>🌿 '+iNames:'')+'</div>'
+                +'<div class="result-body">'+r.m+'</div>'
+                +'<div class="result-action">👨‍⚕️ '+r.a+'</div>'
+                +'</div>';
+            }).join('')
+            +'<div style="margin-top:16px;padding:16px 18px;background:#EBF7F2;border-radius:16px;font-size:15px;color:#3E6B58;line-height:1.8;text-align:center">'
+            +'💊🌿🩺<br><b style="font-size:16px">이 결과는 참고용이에요.</b><br>'
+            +'드시기 전에 의사·약사 선생님께 꼭 상담받으시고 복용하세요.'
+            +'</div>';
         }
+        window._lastCheckShareText=buildShareText(sd,si,hits,worst);
+        el.innerHTML+='<button class="btn-share" onclick="shareResult()">📤 결과 공유하기</button>';
+        saveCheckHistory(sd,si,hits.length,worst);
         updateCheckBtn();
         el.scrollIntoView({behavior:'smooth',block:'nearest'});
       },200);
     }:null);
   });
 }
+function buildShareText(sd,si,hits,worst){
+  var dLabels=sd.map(function(d){var x=DRUGS.find(function(x){return x.id===d;});return x?x.l:d;});
+  var iLabels=si.map(function(i){var x=INGS.find(function(x){return x.id===i;});return x?x.n:i;});
+  var lines=['💊🌿 [다시봄 건강 돋보기] 복용약·영양제 확인 결과'];
+  lines.push('');
+  lines.push('먹는 약: '+(dLabels.join(', ')||'없음'));
+  lines.push('먹는 영양제: '+(iLabels.join(', ')||'없음'));
+  lines.push('');
+  if(!hits.length){
+    lines.push('😊 선택한 조합에서 특별히 주의할 점은 보이지 않았어요.');
+  } else {
+    lines.push((worst==='danger'?'🔶':'💛')+' 확인이 필요한 조합 '+hits.length+'가지');
+    hits.forEach(function(r,idx){
+      lines.push((idx+1)+'. '+r.icon+' '+r.tag+' — '+r.m);
+      lines.push('   → '+r.a);
+    });
+  }
+  lines.push('');
+  lines.push('※ 참고용 정보이며, 드시기 전 의사·약사 선생님과 꼭 상담하세요.');
+  return lines.join('\n');
+}
+function shareResult(){
+  var text=window._lastCheckShareText||'[다시봄 건강 돋보기] 복용약·영양제 중복체크 결과를 확인했어요. 드시기 전 의사·약사 선생님과 상담해 주세요 💚';
+  if(navigator.share){navigator.share({title:'다시봄 건강 돋보기 확인 결과',text:text}).catch(function(){});}
+  else{navigator.clipboard.writeText(text).then(function(){popToast('📋 결과 내용이 복사됐어요. 붙여넣기로 전달해 보세요');});}
+}
+function saveCheckHistory(sd,si,hitCount,worst){
+  var dLabels=sd.map(function(d){var x=DRUGS.find(function(x){return x.id===d;});return x?x.l:d;});
+  var iLabels=si.map(function(i){var x=INGS.find(function(x){return x.id===i;});return x?x.n:i;});
+  MY.history.unshift({date:new Date().toISOString(),drugs:dLabels,ings:iLabels,hitCount:hitCount,worst:worst});
+  MY.history=MY.history.slice(0,5);
+  saveMyData();
+  renderHistory();
+}
+function renderHistory(){
+  var el=document.getElementById('historyList');
+  if(!el)return;
+  if(!MY.history.length){el.innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 0">아직 확인한 이력이 없어요</div>';return;}
+  el.innerHTML=MY.history.map(function(h){
+    var d=new Date(h.date);
+    var dateStr=(d.getMonth()+1)+'월 '+d.getDate()+'일';
+    var badge=h.worst==='danger'?'🔶 상담 필요':h.worst==='caution'?'💛 조심 필요':'😊 이상 없음';
+    return '<div class="history-item"><div class="history-date">'+dateStr+' · '+badge+'</div><div class="history-detail">💊 '+h.drugs.join(', ')+'　🌿 '+h.ings.join(', ')+'</div></div>';
+  }).join('');
+}
 
 /* ── ③ 내 정보 ── */
 var MY={
   drugs:JSON.parse(localStorage.getItem('hm_my_drugs')||'[]'),
   ings: JSON.parse(localStorage.getItem('hm_my_ings') ||'[]'),
-  alarms:JSON.parse(localStorage.getItem('hm_alarms') ||'[]')
+  alarms:JSON.parse(localStorage.getItem('hm_alarms') ||'[]'),
+  history:JSON.parse(localStorage.getItem('hm_history')||'[]')
 };
 function saveMyData(){
   localStorage.setItem('hm_my_drugs',JSON.stringify(MY.drugs));
   localStorage.setItem('hm_my_ings', JSON.stringify(MY.ings));
   localStorage.setItem('hm_alarms',  JSON.stringify(MY.alarms));
+  localStorage.setItem('hm_history', JSON.stringify(MY.history));
 }
 function renderMyTags(){
   document.getElementById('myDrugTags').innerHTML=MY.drugs.map(function(id){
@@ -651,7 +872,7 @@ function popToast(msg){var el=document.getElementById('toast');el.textContent=ms
 (function(){
   renderCatBtns();filterIng('');
   renderCheckChips();
-  populateMySelects();renderMyTags();renderAlarmList();
+  populateMySelects();renderMyTags();renderAlarmList();renderHistory();
   renderShop();
 })();
 </script>

@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>봄이와 맞고 — 다시봄</title>
+<style>
+@import url('https://hangeul.pstatic.net/hangeul_static/css/nanum-square-round.css');
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#F5F1E8; --cream-2:#EDE7D7; --paper:#FBF8F0;
+  --ink:#1F2A1A; --ink-2:#2D3A2A; --muted:#6B6B5C;
+  --sage:#5C7A4A; --sage-deep:#3F5A30; --gold:#C9A961; --gold-soft:#E0C988;
+  --felt:#3E5A3E; --felt-dark:#2E462E;
+  --cw:56px; --ch:87px;   /* 바닥/AI 카드 */
+  --hw:64px; --hh:100px;  /* 내 손패 카드 */
+}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:'NanumSquareRound',-apple-system,sans-serif;background:var(--cream);color:var(--ink);font-weight:700;min-height:100vh}
+.wrap{max-width:560px;margin:0 auto;padding:0 10px 40px}
+
+header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:rgba(245,241,232,.96);backdrop-filter:blur(8px);border-bottom:1.5px solid var(--cream-2)}
+.h-title{font-family:'Nanum Myeongjo',serif;font-size:19px;font-weight:800;color:var(--sage-deep)}
+.h-exit{border:1.5px solid rgba(63,90,48,.3);color:var(--sage-deep);background:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:50px;cursor:pointer;text-decoration:none;font-family:inherit;min-height:44px;display:inline-flex;align-items:center}
+
+/* ── 카드 ── */
+.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=2');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
+.card.hand{width:var(--hw);height:var(--hh);cursor:pointer;transition:transform .14s}
+.card.hand.sel{transform:translateY(-14px);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft),0 8px 14px rgba(0,0,0,.3)}
+.card.back{background-image:none;background:repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px);border-color:#5A2020}
+/* 짝이 있는 손패: 네온 테두리가 강하게 깜빡이며 둥실둥실 떠 있음 */
+.card.matchable::after{content:'';position:absolute;inset:-6px;border:4px solid #FFD54F;border-radius:11px;animation:mpulse .65s infinite alternate;pointer-events:none}
+.card.hand.matchable:not(.sel){animation:mfloat 1.3s ease-in-out infinite}
+@keyframes mpulse{
+  0%{opacity:.5;box-shadow:0 0 6px #FFD54F,0 0 12px rgba(255,213,79,.5)}
+  100%{opacity:1;box-shadow:0 0 14px #FFD54F,0 0 30px rgba(255,213,79,.95),inset 0 0 10px rgba(255,235,170,.5)}
+}
+@keyframes mfloat{0%,100%{transform:translateY(-6px)}50%{transform:translateY(-13px)}}
+.card .mnum{position:absolute;top:2px;left:3px;background:rgba(0,0,0,.55);color:#fff;font-size:10px;font-weight:800;padding:1px 5px;border-radius:8px;line-height:1.3}
+
+/* ── 상대(봄이 AI) 영역 ── */
+.opp{background:var(--paper);border:1.5px solid var(--cream-2);border-radius:16px;padding:10px 12px;margin-top:10px}
+.opp-head{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.bom-avatar-wrap{position:relative;flex-shrink:0}
+.opp-head img{width:34px;height:34px;border-radius:50%;background:#fff;transition:transform .15s}
+.bom-bubble{position:absolute;left:40px;top:-8px;min-width:150px;max-width:220px;background:#fff;border:1.5px solid var(--gold-soft);border-radius:14px 14px 14px 2px;padding:8px 12px;font-size:12.5px;line-height:1.5;color:var(--ink);box-shadow:0 6px 16px rgba(31,42,26,.18);z-index:50;opacity:0;transform:translateY(4px) scale(.94);transition:opacity .18s,transform .18s;pointer-events:none;white-space:normal}
+.bom-bubble.show{opacity:1;transform:translateY(0) scale(1)}
+.bom-bubble::before{content:'';position:absolute;left:-7px;bottom:6px;border:7px solid transparent;border-right-color:var(--gold-soft)}
+.bom-bubble::after{content:'';position:absolute;left:-5.5px;bottom:7px;border:6px solid transparent;border-right-color:#fff}
+.opp-head .nm{font-size:14px;color:var(--ink)}
+.opp-head .sc{margin-left:auto;font-size:15px;font-weight:800;color:var(--sage-deep)}
+/* 고/흔들기 배지 — 별도 줄 없이 이름 옆에 붙여서 빈 줄 낭비 없앰 */
+.cap-badge{font-size:11.5px;font-weight:800;white-space:nowrap}
+/* 줄바꿈 대신 가로 스크롤로 고정 높이 유지 (여백은 최소화) */
+.cap-strip{display:flex;gap:6px;margin-top:2px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;height:48px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.cap-strip .card{width:26px;height:40px;border-radius:3px;flex-shrink:0}
+/* 획득 패는 실제 화투처럼 광/열끗/띠/피 그룹으로 모아둠 */
+.cap-group{display:flex;align-items:center;gap:2px;background:rgba(63,90,48,.07);border:1px solid var(--cream-2);border-radius:8px;padding:3px 6px;flex-shrink:0}
+.cap-lbl{font-size:10px;font-weight:800;color:var(--muted);margin-right:3px;white-space:nowrap}
+/* 봄이 손패 뒷면 */
+.opp-backs{display:flex;gap:2px;flex-wrap:wrap}
+.opp-backs .b{width:18px;height:28px;border-radius:3px;background:repeating-linear-gradient(45deg,#7A3030 0 5px,#8A3A3A 5px 10px);border:1px solid #5A2020}
+/* 날아가는 카드 */
+.fly{position:fixed;left:0;top:0;margin:0;z-index:600;pointer-events:none;box-shadow:0 8px 18px rgba(0,0,0,.35)}
+/* 더미에서 뒤집은 패 공개 연출 (3D 플립) */
+.rv{position:fixed;left:0;top:0;margin:0;z-index:650;pointer-events:none;perspective:700px}
+.rv-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .45s ease}
+.rv-inner.flipped{transform:rotateY(180deg)}
+.rv-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:8px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+.rv-back{background:repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px);border:1.5px solid #5A2020}
+.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=2');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0}
+/* 내리치기: 착지 카드 펀치 + 판 전체 흔들림 */
+.card.slam{animation:slamIn .22s ease-out}
+@keyframes slamIn{0%{transform:scale(1.5)}55%{transform:scale(.94)}100%{transform:scale(1)}}
+.board.bshake{animation:bshake .18s ease-out}
+@keyframes bshake{25%{transform:translateY(1.5px)}55%{transform:translateY(-1px)}100%{transform:translateY(0)}}
+
+/* ── 바닥판 ── */
+.board{background:radial-gradient(circle at center,var(--felt),var(--felt-dark));border:6px solid #8A6A3A;border-radius:18px;padding:14px 10px;margin-top:10px;min-height:230px;position:relative}
+.floor{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-start;min-height:190px}
+.fslot{position:relative;width:var(--cw);height:var(--ch)}
+.fslot .card{position:absolute;top:0;left:0}
+.fslot .card:nth-child(2){top:14px;left:8px}
+.fslot .card:nth-child(3){top:28px;left:16px}
+.fslot .card:nth-child(4){top:42px;left:24px}
+.fslot.stack3{margin-bottom:30px;margin-right:16px}
+.deck{position:absolute;right:10px;bottom:10px;text-align:center}
+.deck .card{margin:0 auto}
+.deck .dn{color:#EFE6D0;font-size:11px;margin-top:3px}
+.turnmsg{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.45);color:#FBF8F0;font-size:12.5px;padding:6px 12px;border-radius:50px;max-width:60%}
+
+/* ── 내 영역 ── */
+.mine{background:var(--paper);border:1.5px solid var(--cream-2);border-radius:16px;padding:10px 12px;margin-top:10px}
+.mine-head{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.my-stats{height:22px;overflow:hidden;margin-top:6px;font-size:12px;font-weight:800;color:var(--sage-deep);background:rgba(63,90,48,.07);border-radius:10px;padding:3px 10px;text-align:center;white-space:nowrap;text-overflow:ellipsis}
+.mine-head .nm{font-size:14px}
+.mine-head .sc{margin-left:auto;font-size:17px;font-weight:800;color:var(--sage-deep)}
+.hand-row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;padding:12px 2px 6px}
+.gobtn-row{display:flex;gap:10px;margin-top:10px}
+.gobtn{flex:1;min-height:52px;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit}
+.gobtn.go{background:linear-gradient(to bottom,#C05050,#A03A3A);color:#fff;box-shadow:0 4px 0 #7A2A2A}
+.gobtn.stop{background:linear-gradient(to bottom,#6E9257,#4B6B3B);color:#fff;box-shadow:0 4px 0 var(--sage-deep)}
+.gobtn:active{transform:translateY(3px);box-shadow:none}
+
+/* ── 모달 ── */
+.mm-overlay{position:fixed;inset:0;background:rgba(31,42,26,.7);z-index:300;display:none;align-items:center;justify-content:center;padding:16px}
+.mm-overlay.on{display:flex}
+.mm-box{background:var(--paper);border-radius:20px;width:100%;max-width:400px;padding:24px 20px;text-align:center;box-shadow:0 20px 50px rgba(31,42,26,.4);max-height:86vh;overflow-y:auto}
+.mm-title{font-family:'Nanum Myeongjo',serif;font-size:22px;font-weight:800;color:var(--sage-deep);margin-bottom:10px}
+.mm-body{font-size:15px;line-height:1.75;color:var(--ink-2);margin-bottom:16px}
+.mm-body .big{font-size:34px;display:block;margin:6px 0}
+.mm-btn{display:block;width:100%;min-height:50px;border:none;border-radius:14px;background:var(--sage);color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px}
+.mm-btn.sub{background:#fff;border:1.5px solid var(--cream-2);color:var(--muted)}
+.mm-score-table{width:100%;font-size:14px;margin:10px 0;border-collapse:collapse}
+.mm-score-table td{padding:5px 8px;border-bottom:1px solid var(--cream-2);text-align:left}
+.mm-score-table td:last-child{text-align:right;font-weight:800;color:var(--sage-deep)}
+.evt-banner{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);z-index:400;background:rgba(31,42,26,.88);color:#FBF8F0;font-family:'Nanum Myeongjo',serif;font-size:34px;font-weight:800;padding:18px 44px;border-radius:20px;border:2px solid var(--gold);display:none;letter-spacing:4px;white-space:nowrap}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 24px;font-size:14px;z-index:500;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+/* 말투 선택 */
+.tone-list{display:flex;flex-direction:column;gap:8px}
+.tone-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--cream-2);border-radius:14px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;min-height:56px}
+.tone-item.on{border-color:var(--sage);background:rgba(92,122,74,.08)}
+.tone-item .te{font-size:26px;flex-shrink:0}
+.tone-item .tl{display:flex;flex-direction:column;line-height:1.3;flex:1}
+.tone-item .tl b{font-size:15px;color:var(--ink)}
+.tone-item .tl span{font-size:12px;color:var(--muted)}
+.tone-item .tk{color:var(--sage);font-weight:800;font-size:18px}
+
+/* ── 모바일: 한 화면에 모든 플레이 요소가 들어오도록 축소 ── */
+@media (max-width:480px){
+  :root{
+    --cw:40px; --ch:62px;   /* 바닥/AI 카드 */
+    --hw:44px; --hh:68px;   /* 내 손패 카드 */
+  }
+  .wrap{padding:0 8px 10px}
+  header{padding:6px 12px}
+  .h-title{font-size:17px}
+  .h-exit{font-size:12px;padding:6px 11px;min-height:38px}
+
+  .opp{padding:7px 10px;margin-top:7px}
+  .opp-head{margin-bottom:2px}
+  .opp-head img{width:28px;height:28px}
+  .opp-head .nm{font-size:13px}
+  .opp-head .sc{font-size:14px}
+  .opp-backs .b{width:13px;height:20px}
+  .cap-strip{height:38px;margin-top:2px}
+  .cap-strip .card{width:21px;height:32px}
+  .cap-group{padding:2px 5px}
+  .cap-lbl{font-size:9px}
+
+  .board{padding:7px;margin-top:7px;min-height:auto;border-width:5px}
+  .floor{min-height:118px;gap:5px}
+  .fslot .card:nth-child(2){top:10px;left:5px}
+  .fslot .card:nth-child(3){top:20px;left:10px}
+  .fslot .card:nth-child(4){top:30px;left:15px}
+  .deck .card{width:36px;height:56px}
+  .deck .dn{font-size:10px;margin-top:2px}
+  .turnmsg{font-size:11px;padding:4px 9px}
+
+  .mine{padding:7px 10px;margin-top:7px}
+  .mine-head{margin-bottom:2px}
+  .mine-head .nm{font-size:13px}
+  .mine-head .sc{font-size:15px}
+  .my-stats{font-size:11px;height:19px;margin-top:3px;padding:2px 8px}
+  .hand-row{gap:4px;padding:6px 2px 2px}
+
+  .bom-bubble{min-width:130px;max-width:180px;font-size:12px;padding:7px 10px}
+}
+</style>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/bom_voice.js?v=9" defer></script>
+<script src="/bom_tutorial.js?v=3" defer></script>
+<script>window.BOM_TUT={
+  key:'matgo', face:'bom_cheer.png', name:'봄이와 맞고',
+  welcome:'{호칭}, 저랑 화투 한 판 어떠세요? 점수 계산은 제가 다 해드릴 테니, 패만 편하게 내시면 돼요 🎴',
+  action:'‘맞고 한 판 치기’를 눌러 저랑 시작해봐요.',
+  tour:[
+    {text:'‘맞고 한 판 치기’를 누르면 저랑 바로 시작할 수 있어요.', sel:'#mmBtns'},
+    '어려운 점수 계산은 봄이가 다 해드려요.',
+    '한 판씩 이기면 포인트가 쌓이고 레벨도 올라가요!'
+  ]
+};</script>
+<script src="/dasibom-header.js"></script>
+</head>
+<body>
+<!-- 공용 헤더: 왼쪽 [← 홈으로] / 오른쪽 [카드 제목] — 안쪽은 dasibom-header.js가 채움.
+     음악/효과음/말투 버튼은 data-dbh-keep 이라 홈버튼과 제목 사이에 그대로 남음. -->
+<header data-dasibom-header data-title="🎴 봄이와 맞고" data-accent="#3F5A30">
+  <span style="display:flex;gap:8px" data-dbh-keep>
+    <button class="h-exit" id="toneBtn" onclick="openTonePicker()" aria-label="봄이 말투">🗣️</button>
+    <button class="h-exit" id="bgmBtn" onclick="toggleBgm()" aria-label="배경음악">🎵</button>
+    <button class="h-exit" id="sndBtn" onclick="toggleSnd()" aria-label="효과음">🔊</button>
+  </span>
+</header>
+
+<div class="wrap">
+  <!-- 상대 (봄이) -->
+  <div class="opp">
+    <div class="opp-head">
+      <span class="bom-avatar-wrap">
+        <img id="bomFaceImg" src="/img/bom_smile.png" alt="봄이" onerror="this.style.display='none'">
+        <div class="bom-bubble" id="bomBubble"></div>
+      </span>
+      <span class="nm">봄이</span>
+      <span class="cap-badge" id="oppCaps"></span>
+      <span class="sc" id="oppScore">0점</span>
+    </div>
+    <div class="cap-strip" id="oppStrip"></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+      <div class="opp-backs" id="oppBacks"></div>
+      <span style="font-size:11.5px;color:var(--muted)"><b id="oppHandN">10</b>장 남음</span>
+    </div>
+  </div>
+
+  <!-- 바닥 -->
+  <div class="board">
+    <div class="floor" id="floor"></div>
+    <div class="deck"><div class="card back"></div><div class="dn"><span id="deckN">24</span>장</div></div>
+    <div class="turnmsg" id="turnMsg">패를 골라주세요</div>
+  </div>
+
+  <!-- 나 -->
+  <div class="mine">
+    <div class="mine-head">
+      <span class="nm">😊 나</span>
+      <span class="cap-badge" id="myCaps"></span>
+      <span class="sc" id="myScore">0점</span>
+    </div>
+    <div class="cap-strip" id="myStrip"></div>
+    <div class="hand-row" id="hand"></div>
+    <div class="my-stats" id="myStats">🏅 Lv.1 화투 새내기 · 0P · 0승 0패</div>
+  </div>
+</div>
+
+<!-- 이벤트 배너 (뻑! 쪽! 등) -->
+<div class="evt-banner" id="evtBanner"></div>
+
+<!-- 같은 달 패 선택 오버레이 -->
+<div class="mm-overlay" id="chOverlay">
+  <div class="mm-box">
+    <div class="mm-title">어느 패를 가져올까요?</div>
+    <div class="mm-body">바닥에 같은 달 패가 두 장 있어요.<br>가져오고 싶은 패를 눌러주세요.</div>
+    <div id="chCards" style="display:flex;gap:18px;justify-content:center;padding:6px 0 4px"></div>
+  </div>
+</div>
+
+<!-- 봄이 말투 선택 -->
+<div class="mm-overlay" id="toneOverlay" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="mm-box" style="max-width:340px">
+    <div class="mm-title">봄이 말투 고르기</div>
+    <div class="mm-body" style="margin-bottom:10px">어떤 손녀로 함께할까요?<br><span style="font-size:12.5px;color:var(--muted)">언제든 다시 바꿀 수 있어요</span></div>
+    <div id="toneList" class="tone-list"></div>
+  </div>
+</div>
+
+<!-- 공용 모달 -->
+<div class="mm-overlay" id="mmOverlay">
+  <div class="mm-box">
+    <div class="mm-title" id="mmTitle"></div>
+    <div class="mm-body" id="mmBody"></div>
+    <div id="mmBtns"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   봄이와 맞고 — 2인(나 vs 봄이 AI)
+   화투 이미지: sunduk/freegostop 오픈소스(상업적 사용 자유)
+   룰: 표준 맞고 7점 기준. 흔들기·폭탄·뻑·쪽·따닥·싹쓸이·피박·광박·고박 포함.
+   단순화: 국진(9월 열끗)은 열끗 고정, 멍박·첫뻑 보너스 없음.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── 카드 데이터 ──
+   스프라이트: 4열×12행, 위에서부터 12월→1월. col은 시트상의 위치. */
+var TYPES = { KWANG:'광', YEOL:'열끗', TTI:'띠', PI:'피', SSANGPI:'쌍피' };
+var MONTH_DEF = {
+  1:  [['KWANG'],['TTI','hong'],['PI'],['PI']],
+  2:  [['YEOL','godori'],['TTI','hong'],['PI'],['PI']],
+  3:  [['KWANG'],['TTI','hong'],['PI'],['PI']],
+  4:  [['YEOL','godori'],['TTI','cho'],['PI'],['PI']],
+  5:  [['YEOL'],['TTI','cho'],['PI'],['PI']],
+  6:  [['YEOL'],['TTI','chung'],['PI'],['PI']],
+  7:  [['YEOL'],['TTI','cho'],['PI'],['PI']],
+  8:  [['KWANG'],['YEOL','godori'],['PI'],['PI']],
+  9:  [['YEOL','kukjin'],['TTI','chung'],['PI'],['PI']],
+  10: [['YEOL'],['TTI','chung'],['PI'],['PI']],
+  11: [['KWANG'],['SSANGPI'],['PI'],['PI']],
+  12: [['KWANG','bi'],['YEOL'],['TTI','bi'],['SSANGPI']]
+};
+function buildDeck(){
+  var deck=[];
+  for(var m=1;m<=12;m++){
+    MONTH_DEF[m].forEach(function(def,col){
+      deck.push({ month:m, type:def[0], tag:def[1]||null, col:col, id:m+'-'+col });
+    });
+  }
+  return deck;
+}
+/* 난수: 브라우저 암호학적 난수(crypto) 우선 — Math.random 편향 의심 원천 차단 */
+function rnd(){
+  if(window.crypto && crypto.getRandomValues){
+    var u=new Uint32Array(1); crypto.getRandomValues(u);
+    return u[0]/4294967296;
+  }
+  return Math.random();
+}
+function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)); var t=a[i];a[i]=a[j];a[j]=t; } return a; }
+
+/* 스프라이트 위치: 컬러 시트는 1월이 맨 위 (행 = month-1). 카드에 숫자 인쇄돼 있음 */
+function cardStyle(c){
+  var row = c.month - 1;
+  var x = (c.col/3)*100, y = (row/11)*100;
+  return 'background-position:'+x+'% '+y+'%';
+}
+function cardEl(c, cls){
+  var d=document.createElement('div');
+  d.className='card'+(cls?' '+cls:'');
+  d.style.cssText=cardStyle(c);
+  if(HIDE_IDS[c.id]) d.style.visibility='hidden';
+  d.dataset.id=c.id;
+  return d;
+}
+
+/* ══════════════════════════════════════════════════════════
+   포인트·전적·레벨 (봄이네 사랑방 공용 설계 — game_stats/{uid}.matgo)
+   로컬(localStorage)에 즉시 반영하고 Firestore에 병합 저장.
+   ══════════════════════════════════════════════════════════ */
+var LEVELS=[
+  [0,'화투 새내기'],[30,'피 모으기 달인'],[80,'띠 수집가'],[150,'고도리 사냥꾼'],
+  [250,'광 부자'],[400,'쓰리고 도전자'],[600,'동네 고수'],[850,'사랑방 지존'],
+  [1150,'화투 명인'],[1500,'화투 신선']
+];
+function levelOf(pts){
+  var lv=1,name=LEVELS[0][1],next=null;
+  for(var i=0;i<LEVELS.length;i++){
+    if(pts>=LEVELS[i][0]){ lv=i+1; name=LEVELS[i][1]; next=LEVELS[i+1]?LEVELS[i+1][0]:null; }
+  }
+  return {lv:lv,name:name,next:next};
+}
+var STATS={points:0,wins:0,losses:0,draws:0};
+try{ var s=JSON.parse(localStorage.getItem('matgo_stats')); if(s) STATS=s; }catch(e){}
+function saveStats(){
+  try{ localStorage.setItem('matgo_stats',JSON.stringify(STATS)); }catch(e){}
+  renderStats();
+  // Firestore 동기화 (게임별 필드 구조 — 장기 등 추가 대비)
+  statsFB().then(function(uid){
+    if(!uid) return;
+    firebase.firestore().collection('game_stats').doc(uid)
+      .set({ matgo: STATS, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge:true })
+      .catch(function(){});
+  });
+}
+function renderStats(){
+  var el=document.getElementById('myStats'); if(!el) return;
+  var L=levelOf(STATS.points);
+  el.textContent='🏅 Lv.'+L.lv+' '+L.name+' · '+STATS.points+'P · '+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')
+    +(L.next!==null?' · 다음 레벨까지 '+(L.next-STATS.points)+'P':'');
+}
+// Firebase 지연 로드(정산 때만 필요) + 익명 로그인. 실패해도 게임엔 지장 없음
+var _statsFbReady=null;
+function statsFB(){
+  if(_statsFbReady) return _statsFbReady;
+  _statsFbReady=new Promise(function(res){
+    var srcs=['https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+              'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+              'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js'];
+    var loaded=0;
+    srcs.forEach(function(src){
+      var sc=document.createElement('script'); sc.src=src;
+      sc.onload=sc.onerror=function(){
+        if(++loaded<srcs.length) return;
+        try{
+          if(window.firebase && !firebase.apps.length) firebase.initializeApp({
+            apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+            authDomain:"mylife-650f0.firebaseapp.com",
+            projectId:"mylife-650f0",
+            storageBucket:"mylife-650f0.firebasestorage.app",
+            messagingSenderId:"512010655611",
+            appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+          });
+          // 로그인 세션 복원은 비동기 — onAuthStateChanged로 기다린 뒤 판단.
+          // 앱 어디선가 로그인해 뒀으면 그 계정 uid를 그대로 써서 포인트가 계정에 누적됨.
+          var done=false;
+          var unsub=firebase.auth().onAuthStateChanged(function(u){
+            if(done) return; done=true; if(unsub) unsub();
+            if(u){ res(u.uid); }
+            else firebase.auth().signInAnonymously()
+              .then(function(r){ res(r.user.uid); }).catch(function(){ res(null); });
+          });
+        }catch(e){ res(null); }
+      };
+      document.head.appendChild(sc);
+    });
+  });
+  return _statsFbReady;
+}
+// 접속 시 서버 누적치가 로컬보다 크면(다른 기기 등) 서버 값으로 맞춤
+statsFB().then(function(uid){
+  if(!uid) return;
+  firebase.firestore().collection('game_stats').doc(uid).get().then(function(snap){
+    if(snap.exists && snap.data().matgo){
+      var sv=snap.data().matgo;
+      if((sv.points||0)>=STATS.points){ STATS=sv; try{localStorage.setItem('matgo_stats',JSON.stringify(STATS));}catch(e){} renderStats(); }
+    }
+  }).catch(function(){});
+});
+
+/* ── 배경음악 — 맞고 전용 국악풍 BGM (달콤한 장단) ── */
+var bgmAudio=new Audio('/audio/matgo_bgm.mp3');
+bgmAudio.loop=true; bgmAudio.volume=0.3;
+var BGM_ON=false;
+try{ BGM_ON=localStorage.getItem('matgo_bgm')==='1'; }catch(e){}
+function toggleBgm(){
+  BGM_ON=!BGM_ON;
+  try{ localStorage.setItem('matgo_bgm',BGM_ON?'1':'0'); }catch(e){}
+  document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
+  if(BGM_ON) bgmAudio.play().catch(function(){});
+  else bgmAudio.pause();
+}
+// 이전에 켜뒀으면 첫 터치 때 자동 재개(브라우저 자동재생 제한 대응)
+document.addEventListener('click', function(){ if(BGM_ON&&bgmAudio.paused) bgmAudio.play().catch(function(){}); }, {once:false});
+// 앱을 벗어나면 배경음 정지
+document.addEventListener('visibilitychange', function(){
+  if(document.hidden) bgmAudio.pause();
+  else if(BGM_ON) bgmAudio.play().catch(function(){});
+});
+window.addEventListener('pagehide', function(){ bgmAudio.pause(); });
+
+/* ── 효과음 (Web Audio 합성 — 파일 없이 즉시 재생) ── */
+var AC=null, SND_ON=true;
+try{ SND_ON=localStorage.getItem('matgo_snd')!=='0'; }catch(e){}
+function toggleSnd(){
+  SND_ON=!SND_ON;
+  try{ localStorage.setItem('matgo_snd',SND_ON?'1':'0'); }catch(e){}
+  document.getElementById('sndBtn').textContent=SND_ON?'🔊':'🔇';
+  if(SND_ON) sfx('click');
+}
+function ac(){
+  if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)();
+  if(AC.state==='suspended') AC.resume();
+  return AC;
+}
+function tone(freq,type,dur,vol,when){
+  var ctx=ac(), o=ctx.createOscillator(), g=ctx.createGain();
+  o.type=type; o.frequency.setValueAtTime(freq,when);
+  g.gain.setValueAtTime(0,when);
+  g.gain.linearRampToValueAtTime(vol,when+.012);
+  g.gain.exponentialRampToValueAtTime(.001,when+dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(when); o.stop(when+dur+.02);
+}
+function noiseBurst(dur,vol,when,freq){
+  var ctx=ac(), len=Math.max(1,Math.floor(ctx.sampleRate*dur));
+  var buf=ctx.createBuffer(1,len,ctx.sampleRate), d=buf.getChannelData(0);
+  for(var i=0;i<len;i++) d[i]=Math.random()*2-1;
+  var src=ctx.createBufferSource(); src.buffer=buf;
+  var f=ctx.createBiquadFilter(); f.type='bandpass'; f.frequency.setValueAtTime(freq,when); f.Q.value=0.9;
+  var g=ctx.createGain();
+  g.gain.setValueAtTime(vol,when);
+  g.gain.exponentialRampToValueAtTime(.001,when+dur);
+  src.connect(f); f.connect(g); g.connect(ctx.destination);
+  src.start(when); src.stop(when+dur+.02);
+}
+function sfx(n,delayMs){
+  if(!SND_ON) return;
+  try{
+    var t=ac().currentTime+(delayMs||0)/1000;
+    switch(n){
+      case 'click':   tone(880,'sine',.06,.1,t); break;
+      case 'tick':    noiseBurst(.025,.2,t,2800); break;                          // 배분 한 장(타닥)
+      case 'pick':    tone(520,'triangle',.05,.09,t); break;                       // 패 집기
+      case 'slap':    noiseBurst(.055,.5,t,2100); tone(170,'triangle',.07,.32,t); break; // 패 부딪히는 딱!
+      case 'flip':    noiseBurst(.04,.22,t,3200); break;                           // 더미 뒤집기
+      case 'collect': tone(660,'sine',.05,.07,t); noiseBurst(.03,.1,t,4200); break; // 획득 정렬 슥
+      case 'steal':   tone(300,'sawtooth',.12,.11,t); tone(240,'sawtooth',.12,.09,t+.08); break; // 피 뺏기
+      case 'event':   tone(523,'square',.09,.12,t); tone(784,'square',.13,.12,t+.09); break;     // 뻑·쪽·따닥
+      case 'go':      tone(392,'square',.1,.14,t); tone(523,'square',.1,.14,t+.1); tone(659,'square',.2,.14,t+.2); break; // 고!·흔들기
+      case 'deal':    for(var i=0;i<9;i++) noiseBurst(.028,.16,t+i*.055,3000); break;             // 패 돌리기
+      case 'win':     [523,659,784,1047].forEach(function(f,i){tone(f,'triangle',.24,.18,t+i*.13);}); break;
+      case 'lose':    [392,330,262].forEach(function(f,i){tone(f,'sine',.32,.16,t+i*.18);}); break;
+      case 'draw':    tone(440,'sine',.25,.13,t); tone(440,'sine',.25,.1,t+.3); break;
+    }
+  }catch(e){}
+}
+
+/* ── 카드 이동 애니메이션 ──
+   상태는 즉시 바꾸되, 바뀐 자리의 카드를 잠시 숨기고
+   복제 카드를 출발 위치→도착 위치로 날려서 손맛을 살린다. */
+var HIDE_IDS={};
+function rectOf(el){ var r=el.getBoundingClientRect(); return {x:r.left,y:r.top,w:r.width,h:r.height}; }
+function floorRects(){
+  var m={};
+  document.querySelectorAll('#floor .card').forEach(function(el){ m[el.dataset.id]=rectOf(el); });
+  return m;
+}
+function deckRect(){ var el=document.querySelector('.deck .card'); return el?rectOf(el):{x:innerWidth-70,y:300,w:56,h:87}; }
+function stripRect(who){
+  var el=document.getElementById(who==='me'?'myStrip':'oppStrip');
+  var r=rectOf(el);
+  return {x:r.x+Math.min(Math.max(r.w-34,0), el.querySelectorAll('.card').length*8), y:r.y+2, w:26, h:40};
+}
+function handRect(who,id){
+  if(who==='me'){ var el=document.querySelector('#hand .card[data-id="'+id+'"]'); if(el) return rectOf(el); }
+  var bk=document.getElementById('oppBacks');
+  if(bk&&bk.lastElementChild) return rectOf(bk.lastElementChild);
+  return rectOf(document.querySelector('.opp'));
+}
+function unhide(id){
+  delete HIDE_IDS[id];
+  var el=document.querySelector('.card[data-id="'+id+'"]');
+  if(el) el.style.visibility='visible';
+}
+/* 더미 패 공개: 더미→판 중앙으로 커지며 이동 → 3D로 뒤집어 공개 → 1.5초 보여주기 → cb(중앙 rect) */
+function revealFlip(card, fromRect, cb){
+  sfx('flip');
+  var W=88, H=137;
+  var br=document.querySelector('.board').getBoundingClientRect();
+  var cx=br.left+br.width/2-W/2, cy=br.top+br.height/2-H/2;
+  var wrap=document.createElement('div'); wrap.className='rv';
+  wrap.style.width=fromRect.w+'px'; wrap.style.height=fromRect.h+'px';
+  wrap.style.transform='translate('+fromRect.x+'px,'+fromRect.y+'px)';
+  wrap.style.transition='transform .28s ease, width .28s ease, height .28s ease';
+  var inner=document.createElement('div'); inner.className='rv-inner';
+  var back=document.createElement('div'); back.className='rv-face rv-back';
+  var front=document.createElement('div'); front.className='rv-face rv-front';
+  front.style.cssText+=';'+cardStyle(card);
+  inner.appendChild(back); inner.appendChild(front); wrap.appendChild(inner);
+  document.body.appendChild(wrap);
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    wrap.style.transform='translate('+cx+'px,'+cy+'px)';
+    wrap.style.width=W+'px'; wrap.style.height=H+'px';
+  });});
+  setTimeout(function(){ inner.classList.add('flipped'); sfx('pick'); }, 300);
+  setTimeout(function(){
+    // wrap은 제거하지 않고 호출자에게 넘김 — 바닥으로 이어지는 연속 이동에 재사용
+    cb({x:cx,y:cy,w:W,h:H}, wrap);
+  }, 300+1200); // 뒤집기 포함 1.2초간 보여주고 진행
+}
+
+function flyClone(card, from, to, ms, cb, back){
+  if(!from||!to){ if(cb)cb(); return; }
+  var el = back ? (function(){ var d=document.createElement('div'); d.className='card back'; return d; })() : cardEl(card);
+  el.style.visibility='visible';
+  el.classList.add('fly');
+  el.style.width=from.w+'px'; el.style.height=from.h+'px';
+  el.style.transform='translate('+from.x+'px,'+from.y+'px)';
+  el.style.transition='transform '+ms+'ms cubic-bezier(.35,.75,.35,1), width '+ms+'ms, height '+ms+'ms';
+  document.body.appendChild(el);
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){
+    el.style.transform='translate('+to.x+'px,'+to.y+'px)';
+    el.style.width=to.w+'px'; el.style.height=to.h+'px';
+  });});
+  setTimeout(function(){ el.remove(); if(cb)cb(); }, ms+50);
+}
+
+/* ── 게임 상태 ── */
+var G=null;
+function newGame(){
+  // 배분: 각 10장, 바닥 8장 (2인 맞고 표준)
+  // 이상한 시작(바닥에 같은 달 3장+, 손에 같은 달 4장=총통)은 실제 화투처럼 다시 섞음
+  var deck, me, ai, floor, tries=0;
+  do{
+    deck=shuffle(buildDeck());
+    me=[]; ai=[]; floor=[];
+    for(var i=0;i<10;i++){ me.push(deck.pop()); ai.push(deck.pop()); }
+    for(var i2=0;i2<8;i2++) floor.push(deck.pop());
+    tries++;
+  }while(tries<12 && badDeal(me,ai,floor));
+
+  G={
+    deck:deck,
+    floor:[],                 // [{month, cards:[...]}] 달별 묶음
+    me:{hand:me,cap:[],go:0,shake:0,lastGoScore:0},
+    ai:{hand:ai,cap:[],go:0,shake:0,lastGoScore:0},
+    turn:'me',
+    over:false,
+    busy:false
+  };
+  floor.forEach(floorAdd);
+  sortHand(G.me.hand);
+  dealAnimation();
+}
+function badDeal(me,ai,floor){
+  function counts(arr){ var c={}; arr.forEach(function(x){c[x.month]=(c[x.month]||0)+1;}); return c; }
+  var fm=counts(floor), mm=counts(me), am=counts(ai);
+  for(var m in fm) if(fm[m]>=3) return true;   // 바닥에 같은 달 3장 이상
+  for(var m2 in mm) if(mm[m2]>=4) return true; // 총통(손에 4장)
+  for(var m3 in am) if(am[m3]>=4) return true;
+  return false;
+}
+function sortHand(h){ h.sort(function(a,b){ return a.month-b.month || a.col-b.col; }); }
+
+/* ── 패 배분 연출: 실제 맞고 순서(바닥4→상대5→나5, 두 바퀴)로 타다닥 나눠줌 ── */
+function dealAnimation(){
+  G.busy=true;
+  // 나눠주기 전: 내 손패·바닥 전부 숨기고, 봄이 패는 0장부터 시작
+  var floorCards=[]; G.floor.forEach(function(g){ g.cards.forEach(function(c){ floorCards.push(c); }); });
+  var meCards=G.me.hand.slice();
+  floorCards.concat(meCards).forEach(function(c){ HIDE_IDS[c.id]=1; });
+  window.DEAL_SHOWN=0;
+  render();
+  say('패를 나눠드리고 있어요…');
+
+  // 배분 순서: 바닥4 → 상대5 → 나5 → 바닥4 → 상대5 → 나5
+  var seq=[];
+  floorCards.slice(0,4).forEach(function(c){ seq.push({t:'floor',c:c}); });
+  for(var i=0;i<5;i++) seq.push({t:'opp'});
+  meCards.slice(0,5).forEach(function(c){ seq.push({t:'me',c:c}); });
+  floorCards.slice(4,8).forEach(function(c){ seq.push({t:'floor',c:c}); });
+  for(var i2=0;i2<5;i2++) seq.push({t:'opp'});
+  meCards.slice(5,10).forEach(function(c){ seq.push({t:'me',c:c}); });
+
+  var GAP=112; // 배분 속도 (기존 75ms의 1.5배 느리게)
+  seq.forEach(function(s,i){
+    setTimeout(function(){
+      sfx('tick');
+      var from=deckRect();
+      if(s.t==='opp'){
+        var bk=document.getElementById('oppBacks');
+        var to=rectOf(bk.lastElementChild||bk); to.w=18; to.h=28;
+        flyClone(null, from, to, 270, function(){ window.DEAL_SHOWN++; render(); }, true);
+      } else {
+        var sel=(s.t==='me')?'#hand .card[data-id="'+s.c.id+'"]':'#floor .card[data-id="'+s.c.id+'"]';
+        var el=document.querySelector(sel);
+        var to=el?rectOf(el):deckRect();
+        flyClone(null, from, to, 270, function(){ unhide(s.c.id); }, true);
+      }
+    }, i*GAP);
+  });
+
+  // 배분 종료 → 게임 시작
+  setTimeout(function(){
+    window.DEAL_SHOWN=null;
+    floorCards.concat(meCards).forEach(function(c){ unhide(c.id); }); // 안전장치
+    render();
+    G.busy=false;
+    say('패를 골라주세요');
+    checkShakeOrBomb('me');
+  }, seq.length*GAP+320);
+}
+function floorAdd(c){
+  var g=G.floor.find(function(f){return f.month===c.month;});
+  if(g) g.cards.push(c); else G.floor.push({month:c.month,cards:[c]});
+}
+function floorTake(month){
+  var i=G.floor.findIndex(function(f){return f.month===month;});
+  if(i<0) return [];
+  var cards=G.floor[i].cards; G.floor.splice(i,1); return cards;
+}
+
+/* ── 점수 계산 ── */
+function calcScore(p){
+  var kw=p.cap.filter(function(c){return c.type==='KWANG';});
+  var yl=p.cap.filter(function(c){return c.type==='YEOL';});
+  var tt=p.cap.filter(function(c){return c.type==='TTI';});
+  var piCnt=p.cap.reduce(function(n,c){return n+(c.type==='PI'?1:c.type==='SSANGPI'?2:0);},0);
+  var s=0, parts=[];
+  // 광
+  if(kw.length===5){ s+=15; parts.push(['오광',15]); }
+  else if(kw.length===4){ s+=4; parts.push(['사광',4]); }
+  else if(kw.length===3){
+    var hasBi=kw.some(function(c){return c.tag==='bi';});
+    var v=hasBi?2:3; s+=v; parts.push([hasBi?'비삼광':'삼광',v]);
+  }
+  // 열끗 + 고도리
+  if(yl.length>=5){ var v=yl.length-4; s+=v; parts.push(['열끗 '+yl.length+'장',v]); }
+  if(yl.filter(function(c){return c.tag==='godori';}).length===3){ s+=5; parts.push(['고도리',5]); }
+  // 띠 + 단
+  if(tt.length>=5){ var v=tt.length-4; s+=v; parts.push(['띠 '+tt.length+'장',v]); }
+  ['hong','chung','cho'].forEach(function(tag){
+    if(tt.filter(function(c){return c.tag===tag;}).length===3){
+      s+=3; parts.push([tag==='hong'?'홍단':tag==='chung'?'청단':'초단',3]);
+    }
+  });
+  // 피
+  if(piCnt>=10){ var v=piCnt-9; s+=v; parts.push(['피 '+piCnt+'장',v]); }
+  return { score:s, parts:parts, kw:kw.length, yl:yl.length, tt:tt.length, pi:piCnt };
+}
+
+/* ── 렌더 ── */
+function render(){
+  // 바닥
+  var fl=document.getElementById('floor'); fl.innerHTML='';
+  G.floor.forEach(function(g){
+    var slot=document.createElement('div');
+    slot.className='fslot'+(g.cards.length>=3?' stack3':'');
+    g.cards.forEach(function(c){ slot.appendChild(cardEl(c)); });
+    slot.dataset.month=g.month;
+    fl.appendChild(slot);
+  });
+  document.getElementById('deckN').textContent=G.deck.length;
+  // 상대
+  var ai=calcScore(G.ai);
+  document.getElementById('oppScore').textContent=finalPreview(G.ai,ai.score)+'점';
+  document.getElementById('oppCaps').innerHTML=capBadges(G.ai);
+  document.getElementById('oppHandN').textContent=G.ai.hand.length;
+  var bk=document.getElementById('oppBacks'); bk.innerHTML='';
+  var backN=(window.DEAL_SHOWN!=null)?window.DEAL_SHOWN:G.ai.hand.length; // 배분 중엔 나눠준 만큼만
+  for(var bi=0;bi<backN;bi++){ var b=document.createElement('span'); b.className='b'; bk.appendChild(b); }
+  renderStrip('oppStrip',G.ai.cap);
+  // 나
+  var me=calcScore(G.me);
+  document.getElementById('myScore').textContent=finalPreview(G.me,me.score)+'점';
+  document.getElementById('myCaps').innerHTML=capBadges(G.me);
+  renderStrip('myStrip',G.me.cap);
+  // 손패
+  var hd=document.getElementById('hand'); hd.innerHTML='';
+  var floorMonths={}; G.floor.forEach(function(g){floorMonths[g.month]=1;});
+  G.me.hand.forEach(function(c){
+    var el=cardEl(c,'hand'+(floorMonths[c.month]?' matchable':''));
+    el.onclick=function(){ if(G.turn==='me'&&!G.busy&&!G.over) playCard('me',c); };
+    hd.appendChild(el);
+  });
+}
+// 고/흔들기 배지만 표시 (광·열끗·띠·피 개수는 아래 획득 패 그룹에 이미 나와있어 중복이라 생략)
+function capBadges(p){
+  var out=[];
+  if(p.go) out.push('<b style="color:#A03A3A">'+p.go+'고</b>');
+  if(p.shake) out.push('<span style="color:var(--sage-deep);font-weight:800">흔듦×'+Math.pow(2,p.shake)+'</span>');
+  return out.join(' · ');
+}
+function renderStrip(id,cap){
+  var el=document.getElementById(id); el.innerHTML='';
+  // 실제 화투처럼 광 / 열끗 / 띠 / 피 그룹으로 모아서 정렬
+  var groups=[['광',['KWANG']],['열끗',['YEOL']],['띠',['TTI']],['피',['SSANGPI','PI']]];
+  groups.forEach(function(g){
+    var cards=cap.filter(function(c){return g[1].indexOf(c.type)>=0;});
+    if(!cards.length) return;
+    var box=document.createElement('div'); box.className='cap-group';
+    var lbl=document.createElement('span'); lbl.className='cap-lbl';
+    var n=(g[0]==='피')?cards.reduce(function(s,c){return s+(c.type==='SSANGPI'?2:1);},0):cards.length;
+    lbl.textContent=g[0]+' '+n;
+    box.appendChild(lbl);
+    cards.sort(function(a,b){return a.month-b.month;}).forEach(function(c){ box.appendChild(cardEl(c)); });
+    el.appendChild(box);
+  });
+}
+function finalPreview(p,base){ return base; }
+function say(t){ document.getElementById('turnMsg').textContent=t; }
+function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},1800); }
+function banner(t){
+  var el=document.getElementById('evtBanner'); el.textContent=t; el.style.display='block';
+  sfx(t.indexOf('고')>=0||t.indexOf('흔들')>=0?'go':'event');
+  setTimeout(function(){ el.style.display='none'; },1100);
+  // 배너 문구로 상황을 유추해 봄이 말풍선도 자동으로 반응
+  if(t==='뻑!'||t==='뻑 먹기!'){ bomSay('ppuk'); _bomSaidThisTurn=true; }
+  else if(t==='따닥!'){ bomSay('ddak'); _bomSaidThisTurn=true; }
+  else if(t==='쪽!'){ bomSay('jjok'); _bomSaidThisTurn=true; }
+  else if(t==='싹쓸이!'){ bomSay('sweep'); _bomSaidThisTurn=true; }
+  else if(t==='흔들기!'){ bomSay('shake'); }
+  else if(t.indexOf('고!')>=0){ bomSay('go'); }
+}
+var _bomSaidThisTurn=false;
+var _actor='me'; // 이번 수를 둔 사람 ('me'=할배, 'ai'=봄이) — 말풍선 화자 판단용
+
+/* ══════════════════════════════════════════════════════════
+   봄이 말풍선 — 손녀 말투. 화자별로 대사가 다름:
+   self = 봄이가 한 행동(1인칭), user = 할배가 한 행동(봄이가 옆에서 반응)
+   → "내가 먹었는데 봄이가 '잘 먹었다'" 같은 어긋남 방지
+   ══════════════════════════════════════════════════════════ */
+// 표정: [봄이가 할 때, 할배가 할 때]
+var BOM_FACE = {
+  play:['bom_calm','bom_calm'], capture:['bom_smile','bom_surprise'],
+  cheap:['bom_wink','bom_grin'], ppuk:['bom_surprise','bom_grin'],
+  ddak:['bom_sparkle','bom_surprise'], jjok:['bom_wink','bom_surprise'],
+  sweep:['bom_cheer','bom_surprise'], steal:['bom_grin','bom_sulk_worry'],
+  go:['bom_fab','bom_surprise'], shake:['bom_surprise','bom_surprise'],
+  stop:['bom_calm','bom_calm'], win:['bom_sparkle','bom_sparkle'],
+  lose:['bom_sulk_worry','bom_sulk_worry'], draw:['bom_sleepy','bom_sleepy']
+};
+var BOM_LINES = {
+  play:{ // 매치 없이 그냥 냄
+    self:['음, 이건 그냥 깔아둘게요~','패가 애매해서 일단 놓을게요','흠… 여기다 살짝 놓아둘게요','이번엔 밑밥부터 깔아봐요','다음 수를 위해 아껴둘게요','자, 이 패는 여기요!','짝이 없네요, 그냥 둘게요','일단 손 좀 풀어볼게요','요건 나중을 위해 남겨둘게요','에잇, 짝이 안 붙네 그냥 놓자','이 패는 살짝 던져만 둘게요','흐음, 판을 좀 지켜봐야겠어요','바닥에 하나 깔아두고 기다려요','아직은 참을 때예요, 살짝!','이번엔 얌전히 한 장만 놓을게요','다음 패가 임자를 데려오겠죠'],
+    user:['음, 그 패는 짝이 없네요','다음 패를 노리시는군요!','오, 신중하게 두시네요','밑밥 까시는 거예요? 헤헤','할배 수가 깊으신데요?','그것도 나름 작전이죠!','짝꿍이 없어서 아쉽네요','저는 뭐 나오나 지켜볼게요','오호, 조용히 한 장 놓으시네','뭔가 노리시는 눈빛인데요?','할배 포커페이스 대단하세요','그 패, 다음에 쓰시려고요?','흐음, 저도 긴장되는데요','바닥이 점점 쌓이네요~','신중하신 거 보니 고수신데요','저 몰래 작전 짜시는 거죠?'],
+  },
+  capture:{ // 일반 매치 먹기
+    self:['옳지! 짝 맞았다~','헤헤, 이건 제 거예요!','짝짝! 딱 맞췄어요','한 장 챙겼습니다, 좋아요!','냠냠, 잘 먹었어요!','오호, 딱 걸렸네요','짝꿍 찾았다, 신난다!','이건 놓칠 수 없죠~','요 패는 제가 쏙 가져가요','딱 붙었네요, 기분 좋다!','짝 맞는 소리가 제일 좋아요','한 장 두 장 모아볼게요~','이거 임자는 저예요, 헤헤','오늘 손이 잘 붙는데요?','제 짝꿍 데려왔어요!','살포시 한 장 접수합니다~'],
+    user:['오, 잘 가져가셨어요!','할배 짝 맞추셨네요, 굿!','아이고 그걸 채가시네요','좋은 패 챙기셨어요~','역시 할배 눈썰미!','한 장 잘 드셨네요 헤헤','에잉, 그거 탐났는데!','깔끔하게 먹으셨어요!','우와 딱 붙이셨네요!','할배 손이 매섭네요~','그거 제가 노렸던 건데 ㅠ','짝 맞추는 솜씨가 좋으세요','오늘 할배 컨디션 좋으신데요','한 수 배우고 갑니다!','아깝다, 제 짝꿍이었는데','살살 좀 해주세요 헤헤'],
+  },
+  cheap:{ // 피 한 장만 먹음
+    self:['에잉, 겨우 피 한 장이네요','피 한 장도 소중하죠, 헤헤','티끌 모아 태산이랬어요!','자잘해도 챙겨야죠~','오늘은 알뜰하게 모아요','작지만 알찬 한 수였어요','피 한 장, 이것도 점수예요','소소하게 한 장 줍줍!','피도 열 장 모으면 무섭죠','작은 게 나중에 큰 힘이 돼요','에계, 그래도 안 놓쳐요','피 부자 되는 게 꿈이에요~'],
+    user:['피 한 장 챙기셨네요','에계, 그것만 드셨어요? 헤헤','알뜰하게 주우셨네요','피도 모으면 점수죠!','소소하게 한 장 가져가시네','피 욕심 나셨나 봐요~','작은 것도 안 놓치시네요','피 한 장도 야무지게!','할배 알뜰하신데요 헤헤','티끌 모아 태산이래요, 굿!','그 피 저도 필요했는데~','피 모으기 작전이시군요!'],
+  },
+  ppuk:{ // 뻑
+    self:['어멋, 제가 뻑이 났어요!','아이고 뻑 났네, 아쉬워라','흐음, 이번엔 제가 뻑이에요','셋이 겹쳤어요, 뻑…','뻑 나면 저도 조마조마해요','다음 패가 임자를 가려주겠죠','아이참, 못 먹고 쌓였네요','뻑이라 다음 기회를 봐야죠','셋이 뭉쳐서 그냥 뻑이에요','괜찮아요, 뻑도 재미죠 헤헤','으으 뻑, 이럴 줄 몰랐어요','뻑 났지만 웃으며 넘길게요~'],
+    user:['어머, 할배 뻑 나셨네요!','아이고 뻑이다 뻑! 헤헤','셋이 겹쳤어요, 할배 뻑!','뻑 나면 다음 기회 노려요','저런, 뻑이라 아쉽겠어요','뻑은 인생이죠 뭐, 헤헤','에구, 못 드시고 쌓였네요','할배 뻑! 저는 살짝 신나요','괜찮아요, 다음에 왕창 드세요','뻑 나도 기죽지 마세요!','저 쌓인 패 나중에 임자 생겨요','앗 뻑, 판이 재밌어지는데요?'],
+  },
+  ddak:{ // 따닥
+    self:['따닥이다! 완전 신나요!','우와 제 따닥, 못 참죠!','따닥 터졌다, 대박이에요!','따닥 한 방에 분위기 반전!','헤헤 따닥은 정말 짜릿해요','짝짝, 제가 따닥 냈어요!','따닥으로 한 번에 쓸어담아요','이 맛에 화투 치는 거죠, 따닥!','두 장 동시에, 완전 럭키!','따닥 소리에 제 어깨가 들썩','오늘 운 좋다, 따닥까지!','따닥 나오면 심장이 쿵쾅쿵쾅'],
+    user:['우와 할배 따닥이에요!','대박, 따닥 축하드려요!','따닥이라니 부러운데요!','할배 오늘 운 좋으신데요?','짝짝짝, 멋진 따닥이에요','따닥 나오니 저도 놀랐어요!','할배 따닥, 완전 멋있어요!','두 장이나 한 번에, 대단!','아이고 따닥까지, 못 이기겠네','오늘 할배한테 운이 붙었네요','따닥이라니, 손녀 기죽어요 ㅠ','저도 따닥 한 번 내보고 싶다!'],
+  },
+  jjok:{ // 쪽
+    self:['쪽이에요, 한 장 더 챙겼어요!','오호라 쪽! 재밌는 걸요','쪽 났어요, 운이 따라주네요','살짝 걸렸어요, 쪽이네요','쪽 나니까 기분 좋아요~','제가 쪽으로 주웠어요!','쪽 소리 나면 괜히 신나요','생각지도 못한 쪽, 럭키!','바닥에서 쏙, 쪽이에요','오늘 쪽 운이 좋은데요?','쪽으로 슬쩍 한 장 더!','이런 게 쪽의 묘미죠 헤헤'],
+    user:['오, 할배 쪽이에요!','쪽 나셨네요, 운 좋으신데!','한 장 더 챙기셨어요, 쪽!','아잉 그걸 쪽으로 가져가시네','쪽이라니 얄미운데요? 헤헤','살짝 걸리셨네요, 쪽!','할배 쪽 운도 좋으시네요','쪽까지, 오늘 대단하세요!','어머 쪽, 얄밉게 잘 가져가셔','바닥에서 쏙 빼가시네요~','쪽 나니까 할배 신나셨죠?','저도 쪽 한 번 나봤으면!'],
+  },
+  sweep:{ // 싹쓸이
+    self:['싹쓸이다! 바닥이 텅텅!','우와아 제가 싹쓸이했어요!','바닥을 싹 쓸어담았어요~','싹쓸이 한 방, 최고예요!','완전 알뜰하게 쓸었죠?','바닥 깨끗! 기분 좋다!','싹쓸이하면 피도 따라와요','판을 싹 정리했네요, 시원!','바닥이 반짝반짝 깨끗해요','오늘의 명장면, 싹쓸이!','쓸어담는 이 맛, 못 잃죠~','싹쓸이 나오면 어깨춤 나요'],
+    user:['우와 할배 싹쓸이!','바닥을 싹 쓸어가시네요!','싹쓸이라니 대단하세요!','아이고 다 가져가셨어요','완전 깔끔하게 쓰셨네요','싹쓸이 축하드려요, 헤헤','할배 싹쓸이, 못 말려요!','바닥이 텅 비었어요, 대박','피까지 따라가네요, 아깝다','오늘 할배 손이 무섭네요','싹쓸이라니 손녀 울고 싶다 ㅠ','완전 시원하게 쓰셨어요!'],
+  },
+  steal:{ // 피 뺏김/뺏음
+    self:['할배 피 한 장 슬쩍 가져갈게요~','헤헤, 이 피는 제가 챙길게요','한 장 슬쩍! 미안해요 헤헤','저 피 욕심 많아요~ 미안!','피 뺏는 맛이 쏠쏠하죠?','미안해요, 이 피는 제 거!','할배 피 하나만 빌려갈게요','살짝 실례, 피 한 장!','이런 게 화투의 밀당이죠~','피 한 장에 승부가 갈려요','미안하지만 안 돌려드려요 헤헤','할배 피, 제가 잘 키울게요~'],
+    user:['앗, 제 피 가져가셨어요!','아잉 제 피를… 다음엔 조심!','에잉, 피 뺏기다니 분해요','할배 피 욕심 많으시네요!','제 피가… 흑, 돌려주세요~','피 싸움에서 밀렸네요 ㅠ','아이고 제 피 어디 가요!','할배 얄미워요, 제 피를!','피 뺏기니까 오기 생겨요','두고 봐요, 다시 뺏어올 거예요','제 소중한 피가… 훌쩍','할배도 참 야무지시네요~'],
+  },
+  go:{ // 고 선언
+    self:['고! 끝까지 가볼게요!','흐흐, 여기서 멈출 순 없죠. 고!','한 발 더! 고 하겠습니다','조금만 더 욕심내볼게요, 고!','오늘 운 좋아요, 고!','승부는 지금부터죠, 고!','아직 안 끝났어요, 고!','기왕 이렇게 된 거 고!','손에 패가 좋아서 고 할게요','고박은 걱정 마세요, 고!','더 크게 먹어볼게요, 고고!','심장이 두근두근, 그래도 고!'],
+    user:['오, 할배 고 하셨네요!','우와 배짱 좋으신데요, 고!','고라니… 저 긴장돼요!','끝까지 가시는군요, 좋아요!','고박 조심하세요, 헤헤','할배 승부사시네요, 고!','할배 고! 저 떨리는데요','대범하시다, 고를 부르시네','고 하셨으니 각오하셔야 해요','오늘 할배 자신감 넘치시네요','저도 지지 않을 거예요, 고!','고박 나면 제가 웃어요? 헤헤'],
+  },
+  shake:{ // 흔들기
+    self:['제가 흔들었어요, 점수 두 배!','흔들기 갑니다, 각오하세요!','세 장 들고 있었죠, 흔들기!','판돈 키워볼게요, 흔들!','흔들기로 한 방 노려요!','두 배 판, 자신 있어요!','흔들었으니 이겨야겠죠?','오늘 크게 한 번 가봅니다!'],
+    user:['우와 할배 흔들기예요!','세 장이나 들고 계셨다니!','흔들기라니 판이 커지는데요?','대단해요, 점수 두 배네요!','할배 배짱에 손녀 놀랐어요','판돈 두 배, 긴장되는데요','흔들기 부르시네, 고수시다!','두 배라니, 이번 판 무섭다!'],
+  },
+  stop:{ // 봄이가 스톱 (AI만)
+    self:['오늘은 여기까지! 스톱할게요','안전하게 스톱이 좋겠어요','고박 위험은 피할래요, 스톱','챙길 건 챙기고 스톱!','적당한 게 최고죠, 스톱!','이 정도면 만족, 스톱!','욕심부리다 탈나요, 스톱','기분 좋게 스톱할게요~','여기서 멈추는 게 현명해요','스톱하고 웃으며 마무리!','더 갔다간 큰일나요, 스톱','안전제일, 스톱입니다!'],
+    user:[]
+  },
+  win:{ // 봄이 승리
+    self:['야호! 오늘은 제가 이겼어요!','헤헤 제가 한 수 위였네요~','오늘의 승자는 저예요, 짜잔!','완전 신나요, 이겼어요!','할배, 다음엔 꼭 이기세요!','운도 실력이죠, 제가 이겼네요','다음 판도 자신 있어요!','이겼다고 너무 부러워 마세요 헤헤','제가 이겼지만 재밌으셨죠?','오늘은 손녀가 세네요, 헤헤','승리의 기쁨, 짜릿해요!','한 판 더 하면 또 이길지도?','할배 봐드린 거 아니에요~','제 화투 실력 어떠셨어요?','이겨서 기분 최고예요!','다음엔 할배도 응원할게요~'],
+    user:[]
+  },
+  lose:{ // 봄이 패배
+    self:['아잉, 오늘은 제가 졌네요','할배가 한 수 위셨어요!','으엥 분해요, 한 판 더 해요!','졌지만 재밌었어요, 헤헤','다음엔 꼭 설욕할 거예요!','오늘의 승자는 할배시네요','속상하지만 인정할게요','다음 판에서 만회할게요!','할배 실력에 두 손 들었어요','오늘은 할배가 운이 좋으셨죠','졌어도 할배랑 노니 좋아요','다음엔 안 봐드릴 거예요!','분하다, 딱 한 끗 차이였는데','할배 축하드려요, 대단하세요','제가 배울 게 많네요 헤헤','복수전 신청합니다, 콜?'],
+    user:[]
+  },
+  draw:{ // 나가리
+    self:['어라, 이번 판은 나가리네요','둘 다 아쉽게 됐어요, 헤헤','나가리도 승부의 일부죠!','비긴 것도 나쁘지 않아요','자, 다시 한 판 어때요?','이런 날도 있는 거죠 헤헤','무승부라니 얼떨떨해요','둘 다 잘해서 못 정했네요','다음 판에서 제대로 붙어요!','나가리는 은근 아쉬워요','비겼으니 다시 한 판 콜?','피장파장, 재밌었어요 헤헤'],
+    user:[]
+  }
+};
+/* 드라마틱한 대사(뻑/따닥/쪽/싹쓸이)는 평범한 대사에 덮이지 않게 우선순위+최소 유지시간 */
+var BOM_PRIORITY = {
+  play:1, capture:1, cheap:1,
+  ppuk:2, ddak:2, jjok:2, sweep:2, steal:2, shake:2,
+  go:3, stop:3, win:3, lose:3, draw:3
+};
+/* ══════════════════════════════════════════════════════════
+   봄이 말투(사투리) — 표준 대사 1벌을 말끝 변환 필터로 각 지역/애교체로 바꿈.
+   나중에 ElevenLabs 음성도 말투당 1개만 준비하면 됨.
+   ══════════════════════════════════════════════════════════ */
+var TONES=[
+  {id:'std', label:'표준 손녀', emoji:'🙂', desc:'밝고 명랑한 서울 손녀'},
+  {id:'gs',  label:'경상도',   emoji:'💪', desc:'툭툭 던져도 정 많은 손녀'},
+  {id:'jl',  label:'전라도',   emoji:'🌻', desc:'구성지고 애교 넘치는 손녀'},
+  {id:'cc',  label:'충청도',   emoji:'🌾', desc:'느긋하고 순한 손녀'},
+  {id:'ae',  label:'애교 콧소리', emoji:'🥰', desc:'어리광 부리는 막내 손녀'}
+];
+var BOM_TONE='std';
+try{ BOM_TONE=localStorage.getItem('matgo_tone')||'std'; }catch(e){}
+
+/* 어미 변환 규칙: [정규식, 대체] — 문장 끝(구두점/공백/끝) 앞의 표준 어미를 지역 어미로.
+   긴 패턴을 먼저 두어 부분매칭 오작동 방지. */
+var TONE_RULES={
+  gs:[ // 경상도
+    [/했습니다(?=[!?~.,\s]|$)/g,'했심더'],[/습니다(?=[!?~.,\s]|$)/g,'심더'],
+    [/거예요(?=[!?~.,\s]|$)/g,'끼라예'],[/예요(?=[!?~.,\s]|$)/g,'라예'],[/에요(?=[!?~.,\s]|$)/g,'라예'],
+    [/했어요(?=[!?~.,\s]|$)/g,'했다 아이가'],[/봤어요(?=[!?~.,\s]|$)/g,'봤다 아이가'],
+    [/네요(?=[!?~.,\s]|$)/g,'네예'],[/까요(?=[!?~.,\s]|$)/g,'까예'],[/세요(?=[!?~.,\s]|$)/g,'이소'],
+    [/어요(?=[!?~.,\s]|$)/g,'어예'],[/아요(?=[!?~.,\s]|$)/g,'아예'],[/해요(?=[!?~.,\s]|$)/g,'해예'],
+    [/이죠(?=[!?~.,\s]|$)/g,'이제'],[/죠(?=[!?~.,\s]|$)/g,'지예'],[/데요(?=[!?~.,\s]|$)/g,'데예'],
+    [/거든요(?=[!?~.,\s]|$)/g,'거든예'],[/군요(?=[!?~.,\s]|$)/g,'구마'],[/걸요(?=[!?~.,\s]|$)/g,'구마'],
+    [/할게요(?=[!?~.,\s]|$)/g,'할게예'],[/볼게요(?=[!?~.,\s]|$)/g,'볼게예'],[/게요(?=[!?~.,\s]|$)/g,'게예']
+  ],
+  jl:[ // 전라도
+    [/했습니다(?=[!?~.,\s]|$)/g,'했구만이라'],[/습니다(?=[!?~.,\s]|$)/g,'구만이라'],
+    [/거예요(?=[!?~.,\s]|$)/g,'거랑께'],[/예요(?=[!?~.,\s]|$)/g,'이라'],[/에요(?=[!?~.,\s]|$)/g,'이라'],
+    [/네요(?=[!?~.,\s]|$)/g,'네잉'],[/까요(?=[!?~.,\s]|$)/g,'까라'],[/세요(?=[!?~.,\s]|$)/g,'씨요'],
+    [/했어요(?=[!?~.,\s]|$)/g,'했어라'],[/어요(?=[!?~.,\s]|$)/g,'어라'],[/아요(?=[!?~.,\s]|$)/g,'아라'],[/해요(?=[!?~.,\s]|$)/g,'해라'],
+    [/이죠(?=[!?~.,\s]|$)/g,'이제'],[/죠(?=[!?~.,\s]|$)/g,'제'],[/데요(?=[!?~.,\s]|$)/g,'디요'],
+    [/거든요(?=[!?~.,\s]|$)/g,'거든이라'],[/군요(?=[!?~.,\s]|$)/g,'구만'],[/걸요(?=[!?~.,\s]|$)/g,'것이요'],
+    [/할게요(?=[!?~.,\s]|$)/g,'할라요'],[/볼게요(?=[!?~.,\s]|$)/g,'볼라요'],[/게요(?=[!?~.,\s]|$)/g,'게라']
+  ],
+  cc:[ // 충청도
+    [/했습니다(?=[!?~.,\s]|$)/g,'했슈'],[/습니다(?=[!?~.,\s]|$)/g,'슈'],
+    [/거예요(?=[!?~.,\s]|$)/g,'거유'],[/예요(?=[!?~.,\s]|$)/g,'유'],[/에요(?=[!?~.,\s]|$)/g,'유'],
+    [/네요(?=[!?~.,\s]|$)/g,'네유'],[/까요(?=[!?~.,\s]|$)/g,'까유'],[/세요(?=[!?~.,\s]|$)/g,'세유'],
+    [/어요(?=[!?~.,\s]|$)/g,'어유'],[/아요(?=[!?~.,\s]|$)/g,'아유'],[/해요(?=[!?~.,\s]|$)/g,'해유'],
+    [/이죠(?=[!?~.,\s]|$)/g,'이쥬'],[/죠(?=[!?~.,\s]|$)/g,'쥬'],[/데요(?=[!?~.,\s]|$)/g,'데유'],
+    [/거든요(?=[!?~.,\s]|$)/g,'거든유'],[/군요(?=[!?~.,\s]|$)/g,'구먼유'],[/걸요(?=[!?~.,\s]|$)/g,'걸유'],
+    [/게요(?=[!?~.,\s]|$)/g,'게유']
+  ],
+  ae:[ // 애교 콧소리
+    [/예요(?=[!?~.,\s]|$)/g,'예용'],[/에요(?=[!?~.,\s]|$)/g,'에용'],[/네요(?=[!?~.,\s]|$)/g,'네용'],
+    [/까요(?=[!?~.,\s]|$)/g,'까용'],[/세요(?=[!?~.,\s]|$)/g,'세용'],[/어요(?=[!?~.,\s]|$)/g,'어용'],
+    [/아요(?=[!?~.,\s]|$)/g,'아용'],[/해요(?=[!?~.,\s]|$)/g,'해용'],[/죠(?=[!?~.,\s]|$)/g,'죠옹'],
+    [/데요(?=[!?~.,\s]|$)/g,'데용'],[/게요(?=[!?~.,\s]|$)/g,'게용'],[/군요(?=[!?~.,\s]|$)/g,'군뇽'],
+    [/습니다(?=[!?~.,\s]|$)/g,'어용']
+  ]
+};
+function toneApply(text){
+  if(BOM_TONE==='std' || !TONE_RULES[BOM_TONE]) return text;
+  var t=text;
+  TONE_RULES[BOM_TONE].forEach(function(r){ t=t.replace(r[0], r[1]); });
+  if(BOM_TONE==='ae' && Math.random()<0.5 && !/[♡~]/.test(t.slice(-1))) t=t.replace(/([!.])?$/,'♡');
+  return t;
+}
+function setTone(id){
+  BOM_TONE=id;
+  try{ localStorage.setItem('matgo_tone', id); }catch(e){}
+  var t=TONES.find(function(x){return x.id===id;});
+  document.getElementById('toneOverlay').classList.remove('on');
+  // 선택 즉시 미리듣기 말풍선
+  var bubble=document.getElementById('bomBubble');
+  if(bubble){
+    _bomLastPriority=0;
+    var greet={std:'안녕하세요, 봄이예요! 잘 부탁해요~',gs:'안녕하세요, 봄이라예! 잘 부탁합니데이~',
+      jl:'안녕하세요잉, 봄이어라~ 잘 부탁해라!',cc:'안녕하세유, 봄이유~ 천천히 놀아유',
+      ae:'안뇽하세용, 봄이예용! 잘 부탁해용♡'}[id];
+    bubble.textContent=greet;
+    document.getElementById('bomFaceImg').src='/img/bom_wink.png';
+    bubble.classList.add('show');
+    if(_bomHideTimer) clearTimeout(_bomHideTimer);
+    _bomHideTimer=setTimeout(function(){ bubble.classList.remove('show'); document.getElementById('bomFaceImg').src='/img/bom_smile.png'; }, 2600);
+  }
+}
+function openTonePicker(){
+  var box=document.getElementById('toneList');
+  box.innerHTML=TONES.map(function(t){
+    return '<button class="tone-item'+(t.id===BOM_TONE?' on':'')+'" onclick="setTone(\''+t.id+'\')">'+
+      '<span class="te">'+t.emoji+'</span><span class="tl"><b>'+t.label+'</b><span>'+t.desc+'</span></span>'+
+      (t.id===BOM_TONE?'<span class="tk">✓</span>':'')+'</button>';
+  }).join('');
+  document.getElementById('toneOverlay').classList.add('on');
+}
+
+var _bomHideTimer=null, _bomLastAt=0, _bomLastPriority=0;
+// who='ai'(봄이가 함) → self 대사, who='me'(할배가 함) → user 대사. 생략 시 현재 턴 액터.
+function bomSay(cat, who, force){
+  var set=BOM_LINES[cat]; if(!set) return;
+  var persp=(who||_actor)==='ai'?0:1;
+  var lines=persp===0?set.self:(set.user&&set.user.length?set.user:null);
+  if(!lines) return;                                   // user 대사가 없으면 침묵
+  lines=lines.filter(function(x){return x;});          // 빈 문자열 제거
+  if(!lines.length) return;
+  var bubble=document.getElementById('bomBubble'); if(!bubble) return;
+  var pr=BOM_PRIORITY[cat]||1, now=Date.now();
+  if(!force && bubble.classList.contains('show') && pr<=_bomLastPriority && (now-_bomLastAt)<1500) return;
+  _bomLastAt=now; _bomLastPriority=pr;
+  bubble.textContent=toneApply(lines[Math.floor(Math.random()*lines.length)]);
+  var img=document.getElementById('bomFaceImg');
+  var face=BOM_FACE[cat]?BOM_FACE[cat][persp]:null;
+  if(img && face) img.src='/img/'+face+'.png';
+  bubble.classList.add('show');
+  if(_bomHideTimer) clearTimeout(_bomHideTimer);
+  var hold = pr>=2 ? 2200 : 1600;
+  _bomHideTimer=setTimeout(function(){
+    bubble.classList.remove('show');
+    if(img) img.src='/img/bom_smile.png';
+    _bomLastPriority=0;
+  }, hold);
+}
+
+/* ── 모달 ── */
+function modal(title, bodyHTML, btns){
+  document.getElementById('mmTitle').textContent=title;
+  document.getElementById('mmBody').innerHTML=bodyHTML;
+  var bx=document.getElementById('mmBtns'); bx.innerHTML='';
+  btns.forEach(function(b){
+    var el=document.createElement('button');
+    el.className='mm-btn'+(b.sub?' sub':''); el.textContent=b.label;
+    el.onclick=function(){ sfx('click'); closeModal(); if(b.fn)b.fn(); };
+    bx.appendChild(el);
+  });
+  document.getElementById('mmOverlay').classList.add('on');
+}
+function closeModal(){ document.getElementById('mmOverlay').classList.remove('on'); }
+
+/* ── 흔들기/폭탄 감지 ── */
+function checkShakeOrBomb(who){
+  if(who!=='me') return;
+  var byM={};
+  G.me.hand.forEach(function(c){ if(!byM[c.month]) byM[c.month]=[]; byM[c.month].push(c); });
+  for(var m in byM){
+    if(byM[m].length>=3 && !G.me['asked'+m]){
+      G.me['asked'+m]=1;
+      var mm=m;
+      // 실제로 들고 있는 그 달의 패 3장 이미지를 그대로 보여줌
+      var cardsHtml=byM[m].slice(0,3).map(function(c){
+        return '<div class="card" style="'+cardStyle(c)+';width:58px;height:90px;display:inline-block;vertical-align:middle;margin:0 3px"></div>';
+      }).join('');
+      modal('흔들기',
+        mm+'월 패를 3장 들고 계세요!<div style="margin:12px 0;text-align:center">'+cardsHtml+'</div>흔들면 이번 판 점수가 <b>2배</b>가 됩니다.<br>(대신 상대에게 패가 알려져요)',
+        [{label:'흔들기! (점수 2배)',fn:function(){ G.me.shake++; banner('흔들기!'); render(); }},
+         {label:'그냥 하기',sub:true}]);
+      return;
+    }
+  }
+}
+
+/* ── 턴 진행 ──
+   1) 손패 제출 → 바닥 매칭
+   2) 더미 뒤집기 → 매칭
+   3) 특수(뻑/쪽/따닥/싹쓸이) 처리 → 획득
+   4) 점수 확인 → 고/스톱 */
+/* 같은 달 그룹에서 특정 카드들만 빼오기(나머지는 바닥에 남음) */
+function takeFromGroup(month, ids){
+  var g=G.floor.find(function(f){return f.month===month;});
+  if(!g) return [];
+  var taken=[];
+  g.cards=g.cards.filter(function(c){ if(ids.indexOf(c.id)>=0){ taken.push(c); return false; } return true; });
+  if(!g.cards.length) G.floor.splice(G.floor.indexOf(g),1);
+  return taken;
+}
+
+/* 같은 달 패 2장 중 어느 것을 가져올지 선택 (나=화면 선택, 봄이=가치 높은 쪽 자동) */
+function chooseCard(who, cards, cb){
+  if(who!=='me'){
+    cb(cards.slice().sort(function(a,b){return cardValue(b)-cardValue(a);})[0]);
+    return;
+  }
+  sfx('click');
+  var box=document.getElementById('chCards'); box.innerHTML='';
+  cards.forEach(function(c){
+    var el=cardEl(c);
+    el.style.cssText+=';width:96px;height:150px;cursor:pointer;visibility:visible';
+    el.onclick=function(){
+      document.getElementById('chOverlay').classList.remove('on');
+      sfx('pick'); cb(c);
+    };
+    box.appendChild(el);
+  });
+  document.getElementById('chOverlay').classList.add('on');
+}
+
+/* 착지 내리치기: 카드 펀치 + 판 흔들림 + 딱! */
+function slamAt(id){
+  var el=document.querySelector('#floor .card[data-id="'+id+'"]');
+  if(el){ el.classList.add('slam'); setTimeout(function(){ el.classList.remove('slam'); },240); }
+  var bd=document.querySelector('.board');
+  if(bd){ bd.classList.add('bshake'); setTimeout(function(){ bd.classList.remove('bshake'); },220); }
+  sfx('slap');
+}
+
+function playCard(who, card){
+  G.busy=true;
+  var p=G[who==='me'?'me':'ai'];
+  sfx('pick');
+  _bomSaidThisTurn=false;
+  _actor=who;
+
+  var startRect=handRect(who, card.id);     // 애니 출발점(손패/봄이 패)
+  var preRects=floorRects();                 // 획득 애니용: 바닥 카드들의 현재 위치
+  var animFrom={};                           // 카드id → 출발 rect
+  animFrom[card.id]=startRect;
+
+  p.hand.splice(p.hand.indexOf(card),1);
+
+  var capture=[];   // 이번 턴 획득 예정
+  var steals=0;     // 상대 피 뺏기 횟수
+  var playedGroup=G.floor.find(function(f){return f.month===card.month;});
+  var playedMatched=false, playedLaidId=null, chosenPlayId=null, isPpuk=false;
+
+  // 배치 이후 진행(1단계 비행 → 뒤집기)
+  function proceed(){
+    var cardOnFloor=(playedMatched==='pending1'||playedMatched==='pending2'||playedLaidId);
+    if(cardOnFloor) HIDE_IDS[card.id]=1;
+    render();
+
+    var afterPlay=function(){
+      if(cardOnFloor){ unhide(card.id); slamAt(card.id); }
+
+      setTimeout(function(){
+        // ── 더미 뒤집기: 판 중앙 공개(1.2초) 후 매칭 진행 ──
+        var flip=G.deck.pop();
+        if(!flip){ finishTurn(who,capture,steals,animFrom); return; }
+        var dR=deckRect();
+        toast((who==='me'?'':'봄이 · ')+'더미에서 '+flip.month+'월 패가 나왔어요');
+
+        revealFlip(flip, dR, function(centerRect, revealEl){
+          var fid=flip.id;
+          animFrom[fid]=centerRect;
+          var preRects2=floorRects();
+          var flipGroup=G.floor.find(function(f){return f.month===flip.month;});
+          var flipOnFloor=false;
+
+          // 매칭된 짝 위에 내리치는 연출: 정중앙이 아니라 실제 화투처럼 살짝 사선 아래로 겹쳐 내려찍음
+          function slamThen(targetRect){
+            if(!revealEl||!targetRect){ if(revealEl){revealEl.remove();revealEl=null;} finishFlip(); return; }
+            var tgt={x:targetRect.x+10, y:targetRect.y+16, w:targetRect.w, h:targetRect.h};
+            revealEl.style.transition='transform .32s cubic-bezier(.35,.75,.35,1), width .32s ease, height .32s ease';
+            revealEl.style.transform='translate('+tgt.x+'px,'+tgt.y+'px)';
+            revealEl.style.width=tgt.w+'px'; revealEl.style.height=tgt.h+'px';
+            setTimeout(function(){
+              sfx('slap');
+              var bd=document.querySelector('.board');
+              if(bd){ bd.classList.add('bshake'); setTimeout(function(){bd.classList.remove('bshake');},200); }
+              animFrom[fid]=tgt;  // 획득 비행은 짝 위치(사선 아래)에서 출발
+              setTimeout(function(){ if(revealEl){revealEl.remove();revealEl=null;} finishFlip(); }, 260);
+            }, 320);
+          }
+
+          // 뒤집기 매칭 결과 확정 후 마무리(비행/정산)
+          function finishFlip(){
+            if(capture.length && G.floor.length===0 && G.deck.length>0){
+              banner('싹쓸이!'); steals++;
+            }
+            if(flip && flipOnFloor) HIDE_IDS[flip.id]=1;
+            render();
+            if(flip && flipOnFloor){
+              // 공개된 카드가 중앙에서 실제 바닥 자리로 끊김 없이 이어서 이동
+              var fDest=document.querySelector('#floor .card[data-id="'+flip.id+'"]');
+              var tr=fDest?rectOf(fDest):null;
+              if(tr && revealEl){
+                revealEl.style.transition='transform .32s cubic-bezier(.35,.75,.35,1), width .32s ease, height .32s ease';
+                revealEl.style.transform='translate('+tr.x+'px,'+tr.y+'px)';
+                revealEl.style.width=tr.w+'px'; revealEl.style.height=tr.h+'px';
+                setTimeout(function(){
+                  revealEl.remove();
+                  unhide(flip.id); slamAt(flip.id);
+                  finishTurn(who,capture,steals,animFrom);
+                }, 360);
+              } else {
+                if(revealEl) revealEl.remove();
+                flyClone(flip, centerRect, tr, 320, function(){
+                  unhide(flip.id); slamAt(flip.id);
+                  finishTurn(who,capture,steals,animFrom);
+                });
+              }
+            } else {
+              // 획득되는 패: 정산 비행이 중앙 위치에서 시작하므로 공개 카드는 여기서 제거
+              if(revealEl) revealEl.remove();
+              finishTurn(who,capture,steals,animFrom);
+            }
+          }
+
+          if(playedMatched==='pending1' && flip.month===card.month){
+            // 뻑! 내 패+바닥패+뒤집은 패 3장이 같은 달 → 못 먹고 쌓임
+            flipGroup.cards.push(flip);
+            banner('뻑!');
+            playedMatched=false; flipOnFloor=true;
+            finishFlip();
+          }
+          else if(playedMatched==='pending2' && flip.month===card.month){
+            // 따닥! 4장 모두 획득 + 피 뺏기
+            var gd=G.floor.find(function(f){return f.month===card.month;});
+            var tgtDd=preRects2[gd.cards[0].id];
+            gd.cards.forEach(function(c){ if(!animFrom[c.id]) animFrom[c.id]=preRects2[c.id]||preRects[c.id]; });
+            capture=capture.concat(floorTake(card.month)); capture.push(flip);
+            banner('따닥!'); steals++;
+            playedMatched=true; flip=null;
+            slamThen(tgtDd);
+          }
+          else {
+            // 낸 패 확정 처리
+            if(playedMatched==='pending1'){
+              var gp=G.floor.find(function(f){return f.month===card.month;});
+              gp.cards.forEach(function(c){ if(!animFrom[c.id]) animFrom[c.id]=preRects2[c.id]||preRects[c.id]; });
+              capture=capture.concat(floorTake(card.month));
+              playedMatched=true;
+              if(isPpuk){ steals++; banner('뻑 먹기!'); }
+            } else if(playedMatched==='pending2'){
+              // 2장 중 골라둔 패 + 내 패만 가져오고 나머지 1장은 바닥에 남김(정식 룰)
+              var gp2=G.floor.find(function(f){return f.month===card.month;});
+              gp2.cards.forEach(function(c){ if(!animFrom[c.id]) animFrom[c.id]=preRects2[c.id]||preRects[c.id]; });
+              capture=capture.concat(takeFromGroup(card.month,[card.id,chosenPlayId]));
+              playedMatched=true;
+            }
+            // 뒤집은 패 매칭
+            if(flip){
+              if(playedLaidId && flip.month===card.month){
+                // 쪽! 낸 패가 매칭 안 됐는데 뒤집은 패가 그 패와 맞음
+                var gj=G.floor.find(function(f){return f.month===card.month;});
+                var tgtJk=preRects2[card.id];
+                gj.cards.forEach(function(c){ animFrom[c.id]=preRects2[c.id]||animFrom[c.id]; });
+                capture=capture.concat(floorTake(card.month)); capture.push(flip);
+                banner('쪽!'); steals++;
+                slamThen(tgtJk);
+              }
+              else if(flipGroup && flipGroup.month!==card.month){
+                var tgtFg=preRects2[flipGroup.cards[0].id];
+                flipGroup.cards.forEach(function(c){ animFrom[c.id]=preRects2[c.id]; });
+                if(flipGroup.cards.length===3){
+                  capture=capture.concat(floorTake(flip.month)); capture.push(flip); steals++;
+                  slamThen(tgtFg);
+                } else if(flipGroup.cards.length===2){
+                  // 뒤집은 패도 같은 달 2장과 만남 → 어느 것을 가져올지 선택
+                  chooseCard(who, flipGroup.cards.slice(), function(chosen){
+                    var tgtCh=preRects2[chosen.id];
+                    capture=capture.concat(takeFromGroup(flip.month,[chosen.id])); capture.push(flip);
+                    slamThen(tgtCh);
+                  });
+                } else {
+                  capture=capture.concat(floorTake(flip.month)); capture.push(flip);
+                  slamThen(tgtFg);
+                }
+              }
+              else if(!flipGroup){
+                floorAdd(flip); flipOnFloor=true; finishFlip();
+              }
+              else { // 같은 달인데 위 분기 안 탄 경우(이미 먹은 달)
+                floorAdd(flip); flipOnFloor=true; finishFlip();
+              }
+            } else {
+              finishFlip();
+            }
+          }
+        }); // revealFlip 끝
+      }, 260);
+    };
+
+    var cardOnFloorNow=(playedMatched==='pending1'||playedMatched==='pending2'||playedLaidId);
+    if(cardOnFloorNow){
+      var pDest=document.querySelector('#floor .card[data-id="'+card.id+'"]');
+      flyClone(card, startRect, pDest?rectOf(pDest):null, 320, afterPlay);
+    } else {
+      afterPlay();
+    }
+  }
+
+  // ── 배치 판정 ──
+  if(playedGroup){
+    if(playedGroup.cards.length===3){
+      // 바닥 3장(뻑 더미) + 내 1장 = 4장 싹 먹기
+      // 손패가 먼저 바닥 더미 위로 실제로 내려앉는 걸 보여준 뒤에 획득 처리(뻑 전용 플래그)
+      isPpuk=true;
+      playedGroup.cards.push(card); playedMatched='pending1';
+      proceed();
+    } else if(playedGroup.cards.length===2){
+      // 같은 달 2장: 어느 것을 가져올지 먼저 선택 (따닥이 나면 어차피 다 가져감)
+      chooseCard(who, playedGroup.cards.slice(), function(chosen){
+        chosenPlayId=chosen.id;
+        playedGroup.cards.push(card); playedMatched='pending2';
+        proceed();
+      });
+    } else {
+      playedGroup.cards.push(card); playedMatched='pending1';
+      proceed();
+    }
+  } else {
+    floorAdd(card); playedLaidId=card.id;
+    proceed();
+  }
+}
+
+function finishTurn(who,capture,steals,animFrom){
+  var p=G[who], opp=G[who==='me'?'ai':'me'];
+  var stolen=[];
+  // 뺏기기 전 상대 획득칸의 카드별 위치 스냅샷 (뺏은 피 출발점)
+  var preStrip={};
+  document.querySelectorAll('.cap-strip .card').forEach(function(el){ preStrip[el.dataset.id]=rectOf(el); });
+
+  capture.forEach(function(c){ p.cap.push(c); });
+  // 피 뺏기
+  for(var i=0;i<steals;i++){
+    var idx=opp.cap.findIndex(function(c){return c.type==='PI';});
+    if(idx<0) idx=opp.cap.findIndex(function(c){return c.type==='SSANGPI';});
+    if(idx>=0){ var scard=opp.cap.splice(idx,1)[0]; p.cap.push(scard); stolen.push(scard); toast(who==='me'?'봄이의 피를 한 장 가져왔어요!':'봄이가 내 피를 가져갔어요'); }
+  }
+
+  // 이동 중에는 획득칸의 새 카드들을 숨겨두고, 도착하는 순서대로 나타나게
+  capture.forEach(function(c){ HIDE_IDS[c.id]=1; });
+  stolen.forEach(function(c){ HIDE_IDS[c.id]=1; });
+  render();
+
+  // 3단계: 획득한 패들이 각자 자기 그룹(광/열끗/띠/피) 자리로 개별 비행
+  var stripSel = who==='me' ? '#myStrip' : '#oppStrip';
+  function destOf(c){
+    var el=document.querySelector(stripSel+' .card[data-id="'+c.id+'"]');
+    return el?rectOf(el):stripRect(who);
+  }
+  capture.forEach(function(c,i){
+    var from=animFrom&&animFrom[c.id];
+    if(!from){ unhide(c.id); return; }
+    setTimeout(function(){
+      flyClone(c, from, destOf(c), 320, function(){ unhide(c.id); });
+      sfx('collect');
+    }, i*80);
+  });
+  if(stolen.length) sfx('steal',200);
+  // 뻑/따닥/쪽/싹쓸이/흔들기/고 처럼 이미 말풍선이 뜬 경우가 아니면 상황별 기본 반응
+  if(!_bomSaidThisTurn){
+    if(stolen.length>0) bomSay('steal',who);
+    else if(capture.length===0) bomSay('play',who);
+    else if(capture.length===1 && capture[0].type==='PI') bomSay('cheap',who);
+    else if(capture.length>0) bomSay('capture',who);
+  }
+  stolen.forEach(function(c,i){
+    var from=preStrip[c.id]||rectOf(document.getElementById(who==='me'?'oppStrip':'myStrip'));
+    setTimeout(function(){
+      flyClone(c, from, destOf(c), 320, function(){ unhide(c.id); });
+    }, 200+i*80);
+  });
+  // 안전장치: 어떤 이유로든 비행이 누락돼도 전부 표시되도록
+  var totalN=capture.length+stolen.length;
+  setTimeout(function(){ capture.concat(stolen).forEach(function(c){ unhide(c.id); }); }, totalN*80+700);
+
+  // 획득 애니메이션이 끝난 뒤에 고/스톱·다음 턴 진행
+  var animWait = totalN ? Math.min(totalN*80+520, 1300) : 60;
+  setTimeout(function(){
+    var sc=calcScore(p).score;
+    // 고/스톱 판정: 7점 이상 + 직전 고 시점보다 점수 상승
+    if(!G.over && sc>=7 && sc>p.lastGoScore){
+      // 낼 패가 없으면 '고'가 불가능 → 물어보지 않고 그대로 승리 종료
+      if(p.hand.length===0){ endGame(who); return; }
+      if(who==='me'){
+        G.busy=false;
+        modal('고? 스톱?',
+          '현재 <b>'+sc+'점</b>이에요!<span class="big">🤔</span>'+
+          '<b>고</b>를 하면 점수를 더 쌓을 수 있지만,<br>봄이가 역전하면 <b>고박</b>으로 배로 물어줘요.<br>'+
+          '<b>스톱</b>하면 지금 점수로 이깁니다.',
+          [{label:'스톱! (지금 이기기)',fn:function(){ endGame('me'); }},
+           {label:'고! (더 노려보기)',fn:function(){ p.go++; p.lastGoScore=sc; banner(p.go+'고!'); nextTurn(who); }}]);
+        return;
+      } else {
+        // AI 고/스톱: 단순 정책 — 첫 점수면 60% 고, 2고부터는 스톱
+        if(p.go<1 && Math.random()<0.6 && G.deck.length>6){
+          p.go++; p.lastGoScore=sc; banner('봄이 '+p.go+'고!');
+        } else {
+          bomSay('stop','ai'); endGame('ai'); return;
+        }
+      }
+    }
+    // 나가리
+    if(G.me.hand.length===0 && G.ai.hand.length===0){ endGame(null); return; }
+    nextTurn(who);
+  }, animWait);
+}
+
+function nextTurn(who){
+  G.turn = (who==='me')?'ai':'me';
+  G.busy=false;
+  render();
+  if(G.turn==='ai'){
+    say('봄이가 생각하고 있어요…');
+    setTimeout(aiPlay, 900);
+  } else {
+    say('패를 골라주세요');
+  }
+}
+
+/* ── AI: 그리디 ── */
+function cardValue(c){
+  if(c.type==='KWANG') return 10;
+  if(c.type==='SSANGPI') return 6;
+  if(c.type==='YEOL') return c.tag==='godori'?8:5;
+  if(c.type==='TTI') return c.tag?6:4;
+  return 1;
+}
+function aiPlay(){
+  if(G.over) return;
+  var hand=G.ai.hand;
+  if(!hand.length){ finishTurn('ai',[],0); return; }
+  var floorMonths={}; G.floor.forEach(function(f){floorMonths[f.month]=f.cards;});
+  // 먹을 수 있는 패 중 가치 최고
+  var best=null,bestV=-1;
+  hand.forEach(function(c){
+    var g=floorMonths[c.month];
+    if(g){
+      var v=cardValue(c)+g.reduce(function(n,x){return n+cardValue(x);},0);
+      if(v>bestV){bestV=v;best=c;}
+    }
+  });
+  if(!best){
+    // 못 먹으면 가장 가치 낮은 패 버림
+    best=hand.slice().sort(function(a,b){return cardValue(a)-cardValue(b);})[0];
+  }
+  playCard('ai',best);
+}
+
+/* ── 종료 & 정산 ── */
+function endGame(winner){
+  G.over=true; G.busy=true;
+  sfx(winner==='me'?'win':winner==='ai'?'lose':'draw');
+  bomSay(winner==='ai'?'win':winner==='me'?'lose':'draw','ai'); // 게임 결과는 봄이 관점 고정
+  if(winner===null){
+    STATS.draws++; STATS.points+=1; saveStats(); // 참가 포인트
+    modal('나가리', '둘 다 점수를 내지 못했어요.<span class="big">😅</span>무승부입니다!<br><span style="font-size:13px;color:var(--muted)">참가 포인트 +1P</span>',
+      [{label:'다시 하기',fn:newGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
+    return;
+  }
+  var w=G[winner], l=G[winner==='me'?'ai':'me'];
+  var ws=calcScore(w), ls=calcScore(l);
+  var total=ws.score;
+  var rows=ws.parts.map(function(p){return '<tr><td>'+p[0]+'</td><td>'+p[1]+'점</td></tr>';});
+  // 고 보너스
+  if(w.go===1){ total+=1; rows.push('<tr><td>1고</td><td>+1점</td></tr>'); }
+  if(w.go===2){ total+=2; rows.push('<tr><td>2고</td><td>+2점</td></tr>'); }
+  if(w.go>=3){ total+=2; rows.push('<tr><td>'+w.go+'고</td><td>+2점, ×'+Math.pow(2,w.go-2)+'</td></tr>'); total*=Math.pow(2,w.go-2); }
+  // 피박: 진 쪽 피 5장 이하(승자가 피 점수 났을 때)
+  if(ws.pi>=10 && ls.pi<=5 && ls.pi>0){ total*=2; rows.push('<tr><td>피박!</td><td>×2</td></tr>'); }
+  // 광박: 승자 광 점수, 패자 광 0
+  if(ws.kw>=3 && ls.kw===0){ total*=2; rows.push('<tr><td>광박!</td><td>×2</td></tr>'); }
+  // 고박: 진 쪽이 고를 불렀는데 역전당함
+  if(l.go>0){ total*=2; rows.push('<tr><td>고박!</td><td>×2</td></tr>'); }
+  // 흔들기
+  if(w.shake>0){ total*=Math.pow(2,w.shake); rows.push('<tr><td>흔들기</td><td>×'+Math.pow(2,w.shake)+'</td></tr>'); }
+
+  var isMe=winner==='me';
+  // 포인트·전적 정산: 승리=최종점수만큼, 패배=참가 1P
+  var oldLv=levelOf(STATS.points).lv;
+  var earned=isMe?total:1;
+  STATS.points+=earned;
+  if(isMe) STATS.wins++; else STATS.losses++;
+  saveStats();
+  var newL=levelOf(STATS.points);
+  var lvUp=newL.lv>oldLv;
+  var ptLine='<div style="margin:10px 0 4px;padding:10px;background:rgba(63,90,48,.08);border-radius:12px;font-size:14px;font-weight:800;color:var(--sage-deep)">'
+    +'✨ +'+earned+'P 획득 · 누적 '+STATS.points+'P<br>'
+    +'<span style="font-size:12.5px;font-weight:700">'+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')+' · Lv.'+newL.lv+' '+newL.name+'</span>'
+    +(lvUp?'<br><span style="color:#B8860B">🎊 레벨 업! Lv.'+newL.lv+' '+newL.name+' 달성!</span>':'')
+    +'</div>';
+  modal(isMe?'🎉 이겼습니다!':'😢 봄이가 이겼어요',
+    '<span class="big">'+(isMe?'👏':'🌸')+'</span>'+
+    '<table class="mm-score-table">'+rows.join('')+
+    '<tr><td><b>최종</b></td><td><b>'+total+'점</b></td></tr></table>'+
+    ptLine+
+    (isMe?'대단하세요! 한 판 더 어떠세요?':'봄이가 운이 좋았네요. 복수전 가시죠!'),
+    [{label:'한 판 더!',fn:newGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
+}
+
+document.getElementById('sndBtn').textContent=SND_ON?'🔊':'🔇';
+document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
+renderStats();
+newGame();
+</script>
+</body>
+</html>

@@ -5,17 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>말동무 사전 — 시대별 유행어 사전 · 다시봄</title>
 <meta name="description" content="1970년대부터 요즘 신조어까지, 시대별 유행어를 한눈에 — 손주들 말도 술술 이해해요.">
-<script src="a11y.js?v=3" defer></script>
-<script src="attend.js?v=3" defer></script>
-<script src="bom_voice.js?v=1" defer></script>
-<script src="bom_guide.js?v=1" defer></script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/attend.js?v=3" defer></script>
+<script src="/bom_voice.js?v=9" defer></script>
+<script src="/bom_guide.js?v=1" defer></script>
+<script src="/bom_tutorial.js?v=3" defer></script>
+<script>window.BOM_TUT={
+  key:'trendy', face:'bom_grin.png', name:'말동무 사전',
+  welcome:'{호칭}, 여기는 옛날 유행어부터 요즘 손주들이 쓰는 말까지 모아둔 사전이에요. 손주들 말도 술술 알아들으실 수 있어요 💬',
+  action:'궁금한 시대를 하나 골라 구경해봐요.',
+  tour:[
+    {text:'시대를 골라요 — 1970년대부터 요즘 신조어까지 다 있어요.', sel:'#eraChips'},
+    {text:'유행어 카드를 넘겨보며 무슨 뜻인지 편하게 읽어요.', sel:'#dictList'},
+    {text:'퀴즈로 재미있게 풀어보고, 마음에 든 말은 앨범에 담아요!', sel:'#tabs'}
+  ]
+};</script>
 <script>window.BOM_GUIDES={
   trendy_quiz:{face:'bom_cheer.png',title:'🎯 유행어 퀴즈',text:'시대를 골라서 5문제를 풀어보세요. 뜻을 보고 알맞은 유행어를 맞히면 돼요. 틀려도 괜찮아요, 재미로 즐겨보세요!'},
   trendy_album:{face:'bom_smile.png',title:'📖 나만의 앨범',text:'마음에 드는 유행어에 하트를 누르면 여기에 모아둘 수 있어요. 손주들에게 써먹어 보세요!'},
   trendy_submit:{face:'bom_grin.png',title:'💡 신조어 제보',text:'어르신이 아시는 옛말이나 신조어를 다른 분들과 나눠보세요. 마음에 드는 말엔 공감 버튼도 눌러주세요!'},
 
 };</script>
-<script src="trendy_data.js" defer></script>
+<script src="/trendy_data.js?v=2" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
@@ -130,14 +141,11 @@ body.dark .fortune-desc{background:#1c1714;color:#e6d9c5}
 
 
 </style>
-<script src="/logo.js"></script>
+<script src="/dasibom-header.js"></script>
 </head>
 <body>
 
-<header>
-  <a class="logo" href="/?home=1" data-dasibom-logo></a>
-  <a class="back" href="/?home=1">‹ 홈으로</a>
-</header>
+<header data-dasibom-header data-title="말동무 사전" data-accent="#c8784a"></header>
 
 <div class="wrap">
   <div class="hero">

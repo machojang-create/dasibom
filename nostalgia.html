@@ -471,19 +471,46 @@ body{
 .nsq-res.show{display:block}
 .nsq-res b{color:#8A6200}
 </style>
-<script src="a11y.js?v=3" defer></script>
-<script src="attend.js?v=3" defer></script>
-<script src="bom_voice.js?v=1" defer></script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/attend.js?v=3" defer></script>
+<script src="/bom_voice.js?v=9" defer></script>
+<script src="/bom_tutorial.js?v=3" defer></script>
+<script>window.BOM_TUT={
+  key:'nostalgia', face:'bom_grin.png', name:'그때 그 시절',
+  welcome:'{호칭}, 여기서는 매일 옛 추억을 하나씩 만나요. 추억 퀴즈도 풀고, 도장도 모으면서 추억첩을 채워봐요 🖼️',
+  action:'오늘의 추억을 열어보고, 퀴즈도 한 번 풀어봐요.',
+  tour:[
+    {text:'오늘의 추억을 읽어봐요.', sel:'#tlWrap'},
+    {text:'추억 퀴즈로 그 시절을 맞혀봐요.', sel:'#quiz'},
+    '하루하루 도장이 쌓이고 추억첩이 채워져요!'
+  ]
+};</script>
+<!-- Firebase — 댓글·감정반응이 여기 의존 (이전엔 누락돼 댓글이 영영 '불러오는 중'이었음) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+<script defer>
+document.addEventListener('DOMContentLoaded', function(){
+  try{
+    if (window.firebase && !firebase.apps.length) firebase.initializeApp({
+      apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+      authDomain:"mylife-650f0.firebaseapp.com",
+      projectId:"mylife-650f0",
+      storageBucket:"mylife-650f0.firebasestorage.app",
+      messagingSenderId:"512010655611",
+      appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+    });
+  }catch(e){}
+});
+</script>
 <script src="/comments.js?v=1" defer></script>
-<script src="/logo.js"></script>
+<script src="/reactions.js?v=1" defer></script>
+<script src="/dasibom-header.js"></script>
 </head>
 <body>
 
 <!-- GNB -->
-<header id="gnb">
-  <a href="/?home=1" class="logo" data-dasibom-logo></a>
-  <button class="back-btn" onclick="location.href='/?home=1'">← 돌아가기</button>
-</header>
+<header id="gnb" data-dasibom-header data-title="그때 그 시절" data-accent="#4A7A3A"></header>
 
 <!-- HERO -->
 <section class="hero">
@@ -567,8 +594,23 @@ body{
     return((idx%n)+n)%n;
   }
 
-  /* ── init (1일 1개 모드) ── */
+  /* ── init (1일 1개 모드 / 전체보기 모드) ── */
   function init(){
+    const isArchive = new URLSearchParams(location.search).get('all')==='1';
+
+    document.getElementById('statTotal').textContent = ALL_ITEMS.length;
+    document.getElementById('statCats').textContent  = ALL_CATS.length;
+
+    if(isArchive){
+      document.querySelector('.cat-section').style.display = '';
+      document.getElementById('allCnt').textContent = ALL_ITEMS.length;
+      buildCatTabs();
+      renderTimeline('all');
+      const heroDay=document.getElementById('heroDay');
+      if(heroDay) heroDay.textContent = '전체보기 · '+ALL_ITEMS.length+'개';
+      return;
+    }
+
     document.querySelector('.cat-section').style.display = 'none';
 
     const dayIndex  = localDayIdx(ALL_ITEMS.length);
@@ -580,8 +622,6 @@ body{
       + String(now.getDate()).padStart(2,'0');
     const seenKey = 'nostalgia_seen_' + ymd;
 
-    document.getElementById('statTotal').textContent = ALL_ITEMS.length;
-    document.getElementById('statCats').textContent  = ALL_CATS.length;
     document.getElementById('heroDay').textContent   =
       'No.' + String(dayIndex + 1).padStart(3, '0');
 
@@ -624,6 +664,19 @@ body{
     tmr.setDate(tmr.getDate() + 1);
     const tmrStr = tmr.getFullYear()+'년 '+(tmr.getMonth()+1)+'월 '+tmr.getDate()+'일';
 
+    // 감정 표현 반응 바 (❤️ 좋아요 + 감정 이모지)
+    const reactWrap = document.createElement('div');
+    reactWrap.style.cssText = 'margin:16px 0 2px';
+    wrap.appendChild(reactWrap);
+    (function mountNsReactions(){
+      var start = new Date(2025,0,1).getTime();
+      var rScope = 'nostalgia_' + (((Math.floor((Date.now()-start)/86400000))%300+300)%300);
+      (function tryMount(){
+        if(window.DasibomReactions){ DasibomReactions.mount(reactWrap, rScope); }
+        else setTimeout(tryMount, 400);
+      })();
+    })();
+
     // 한 줄 공감 댓글 (봇 + 실 유저)
     const cmtWrap = document.createElement('div');
     cmtWrap.id = 'ns-comments-mount';
@@ -647,7 +700,8 @@ body{
       '<span class="tf-icon">🌅</span>'+
       '<div class="tf-main">내일 다시 새로운 추억이 찾아옵니다</div>'+
       '<div class="tf-sub">매일 하나의 따뜻한 기억을 소환해 드립니다<br>내일도 잊지 말고 찾아와 주세요</div>'+
-      '<div class="tf-date">다음 이야기: '+tmrStr+'</div>';
+      '<div class="tf-date">다음 이야기: '+tmrStr+'</div>'+
+      '<a href="/nostalgia?all=1" style="display:inline-block;margin-top:14px;font-size:14px;font-weight:700;color:inherit;text-decoration:underline">📂 지난 이야기 전체 보기 →</a>';
     wrap.appendChild(footer);
 
     setupObserver();
@@ -776,6 +830,8 @@ body{
       </div>`+
       /* 말벗 한마디 (desc 보강 시 생성되는 대화 유도 질문) */
       (item.talk ? `<div style="margin-top:10px;background:#FFF8E8;border:1.5px solid #E8D9A8;border-radius:14px;padding:13px 16px;font-size:14.5px;color:#6B5320;line-height:1.7;text-align:center">🗣️ <b>말벗 한마디</b> — ${esc(item.talk)}</div>` : '');
+
+    /* 읽어주기(브라우저 TTS) 제거됨 (2026-07-08) — 봄이 튜토리얼 모드로 향후 재도입 예정 */
 
     return el;
   }

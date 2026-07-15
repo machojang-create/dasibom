@@ -300,9 +300,9 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 .alarm-active{color:#81C784}
 .alarm-off{color:#ddd}
 </style>
-<script src="a11y.js?v=3" defer></script>
-<script src="attend.js?v=3" defer></script>
-<script src="/logo.js"></script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/attend.js?v=3" defer></script>
+<script src="/dasibom-header.js"></script>
 </head>
 <body>
 <div class="toast" id="toast"></div>
@@ -318,13 +318,7 @@ body.high-contrast .cat-tab.active{background:#000 !important;color:#fff !import
 <button class="hc-btn" id="hcBtn" aria-pressed="false">고대비 모드</button>
 
 <!-- ── GNB ── -->
-<header>
-  <a class="logo" href="/?home=1" data-dasibom-logo></a>
-  <button class="back-btn" onclick="location.href='/?home=1'">
-    <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M9.5 12L5.5 7.5 9.5 3" stroke="#0C7C62" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    돌아가기
-  </button>
-</header>
+<header data-dasibom-header data-title="건강 돋보기" data-accent="#0C7C62"></header>
 
 <!-- ── 모드 탭 ── -->
 <div class="mode-tabs">

@@ -443,9 +443,9 @@ body.shake{animation:bShake .35s}
 .shape-cell,.num-btn,.wc-tile,.wb-cell,.ms-cell,.pos-cell,.flip-back{background:#FFFBF4}
 .gnb{box-shadow:none}
 </style>
-<script src="a11y.js?v=3" defer></script>
-<script src="attend.js?v=3" defer></script>
-<script src="/logo.js"></script>
+<script src="/a11y.js?v=6" defer></script>
+<script src="/attend.js?v=3" defer></script>
+<script src="/dasibom-header.js"></script>
 </head>
 <body>
 
@@ -453,14 +453,8 @@ body.shake{animation:bShake .35s}
 
 <!-- ═══ HOME ═══ -->
 <div class="screen active" id="s-home">
-  <div class="gnb">
-    <button class="gnb-back" onclick="goMainSite()">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M12 4l-6 6 6 6" stroke="#4A7A3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      메인으로
-    </button>
-    <a href="/?home=1" class="gnb-logo" data-dasibom-logo></a>
-    <div style="width:72px"></div>
-  </div>
+  <!-- 공용 헤더: 왼쪽 [← 홈으로] / 오른쪽 [카드 제목] — dasibom-header.js가 안쪽을 채움 -->
+  <div class="gnb" data-dasibom-header data-title="오늘의 뇌 건강" data-accent="#4A7A3A"></div>
   <div class="home-hero">
     <span class="hero-brain">🧠</span>
     <div class="hero-badge">BRAIN FITNESS</div>
@@ -651,12 +645,12 @@ const GAME_NAMES = {
 
 // 게임 카드 대표 이미지(아이콘 대신 사진) — [조정 2026-06-24] 뇌건강게임 카드 12종 사진 교체
 const GAME_IMG = {
-  card:'img/gameicon-card.jpg', position:'img/gameicon-position.jpg',
-  shape:'img/gameicon-shape.jpg', matchsame:'img/gameicon-matchsame.jpg',
-  number:'img/gameicon-number.jpg', reverse:'img/gameicon-reverse.jpg',
-  wordbingo:'img/gameicon-wordbingo.jpg', wordcombine:'img/gameicon-wordcombine.jpg',
-  classify:'img/gameicon-classify.jpg', timing:'img/gameicon-timing.jpg',
-  math:'img/gameicon-math.jpg', pattern:'img/gameicon-pattern.jpg'
+  card:'/img/gameicon-card.jpg', position:'/img/gameicon-position.jpg',
+  shape:'/img/gameicon-shape.jpg', matchsame:'/img/gameicon-matchsame.jpg',
+  number:'/img/gameicon-number.jpg', reverse:'/img/gameicon-reverse.jpg',
+  wordbingo:'/img/gameicon-wordbingo.jpg', wordcombine:'/img/gameicon-wordcombine.jpg',
+  classify:'/img/gameicon-classify.jpg', timing:'/img/gameicon-timing.jpg',
+  math:'/img/gameicon-math.jpg', pattern:'/img/gameicon-pattern.jpg'
 };
 
 const CATEGORIES = [
@@ -672,45 +666,45 @@ const COMING_SOON = [];
 
 // Per-game, per-level seconds
 const LV_TIMES = {
-  card:      [20,20,20,20,20],
-  shape:     [20,20,20,20,20],
-  number:    [20,20,20,20,20],
-  position:  [25,25,30,30,35],
-  matchsame: [20,20,25,25,30],
-  reverse:   [25,25,30,30,35],
-  wordbingo:   [20,20,25,25,30],
-  wordcombine: [25,25,30,35,45],
-  classify:    [30,30,35,35,40],
-  timing:      [25,25,30,30,35],
-  math:        [20,20,18,18,15],
-  pattern:     [25,25,22,22,20]
+  card:      [30,30,30,30,30],
+  shape:     [30,30,30,30,30],
+  number:    [30,30,30,30,30],
+  position:  [35,35,40,40,45],
+  matchsame: [30,30,35,35,40],
+  reverse:   [35,35,40,40,45],
+  wordbingo:   [30,30,35,35,40],
+  wordcombine: [35,35,40,45,55],
+  classify:    [40,40,45,45,50],
+  timing:      [35,35,40,40,45],
+  math:        [30,30,30,30,30],
+  pattern:     [35,35,35,35,35]
 };
 
 // Timing: per-level config
 const TIMING_LEVELS = [
-  {zone:32, speed:1.0, needed:3},
-  {zone:24, speed:1.3, needed:4},
-  {zone:18, speed:1.7, needed:4},
-  {zone:13, speed:2.1, needed:5},
-  {zone:10, speed:2.5, needed:5}
+  {zone:42, speed:0.8, needed:3},
+  {zone:34, speed:1.0, needed:3},
+  {zone:28, speed:1.3, needed:4},
+  {zone:22, speed:1.6, needed:4},
+  {zone:18, speed:1.9, needed:5}
 ];
 
 // Math: per-level config
 const MATH_LEVELS = [
   {type:'add', a:[1,9],   b:[1,9]},
+  {type:'add', a:[10,19], b:[1,9]},
   {type:'add', a:[10,29], b:[1,9]},
-  {type:'add', a:[10,29], b:[10,19]},
-  {type:'sub', a:[20,50], b:[5,19]},
-  {type:'mix', a:[5,20],  b:[2,9],  c:[2,9]}
+  {type:'sub', a:[10,30], b:[1,9]},
+  {type:'mix', a:[2,12],  b:[2,5],  c:[2,5]}
 ];
 
 // Pattern: per-level config
 const PATTERN_LEVELS = [
-  {type:'arith', dMin:2, dMax:4,  len:5, desc:false},
-  {type:'arith', dMin:5, dMax:10, len:5, desc:false},
-  {type:'arith', dMin:2, dMax:4,  len:5, desc:true},
-  {type:'geo',   bases:[2,3],     len:5},
-  {type:'alt',   aMin:2, aMax:5,  bMin:6, bMax:12, len:6}
+  {type:'arith', dMin:1, dMax:3,  len:5, desc:false},
+  {type:'arith', dMin:2, dMax:5,  len:5, desc:false},
+  {type:'arith', dMin:1, dMax:3,  len:5, desc:true},
+  {type:'geo',   bases:[2],       len:5},
+  {type:'alt',   aMin:2, aMax:4,  bMin:5, bMax:9, len:5}
 ];
 
 // Classify: per-level config
@@ -770,72 +764,72 @@ const WORDBINGO_LEVELS = [
    targets:['강아지','고양이','호랑이','토끼'],
    pool:['사과','버스','의자','연필','냉장고','피아노','기차','칫솔'],
    inst:'동물을 모두 찾아요!'},
-  {cols:4, total:16, count:5, category:'채소', catIcon:'🥦',
-   targets:['당근','배추','오이','감자','무'],
+  {cols:4, total:12, count:4, category:'채소', catIcon:'🥦',
+   targets:['당근','배추','오이','감자'],
    pool:['딸기','자동차','피아노','의사','구름','버스','학교','신발','냉장고','시계','바다'],
    inst:'채소를 모두 찾아요!'},
-  {cols:4, total:16, count:5, category:'직업', catIcon:'👔',
-   targets:['의사','선생님','경찰','요리사','간호사'],
+  {cols:4, total:12, count:4, category:'직업', catIcon:'👔',
+   targets:['의사','선생님','경찰','요리사'],
    pool:['사과','당근','버스','기타','구름','바다','연필','피아노','냉장고','시계','꽃'],
    inst:'직업을 모두 찾아요!'},
-  {cols:5, total:20, count:6, category:'탈것', catIcon:'🚌',
-   targets:['버스','지하철','기차','비행기','배','자동차'],
+  {cols:4, total:16, count:5, category:'탈것', catIcon:'🚌',
+   targets:['버스','지하철','기차','비행기','배'],
    pool:['사과','강아지','의사','책상','구름','바다','연필','피아노','냉장고','달','꽃','눈사람','선생님','여름'],
    inst:'탈것을 모두 찾아요!'}
 ];
 
 // Reverse: per-level config
 const REVERSE_LEVELS = [
+  {count:4,  mode:'visible'},
   {count:5,  mode:'visible'},
-  {count:7,  mode:'visible'},
-  {count:9,  mode:'question'},
-  {count:11, mode:'blank'},
-  {count:13, mode:'blank', distract:true}
+  {count:6,  mode:'question'},
+  {count:8,  mode:'blank'},
+  {count:10, mode:'blank', distract:true}
 ];
 
 // Matchsame: per-level config
 const MATCHSAME_LEVELS = [
   {cols:3, total:9,  count:2, targetIcon:'🍎', pool:['🍊','🍋','🍇','🍓','🍌'],               inst:'사과를 모두 찾아요!'},
   {cols:4, total:12, count:3, targetIcon:'🐶', pool:['🐱','🐭','🐰','🐻','🐼'],               inst:'강아지를 모두 찾아요!'},
-  {cols:4, total:16, count:4, targetIcon:'⭐', pool:['🌟','✨','💫','⚡','🌙','☀️'],           inst:'별을 모두 찾아요!'},
-  {cols:5, total:20, count:5, targetIcon:'🌸', pool:['🌺','🌹','🌷','🌼','💐','🌻','🏵️'],   inst:'벚꽃을 모두 찾아요!'},
-  {cols:5, total:25, count:7, targetIcon:'🦋', pool:['🐝','🐛','🐌','🐞','🦗','🐜','🪲'],   inst:'나비를 모두 찾아요!'}
+  {cols:4, total:16, count:3, targetIcon:'⭐', pool:['🌟','✨','💫','⚡','🌙','☀️'],           inst:'별을 모두 찾아요!'},
+  {cols:5, total:20, count:4, targetIcon:'🌸', pool:['🌺','🌹','🌷','🌼','💐','🌻','🏵️'],   inst:'벚꽃을 모두 찾아요!'},
+  {cols:5, total:25, count:5, targetIcon:'🦋', pool:['🐝','🐛','🐌','🐞','🦗','🐜','🪲'],   inst:'나비를 모두 찾아요!'}
 ];
 
 // Position: per-level grid config
 const POSITION_LEVELS = [
   {cols:3, count:3},
-  {cols:3, count:4},
+  {cols:3, count:3},
+  {cols:4, count:4},
   {cols:4, count:5},
-  {cols:4, count:6},
-  {cols:5, count:8}
+  {cols:5, count:6}
 ];
 
 // Card: per-level theme config — [조정 2026-06-24] 아이콘→사진 교체(10장) + 난이도 하향, 외우는 시간 늘림
 const CARD_LEVELS = [
-  {theme:'과일', isPhoto:true, icons:['card-apple.jpg','card-orange.jpg'],                                                              count:4,  cols:2, preview:3},
-  {theme:'사물', isPhoto:true, icons:['card-scissors.jpg','card-key.jpg','card-bulb.jpg'],                                              count:6,  cols:3, preview:4},
-  {theme:'꽃',   isPhoto:true, icons:['card-cherryblossom.jpg','card-hibiscus.jpg','card-rose.jpg','card-tulip.jpg','card-daisy.jpg'],  count:10, cols:5, preview:5},
-  {theme:'단어', isText:true, words:['사랑','행복','봄날','기쁨','하늘','바다','나무','강물'], count:10, cols:5, preview:6},
-  {theme:'유사단어', isText:true, words:['사람','사랑','나무','나비','하나','하늘','기억','기쁨','봄날','봄비'], count:12, cols:4, preview:6}
+  {theme:'과일', isPhoto:true, icons:['card-apple.jpg','card-orange.jpg'],                                                              count:4,  cols:2, preview:5},
+  {theme:'사물', isPhoto:true, icons:['card-scissors.jpg','card-key.jpg','card-bulb.jpg'],                                              count:6,  cols:3, preview:6},
+  {theme:'꽃',   isPhoto:true, icons:['card-cherryblossom.jpg','card-hibiscus.jpg','card-rose.jpg','card-tulip.jpg','card-daisy.jpg'],  count:8,  cols:4, preview:7},
+  {theme:'단어', isText:true, words:['사랑','행복','봄날','기쁨','하늘','바다','나무','강물'], count:8, cols:4, preview:8},
+  {theme:'유사단어', isText:true, words:['사람','사랑','나무','나비','하나','하늘','기억','기쁨','봄날','봄비'], count:10, cols:5, preview:8}
 ];
 
 // Shape: per-level content config
 const SHAPE_LEVELS = [
   {count:6,  cols:3, kind:'emoji',     main:'🍎', odd:'🍌',                          inst:'🍌 바나나를 찾아 눌러주세요!'},
   {count:9,  cols:3, kind:'svg_shape', color:'#81D4FA',                              inst:'세모(△)를 찾아 눌러주세요!'},
-  {count:12, cols:4, kind:'svg_ball',  mainColor:'#EF5350', oddColor:'#FF7043',      inst:'주황색 공을 찾아 눌러주세요!'},
-  {count:16, cols:4, kind:'svg_clock', mainHour:12, oddHour:3,                       inst:'다른 방향의 시계를 찾아 눌러주세요!'},
-  {count:20, cols:4, kind:'text',      main:'눈', odd:'눔',                           inst:"'눔'을 찾아 눌러주세요!"}
+  {count:9,  cols:3, kind:'svg_ball',  mainColor:'#EF5350', oddColor:'#FF7043',      inst:'주황색 공을 찾아 눌러주세요!'},
+  {count:12, cols:4, kind:'svg_clock', mainHour:12, oddHour:3,                       inst:'다른 방향의 시계를 찾아 눌러주세요!'},
+  {count:16, cols:4, kind:'text',      main:'눈', odd:'눔',                           inst:"'눔'을 찾아 눌러주세요!"}
 ];
 
 // Number: per-level count + hide mode
 const NUMBER_LEVELS = [
   {count:4,  mode:'visible'},
-  {count:6,  mode:'visible'},
-  {count:9,  mode:'question'},
-  {count:12, mode:'blank'},
-  {count:15, mode:'shuffle', distract:true}
+  {count:5,  mode:'visible'},
+  {count:6,  mode:'question'},
+  {count:8,  mode:'blank'},
+  {count:10, mode:'shuffle', distract:true}
 ];
 
 // Tier system (new thresholds + emoji dots)
@@ -1046,7 +1040,7 @@ function buildCardGame(){
     var backContent=lv.isText
       ?'<span style="font-size:clamp(12px,3.5vw,17px);font-weight:900;color:#1F2A1A;word-break:keep-all;text-align:center;padding:4px">'+lv.words[val]+'</span>'
       :lv.isPhoto
-      ?'<img src="img/'+lv.icons[val]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:14px" draggable="false">'
+      ?'<img src="/img/'+lv.icons[val]+'" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:14px" draggable="false">'
       :lv.icons[val];
     c.innerHTML='<div class="flip-inner"><div class="flip-front">🌿</div><div class="flip-back">'+backContent+'</div></div>';
     c.addEventListener('click',function(){onCardClick(c,val);});
