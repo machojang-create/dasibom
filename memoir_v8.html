@@ -370,6 +370,80 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 
 /* ── 미리보기 ── */
 #s-preview{background:var(--warm);overflow-y:auto}
+/* ═══ 공유 표지 (자식이 링크 열고 '처음 보는 화면') ═══
+   여기서 승부가 남. 결제 요청이 아니라 '엄마가 쓴 진짜 책'으로 보여야 함.
+   그래서 가격·버튼을 위에 두지 않고, 표지 → 본문 → 그 다음에야 제안.  */
+.sh-cover{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:40px 24px 32px;text-align:center;position:relative;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 0%,#243019 0%,#141c0e 45%,#0a0d07 100%)}
+/* 은은한 빛 결 — 사진 없이도 표지가 비지 않도록 */
+.sh-cover::before{content:'';position:absolute;inset:-40% -10%;pointer-events:none;
+  background:radial-gradient(closest-side,rgba(201,169,97,.16),transparent 70%);
+  filter:blur(20px);animation:shGlow 9s ease-in-out infinite alternate}
+@keyframes shGlow{from{transform:translateY(-6%) scale(1)}to{transform:translateY(4%) scale(1.08)}}
+.sh-ctx{position:relative;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:13px;font-weight:700;color:#C9A961;letter-spacing:1px;margin-bottom:22px;opacity:0;
+  animation:shIn .8s .1s ease-out forwards}
+
+/* 책 — 살짝 세워서 두께가 보이게 */
+.sh-book{position:relative;width:min(78vw,300px);aspect-ratio:1/1.42;transform:perspective(1400px) rotateY(-13deg) rotateX(2deg);
+  transform-style:preserve-3d;opacity:0;animation:shBook 1.1s .25s cubic-bezier(.2,.8,.3,1) forwards}
+@keyframes shBook{from{opacity:0;transform:perspective(1400px) rotateY(-26deg) rotateX(6deg) translateY(26px) scale(.94)}
+                  to{opacity:1;transform:perspective(1400px) rotateY(-13deg) rotateX(2deg)}}
+.sh-face{position:absolute;inset:0;border-radius:3px 8px 8px 3px;overflow:hidden;
+  background:linear-gradient(140deg,#3E5A2C 0%,#2C4020 42%,#1E2C16 100%);
+  box-shadow:0 2px 0 rgba(255,255,255,.10) inset, -14px 0 26px -14px rgba(0,0,0,.85) inset,
+             28px 34px 60px -18px rgba(0,0,0,.75), 0 0 0 1px rgba(201,169,97,.18);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:34px 22px;gap:2px}
+/* 표지 사진이 있으면 배경으로 은은하게(글자 가독 우선) */
+.sh-face.has-photo::before{content:'';position:absolute;inset:0;background-size:cover;background-position:center;
+  background-image:var(--cover);opacity:.30;filter:saturate(.85)}
+.sh-face.has-photo::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(20,28,14,.55),rgba(20,28,14,.86))}
+.sh-face>*{position:relative;z-index:2}
+/* 책등 */
+.sh-spine{position:absolute;left:0;top:0;bottom:0;width:14px;border-radius:3px 0 0 3px;
+  background:linear-gradient(90deg,#16200F,#2A3C1E 60%,rgba(255,255,255,.14));
+  box-shadow:1px 0 0 rgba(0,0,0,.5)}
+/* 금박 테두리 */
+.sh-frame{position:absolute;inset:12px 12px 12px 22px;border:1px solid rgba(201,169,97,.42);border-radius:2px;pointer-events:none;z-index:2}
+.sh-frame::after{content:'';position:absolute;inset:4px;border:1px solid rgba(201,169,97,.18);border-radius:1px}
+.sh-orn{font-size:17px;color:#C9A961;opacity:.9;margin-bottom:12px}
+/* 금박 제목 */
+.sh-title{font-family:'Nanum Myeongjo','Batang',serif;font-weight:800;line-height:1.42;
+  font-size:clamp(21px,5.6vw,27px);letter-spacing:-.3px;word-break:keep-all;
+  background:linear-gradient(180deg,#F4E3B4 0%,#C9A961 48%,#8F6E2E 78%,#E6D296 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.sh-rule{width:44px;height:1px;background:linear-gradient(90deg,transparent,#C9A961,transparent);margin:14px 0 12px;opacity:.8}
+.sh-author{font-family:'Nanum Myeongjo','Batang',serif;font-size:14.5px;color:#E8DFC6;opacity:.92}
+.sh-year{font-family:'Apple SD Gothic Neo',sans-serif;font-size:11px;color:#C9A961;letter-spacing:3px;margin-top:16px;opacity:.75}
+/* 바닥 그림자 */
+.sh-book::after{content:'';position:absolute;left:6%;right:-6%;bottom:-26px;height:26px;border-radius:50%;
+  background:radial-gradient(closest-side,rgba(0,0,0,.62),transparent 72%);filter:blur(6px);transform:translateZ(-1px)}
+.sh-scroll{position:relative;margin-top:44px;font-family:'Apple SD Gothic Neo',sans-serif;font-size:12.5px;
+  color:#9FB08C;opacity:0;animation:shIn .8s 1.1s ease-out forwards}
+.sh-scroll span{display:block;font-size:17px;margin-top:5px;animation:shBob 1.8s ease-in-out infinite}
+@keyframes shBob{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(5px);opacity:1}}
+@keyframes shIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){
+  .sh-cover::before,.sh-book,.sh-ctx,.sh-scroll,.sh-scroll span{animation:none;opacity:1}
+  .sh-book{transform:perspective(1400px) rotateY(-13deg)}
+}
+
+/* 자식용 제안 — 본문 끝에서 조용히. 광고처럼 보이면 안 됨 */
+.sh-cta{padding:44px 26px 56px;text-align:center;background:linear-gradient(180deg,#0a0805,#141c0e)}
+.shc-orn{color:#C9A961;font-size:18px;opacity:.55;margin-bottom:18px}
+.shc-h{font-family:'Nanum Myeongjo','Batang',serif;font-size:17px;color:#E8DFC6;margin-bottom:12px;word-break:keep-all}
+.shc-p{font-family:'Apple SD Gothic Neo',sans-serif;font-size:14px;line-height:1.85;color:#9FB08C;margin-bottom:26px;word-break:keep-all}
+.shc-p b{color:#C9A961}
+.shc-btn{width:100%;max-width:400px;min-height:56px;padding:16px 22px;border:none;border-radius:16px;cursor:pointer;
+  font-family:'Apple SD Gothic Neo',sans-serif;font-size:15.5px;font-weight:800;color:#1A2416;word-break:keep-all;
+  background:linear-gradient(135deg,#E6D296,#C9A961 55%,#A8842F);
+  box-shadow:0 10px 26px -10px rgba(201,169,97,.7)}
+.shc-btn:active{transform:translateY(1px)}
+.shc-note{font-family:'Apple SD Gothic Neo',sans-serif;font-size:11.5px;color:#6E7A62;margin-top:16px;line-height:1.7}
+
 .pv-head{background:linear-gradient(180deg,#1a0e06,#0a0805);padding:52px 28px 44px;text-align:center;position:relative}
 .pv-back{position:absolute;top:16px;left:16px;background:none;border:none;color:var(--sepiaL);font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;cursor:pointer;opacity:.6}
 .pv-badge{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:10px;color:var(--orange);letter-spacing:3px;margin-bottom:14px;opacity:.8}
@@ -783,6 +857,23 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 
 <!-- ════ 미리보기 ════ -->
 <div class="screen" id="s-preview">
+  <!-- 공유로 들어온 자식이 '처음' 보는 화면. 공유 모드에서만 표시(showPreview) -->
+  <div class="sh-cover" id="shCover" style="display:none">
+    <div class="sh-ctx" id="shCtx">어머니께서 들려주신 이야기</div>
+    <div class="sh-book">
+      <div class="sh-face" id="shFace">
+        <div class="sh-spine"></div>
+        <div class="sh-frame"></div>
+        <div class="sh-orn">❦</div>
+        <div class="sh-title" id="shTitle"></div>
+        <div class="sh-rule"></div>
+        <div class="sh-author" id="shAuthor"></div>
+        <div class="sh-year" id="shYear"></div>
+      </div>
+    </div>
+    <div class="sh-scroll">아래로 넘겨서 읽어보세요<span>↓</span></div>
+  </div>
+
   <div class="pv-head" id="pvHead">
     <button class="pv-back" id="btnPvBack">← 목록으로</button>
     <div class="pv-badge">나의 자서전 · 미리보기</div>
@@ -803,6 +894,19 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       <div style="font-size:12px;color:#999;margin-top:7px;line-height:1.6">올리면 공개 서재에서 누구나 읽을 수 있어요. '나만 보기' 이야기는 빠지며, 언제든 내릴 수 있습니다.</div>
     </div>
   </div>
+  <!-- ★공유로 들어온 자식용 제안 — 본문을 '다 읽은 뒤'에만 나옴.
+       가격표를 먼저 보여주면 "비싼데?"가 되고, 엄마 글을 먼저 읽으면 "더 듣고 싶다"가 됨. -->
+  <div class="sh-cta" id="shCta" style="display:none">
+    <div class="shc-orn">❦</div>
+    <div class="shc-h" id="shCtaH">여기까지가 지금까지의 이야기입니다</div>
+    <div class="shc-p" id="shCtaP">
+      봄이가 여쭤본 건 <b>15가지</b>뿐이에요.<br>
+      아직 들려주실 이야기가 훨씬 많습니다.
+    </div>
+    <button class="shc-btn" id="btnShBuy">이야기를 더 여쭤보고, 책으로 만들어 드릴게요</button>
+    <div class="shc-note" id="shCtaNote"></div>
+  </div>
+
   <div class="cta" id="pvCta" style="display:none">
     <div class="bom-row" style="margin-bottom:18px">
       <img class="bom-face" src="/img/bom_smile.png" alt="봄이">
@@ -2187,6 +2291,37 @@ function showPreview(shared){
   el('pvTitle').textContent=p.title||'나의 이야기';
   el('pvSub').textContent=new Date().getFullYear()+'년 · 나의 자서전';
 
+  /* ★공유로 들어온 사람(=자식)에게만 표지를 세운다.
+     본인이 자기 자서전을 볼 땐 기존 화면 그대로(표지 없음). */
+  var shc=el('shCover');
+  if(shc){
+    if(shared){
+      var m=APP.shareMeta||{};
+      shc.style.display='flex';
+      el('shTitle').textContent=p.title||'나의 이야기';
+      var who=(m.authorName||'').trim();
+      el('shAuthor').textContent = who ? ('— '+who+' 지음 —') : '— 어머니·아버지의 이야기 —';
+      el('shYear').textContent=new Date().getFullYear();
+      // 호칭(_honorific)에 이미 '할머니/할아버지'가 들어있어 '님'을 덧붙이면 이중 호칭이 됨.
+      // 받는 사람이 아들인지 딸인지도 모르므로 문구는 중립으로.
+      el('shCtx').textContent = who ? (who+'께서 들려주신 이야기') : '가족께 보내신 이야기';
+      var face=el('shFace');
+      if(m.coverPhoto){ face.classList.add('has-photo'); face.style.setProperty('--cover','url('+m.coverPhoto+')'); }
+      else { face.classList.remove('has-photo'); }
+      // 본문을 다 읽은 뒤에 나오는 제안
+      var cta=el('shCta');
+      if(cta){
+        cta.style.display='block';
+        var n=m.answered||0;
+        if(n) el('shCtaP').innerHTML='봄이가 여쭤본 건 <b>'+n+'가지</b>뿐이에요.<br>아직 들려주실 이야기가 훨씬 많습니다.';
+        el('shCtaNote').textContent='더 여쭤본 이야기는 '+(who||'어르신')+'께서 직접 답하시게 되고, 완성되면 책으로 보내드려요.';
+      }
+    } else {
+      shc.style.display='none';
+      var _c=el('shCta'); if(_c) _c.style.display='none';
+    }
+  }
+
   // 표지 사진 적용
   var head=el('pvHead');
   if(APP.coverPhoto){
@@ -2313,11 +2448,27 @@ async function makeShareLink(){
       ownerUid: _auth.currentUser.uid,
       title: (APP.bookTitle || (APP.preview && APP.preview.title) || '나의 이야기'),
       chapters: chapters,
+      // ★표지에 필요한 값들 — 예전엔 title/chapters만 저장해서 자식이 여는 화면에 사진도 지은이도 없었음
+      coverPhoto: (APP.coverPhoto || null),
+      // 지은이 = 기존 책표지(bkfAuthor)와 같은 출처인 _honorific() — 별도 이름 필드는 없음
+      authorName: (function(){ try{ return _hsafe(); }catch(e){ return ''; } })(),
+      answered: (function(){ try{ return Object.keys(APP.answers||{}).length; }catch(e){ return 0; } })(),
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
     var url = location.origin + location.pathname + '?share=' + ref.id;
     el('shareUrl').value = url; el('shareResult').style.display='block';
-    popToast('공유 링크가 만들어졌어요 (3일간 유효) ✓', 4000);
+    popToast('공유 링크가 만들어졌어요 (30일간 유효) ✓', 4000);
+    // ★자식에게 우리가 보내지 않는다 — 어르신 본인 메신저로 보내야 '엄마가 보낸 링크'가 됨
+    //   (모르는 번호가 보낸 결제 링크 = 보이스피싱으로 보임)
+    if(navigator.share){
+      try{
+        await navigator.share({
+          title: (APP.bookTitle || '나의 이야기'),
+          text: '제가 살아온 이야기를 조금 적어봤어요.',
+          url: url
+        });
+      }catch(e){ /* 사용자가 취소 — 링크는 위에 남아 있음 */ }
+    }
   }catch(e){ console.warn('공유 생성 실패:', e.message); popToast('공유 링크 생성에 실패했어요'); }
 }
 function copyShare(){
@@ -2333,8 +2484,10 @@ async function loadShared(id){
     if(!doc.exists){ alert('존재하지 않는 공유 링크입니다.'); return; }
     var d = doc.data();
     var created = (d.createdAt && d.createdAt.toMillis) ? d.createdAt.toMillis() : 0;
-    if(created && (Date.now()-created > 3*24*60*60*1000)){ alert('이 공유 링크는 기간(3일)이 지나 만료되었습니다.'); return; }
+    // ★3일 → 30일. 자식이 바쁘면 3일은 그냥 넘어감(읽지도 못하고 만료됨).
+    if(created && (Date.now()-created > 30*24*60*60*1000)){ alert('이 공유 링크는 기간(30일)이 지나 만료되었습니다.'); return; }
     APP.preview = { title: d.title||'나의 이야기', chapters: d.chapters||{} };
+    APP.shareMeta = { coverPhoto: d.coverPhoto||null, authorName: d.authorName||'', answered: d.answered||0 };
     showPreview(true);
   }catch(e){ console.warn('공유 불러오기 실패:', e.message); alert('공유 자서전을 불러오지 못했습니다.'); }
 }
@@ -2529,6 +2682,8 @@ document.addEventListener('DOMContentLoaded',function(){
     if(_shouldShowSurvey()){ showSurveyModal(); } else { renderDash(); go('s-dash'); }
   });
   el('btnBuy').addEventListener('click',openModal);
+  // 공유로 들어온 자식의 결제 진입 — 본인용 btnBuy와 같은 상품 모달로 보냄
+  var _sb=el('btnShBuy'); if(_sb) _sb.addEventListener('click', function(){ renderProds(); openModal(); });
   el('modalBg').addEventListener('click',function(e){if(e.target===this)closeModal();});
   el('btnPurchase').addEventListener('click',completePurchase);
   el('btnModalClose').addEventListener('click',closeModal);
