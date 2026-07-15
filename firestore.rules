@@ -140,6 +140,14 @@ service cloud.firestore {
       allow delete: if isMasterCU();
     }
 
+    // AI 토큰 실측(usage_ai_daily) — 원가 파악용 일별 집계.
+    //   Functions(Admin SDK)만 기록, 운영 데이터라 master만 조회.
+    match /usage_ai_daily/{day} {
+      allow read:  if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      allow write: if false;
+    }
+
     // ── 봄이 장기 기억(bom_memory) ──────────────────────────────────
     //   어르신이 들려준 '사실'(가족·건강·이력)이 쌓이는 민감 영역.
     //   쓰기는 Cloud Functions(Admin SDK)만 — 클라이언트가 기억을 조작하면

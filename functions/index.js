@@ -64,6 +64,34 @@ function callGemini(model, payload) {
 
 // ── 제공자 공통 텍스트 생성 — 순수 텍스트 반환(실패 시 throw) ──
 // opt: { system?, user, maxTokens?, json?, model? }
+/* ════════ AI 토큰 실측 로깅 ════════
+   왜: 원가를 '추정'으로 굴리면 안 됨. 제공자(Gemini/Anthropic)가 응답에 실제 토큰 수를
+       돌려주므로 그걸 그대로 쌓는다. aiText 한 곳만 계측하면 챗봇·자서전·케어 전부 잡힘.
+   저장: usage_ai_daily/{YYYY-MM-DD} — 일별 총합 + 기능별(byFn) 분해.
+     uid별로 쌓지 않는다(문서 폭발 + 개인정보 최소수집). 원가 파악이 목적이지 감시가 아님.
+   ★토큰만 저장하고 '돈'은 저장하지 않음 — 단가는 바뀌므로 읽을 때 곱하는 게 맞음.
+   실패는 무음(로깅 때문에 대화가 끊기면 안 됨). */
+function logAiUsage(tag, model, inTok, outTok) {
+  try {
+    inTok = inTok || 0; outTok = outTok || 0;
+    if (!inTok && !outTok) return;
+    const day = new Date().toISOString().slice(0, 10);
+    const FV = admin.firestore.FieldValue;
+    const t = String(tag || 'unknown').replace(/[^a-zA-Z0-9_]/g, '');
+    // 로그로도 남김 — `firebase functions:log`로 바로 확인 가능(Firestore 조회 권한 없이도 원가 점검).
+    try { console.log('[AI] ' + t + ' in=' + inTok + ' out=' + outTok + ' model=' + model); } catch (e) {}
+    admin.firestore().collection('usage_ai_daily').doc(day).set({
+      day,
+      calls: FV.increment(1),
+      inputTokens: FV.increment(inTok),
+      outputTokens: FV.increment(outTok),
+      byFn: { [t]: { calls: FV.increment(1), in: FV.increment(inTok), out: FV.increment(outTok) } },
+      byModel: { [String(model || '').replace(/[^a-zA-Z0-9_.-]/g, '_')]: { calls: FV.increment(1) } },
+      updatedAt: FV.serverTimestamp()
+    }, { merge: true }).catch(() => {});
+  } catch (e) {}
+}
+
 async function aiText(opt) {
   if (AI_PROVIDER === 'gemini') {
     const body = {
@@ -79,6 +107,9 @@ async function aiText(opt) {
     const cand = (parsed.candidates || [])[0];
     const text = ((cand && cand.content && cand.content.parts) || []).map(p => p.text || '').join('').trim();
     if (!text) throw new Error('Gemini 빈 응답' + (cand && cand.finishReason ? ' (' + cand.finishReason + ')' : ''));
+    // 실측: Gemini는 usageMetadata로 실제 토큰 수를 돌려줌
+    const gu = parsed.usageMetadata || {};
+    logAiUsage(opt.tag, opt.model || G_MODEL, gu.promptTokenCount, gu.candidatesTokenCount);
     return text;
   }
   // Anthropic 경로 (ai.provider="anthropic"으로 복귀 시 사용)
@@ -92,6 +123,9 @@ async function aiText(opt) {
   let parsed;
   try { parsed = JSON.parse(result.text); } catch (e) { throw new Error('Anthropic 응답 파싱 실패: ' + result.text.slice(0, 200)); }
   if (parsed.error) throw new Error('Anthropic 오류: ' + JSON.stringify(parsed.error).slice(0, 200));
+  // 실측: Anthropic은 usage로 돌려줌 (제공자 복귀 시에도 같은 집계로 잡히게)
+  const au = parsed.usage || {};
+  logAiUsage(opt.tag, opt.model || MODEL, au.input_tokens, au.output_tokens);
   return (parsed.content || []).map(b => b.text || '').join('').trim();
 }
 
@@ -449,7 +483,7 @@ D. 마지막 문단 끝 문장: 삶의 통찰이 담긴 여운 있는 마무리
 
     let text;
     try {
-      text = await aiText({ system: systemPrompt, user: userMsg, maxTokens: maxTok, model: useModel });
+      text = await aiText({ tag: 'memoirSection', system: systemPrompt, user: userMsg, maxTokens: maxTok, model: useModel });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '생성 오류: ' + e.message);
     }
@@ -612,7 +646,7 @@ exports.chatBom = functions
     const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL;
     let text;
     try {
-      text = await aiText({
+      text = await aiText({ tag: 'chatBom',
         system: bomSystemPrompt(bomMemoryBlock(mem)),
         user: bomUserBlock(history, message),
         maxTokens: 220,
@@ -682,7 +716,7 @@ ${turns.join('\n')}`;
 
     let raw;
     try {
-      raw = await aiText({ user: prompt, maxTokens: 300, json: true, model: (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL });
+      raw = await aiText({ tag: 'bomMemory', user: prompt, maxTokens: 300, json: true, model: (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL });
     } catch (e) {
       return { ok: false, reason: 'ai_error' };
     }
@@ -758,7 +792,7 @@ exports.bomPilotAI = functions
     const system = _base + (task ? ('\n\n' + _doing + '\n' + task) : '');
     let text;
     try {
-      text = await aiText({ system, user: input, maxTokens, json: wantJson, model: G_MODEL });
+      text = await aiText({ tag: 'bomPilotAI', system, user: input, maxTokens, json: wantJson, model: G_MODEL });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '봄이 AI 오류: ' + e.message);
     }
@@ -812,7 +846,7 @@ exports.chatBomCare = functions
     const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL;
     let text;
     try {
-      text = await aiText({ system: sys, user: message, maxTokens: 220, model: useModel });
+      text = await aiText({ tag: 'chatBomCare', system: sys, user: message, maxTokens: 220, model: useModel });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '대화 오류: ' + e.message);
     }
@@ -886,7 +920,7 @@ ${seniorLines.slice(0, 4000)}`;
 
     let raw;
     try {
-      raw = await aiText({ user: prompt, maxTokens: 400, json: true });
+      raw = await aiText({ tag: 'careInsights', user: prompt, maxTokens: 400, json: true });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '분석 오류: ' + e.message);
     }
@@ -950,7 +984,7 @@ exports.extractPeople = functions
 ${text}`;
     let raw;
     try {
-      raw = await aiText({ user: prompt, maxTokens: 800, json: true });
+      raw = await aiText({ tag: 'memoirTitles', user: prompt, maxTokens: 800, json: true });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '추출 오류: ' + e.message);
     }
@@ -1003,7 +1037,7 @@ ${qa}
 
     let raw;
     try {
-      raw = await aiText({ user: prompt, maxTokens: 400, json: true });
+      raw = await aiText({ tag: 'wisdom', user: prompt, maxTokens: 400, json: true });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '제목 생성 오류: ' + e.message);
     }
@@ -1041,7 +1075,7 @@ async function _generateOneWisdom() {
 [출력 형식 — JSON 오직 이것만, 다른 텍스트 없이]
 {"quote":"명언 본문(40~70자)","author":"작성자 이름","bio":"작성자 연혁 1줄(없으면 빈 문자열)","interpretation":"어르신 눈높이의 쉬운 해석(50~90자)"}`;
 
-  const raw = (await aiText({ user: prompt, maxTokens: 300, json: true })).replace(/```json|```/g, '').trim();
+  const raw = (await aiText({ tag: 'wisdomOnDemand', user: prompt, maxTokens: 300, json: true })).replace(/```json|```/g, '').trim();
   const data = JSON.parse(raw);
   if (!data.quote || !data.author) throw new Error('필수 필드 누락: ' + raw);
   return { ...data, topic, createdAt: Date.now() };
