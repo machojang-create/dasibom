@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>돌봄 리포트 — 다시봄</title>
+<meta name="description" content="어르신별 월간 대화 요약 리포트 — 복지사 검수 후 인쇄">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F1E8; --paper:#FBF8F0; --ink:#1A2416; --muted:#5C6152;
+  --sage:#4B6B3B; --sage-deep:#33492A; --gold:#C9A961; --line:#E0DAC9;
+  --danger:#B23A2E; --warn:#B8860B;
+}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);font-weight:600;-webkit-font-smoothing:antialiased}
+.wrap{max-width:900px;margin:0 auto;padding:26px 20px 80px}
+header{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:22px;margin-bottom:20px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:800;color:var(--muted)}
+.field select,.field input{min-height:46px;padding:0 14px;border:2px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+.btn{min-height:46px;padding:0 20px;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--sage);color:#fff}
+.btn-gold{background:var(--gold);color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+.warn-banner{background:#FBF0DA;border:2px solid var(--warn);color:#6b5200;border-radius:12px;padding:12px 16px;font-size:14px;margin-bottom:16px;display:none}
+.warn-banner.on{display:block}
+
+.rp-head{border-bottom:2px solid var(--line);padding-bottom:14px;margin-bottom:16px}
+.rp-head .who{font-size:20px;font-weight:800;color:var(--sage-deep)}
+.rp-head .meta{font-size:13.5px;color:var(--muted);margin-top:4px}
+.sess{border:2px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:12px;background:#fff}
+.sess .d{font-size:13px;color:var(--muted);font-weight:800;margin-bottom:6px}
+.sess .sum{font-size:15.5px;line-height:1.6;margin-bottom:8px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.badge{font-size:12.5px;font-weight:800;padding:4px 10px;border-radius:50px;background:rgba(75,107,59,.1);color:var(--sage-deep)}
+.badge.emo{background:rgba(201,169,97,.18);color:#7a5c14}
+.badge.cog-양호{background:rgba(75,107,59,.15);color:var(--sage-deep)}
+.badge.cog-관찰필요{background:rgba(184,134,11,.15);color:#7a5c14}
+.badge.cog-주의{background:rgba(178,58,46,.15);color:var(--danger)}
+.kw{font-size:12.5px;color:var(--muted)}
+.review-row{display:flex;align-items:center;gap:10px;margin-top:10px;border-top:1px dashed var(--line);padding-top:10px}
+.review-row label{font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:6px}
+.staffnote{flex:1;min-height:38px;padding:0 10px;border:1.5px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+.footnote{font-size:12px;color:var(--muted);margin-top:18px;line-height:1.6;border-top:1px solid var(--line);padding-top:12px}
+
+.stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:12px;margin-bottom:18px}
+.stat-tile{background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 16px;text-align:center}
+.stat-tile .n{font-size:26px;font-weight:800;color:var(--sage-deep)}
+.stat-tile .l{font-size:12.5px;color:var(--muted);margin-top:2px}
+.stat-tile.warn .n{color:var(--danger)}
+.watch-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:2px solid var(--line);border-radius:12px;padding:12px 16px;margin-bottom:10px;background:#fff;cursor:pointer}
+.watch-row:hover{border-color:var(--sage)}
+.watch-row .who{font-weight:800}
+.watch-row .why{font-size:12.5px;color:var(--muted);margin-top:2px}
+.watch-row .go{font-size:13px;color:var(--sage-deep);font-weight:800;white-space:nowrap}
+
+@media print{
+  body{background:#fff}
+  .no-print{display:none!important}
+  .card{border:none;padding:0;box-shadow:none}
+  .sess{break-inside:avoid}
+}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header class="no-print"><span style="font-size:26px">🌱</span><h1>돌봄 리포트</h1></header>
+
+  <!-- 센터는 우리가 발급한 ID/비번으로 로그인(키오스크와 동일). 구글은 운영사(master)용. -->
+  <div class="card no-print" id="loginCard">
+    <p style="margin-bottom:14px">센터 계정으로 로그인해 주세요.</p>
+    <input type="text" id="loginId" placeholder="센터 ID (예: 001)" autocomplete="username"
+           style="width:100%;padding:14px 16px;font-size:16px;border:1.5px solid #d9e2d5;border-radius:12px;margin-bottom:10px;font-family:inherit;min-height:48px">
+    <input type="password" id="loginPw" placeholder="비밀번호" autocomplete="current-password"
+           style="width:100%;padding:14px 16px;font-size:16px;border:1.5px solid #d9e2d5;border-radius:12px;margin-bottom:12px;font-family:inherit;min-height:48px">
+    <button class="btn btn-primary" id="btnLoginId" style="width:100%">로그인</button>
+    <div class="hint" id="loginErr"></div>
+    <button class="btn" id="btnLogin" style="margin-top:14px;background:none;border:none;color:#8a9a86;font-size:13px;text-decoration:underline;cursor:pointer">운영사 계정(Google)으로 로그인</button>
+  </div>
+
+  <div class="card no-print" id="overviewCard" style="display:none">
+    <div class="rp-head"><div class="who" id="ovTitle">이번 달 센터 현황</div><div class="meta" id="ovMeta"></div></div>
+    <div class="stat-grid" id="ovStats"></div>
+    <div id="ovWatchWrap">
+      <div style="font-weight:800;margin-bottom:8px">👀 요즘 신경 써야 할 어르신</div>
+      <div id="ovWatchList"></div>
+    </div>
+  </div>
+
+  <div class="card no-print" id="pickCard" style="display:none">
+    <div class="row">
+      <div class="field">
+        <label>어르신</label>
+        <select id="seniorSel"><option value="">선택해 주세요</option></select>
+      </div>
+      <div class="field">
+        <label>기간(월)</label>
+        <input type="month" id="monthSel">
+      </div>
+      <button class="btn btn-primary" id="btnLoad">불러오기</button>
+    </div>
+    <div class="hint">이 리포트는 봄이와의 대화를 바탕으로 한 AI 참고 지표이며, 의학적 진단이 아닙니다. 인쇄 전 복지사님의 확인이 필요합니다.</div>
+  </div>
+
+  <div class="warn-banner no-print" id="warnBanner">⚠️ 아직 복지사 확인이 안 된 항목이 있어요. 확인 후 인쇄하시는 걸 권장해요.</div>
+
+  <div class="card" id="reportCard" style="display:none">
+    <div class="rp-head">
+      <div class="who" id="rpWho"></div>
+      <div class="meta" id="rpMeta"></div>
+    </div>
+    <div id="sessList"></div>
+    <div class="footnote">본 리포트의 키워드·감정점수·인지 관찰 지표는 AI가 대화 내용을 바탕으로 참고용으로 산출한 것으로, 의학적 진단을 대체하지 않습니다. 각 항목은 담당 복지사의 확인을 거쳐야 합니다.</div>
+  </div>
+
+  <div class="row no-print" id="printRow" style="display:none;margin-top:16px">
+    <button class="btn btn-gold" id="btnPrint">🖨 인쇄(PDF로 저장)</button>
+  </div>
+</div>
+
+<script>
+var FB_CFG={apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",authDomain:"mylife-650f0.firebaseapp.com",projectId:"mylife-650f0",storageBucket:"mylife-650f0.firebasestorage.app",messagingSenderId:"512010655611",appId:"1:512010655611:web:32b153b836b23ae96a8fde"};
+var MASTER=['machojang@gmail.com','machojang@naver.com'];
+if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+var _auth=firebase.auth(), _db=firebase.firestore();
+_auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+var CTX={uid:null,email:null,isMaster:false,orgId:null};
+var _seniorCache={}, _sessCache=[];
+
+function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+_auth.onAuthStateChanged(function(u){
+  if(!u || u.isAnonymous){ show('loginCard'); return; }
+  CTX.uid=u.uid; CTX.email=u.email||'';
+  CTX.isMaster=MASTER.indexOf(CTX.email)>=0;
+  if(CTX.isMaster){ enter(); return; }
+  _db.collection('admin_roles').doc(u.uid).get().then(function(doc){
+    if(doc.exists && doc.data().status==='approved' && ['org_admin','caregiver'].indexOf(doc.data().role)>=0){
+      CTX.orgId=doc.data().orgId||null; enter();
+    } else {
+      document.getElementById('loginErr').textContent='센터 담당자로 승인되지 않은 계정이에요.';
+      _auth.signOut();
+    }
+  }).catch(function(e){ document.getElementById('loginErr').textContent='권한 확인 실패: '+(e.code||e.message); });
+});
+/* 센터 ID/비번 로그인 — 우리가 발급(예: 001). 내부적으로 {id}@dasibom.kr 계정으로 매핑.
+   ⚠️Firebase가 비밀번호 6자 이상을 요구해서 테스트 계정은 001/001001. */
+function doIdLogin(){
+  var id=(document.getElementById('loginId').value||'').trim().toLowerCase();
+  var pw=document.getElementById('loginPw').value||'';
+  var errEl=document.getElementById('loginErr'); errEl.textContent='';
+  if(!id || !pw){ errEl.textContent='센터 ID와 비밀번호를 입력해 주세요.'; return; }
+  var email = id.indexOf('@')>=0 ? id : (id + '@dasibom.kr');
+  _auth.signInWithEmailAndPassword(email, pw).catch(function(e){
+    var c=e&&e.code||'';
+    errEl.textContent =
+      (c==='auth/wrong-password'||c==='auth/invalid-credential'||c==='auth/user-not-found') ? '센터 ID 또는 비밀번호가 맞지 않아요.' :
+      (c==='auth/operation-not-allowed') ? '아직 로그인이 활성화되지 않았어요. 관리자에게 문의해 주세요.' :
+      ('로그인 실패: '+(c||e.message));
+  });
+}
+document.getElementById('btnLoginId').onclick=doIdLogin;
+['loginId','loginPw'].forEach(function(id){
+  document.getElementById(id).addEventListener('keydown', function(e){ if(e.key==='Enter') doIdLogin(); });
+});
+document.getElementById('btnLogin').onclick=function(){
+  document.getElementById('loginErr').textContent='';
+  _auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()).catch(function(e){ document.getElementById('loginErr').textContent=e.message; });
+};
+function show(id){ ['loginCard','pickCard'].forEach(function(s){ document.getElementById(s).style.display = s===id?'block':'none'; }); if(id==='loginCard') document.getElementById('overviewCard').style.display='none'; }
+
+function enter(){
+  show('pickCard');
+  document.getElementById('overviewCard').style.display='block';
+  var m=new Date(); document.getElementById('monthSel').value = m.getFullYear()+'-'+String(m.getMonth()+1).padStart(2,'0');
+  var q=_db.collection('seniors');
+  q = CTX.isMaster ? q : q.where('centerId','==',CTX.orgId||'__none__');
+  q.get().then(function(snap){
+    var sel=document.getElementById('seniorSel');
+    var arr=[]; snap.forEach(function(d){ arr.push(Object.assign({id:d.id},d.data())); _seniorCache[d.id]=d.data(); });
+    arr.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'','ko'); });
+    arr.forEach(function(s){ var o=document.createElement('option'); o.value=s.id; o.textContent=s.name+(s.gender==='남'?' (할아버지)':' (할머니)'); sel.appendChild(o); });
+    loadOverview(arr);
+  }).catch(function(e){ document.getElementById('loginErr').textContent='어르신 목록 불러오기 실패: '+(e.code||e.message); });
+}
+
+/* ── 센터 전체 현황(이번 달) — 실무에서 매일 볼 만한 요약 ── */
+function loadOverview(seniorArr){
+  var q=_db.collection('care_sessions');
+  if(!CTX.isMaster) q=q.where('centerId','==',CTX.orgId||'__none__');
+  q.get().then(function(snap){
+    var now=new Date(), y=now.getFullYear(), mo=now.getMonth()+1;
+    var monthSessions=[];
+    snap.forEach(function(d){
+      var s=d.data();
+      var t = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate() : null;
+      if(t && t.getFullYear()===y && (t.getMonth()+1)===mo && s.status==='ended'){
+        monthSessions.push(Object.assign({id:d.id,_date:t}, s));
+      }
+    });
+    renderOverview(seniorArr, monthSessions);
+  }).catch(function(e){ console.error('현황 불러오기 실패', e); });
+}
+
+function renderOverview(seniorArr, sessions){
+  document.getElementById('ovMeta').textContent = (new Date()).getFullYear()+'년 '+((new Date()).getMonth()+1)+'월 기준';
+
+  var reviewed=sessions.filter(function(s){ return s.extraction && s.extraction.reviewed; }).length;
+  var withEx=sessions.filter(function(s){ return s.extraction; });
+  var avgEmo = withEx.length ? (withEx.reduce(function(a,s){ return a+(s.extraction.emotion_score||0); },0)/withEx.length).toFixed(1) : '-';
+  var needWatch = withEx.filter(function(s){ return (s.extraction.emotion_score||3)<=2 || (s.extraction.cognitive_category&&s.extraction.cognitive_category!=='양호'); });
+
+  var stats=document.getElementById('ovStats');
+  stats.innerHTML =
+    '<div class="stat-tile"><div class="n">'+seniorArr.length+'</div><div class="l">등록 어르신</div></div>'
+   +'<div class="stat-tile"><div class="n">'+sessions.length+'</div><div class="l">이번 달 대화 세션</div></div>'
+   +'<div class="stat-tile"><div class="n">'+avgEmo+'</div><div class="l">평균 감정점수(/5)</div></div>'
+   +'<div class="stat-tile'+(sessions.length && reviewed<sessions.length?' warn':'')+'"><div class="n">'+(sessions.length?Math.round(reviewed/sessions.length*100):0)+'%</div><div class="l">복지사 확인율</div></div>';
+
+  // 어르신별로 가장 최근 '신경써야 할' 세션 하나씩만 추려서 목록화
+  var bySenior={};
+  needWatch.forEach(function(s){
+    var cur=bySenior[s.seniorId];
+    if(!cur || s._date>cur._date) bySenior[s.seniorId]=s;
+  });
+  var watchArr=Object.keys(bySenior).map(function(k){ return bySenior[k]; }).sort(function(a,b){ return b._date-a._date; });
+
+  var wrap=document.getElementById('ovWatchWrap'), list=document.getElementById('ovWatchList');
+  if(!watchArr.length){
+    wrap.style.display = sessions.length ? 'block' : 'none';
+    list.innerHTML='<div class="empty" style="padding:16px">이번 달엔 특별히 신경 쓸 분이 없어요. 다행이에요 🌱</div>';
+  } else {
+    wrap.style.display='block';
+    list.innerHTML = watchArr.map(function(s){
+      var senior=_seniorCache[s.seniorId]||{};
+      var ex=s.extraction||{};
+      var why = ex.cognitive_category && ex.cognitive_category!=='양호'
+        ? ('인지 관찰: '+ex.cognitive_category)
+        : ('감정점수 '+ex.emotion_score+'/5 — '+fmtDate(s._date));
+      return '<div class="watch-row" data-senior="'+s.seniorId+'">'
+        +'<div><div class="who">'+esc(senior.name||'(이름 없음)')+'</div><div class="why">'+esc(why)+'</div></div>'
+        +'<div class="go">리포트 보기 →</div></div>';
+    }).join('');
+    list.querySelectorAll('.watch-row').forEach(function(row){
+      row.addEventListener('click', function(){
+        var sid=this.dataset.senior;
+        document.getElementById('seniorSel').value=sid;
+        var ym=(new Date()).getFullYear()+'-'+String((new Date()).getMonth()+1).padStart(2,'0');
+        document.getElementById('monthSel').value=ym;
+        loadReport(sid, ym);
+        document.getElementById('reportCard').scrollIntoView({behavior:'smooth'});
+      });
+    });
+  }
+}
+
+document.getElementById('btnLoad').onclick=function(){
+  var sid=document.getElementById('seniorSel').value;
+  var ym=document.getElementById('monthSel').value;
+  if(!sid){ alert('어르신을 선택해 주세요'); return; }
+  if(!ym){ alert('기간을 선택해 주세요'); return; }
+  loadReport(sid, ym);
+};
+
+function loadReport(seniorId, ym){
+  var btn=document.getElementById('btnLoad'); btn.disabled=true; btn.textContent='불러오는 중…';
+  var q=_db.collection('care_sessions').where('seniorId','==',seniorId);
+  if(!CTX.isMaster) q=q.where('centerId','==',CTX.orgId||'__none__');
+  q.get().then(function(snap){
+    var parts=ym.split('-'); var y=parseInt(parts[0]), mo=parseInt(parts[1]);
+    var arr=[];
+    snap.forEach(function(d){
+      var s=d.data();
+      var t = s.startedAt && s.startedAt.toDate ? s.startedAt.toDate() : null;
+      if(t && t.getFullYear()===y && (t.getMonth()+1)===mo && s.status==='ended'){
+        arr.push(Object.assign({id:d.id, _date:t}, s));
+      }
+    });
+    arr.sort(function(a,b){ return a._date-b._date; });
+    _sessCache=arr;
+    renderReport(seniorId, ym, arr);
+  }).catch(function(e){ alert('불러오기 실패: '+(e.code||e.message)); })
+  .finally(function(){ btn.disabled=false; btn.textContent='불러오기'; });
+}
+
+function fmtDate(d){ return d.getFullYear()+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+String(d.getDate()).padStart(2,'0'); }
+
+function renderReport(seniorId, ym, arr){
+  var senior=_seniorCache[seniorId]||{};
+  document.getElementById('rpWho').textContent = (senior.name||'')+' '+(senior.gender==='남'?'할아버지':'할머니')+' — '+ym+' 돌봄 리포트';
+  document.getElementById('rpMeta').textContent = '센터: '+(senior.centerId||'-')+' · 대화 세션 '+arr.length+'건';
+
+  var list=document.getElementById('sessList');
+  if(!arr.length){
+    list.innerHTML='<div class="empty">이 기간에는 종료된 대화 기록이 없어요.</div>';
+  } else {
+    list.innerHTML = arr.map(function(s, idx){
+      var ex=s.extraction||{};
+      var kw=(ex.keywords||[]).map(esc).join(', ');
+      var cog=ex.cognitive_category||'-';
+      return '<div class="sess" data-idx="'+idx+'">'
+        +'<div class="d">'+fmtDate(s._date)+'</div>'
+        +'<div class="sum">'+esc(ex.summary||'(요약 없음)')+'</div>'
+        +'<div class="badges">'
+          +'<span class="badge emo">감정점수 '+(ex.emotion_score||'-')+'/5</span>'
+          +'<span class="badge cog-'+esc(cog)+'">인지 관찰: '+esc(cog)+'</span>'
+        +'</div>'
+        +(kw?'<div class="kw">키워드: '+kw+'</div>':'')
+        +'<div class="review-row no-print">'
+          +'<label><input type="checkbox" data-review-idx="'+idx+'" '+(ex.reviewed?'checked':'')+'> 복지사 확인</label>'
+          +'<input type="text" class="staffnote" data-note-idx="'+idx+'" placeholder="메모(선택)" value="'+esc(ex.staffNote||'')+'">'
+        +'</div>'
+        +(ex.reviewed?'<div class="kw" style="margin-top:4px">✓ 복지사 확인 완료'+(ex.staffNote?(' — '+esc(ex.staffNote)):'')+'</div>':'')
+      +'</div>';
+    }).join('');
+  }
+
+  document.getElementById('reportCard').style.display='block';
+  document.getElementById('printRow').style.display= arr.length ? 'flex' : 'none';
+  updateWarnBanner();
+
+  list.querySelectorAll('[data-review-idx]').forEach(function(cb){
+    cb.addEventListener('change', function(){ saveReview(parseInt(this.dataset.reviewIdx), this.checked); });
+  });
+  list.querySelectorAll('[data-note-idx]').forEach(function(inp){
+    inp.addEventListener('blur', function(){ saveNote(parseInt(this.dataset.noteIdx), this.value); });
+  });
+}
+
+function updateWarnBanner(){
+  var unreviewed = _sessCache.some(function(s){ return !(s.extraction && s.extraction.reviewed); });
+  document.getElementById('warnBanner').classList.toggle('on', unreviewed && _sessCache.length>0);
+}
+
+function saveReview(idx, checked){
+  var s=_sessCache[idx]; if(!s) return;
+  s.extraction = s.extraction || {};
+  s.extraction.reviewed = checked;
+  _db.collection('care_sessions').doc(s.id).update({
+    'extraction.reviewed': checked,
+    'extraction.reviewedBy': CTX.uid,
+    'extraction.reviewedAt': firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){ updateWarnBanner(); })
+    .catch(function(e){ alert('저장 실패: '+(e.code||e.message)); });
+}
+function saveNote(idx, val){
+  var s=_sessCache[idx]; if(!s) return;
+  val=(val||'').trim().slice(0,200);
+  s.extraction = s.extraction || {};
+  s.extraction.staffNote = val;
+  _db.collection('care_sessions').doc(s.id).update({ 'extraction.staffNote': val })
+    .catch(function(e){ console.error('메모 저장 실패', e); });
+}
+
+document.getElementById('btnPrint').onclick=function(){ window.print(); };
+</script>
+</body>
+</html>
