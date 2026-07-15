@@ -15,6 +15,12 @@
   if (window.__dsbA11y) return; window.__dsbA11y = true;
   var TS_KEY = 'dasibom_ts', DARK_KEY = 'dasibom_dark';
 
+  /* ── 공용 읽어주기(TTS) 제거됨 (2026-07-08 Macho 지시) ──
+     브라우저 로봇 음성이 봄이(어린 소녀) 컨셉과 안 맞아 전면 삭제.
+     낭독/읽어주기는 향후 봄이 튜토리얼 모드로 재도입 예정.
+     혹시 남은 호출부가 있어도 크래시 안 나도록 no-op 스텁만 유지. */
+  window.dsbSpeak = function () {};
+
   /* ── 구버전 설정 마이그레이션 (1회) ── */
   try {
     if (!localStorage.getItem(TS_KEY)) {
@@ -53,7 +59,7 @@
       ' background:rgba(255,255,255,.96);border:1px solid #ddd6c8;border-radius:50px;padding:5px 9px;',
       ' box-shadow:0 3px 14px rgba(0,0,0,.16);font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif}',
       '.dsb-a11y-lbl{font-size:11px;color:#8a7f72;padding:0 3px 0 2px;user-select:none}',
-      '.dsb-a11y button{border:none;background:transparent;color:#8a7f72;cursor:pointer;width:36px;height:36px;',
+      '.dsb-a11y button{border:none;background:transparent;color:#8a7f72;cursor:pointer;width:44px;height:44px;',
       ' border-radius:50%;font-weight:800;line-height:1;padding:0;font-family:inherit}',
       '.dsb-a11y .t1{font-size:13px}.dsb-a11y .t2{font-size:17px}.dsb-a11y .t3{font-size:21px}.dsb-a11y .dk{font-size:16px}',
       '.dsb-a11y button.on{background:#0e9d7d;color:#fff}',
@@ -121,5 +127,36 @@
     var ts = '1', dk = false;
     try { ts = localStorage.getItem(TS_KEY) || '1'; dk = localStorage.getItem(DARK_KEY) === '1'; } catch (e) {}
     setTs(ts); setDark(dk);
+
+    /* ── 돌봄 키오스크 안내 배너 — 센터 공용 태블릿에서 대화 마치고 본 사이트 구경할 때 1회 안내 ──
+       carechat.html이 전환 시 sessionStorage에 dasibom_kiosk_browse를 심어두면, 그 태블릿의
+       이후 페이지 어디서든(공용 스크립트라) 이 배너가 한 번만 뜬다. */
+    try {
+      if (sessionStorage.getItem('dasibom_kiosk_browse') && !sessionStorage.getItem('dasibom_kiosk_banner_shown')) {
+        sessionStorage.setItem('dasibom_kiosk_banner_shown', '1');
+        var kb = document.createElement('div');
+        kb.className = 'dsb-kiosk-banner';
+        kb.innerHTML =
+          '<span class="kb-face">🌱</span>' +
+          // ★문구 정직성(2026-07-15): 어르신별 이용 기록(카드명·시간)을 남기기 시작했으므로
+          //   "따로 저장은 안 된답니다"는 더 이상 사실이 아님 → 무엇이 남는지 그대로 알림.
+          //   (남는 건 '무엇을 얼마나' 뿐. 보신 내용 자체는 저장하지 않음. 동의서와 같은 범위)
+          '<span class="kb-txt">여긴 여러 어르신이 함께 쓰시는 태블릿이에요. 오늘 무엇을 하셨는지는 센터 선생님께 참여 기록으로만 남는답니다.' +
+          ' 마음에 드는 게 있으시면, 나중에 개인 휴대폰으로 저를 다시 만나러 와주세요 — 그때는 제가 다 기억해둘게요 🌸</span>' +
+          '<button type="button" class="kb-close">확인했어요</button>';
+        var kbCss = document.createElement('style');
+        kbCss.textContent =
+          '.dsb-kiosk-banner{position:fixed;left:12px;right:12px;bottom:88px;z-index:99991;display:flex;align-items:center;gap:12px;' +
+          'background:#33492A;color:#F5F1E8;border-radius:20px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.3);' +
+          'max-width:640px;margin:0 auto;font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif}' +
+          '.dsb-kiosk-banner .kb-face{font-size:26px;flex-shrink:0}' +
+          '.dsb-kiosk-banner .kb-txt{flex:1;font-size:15.5px;line-height:1.6;font-weight:700}' +
+          '.dsb-kiosk-banner .kb-close{flex-shrink:0;background:#C9A961;color:#1A2416;border:none;border-radius:12px;' +
+          'padding:12px 16px;font-size:14.5px;font-weight:800;cursor:pointer;white-space:nowrap;font-family:inherit}';
+        document.head.appendChild(kbCss);
+        document.body.appendChild(kb);
+        kb.querySelector('.kb-close').addEventListener('click', function () { kb.remove(); });
+      }
+    } catch (e) {}
   });
 })();

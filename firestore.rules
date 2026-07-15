@@ -41,6 +41,111 @@ service cloud.firestore {
       allow read, write: if isMaster();
     }
 
+    // ── 통합돌봄 PoC: 어르신 프로필(seniors) — 센터별 격리 ──────────────────
+    //   B2B/B2G 실증용. L번호·건강데이터가 담기므로 센터 스태프(승인된 admin_role)만,
+    //   그것도 자기 센터(orgId==centerId) 것만 접근. master는 전체.
+    //   ⚠️ 실명 어르신 건강데이터를 대량 적재하기 전 release_blockers #2(서버권한 보안) 선행 필요.
+    match /seniors/{sid} {
+      function isMasterS() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      function roleDoc() {
+        return get(/databases/$(database)/documents/admin_roles/$(request.auth.uid)).data;
+      }
+      function isApprovedStaff() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid))
+          && roleDoc().status == 'approved';
+      }
+      function myOrg() { return roleDoc().orgId; }
+      allow read:   if isMasterS() || (isApprovedStaff() && resource.data.centerId == myOrg());
+      allow create: if isMasterS() || (isApprovedStaff() && request.resource.data.centerId == myOrg());
+      allow update, delete: if isMasterS() || (isApprovedStaff() && resource.data.centerId == myOrg());
+    }
+
+    // ── 통합돌봄 PoC: 개인정보(민감정보 포함) 수집·이용 동의(consents) ──────────
+    //   보호자가 센터에서 받은 링크(/care-consent?center=)로 익명 접속해 제출.
+    //   쓰기는 열려있되(보호자는 계정이 없음) 필드 검증으로 방어, 읽기는 그 센터 스태프/master만.
+    match /consents/{cid} {
+      function isMasterCN() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      function roleDocCN() {
+        return get(/databases/$(database)/documents/admin_roles/$(request.auth.uid)).data;
+      }
+      function isApprovedStaffCN() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid))
+          && roleDocCN().status == 'approved';
+      }
+      function myOrgCN() { return roleDocCN().orgId; }
+      allow create: if request.auth != null
+        && request.resource.data.centerId is string && request.resource.data.centerId.size() > 0
+        && request.resource.data.seniorName is string && request.resource.data.seniorName.size() > 0 && request.resource.data.seniorName.size() <= 20
+        && request.resource.data.guardianName is string && request.resource.data.guardianName.size() > 0 && request.resource.data.guardianName.size() <= 20
+        && request.resource.data.relation is string && request.resource.data.relation.size() <= 20
+        && request.resource.data.phone is string && request.resource.data.phone.size() <= 20
+        && request.resource.data.agreedGeneral == true
+        && request.resource.data.agreedSensitive == true;
+      allow read: if isMasterCN() || (isApprovedStaffCN() && resource.data.centerId == myOrgCN());
+      allow update, delete: if isMasterCN();
+    }
+
+    // ── 통합돌봄 PoC: 대화 세션 기록(care_sessions) — 센터별 격리 ──────────────
+    //   봄이-어르신 대화 로그 + AI 추출 지표(emotion_score/cognitive_category)가 담김.
+    //   ⚠️ 공단 제출용으로 쓰려면 release_blockers #2 선행 + 복지사 검수(reviewed) 필수 — extraction은 참고용 지표.
+    match /care_sessions/{sid} {
+      function isMasterCS() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      function roleDocCS() {
+        return get(/databases/$(database)/documents/admin_roles/$(request.auth.uid)).data;
+      }
+      function isApprovedStaffCS() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid))
+          && roleDocCS().status == 'approved';
+      }
+      function myOrgCS() { return roleDocCS().orgId; }
+      allow read:   if isMasterCS() || (isApprovedStaffCS() && resource.data.centerId == myOrgCS());
+      allow create: if isMasterCS() || (isApprovedStaffCS() && request.resource.data.centerId == myOrgCS());
+      allow update: if isMasterCS() || (isApprovedStaffCS() && resource.data.centerId == myOrgCS());
+      allow delete: if isMasterCS();
+    }
+
+    // ── 어르신 콘텐츠 이용 기록(care_usage) — 센터 리포트의 '팩트 지표' 원천 ────────
+    //   어르신·카드·날짜별 1문서. 남는 건 카드명과 이용 시간뿐(대화 내용 아님).
+    //   센터 태블릿이 그 센터 계정으로 로그인한 상태에서 기록 → 자기 센터 것만 쓰고 읽음.
+    //   ※ 보호자 동의서(careconsent)의 '서비스 이용 기록' 항목이 이 데이터에 대한 동의.
+    match /care_usage/{uid} {
+      function isMasterCU() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      function roleDocCU() {
+        return get(/databases/$(database)/documents/admin_roles/$(request.auth.uid)).data;
+      }
+      function isApprovedStaffCU() {
+        return request.auth != null
+          && exists(/databases/$(database)/documents/admin_roles/$(request.auth.uid))
+          && roleDocCU().status == 'approved';
+      }
+      function myOrgCU() { return roleDocCU().orgId; }
+      allow read:   if isMasterCU() || (isApprovedStaffCU() && resource.data.centerId == myOrgCU());
+      allow create: if isMasterCU() || (isApprovedStaffCU() && request.resource.data.centerId == myOrgCU());
+      allow update: if isMasterCU() || (isApprovedStaffCU() && resource.data.centerId == myOrgCU());
+      allow delete: if isMasterCU();
+    }
+
+    // AI 발화분석(통합돌봄) 일일 사용량 — Cloud Functions(Admin SDK)만 기록, 마스터만 조회
+    match /usage_care_daily/{id} {
+      allow read: if request.auth != null && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      allow write: if false;
+    }
+
     // 오늘의 지혜 — 한 줄 공감(커뮤니티). 누구나 읽기 / 인증 사용자가 짧은 글 작성 / 본인·운영자 삭제
     // 운영자는 봇 uid(bot_*)로도 작성 가능(봇 심기)
     match /wisdom_comments/{cid} {
@@ -92,6 +197,15 @@ service cloud.firestore {
     match /usage_chat_daily/{id} {
       allow read: if request.auth != null && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
       allow write: if false;
+    }
+    // 봄이 음성(TTS) 일일 사용량 — Cloud Functions(Admin SDK)만 기록
+    match /usage_tts_daily/{id} {
+      allow read: if request.auth != null && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      allow write: if false;
+    }
+    // 봄이 음성 캐시 — Cloud Functions(Admin SDK)만 읽고 씀(클라는 함수 통해서만 오디오 받음)
+    match /tts_cache/{id} {
+      allow read, write: if false;
     }
 
     // 베타 설문(서프라이즈 자서전 직후) — 본인 작성만, 관리자 통계는 전체 조회
@@ -177,6 +291,45 @@ service cloud.firestore {
       allow read: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
       allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 감정 표현 반응 — 콘텐츠별 이모지 카운트(reactions/{scope}). 누구나 읽기,
+    // 인증 사용자는 허용된 감정 키만 +1씩(다른 필드 못 건드림). 삭제는 마스터만.
+    match /reactions/{scope} {
+      function reactKeysOk() {
+        return request.resource.data.keys().hasOnly(
+          ['like','warm','touched','happy','funny','best','thanks','cheer']);
+      }
+      allow read: if true;
+      allow create: if request.auth != null && reactKeysOk();
+      allow update: if request.auth != null && reactKeysOk()
+        && request.resource.data.diff(resource.data).affectedKeys().size() == 1;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 봄이네 사랑방(맞고 등 보드게임) 누적 전적·포인트 — 문서ID=uid, 게임별 필드 확장 구조
+    // { matgo:{points,wins,losses,draws}, janggi:{...} } — 누구나 읽기(랭킹 대비), 본인만 쓰기
+    match /game_stats/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null && request.auth.uid == uid;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 추억의 오락실 — 주간 랭킹·명예의 전당. 문서ID={weekNum}_{game}_{uid}(유저당 주간 1건, 최고점만 갱신)
+    // 누구나 읽기(랭킹·명예의 전당 열람), 본인 uid로만 쓰기·갱신. 삭제는 마스터만.
+    match /arcade_scores/{sid} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.game in ['blast','match3','bubble']
+        && request.resource.data.score is number
+        && request.resource.data.score >= 0 && request.resource.data.score <= 999999
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 10
+        && request.resource.data.weekNum is number;
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }

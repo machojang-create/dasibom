@@ -196,6 +196,15 @@ _auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 var CTX={ uid:null, email:null, isMaster:false, role:null, orgId:null, centerName:'' };
 var _sfGender='여';
 
+/* ★어르신 세션 종료 지점 — 키오스크 화면으로 돌아왔다는 건 앞 어르신의 이용이 끝났다는 뜻.
+   여기서 정리해야 다음 어르신의 구경 기록이 앞사람에게 잘못 붙지 않음.
+   (구경 모드 동안엔 dasibom_active_senior가 유지됨 — dasibom-kiosk-usage.js가 그걸로 이용 기록) */
+try{
+  sessionStorage.removeItem('dasibom_active_senior');
+  sessionStorage.removeItem('dasibom_kiosk_browse');
+  sessionStorage.removeItem('dasibom_kiosk_banner_shown');
+}catch(e){}
+
 function show(id){ ['loginScreen','profilesScreen'].forEach(function(s){ document.getElementById(s).classList.toggle('on', s===id); }); }
 function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},2200); }
 function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }

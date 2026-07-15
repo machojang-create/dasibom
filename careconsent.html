@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>개인정보 수집·이용 동의 — 다시봄 돌봄</title>
+<meta name="description" content="다시봄 돌봄 시범 서비스 참여를 위한 개인정보(민감정보 포함) 수집·이용 동의">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F1E8; --paper:#FBF8F0; --ink:#1A2416; --muted:#5C6152;
+  --sage:#4B6B3B; --sage-deep:#33492A; --gold:#C9A961; --line:#E0DAC9; --danger:#B23A2E;
+}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);font-weight:600;-webkit-font-smoothing:antialiased}
+.wrap{max-width:520px;margin:0 auto;padding:28px 20px 60px}
+header{text-align:center;margin-bottom:20px}
+header .logo{font-size:30px}
+header h1{font-size:20px;font-weight:800;color:var(--sage-deep);margin-top:6px}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:22px;margin-bottom:16px}
+.card h2{font-size:16px;font-weight:800;color:var(--sage-deep);margin-bottom:10px}
+.card p,.card li{font-size:14.5px;line-height:1.7;color:var(--ink)}
+.card ul{padding-left:18px;margin-top:4px}
+.muted{color:var(--muted);font-size:13.5px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13.5px;font-weight:800;color:var(--muted);margin-bottom:6px}
+.field input,.field select{width:100%;min-height:48px;padding:0 14px;border:2px solid var(--line);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--ink)}
+.consent-box{border:2px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:#fff}
+.consent-box.sensitive{border-color:#D9B36C;background:#FBF6EA}
+.consent-box label{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;font-weight:700;cursor:pointer}
+.consent-box input[type=checkbox]{width:22px;height:22px;flex-shrink:0;margin-top:2px}
+.consent-box .tag{display:inline-block;font-size:11.5px;font-weight:800;color:#7a5c14;background:rgba(201,169,97,.25);padding:2px 8px;border-radius:50px;margin-bottom:4px}
+.btn{width:100%;min-height:56px;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;background:var(--sage);color:#fff}
+.btn:disabled{opacity:.5;cursor:default}
+.err{color:var(--danger);font-size:13.5px;margin-top:10px;text-align:center;min-height:18px}
+.done{text-align:center;padding:50px 20px}
+.done .big{font-size:44px;margin-bottom:14px}
+.done h2{font-size:20px;color:var(--sage-deep);margin-bottom:10px}
+.done p{font-size:15px;color:var(--muted);line-height:1.7}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo">🌱</div>
+    <h1>다시봄 돌봄 시범 서비스<br>개인정보 수집·이용 동의</h1>
+  </header>
+
+  <div id="noCenterErr" class="card" style="display:none;text-align:center">
+    <p>올바른 링크가 아니에요. 센터 담당자에게 받은 링크로 다시 접속해 주세요.</p>
+  </div>
+
+  <div id="formArea">
+    <div class="card">
+      <p>봄이와 나눈 대화를 담당 복지사님이 참고할 수 있게 정리해서 기록해요.</p>
+      <p class="muted" id="moreBtn" style="margin-top:8px;text-decoration:underline;cursor:pointer">자세히 보기 ▾</p>
+      <div id="moreDetail" style="display:none;margin-top:10px">
+        <ul>
+          <!-- ★2026-07-15 개편: 'AI가 산출한 감정·인지 관찰 지표'를 수집 항목에서 삭제.
+               해당 지표 생성 자체를 중단했음(LLM이 감정점수·인지상태를 판단하는 건 근거 없는
+               준-의료 판단이라 제거). 대신 실제로 측정하는 '이용 기록'을 명시적으로 추가. -->
+          <li><b>일반 정보</b>: 어르신 성함, 성별, 출생연도</li>
+          <li><b>서비스 이용 기록</b>: 이용하신 콘텐츠 이름과 이용 시간, 대화 횟수·시간</li>
+          <li><b>민감정보(건강 관련)</b>: 대화 내용, 대화 내용 요약</li>
+        </ul>
+        <p class="muted" style="margin-top:8px">보유기간: 시범 종료 시까지(종료 후 파기) · 목적: 시범 서비스 제공 및 복지사 참고자료 · 동의는 언제든 센터 담당자를 통해 철회 가능</p>
+      </div>
+    </div>
+
+    <div class="consent-box">
+      <label><input type="checkbox" id="agGeneral"><span>[필수] 일반 개인정보 수집·이용에 동의합니다.</span></label>
+    </div>
+    <div class="consent-box sensitive">
+      <span class="tag">민감정보</span>
+      <label><input type="checkbox" id="agSensitive"><span>[필수] 건강 관련 민감정보 수집·이용에 동의합니다.</span></label>
+    </div>
+
+    <div class="card">
+      <div class="field"><label>어르신 성함</label><input type="text" id="seniorName" maxlength="20" placeholder="예) 김순자"></div>
+      <div class="field"><label>보호자(작성자) 성함</label><input type="text" id="guardianName" maxlength="20" placeholder="예) 김민수"></div>
+      <div class="field"><label>어르신과의 관계</label>
+        <select id="relation">
+          <option value="자녀">자녀</option><option value="배우자">배우자</option>
+          <option value="본인">본인(어르신 본인 작성)</option><option value="기타">기타 보호자</option>
+        </select>
+      </div>
+      <div class="field"><label>연락처</label><input type="tel" id="phone" maxlength="20" placeholder="010-0000-0000"></div>
+    </div>
+
+    <button class="btn" id="submitBtn">동의하고 제출하기</button>
+    <div class="err" id="errMsg"></div>
+  </div>
+
+  <div class="done" id="doneArea" style="display:none">
+    <div class="big">🌸</div>
+    <h2>동의해 주셔서 감사합니다</h2>
+    <p>제출이 완료되었습니다.<br>궁금하신 점은 센터 담당자에게 언제든 문의해 주세요.</p>
+  </div>
+</div>
+
+<script>
+var FB_CFG={apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",authDomain:"mylife-650f0.firebaseapp.com",projectId:"mylife-650f0",storageBucket:"mylife-650f0.firebasestorage.app",messagingSenderId:"512010655611",appId:"1:512010655611:web:32b153b836b23ae96a8fde"};
+if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+var _auth=firebase.auth(), _db=firebase.firestore();
+
+function qparam(k){ return new URLSearchParams(location.search).get(k); }
+var CENTER_ID = (qparam('center')||'').trim();
+
+if(!CENTER_ID){
+  document.getElementById('formArea').style.display='none';
+  document.getElementById('noCenterErr').style.display='block';
+}
+
+document.getElementById('moreBtn').onclick=function(){
+  var d=document.getElementById('moreDetail');
+  var open = d.style.display==='none';
+  d.style.display = open?'block':'none';
+  this.textContent = open? '접기 ▴' : '자세히 보기 ▾';
+};
+
+document.getElementById('submitBtn').onclick=function(){
+  var errEl=document.getElementById('errMsg'); errEl.textContent='';
+  var seniorName=(document.getElementById('seniorName').value||'').trim();
+  var guardianName=(document.getElementById('guardianName').value||'').trim();
+  var relation=document.getElementById('relation').value;
+  var phone=(document.getElementById('phone').value||'').trim();
+  var agGeneral=document.getElementById('agGeneral').checked;
+  var agSensitive=document.getElementById('agSensitive').checked;
+
+  if(!seniorName || !guardianName || !phone){ errEl.textContent='빈 칸을 모두 채워 주세요.'; return; }
+  if(!agGeneral || !agSensitive){ errEl.textContent='필수 동의 항목 2가지에 모두 체크해 주세요.'; return; }
+
+  var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='제출 중…';
+
+  var go = _auth.currentUser ? Promise.resolve(_auth.currentUser) : _auth.signInAnonymously().then(function(r){ return r.user; });
+  go.then(function(){
+    return _db.collection('consents').add({
+      centerId: CENTER_ID,
+      seniorName: seniorName, guardianName: guardianName, relation: relation, phone: phone,
+      agreedGeneral: true, agreedSensitive: true,
+      consentVersion: 'v1-2026-07',
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }).then(function(){
+    document.getElementById('formArea').style.display='none';
+    document.getElementById('doneArea').style.display='block';
+  }).catch(function(e){
+    errEl.textContent='제출에 실패했어요: '+(e.code||e.message);
+    btn.disabled=false; btn.textContent='동의하고 제출하기';
+  });
+};
+</script>
+</body>
+</html>

@@ -48,6 +48,9 @@
         firebase.auth().signInAnonymously().catch(function () {});
       } catch (e) {}
       add('/bom_voice.js?v=11', null);
+      // 어르신 콘텐츠 이용 측정(센터 리포트의 팩트 지표) — 키오스크 구경 모드일 때만 동작.
+      // 파일럿도 카드이므로 함께 로드. 개인 사용자에겐 아무 일도 하지 않음.
+      add('/dasibom-kiosk-usage.js', null);
       // BomVoice 준비되는 즉시 환영 대사를 미리 합성 → 창 열 때 곧바로 재생(지연 숨김)
       var tries = 0;
       (function warm() {

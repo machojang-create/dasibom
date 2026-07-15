@@ -26,6 +26,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .bubble-row{display:flex;gap:10px;align-items:flex-end}
 .bubble-row.senior{flex-direction:row-reverse}
 .bavatar{width:38px;height:38px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+/* 봄이 아바타 = 봄이 얼굴(로고 아님). 작은 원형이라 얼굴 위쪽 기준으로 잘라야 정수리가 안 잘림 —
+   다른 화면의 봄이 아바타(.bg2-face/.bt-face)와 같은 규칙. */
+img.bavatar{background:#fff;object-fit:cover;object-position:center top;border:2px solid #fff;box-shadow:0 3px 8px -3px rgba(0,0,0,.35)}
 .bubble-row.senior .bavatar{background:linear-gradient(135deg,#B7C9A6,#8FAE79)}
 .bubble{max-width:72%;padding:16px 20px;border-radius:22px;font-size:19px;line-height:1.6;font-weight:700}
 .bubble-row.bom .bubble{background:var(--paper);border:2px solid var(--line);border-bottom-left-radius:6px;color:var(--ink)}
@@ -477,10 +480,18 @@ function openBookView(S){
   document.getElementById('bookView').classList.add('on');
   document.getElementById('bvClose').onclick=function(){ location.href='/kiosk'; };
 }
+/* 봄이 아바타 마크업 — 말풍선 옆엔 로고(🌱)가 아니라 봄이 얼굴이 나와야 함.
+   경로는 절대(/img/) — /kiosk/chat 처럼 하위경로에서 상대경로면 깨짐. */
+var BOM_AV='<img class="bavatar" src="/img/bom_smile.png" alt="봄이">';
+function bomAvatarEl(){
+  var im=document.createElement('img');
+  im.className='bavatar'; im.src='/img/bom_smile.png'; im.alt='봄이';
+  return im;
+}
 function addBookAgainButton(S){
   var wrap=document.getElementById('chatArea');
   var row=document.createElement('div'); row.className='bubble-row bom';
-  row.innerHTML='<div class="bavatar">🌱</div><div class="bubble" style="display:flex;flex-direction:column;gap:10px">'
+  row.innerHTML=BOM_AV+'<div class="bubble" style="display:flex;flex-direction:column;gap:10px">'
     +'<span>지난번에 선물해 드린 자서전, 다시 보고 싶으세요?</span>'
     +'<button type="button" id="bookAgainBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:12px 20px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit">📖 내 자서전 보기</button></div>';
   wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
@@ -491,7 +502,9 @@ function addBookAgainButton(S){
 function addBubble(role, text){
   var wrap=document.getElementById('chatArea');
   var row=document.createElement('div'); row.className='bubble-row '+role;
-  var av=document.createElement('div'); av.className='bavatar'; av.textContent = role==='bom' ? '🌱' : initial(SENIOR.name);
+  var av;
+  if(role==='bom'){ av=bomAvatarEl(); }                    // 봄이 = 얼굴 이미지
+  else { av=document.createElement('div'); av.className='bavatar'; av.textContent=initial(SENIOR.name); }  // 어르신 = 성함 첫 글자
   var b=document.createElement('div'); b.className='bubble'; b.textContent=text;
   row.appendChild(role==='senior'?b:av); row.appendChild(role==='senior'?av:b);
   wrap.appendChild(row);
@@ -501,7 +514,7 @@ function addBubble(role, text){
 function addThinking(){
   var wrap=document.getElementById('chatArea');
   var row=document.createElement('div'); row.className='bubble-row bom'; row.id='thinkingRow';
-  row.innerHTML='<div class="bavatar">🌱</div><div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>';
+  row.innerHTML=BOM_AV+'<div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>';
   wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
 }
 function removeThinking(){ var el=document.getElementById('thinkingRow'); if(el) el.remove(); }
@@ -602,7 +615,7 @@ function sendMessage(){
 function showTransitionCTA(){
   var wrap=document.getElementById('chatArea');
   var row=document.createElement('div'); row.className='bubble-row bom';
-  row.innerHTML='<div class="bavatar">🌱</div>'
+  row.innerHTML=BOM_AV
     +'<div class="bubble" style="display:flex;flex-direction:column;gap:12px">'
     +'<span>오늘 이야기 들려주셔서 정말 고마워요 🌱 이제 재미난 것들도 구경하러 가볼까요?</span>'
     +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">구경하러 가기 →</button>'
@@ -614,7 +627,11 @@ function goBrowse(){
   var btn=document.getElementById('goBrowseBtn'); if(btn){ btn.disabled=true; btn.textContent='정리하는 중…'; }
   finishSession().then(function(){
     try{
-      sessionStorage.removeItem('dasibom_active_senior');
+      // ★어르신 신원을 유지한 채 구경 모드로 — 센터 리포트의 '이용 기록'(어떤 카드를 몇 분)을
+      //   어르신별로 남기기 위함(dasibom-kiosk-usage.js가 이 값을 보고 기록).
+      //   예전엔 여기서 지워버려서 이후 이용이 전부 센터 계정 하나로 뭉뚱그려졌음.
+      //   ※ 대화 '내용'은 여기서 끝(care_sessions). 구경 중엔 카드명·시간만 남음.
+      //   ※ 세션 종료는 /kiosk로 돌아갈 때(carekiosk가 진입 시 정리).
       sessionStorage.setItem('dasibom_kiosk_browse','1');
       sessionStorage.removeItem('dasibom_kiosk_banner_shown');
     }catch(e){}
