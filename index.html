@@ -3483,6 +3483,21 @@ body.dark .bom-guide-text{color:#c8bba4}
   function bomAppendBot(text){ bomAppendHTML(bomMsgRow(esc(text),bomFaceFor(text))); }
   // 홈 챗봇 잡담을 기기 로컬에만 기록(서버 전송·개인정보 저장 없음).
   // 자서전 작성 시 관련 회상이 있으면 봄이가 "이 이야기 담아볼까요?"로 되살려줌.
+  /* ── 봄이 기억 ──
+     _bomTurns: 이번 세션 대화(서버로 맥락 전달용). 새로고침하면 사라짐 = 무료의 '오늘만 기억'.
+     _bomSyncMemory: 구독자면 서버가 발화에서 '사실'을 뽑아 bom_memory에 누적(장기 기억).
+       매 턴 부르면 낭비라 4턴마다 한 번. 실패는 무음(대화를 막으면 안 됨). */
+  var _bomTurns=[], _bomMemSynced=0;
+  function _bomSyncMemory(){
+    var userTurns=_bomTurns.filter(function(t){ return t.role==='user'; });
+    if(userTurns.length<2 || userTurns.length-_bomMemSynced<4) return;
+    _bomMemSynced=userTurns.length;
+    try{
+      firebase.app().functions('asia-northeast3').httpsCallable('updateBomMemory')({
+        turns: userTurns.slice(-8)
+      }).catch(function(){});
+    }catch(e){}
+  }
   function _logChat(text){
     try{
       var arr=JSON.parse(localStorage.getItem('memoir_chatlog')||'[]');
@@ -3508,12 +3523,18 @@ body.dark .bom-guide-text{color:#c8bba4}
     var typingFace=_bomFaceCycle[_bomFaceIdx%_bomFaceCycle.length];
     bomAppendHTML('<div class="bcp-typing-row" id="bcpTyping"><img class="bcp-mini-face" src="/img/'+typingFace+'.png" alt="봄이" onerror="this.style.visibility=\'hidden\'"><span class="bcp-typing">봄이가 생각하고 있어요…</span></div>');
     document.getElementById('bcpBody').scrollTop=document.getElementById('bcpBody').scrollHeight;
+    _bomTurns.push({ role:'user', text:msg });
     _bomEnsureAuth().then(function(){
       var fn=firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
-      return fn({ message: msg });
+      // ★대화 맥락 전달 — 예전엔 한 마디만 보내서 봄이가 방금 한 말도 기억 못 했음.
+      //   최근 6턴만(길면 비용·지연↑). 장기 기억은 서버가 bom_memory에서 붙임.
+      return fn({ message: msg, history: _bomTurns.slice(-7, -1) });
     }).then(function(res){
       var t=document.getElementById('bcpTyping'); if(t) t.remove();
-      bomAppendBot((res.data&&res.data.text)||'');
+      var reply=(res.data&&res.data.text)||'';
+      bomAppendBot(reply);
+      _bomTurns.push({ role:'bom', text:reply });
+      _bomSyncMemory();
     }).catch(function(){
       var t=document.getElementById('bcpTyping'); if(t) t.remove();
       bomAppendBot('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱');

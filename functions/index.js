@@ -495,6 +495,63 @@ function bomSystemPrompt(extra) {
   return BOM_SYSTEM_PROMPT_BASE + `\n[오늘 정보] 오늘은 ${kstStr}입니다.` + (extra || '');
 }
 
+/* ════════ 봄이 장기 기억 ════════
+   구독의 핵심 가치: 무료는 세션 안에서만, 구독은 봄이가 '나를 계속 기억함'.
+   ★원문(대화 전문) 저장 금지 — 토큰 폭발. '사실'만 짧게. [[context-budget]]
+   저장: bom_memory/{uid} { facts:[], recent:[], updatedAt }
+     · facts  = 오래 가는 사실 (가족·건강·이력·취향). 최대 MEM_FACTS_MAX개
+     · recent = 최근 대화 한 줄 요약. 최대 MEM_RECENT_MAX개
+   ※ 민감정보가 쌓이는 영역이라 본인만 읽게 규칙으로 잠글 것(firestore.rules). */
+const MEM_FACTS_MAX = 12;
+const MEM_RECENT_MAX = 3;
+const MEM_FACT_LEN = 60;
+
+async function loadBomMemory(uid) {
+  try {
+    const d = await admin.firestore().collection('bom_memory').doc(uid).get();
+    if (!d.exists) return null;
+    const m = d.data();
+    return { facts: (m.facts || []).slice(0, MEM_FACTS_MAX), recent: (m.recent || []).slice(0, MEM_RECENT_MAX) };
+  } catch (e) { return null; }
+}
+
+/* 기억을 시스템 프롬프트에 붙이는 블록.
+   ★첫 구현에서 "매번 다 꺼내지 말라"고만 썼더니 봄이가 기억을 '아예 안 꺼냄' → 구독 가치가 안 보였음.
+     기억을 쓰는 게 곧 상품이므로, 쓰되 자연스럽게 쓰라고 명시해야 함.
+   ★기억이 없을 때(무료)는 '기억하는 척'을 막아야 함. 안 그러면 무료도 "당연히 기억하죠!"라고
+     거짓말하고, 유료와 차이가 사라짐. */
+function bomMemoryBlock(mem) {
+  const hasMem = !!(mem && ((mem.facts || []).length || (mem.recent || []).length));
+  if (!hasMem) {
+    return '\n\n[중요] 너는 이 어르신과 예전에 나눈 대화를 기억하지 못한다.' +
+      ' "기억나?"라고 물으시면 기억하는 척하지 말고, 솔직하고 밝게 답해.' +
+      ' (예: "아이고, 제가 아직 기억력이 짧아서요… 다시 들려주시면 안 될까요?")' +
+      ' 지금 이 대화 안에서 하신 말씀은 당연히 기억한다.';
+  }
+  let s = '\n\n[어르신에 대해 봄이가 기억하는 것]\n';
+  (mem.facts || []).forEach((f) => { s += '· ' + f + '\n'; });
+  if ((mem.recent || []).length) {
+    s += '[지난번에 나눈 이야기]\n';
+    (mem.recent || []).forEach((r) => { s += '· ' + r + '\n'; });
+  }
+  s += '[기억 사용법]\n';
+  s += '· 위는 예전에 어르신이 직접 들려주신 것이다. 어르신은 봄이가 기억해주길 바라신다.\n';
+  s += '· "기억나?"라고 물으시면 두루뭉술하게 넘기지 말고 위 내용 중 하나를 콕 집어 말해.\n';
+  s += '· 대화 중에도 관련된 게 있으면 자연스럽게 한 가지쯤 꺼내(예: "무릎은 좀 어떠세요?").\n';
+  s += '· 단, 한 번에 여러 개를 늘어놓거나 취조하듯 확인하지 마. 한두 개만 스치듯.\n';
+  s += '· 틀렸다고 하시면 바로 수긍하고 넘어가. 절대 따지지 마.\n';
+  return s;
+}
+
+// 대화 맥락(세션 내) + 이번 발화를 하나의 user 텍스트로. aiText가 system/user 2개만 받아서 이 형태가 최소 변경.
+function bomUserBlock(history, message) {
+  const h = (Array.isArray(history) ? history : []).slice(-6)
+    .filter((t) => t && t.text)
+    .map((t) => (t.role === 'bom' ? '봄이: ' : '어르신: ') + String(t.text).slice(0, 200));
+  if (!h.length) return message;
+  return '[방금까지 나눈 이야기]\n' + h.join('\n') + '\n\n[어르신 말씀]\n' + message;
+}
+
 exports.chatBom = functions
   .region('asia-northeast3')
   .runWith({ timeoutSeconds: 30, memory: '256MB' })
@@ -545,14 +602,105 @@ exports.chatBom = functions
           : '오늘은 여기까지 이야기 나눴어요 🌱 내일 또 오시면 제가 기다리고 있을게요. (더 오래 이야기하고 싶으시면 봄이랑 함께하기를 살펴봐 주세요)');
     }
 
+    /* ★기억 (구독의 핵심 가치)
+       무료: 세션 안에서만 기억(클라이언트가 보내준 최근 대화) → 내일 오면 처음
+       구독: 위 + 장기 기억(bom_memory의 facts/recent) → "지난번에 무릎 아프시다더니…"
+       클라이언트가 history를 안 보내면 기존과 동일하게 단발 대화로 동작(하위호환). */
+    const history = Array.isArray(data && data.history) ? data.history : [];
+    const mem = _subscribed ? await loadBomMemory(_uid) : null;
+
     const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL;
     let text;
     try {
-      text = await aiText({ system: bomSystemPrompt(), user: message, maxTokens: 220, model: useModel });
+      text = await aiText({
+        system: bomSystemPrompt(bomMemoryBlock(mem)),
+        user: bomUserBlock(history, message),
+        maxTokens: 220,
+        model: useModel
+      });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '대화 오류: ' + e.message);
     }
-    return { text };
+    return { text, remembered: !!(mem && (mem.facts || []).length) };
+  });
+
+/* ════════ 봄이 기억 갱신 (구독자만) ════════
+   대화 몇 턴이 쌓이면 클라이언트가 호출. 발화에서 '오래 갈 사실'만 뽑아 누적하고,
+   이번 대화는 한 줄로 요약해 recent에 넣음. 원문은 저장하지 않는다.
+   비용: 대화당 1회 추출(짧은 출력). 남용 방지로 하루 상한을 둠. */
+exports.updateBomMemory = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 30, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+
+    // 구독자만 장기 기억을 쌓는다(무료는 세션 기억까지)
+    let subscribed = false;
+    try {
+      const u = await admin.firestore().collection('users').doc(uid).get();
+      subscribed = !!(u.exists && u.data().subscribed === true);
+    } catch (e) {}
+    if (!subscribed) return { ok: false, reason: 'not_subscribed' };
+
+    const turns = (Array.isArray(data && data.turns) ? data.turns : [])
+      .filter((t) => t && t.role === 'user' && t.text)
+      .map((t) => String(t.text).slice(0, 200));
+    if (turns.length < 2) return { ok: false, reason: 'too_short' };
+
+    // 남용 방지: uid당 하루 추출 상한
+    const day = new Date().toISOString().slice(0, 10);
+    const capRef = admin.firestore().collection('usage_mem_daily').doc(uid + '_' + day);
+    const allowed = await admin.firestore().runTransaction(async (tx) => {
+      const s = await tx.get(capRef);
+      const n = (s.exists ? (s.data().n || 0) : 0) + 1;
+      if (n > 12) return false;
+      tx.set(capRef, { n, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+      return true;
+    });
+    if (!allowed) return { ok: false, reason: 'cap' };
+
+    const prev = (await loadBomMemory(uid)) || { facts: [], recent: [] };
+    const prompt =
+`다음은 어르신이 AI 말동무 '봄이'에게 하신 말씀이다. 여기서 '앞으로도 오래 유효할 사실'만 뽑아라.
+이미 알고 있는 사실: ${JSON.stringify(prev.facts)}
+
+아래 JSON만 출력(다른 텍스트 금지):
+{
+  "new_facts": ["새로 알게 된 사실. 각 ${MEM_FACT_LEN}자 이내. 없으면 빈 배열"],
+  "summary": "이번 대화 한 줄 요약(40자 이내, 존댓말)"
+}
+[규칙]
+- ★말씀에 실제로 나온 것만. 추측·보완·각색 금지.
+- 오래 갈 사실만: 가족관계, 사는 곳, 지병·건강, 살아온 이력, 좋아하는 것.
+- 오늘 날씨·기분 같은 일시적인 건 사실이 아니다(요약에만).
+- ★건강 상태를 진단하거나 평가하지 말 것. 어르신이 말한 그대로만.
+- 이미 알고 있는 사실과 중복되면 new_facts에 넣지 말 것.
+
+[어르신 말씀]
+${turns.join('\n')}`;
+
+    let raw;
+    try {
+      raw = await aiText({ user: prompt, maxTokens: 300, json: true, model: (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL });
+    } catch (e) {
+      return { ok: false, reason: 'ai_error' };
+    }
+    let ex;
+    try { ex = JSON.parse(String(raw).replace(/```json|```/g, '').trim()); } catch (e) { return { ok: false, reason: 'parse' }; }
+
+    const newFacts = (Array.isArray(ex.new_facts) ? ex.new_facts : [])
+      .map((f) => String(f).slice(0, MEM_FACT_LEN).trim()).filter(Boolean);
+    // 오래된 것부터 밀어내고 최신 유지(상한 고정 = 토큰 상한 고정)
+    const facts = prev.facts.concat(newFacts.filter((f) => prev.facts.indexOf(f) < 0)).slice(-MEM_FACTS_MAX);
+    const summary = String(ex.summary || '').slice(0, 60).trim();
+    const recent = (summary ? prev.recent.concat([summary]) : prev.recent).slice(-MEM_RECENT_MAX);
+
+    await admin.firestore().collection('bom_memory').doc(uid).set({
+      facts, recent, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
+
+    return { ok: true, facts: facts.length, added: newFacts.length };
   });
 
 // ════════════════════════════════════════
