@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>다시봄 돌봄 키오스크</title>
+<meta name="description" content="주야간보호센터 공용 태블릿 — 어르신 프로필 선택 후 봄이와 대화">
+<style>
+/* ── 시니어 키오스크 UX: 큰 터치영역(≥120px), 고대비(WCAG AA), 큰 글씨 ── */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#F5F1E8; --paper:#FBF8F0; --ink:#1A2416; --muted:#5C6152;
+  --sage:#4B6B3B; --sage-deep:#33492A; --gold:#C9A961; --line:#E0DAC9;
+  --danger:#B23A2E;
+}
+html,body{width:100%;min-height:100vh;overflow-x:hidden}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);font-weight:700;-webkit-font-smoothing:antialiased}
+.kwrap{max-width:1100px;margin:0 auto;padding:0 20px 60px}
+
+/* 헤더 */
+header{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:16px 22px;background:rgba(245,241,232,.97);backdrop-filter:blur(8px);border-bottom:2px solid var(--line)}
+.h-brand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;color:var(--sage-deep)}
+.h-brand .logo{width:38px;height:38px;border-radius:10px;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px}
+.h-center{font-size:16px;color:var(--muted);font-weight:700}
+.h-right{display:flex;gap:10px;align-items:center}
+.btn{min-height:56px;padding:0 22px;border:none;border-radius:14px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn-lg{min-height:64px;font-size:19px;padding:0 30px}
+.btn-primary{background:var(--sage);color:#fff}
+.btn-ghost{background:#fff;border:2px solid var(--line);color:var(--sage-deep)}
+.btn-danger{background:var(--danger);color:#fff}
+
+/* 로그인 화면 */
+.screen{display:none}
+.screen.on{display:block}
+.login-box{max-width:460px;margin:70px auto 0;background:var(--paper);border:2px solid var(--line);border-radius:24px;padding:44px 36px;text-align:center}
+.login-box h1{font-size:28px;font-weight:800;color:var(--sage-deep);margin-bottom:10px}
+.login-box p{font-size:17px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+.login-box .btn{width:100%}
+.login-err{color:var(--danger);font-size:15px;margin-top:16px;line-height:1.6;min-height:20px}
+
+/* 프로필 그리드 (넷플릭스형) */
+.profiles-head{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:30px 0 8px}
+.profiles-head h2{font-size:30px;font-weight:800;color:var(--ink)}
+.profiles-head .sub{font-size:17px;color:var(--muted);margin-top:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:22px;margin-top:26px}
+.pcard{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px 16px;cursor:pointer;text-align:center;transition:transform .12s,box-shadow .12s;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.pcard:active{transform:scale(.97)}
+.pcard:hover{box-shadow:0 12px 30px -14px rgba(51,73,42,.4);border-color:var(--sage)}
+.pcard .avatar{width:120px;height:120px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#B7C9A6,#8FAE79);display:flex;align-items:center;justify-content:center;font-size:52px;color:#fff;font-weight:800;flex-shrink:0}
+.pcard .pname{font-size:23px;font-weight:800;color:var(--ink)}
+.pcard .pmeta{font-size:15px;color:var(--muted)}
+.pcard{position:relative}
+.pcard .gift-badge{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:12.5px;font-weight:800;padding:6px 12px;border-radius:50px;box-shadow:0 4px 12px rgba(200,120,74,.45);animation:giftPulse 1.6s ease-in-out infinite}
+@keyframes giftPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.pcard.add{border-style:dashed;color:var(--sage)}
+.pcard.add .plus{width:120px;height:120px;border-radius:50%;background:rgba(75,107,59,.08);display:flex;align-items:center;justify-content:center;font-size:56px;color:var(--sage)}
+.empty{text-align:center;color:var(--muted);font-size:18px;line-height:1.9;padding:60px 20px;background:var(--paper);border:2px dashed var(--line);border-radius:22px;margin-top:26px}
+
+/* 모달 */
+.mv{position:fixed;inset:0;background:rgba(26,36,22,.72);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.mv.on{display:flex}
+.mbox{background:var(--paper);border-radius:24px;width:100%;max-width:520px;padding:32px 28px;max-height:90vh;overflow-y:auto}
+.mbox h3{font-size:24px;font-weight:800;color:var(--sage-deep);margin-bottom:20px;text-align:center}
+.field{margin-bottom:18px}
+.field label{display:block;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:8px}
+.field input,.field select{width:100%;min-height:58px;padding:0 16px;border:2px solid var(--line);border-radius:14px;font-size:18px;font-family:inherit;background:#fff;color:var(--ink)}
+.field input:focus,.field select:focus{outline:none;border-color:var(--sage)}
+.field .hint{font-size:13.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+.mrow{display:flex;gap:12px;margin-top:8px}
+.mrow .btn{flex:1}
+.gender-row{display:flex;gap:10px}
+.gender-row button{flex:1;min-height:58px;border:2px solid var(--line);border-radius:14px;background:#fff;font-size:17px;font-weight:800;color:var(--muted);cursor:pointer;font-family:inherit}
+.gender-row button.on{background:var(--sage);border-color:var(--sage-deep);color:#fff}
+
+/* 세션 시작 확인(선택한 어르신) */
+.confirm-face{width:96px;height:96px;border-radius:50%;margin:0 auto 14px;background:linear-gradient(135deg,#B7C9A6,#8FAE79);display:flex;align-items:center;justify-content:center;font-size:42px;color:#fff;font-weight:800}
+
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:16px 30px;font-size:17px;z-index:500;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+<script src="/dasibom-caregreet.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="h-brand"><span class="logo">🌱</span> 다시봄 돌봄</div>
+  <div class="h-center" id="centerName"></div>
+  <div class="h-right" id="headerRight"></div>
+</header>
+
+<!-- 로그인 -->
+<div class="screen on" id="loginScreen">
+  <div class="login-box">
+    <h1>돌봄 키오스크</h1>
+    <p>센터 계정으로 로그인하시면<br>등록된 어르신 목록이 나타납니다.<br><span style="font-size:14px;color:#8a9a80">태블릿에 최초 1회만 로그인하면 됩니다.</span></p>
+    <input type="text" id="loginId" placeholder="센터 ID (예: 001)" autocomplete="username" inputmode="text" style="width:100%;padding:14px 16px;font-size:17px;border:2px solid #d7e0d4;border-radius:12px;margin-bottom:10px;box-sizing:border-box">
+    <input type="password" id="loginPw" placeholder="비밀번호" autocomplete="current-password" style="width:100%;padding:14px 16px;font-size:17px;border:2px solid #d7e0d4;border-radius:12px;margin-bottom:12px;box-sizing:border-box">
+    <button class="btn btn-primary btn-lg" id="btnLoginId">로그인</button>
+    <div class="login-err" id="loginErr"></div>
+    <button class="btn btn-lg" id="btnLogin" style="background:#f2f4f0;color:#5c6b5a;margin-top:18px;font-size:14px;font-weight:600">운영사 계정(Google)으로 로그인</button>
+  </div>
+</div>
+
+<!-- 프로필 그리드 -->
+<div class="screen" id="profilesScreen">
+  <div class="kwrap">
+    <div class="profiles-head">
+      <div>
+        <h2>오늘 함께할 어르신을 골라주세요</h2>
+        <div class="sub">사진을 누르면 봄이와의 대화가 시작됩니다.</div>
+      </div>
+    </div>
+    <div class="grid" id="profileGrid"></div>
+  </div>
+</div>
+
+<!-- 어르신 등록/수정 모달 -->
+<div class="mv" id="seniorModal">
+  <div class="mbox">
+    <h3 id="seniorModalTitle">어르신 등록</h3>
+    <input type="hidden" id="sfId">
+    <div class="field">
+      <label>성함 <span style="color:var(--danger)">*</span></label>
+      <input type="text" id="sfName" maxlength="20" placeholder="예) 김순자">
+    </div>
+    <div class="field">
+      <label>성별</label>
+      <div class="gender-row" id="sfGender">
+        <button type="button" data-g="여" class="on">할머니</button>
+        <button type="button" data-g="남">할아버지</button>
+      </div>
+    </div>
+    <div class="field">
+      <label>출생연도</label>
+      <input type="number" id="sfBirth" min="1920" max="1970" placeholder="예) 1945">
+    </div>
+    <div class="field">
+      <label>장기요양인정번호 (L번호)</label>
+      <input type="text" id="sfLnum" maxlength="20" placeholder="예) L1234567890">
+      <div class="hint">공단 리포트 발급에 사용됩니다. 실증 전이면 비워두셔도 됩니다.</div>
+    </div>
+    <div class="field">
+      <label>사진 주소 (선택)</label>
+      <input type="text" id="sfPhoto" placeholder="https:// (없으면 성함 첫 글자로 표시)">
+    </div>
+    <div class="mrow">
+      <button class="btn btn-ghost" onclick="closeSeniorModal()">취소</button>
+      <button class="btn btn-primary" id="sfSave">저장</button>
+    </div>
+    <div style="text-align:center;margin-top:14px"><button class="btn btn-danger" id="sfDelete" style="display:none;min-height:48px;font-size:15px">이 어르신 삭제</button></div>
+  </div>
+</div>
+
+<!-- 세션 시작 확인 -->
+<div class="mv" id="startModal">
+  <div class="mbox" style="max-width:420px;text-align:center">
+    <div class="confirm-face" id="startFace"></div>
+    <h3 id="startName" style="margin-bottom:8px"></h3>
+    <p style="font-size:17px;color:var(--muted);line-height:1.7;margin-bottom:24px">봄이와 대화를 시작할까요?</p>
+    <div class="mrow">
+      <button class="btn btn-ghost" onclick="document.getElementById('startModal').classList.remove('on')">뒤로</button>
+      <button class="btn btn-primary" id="startGo">시작하기 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- 최초 1회 본인 동의 (짧게) -->
+<div class="mv" id="consentModal">
+  <div class="mbox" style="max-width:440px;text-align:center">
+    <div class="confirm-face" id="consentFace"></div>
+    <h3 id="consentName" style="margin-bottom:12px"></h3>
+    <p style="font-size:18px;line-height:1.7;margin-bottom:6px">봄이와 나눈 이야기를<br>선생님이 참고할 수 있게 기록해도 될까요?</p>
+    <p class="hint" id="consentMoreBtn" style="text-decoration:underline;cursor:pointer;margin-bottom:18px">자세히 보기 ▾</p>
+    <div id="consentMoreDetail" style="display:none;text-align:left;background:#fff;border:2px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px;font-size:14.5px;color:var(--muted);line-height:1.6">
+      성함·대화 내용과, 그 대화로 알 수 있는 감정·인지 상태를 기록해 담당 선생님께 전달돼요. 언제든 그만하실 수 있어요.
+    </div>
+    <div class="mrow">
+      <button class="btn btn-ghost" id="consentNo">다음에 할게요</button>
+      <button class="btn btn-primary" id="consentYes">네, 좋아요 🌱</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+var FB_CFG={apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",authDomain:"mylife-650f0.firebaseapp.com",projectId:"mylife-650f0",storageBucket:"mylife-650f0.firebasestorage.app",messagingSenderId:"512010655611",appId:"1:512010655611:web:32b153b836b23ae96a8fde"};
+var MASTER=['machojang@gmail.com','machojang@naver.com'];
+if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+var _auth=firebase.auth(), _db=firebase.firestore();
+_auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+var CTX={ uid:null, email:null, isMaster:false, role:null, orgId:null, centerName:'' };
+var _sfGender='여';
+
+function show(id){ ['loginScreen','profilesScreen'].forEach(function(s){ document.getElementById(s).classList.toggle('on', s===id); }); }
+function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},2200); }
+function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function initial(name){ return (name||'').trim().charAt(0)||'봄'; }
+
+/* ── 인증 & 권한 판정 ── */
+_auth.onAuthStateChanged(function(u){
+  if(!u || u.isAnonymous){ CTX.uid=null; show('loginScreen'); renderHeader(); return; }
+  CTX.uid=u.uid; CTX.email=u.email||'';
+  CTX.isMaster = MASTER.indexOf(CTX.email)>=0;
+  if(CTX.isMaster){ CTX.role='master'; CTX.orgId=null; enterProfiles(); return; }
+  // 센터 스태프: admin_roles 확인
+  _db.collection('admin_roles').doc(u.uid).get().then(function(doc){
+    if(doc.exists && doc.data().status==='approved' && ['org_admin','caregiver'].indexOf(doc.data().role)>=0){
+      CTX.role=doc.data().role; CTX.orgId=doc.data().orgId||null;
+      CTX.centerName=doc.data().orgName||CTX.orgId||'우리 센터';
+      enterProfiles();
+    } else {
+      document.getElementById('loginErr').textContent='이 계정은 센터 담당자로 승인되지 않았어요. 관리자에게 문의해 주세요.';
+      _auth.signOut();
+    }
+  }).catch(function(e){
+    document.getElementById('loginErr').textContent='권한 확인 실패: '+(e.code||e.message);
+  });
+});
+
+// ── 센터 계정(발급 ID + 비번) 로그인 — 카카오/네이버 없이 우리가 발급·관리 ──
+//   센터 ID(예: 001) → 내부 이메일 001@dasibom.kr 로 매핑. Firebase 이메일/비번 인증.
+function doIdLogin(){
+  var id=(document.getElementById('loginId').value||'').trim().toLowerCase();
+  var pw=document.getElementById('loginPw').value||'';
+  var errEl=document.getElementById('loginErr'); errEl.textContent='';
+  if(!id || !pw){ errEl.textContent='센터 ID와 비밀번호를 입력해 주세요.'; return; }
+  var email = id.indexOf('@')>=0 ? id : (id + '@dasibom.kr');
+  _auth.signInWithEmailAndPassword(email, pw).catch(function(e){
+    var m = e.code==='auth/wrong-password' || e.code==='auth/user-not-found' || e.code==='auth/invalid-credential'
+      ? '센터 ID 또는 비밀번호가 올바르지 않아요.'
+      : (e.code==='auth/operation-not-allowed' ? '아직 로그인이 활성화되지 않았어요. 관리자에게 문의해 주세요.' : (e.message||'로그인에 실패했어요.'));
+    errEl.textContent=m;
+  });
+}
+document.getElementById('btnLoginId').onclick=doIdLogin;
+document.getElementById('loginPw').addEventListener('keydown',function(e){ if(e.key==='Enter') doIdLogin(); });
+document.getElementById('loginId').addEventListener('keydown',function(e){ if(e.key==='Enter') document.getElementById('loginPw').focus(); });
+
+// 운영사(master) — Google 로그인 유지
+document.getElementById('btnLogin').onclick=function(){
+  document.getElementById('loginErr').textContent='';
+  _auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    .catch(function(e){ document.getElementById('loginErr').textContent=e.message; });
+};
+
+function renderHeader(){
+  var r=document.getElementById('headerRight');
+  document.getElementById('centerName').textContent = CTX.uid ? (CTX.isMaster?'운영사 (전체 센터)':CTX.centerName) : '';
+  if(!CTX.uid){ r.innerHTML=''; return; }
+  r.innerHTML='<button class="btn btn-ghost" onclick="logout()">로그아웃</button>';
+}
+function logout(){ _auth.signOut(); }
+
+/* ── 프로필 목록 ── */
+function enterProfiles(){
+  renderHeader();
+  show('profilesScreen');
+  loadSeniors();
+  prewarm(CONSENT_LINE);   // ★어르신 목록 보는 동안 동의 멘트 미리 합성 → 선택 즉시 봄이 목소리
+}
+function loadSeniors(){
+  var grid=document.getElementById('profileGrid');
+  grid.innerHTML='<div class="empty">불러오는 중…</div>';
+  var q=_db.collection('seniors');
+  q=CTX.isMaster ? q : q.where('centerId','==',CTX.orgId||'__none__');
+  q.get().then(function(snap){
+    var arr=[]; snap.forEach(function(d){ arr.push(Object.assign({id:d.id},d.data())); });
+    arr.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'','ko'); });
+    renderGrid(arr);
+  }).catch(function(e){
+    grid.innerHTML='<div class="empty">목록을 불러오지 못했어요.<br>'+esc(e.code||e.message)+'</div>';
+  });
+}
+function renderGrid(arr){
+  var grid=document.getElementById('profileGrid');
+  var canEdit = CTX.isMaster || CTX.role==='org_admin' || CTX.role==='caregiver';
+  var html='';
+  arr.forEach(function(s){
+    var av = s.photoUrl
+      ? '<img class="avatar" src="'+esc(s.photoUrl)+'" alt="'+esc(s.name)+'" onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'avatar\',textContent:\''+esc(initial(s.name))+'\'}))">'
+      : '<div class="avatar">'+esc(initial(s.name))+'</div>';
+    var meta = (s.gender==='남'?'할아버지':'할머니') + (s.birthYear?(' · '+s.birthYear+'년생'):'');
+    // 자서전 선물 도착(익일 10시 지남 + 책 완성 + 미전달) → 배지
+    var gift = s.memoirSurprise && !s.memoirSurprise.delivered && s.memoirBook && s.memoirBook.done && Date.now()>=s.memoirSurprise.readyAt;
+    html+='<div class="pcard" onclick="pickSenior(\''+s.id+'\')" oncontextmenu="return editGuard(event,\''+s.id+'\')">'
+      +(gift?'<span class="gift-badge">🎁 선물 도착</span>':'')
+      +av+'<div class="pname">'+esc(s.name)+'</div><div class="pmeta">'+esc(meta)+'</div></div>';
+  });
+  if(canEdit){
+    html+='<div class="pcard add" onclick="openSeniorModal()"><div class="plus">＋</div><div class="pname" style="color:var(--sage)">어르신 등록</div></div>';
+  }
+  grid.innerHTML = html || '<div class="empty">아직 등록된 어르신이 없어요.<br>＋ 버튼으로 첫 어르신을 등록해 주세요.</div>';
+  window._seniorCache={}; arr.forEach(function(s){ window._seniorCache[s.id]=s; });
+}
+// 관리자는 카드 길게눌러(우클릭) 수정
+function editGuard(ev,id){ if(CTX.isMaster||CTX.role==='org_admin'){ ev.preventDefault(); openSeniorModal(id); return false; } }
+
+/* ── 어르신 등록/수정 ── */
+function openSeniorModal(id){
+  var s = id ? (window._seniorCache||{})[id] : null;
+  document.getElementById('seniorModalTitle').textContent = s?'어르신 정보 수정':'어르신 등록';
+  document.getElementById('sfId').value = s?s.id:'';
+  document.getElementById('sfName').value = s?s.name||'':'';
+  document.getElementById('sfBirth').value = s?s.birthYear||'':'';
+  document.getElementById('sfLnum').value = s?s.lNumber||'':'';
+  document.getElementById('sfPhoto').value = s?s.photoUrl||'':'';
+  _sfGender = s?(s.gender||'여'):'여';
+  document.querySelectorAll('#sfGender button').forEach(function(b){ b.classList.toggle('on', b.dataset.g===_sfGender); });
+  document.getElementById('sfDelete').style.display = s?'inline-flex':'none';
+  document.getElementById('seniorModal').classList.add('on');
+}
+function closeSeniorModal(){ document.getElementById('seniorModal').classList.remove('on'); }
+document.querySelectorAll('#sfGender button').forEach(function(b){
+  b.onclick=function(){ _sfGender=b.dataset.g; document.querySelectorAll('#sfGender button').forEach(function(x){x.classList.toggle('on',x===b);}); };
+});
+document.getElementById('sfSave').onclick=function(){
+  var name=(document.getElementById('sfName').value||'').trim();
+  if(!name){ toast('성함을 입력해 주세요'); return; }
+  var centerId = CTX.isMaster ? (CTX.orgId||'demo-center') : CTX.orgId;
+  if(!CTX.isMaster && !centerId){ toast('센터 정보가 없어요. 관리자에게 문의하세요'); return; }
+  var data={
+    name:name, gender:_sfGender,
+    birthYear: parseInt(document.getElementById('sfBirth').value)||null,
+    lNumber:(document.getElementById('sfLnum').value||'').trim(),
+    photoUrl:(document.getElementById('sfPhoto').value||'').trim(),
+    centerId:centerId,
+    updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+  };
+  var id=document.getElementById('sfId').value;
+  var btn=document.getElementById('sfSave'); btn.disabled=true; btn.textContent='저장 중…';
+  var p = id
+    ? _db.collection('seniors').doc(id).set(data,{merge:true})
+    : _db.collection('seniors').add(Object.assign({createdAt:firebase.firestore.FieldValue.serverTimestamp()},data));
+  p.then(function(){ closeSeniorModal(); toast('저장했어요'); loadSeniors(); })
+   .catch(function(e){ toast('저장 실패: '+(e.code||e.message)); })
+   .finally(function(){ btn.disabled=false; btn.textContent='저장'; });
+};
+document.getElementById('sfDelete').onclick=function(){
+  var id=document.getElementById('sfId').value; if(!id) return;
+  if(!confirm('이 어르신 정보를 삭제할까요?')) return;
+  _db.collection('seniors').doc(id).delete()
+    .then(function(){ closeSeniorModal(); toast('삭제했어요'); loadSeniors(); })
+    .catch(function(e){ toast('삭제 실패: '+(e.code||e.message)); });
+};
+
+/* ── 어르신 선택 → (최초 1회 본인동의) → 세션 시작 ── */
+function pickSenior(id){
+  var s=(window._seniorCache||{})[id]; if(!s) return;
+  if(!s.consentGiven){ showConsent(s); return; }
+  showStartModal(s);
+}
+function showStartModal(s){
+  document.getElementById('startFace').textContent=initial(s.name);
+  document.getElementById('startName').textContent=s.name+' '+(s.gender==='남'?'할아버지':'할머니');
+  document.getElementById('startGo').onclick=function(){
+    // 서브세션: 선택한 어르신을 sessionStorage에 담아 대화 화면으로.
+    // (2주차에 붙는 /kiosk/chat 이 이 값을 읽어 봄이 대화 + 로그 적재)
+    try{
+      sessionStorage.setItem('dasibom_active_senior', JSON.stringify({
+        id:s.id, name:s.name, gender:s.gender, birthYear:s.birthYear||null,
+        lNumber:s.lNumber||'', centerId:s.centerId, startedAt:Date.now()
+      }));
+    }catch(e){}
+    location.href='/kiosk/chat';
+  };
+  // ★'대화 시작' 모달이 떠 있는 동안(=어르신이 버튼 누르기 전 빈 시간) 챗봇 첫 인사를 미리 합성.
+  //   첫 합성은 4초쯤 걸려서, 이걸 안 해두면 대화방에서 텍스트만 먼저 뜨고 목소리가 한참 뒤에 나옴.
+  //   문구는 carechat과 공유하는 dasibom-caregreet.js가 만듦(어긋나면 서버 캐시가 빗나가 헛수고).
+  try{
+    var g = window.bomCareGreet && bomCareGreet(s, bomCareHonor(s.name, s.gender));
+    if(g) prewarm(g);
+  }catch(e){}
+  document.getElementById('startModal').classList.add('on');
+}
+
+/* ── 최초 1회 본인 동의(짧게) ── */
+/* 봄이 프리미엄 음성 — 동의 안내 등 정해진 멘트. 서버 캐시라 같은 문구는 최초 1회만 합성. */
+var _kioskAudio=new Audio(), _kioskTtsMem={};
+// 자동재생 잠금 해제 — 첫 터치 때 '실제 길이 있는' 무음 재생으로 오디오 요소를 깨워둠
+(function(){
+  function silentWav(){ var sr=8000,n=1200,dl=n*2,len=44+dl,b=new Uint8Array(len),dv=new DataView(b.buffer);
+    function s(o,str){for(var i=0;i<str.length;i++)b[o+i]=str.charCodeAt(i);}
+    s(0,'RIFF');dv.setUint32(4,36+dl,true);s(8,'WAVE');s(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);
+    dv.setUint32(24,sr,true);dv.setUint32(28,sr*2,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);s(36,'data');dv.setUint32(40,dl,true);
+    var bin='';for(var i=0;i<len;i++)bin+=String.fromCharCode(b[i]);return 'data:audio/wav;base64,'+btoa(bin); }
+  var done=false;
+  function unlock(){ if(done) return; done=true;
+    try{ _kioskAudio.src=silentWav(); var p=_kioskAudio.play(); if(p&&p.then) p.then(function(){},function(){}); }catch(e){}
+    ['pointerdown','touchstart','click','keydown'].forEach(function(ev){ document.removeEventListener(ev,unlock,true); });
+  }
+  ['pointerdown','touchstart','click','keydown'].forEach(function(ev){ document.addEventListener(ev,unlock,true); });
+})();
+/* ★봄이 음성 타이밍 표준(스킬 bom-voice-timing) — 고정 대사는 '나오기 전에' 미리 합성해둔다.
+   안 그러면 대사 차례가 됐을 때 서버 왕복(1~2초)이 그제서야 시작돼 "한참 뒤 음성"이 됨. */
+var CONSENT_LINE='봄이와 나눈 이야기를 선생님이 참고할 수 있게 기록해도 될까요?';
+var _kioskPend={};                        // 합성 진행중 요청(프리워밍과 재생이 같은 문구를 두 번 요청하지 않도록)
+function ttsFetch(t){
+  if(_kioskTtsMem[t]) return Promise.resolve(_kioskTtsMem[t]);
+  if(_kioskPend[t]) return _kioskPend[t];
+  var p;
+  try{
+    p=firebase.app().functions('asia-northeast3').httpsCallable('bomVoiceTTS')({ text:t }).then(function(res){
+      delete _kioskPend[t];
+      var b64=res&&res.data&&res.data.audioBase64; if(!b64) return null;
+      var url='data:audio/mpeg;base64,'+b64; _kioskTtsMem[t]=url; return url;
+    }).catch(function(){ delete _kioskPend[t]; return null; });   // 실패 시 무음
+  }catch(e){ return Promise.resolve(null); }
+  _kioskPend[t]=p; return p;
+}
+// ★정규화는 dasibom-caregreet.js의 bomVoiceClean — carechat과 '같은 문자열'을 서버에 보내야
+//   미리 합성해둔 게 캐시 적중함(한쪽만 이모지를 지우면 프리워밍이 헛돎).
+function ttsClean(text){ return window.bomVoiceClean ? bomVoiceClean(text) : String(text||'').trim(); }
+function prewarm(text){ var t=ttsClean(text); if(t) ttsFetch(t); }   // 미리 합성만(재생X)
+function speak(text){
+  var t=ttsClean(text); if(!t) return;
+  ttsFetch(t).then(function(url){
+    if(!url) return;
+    try{ _kioskAudio.src=url; _kioskAudio.currentTime=0; _kioskAudio.play().catch(function(){}); }catch(e){}
+  });
+}
+document.getElementById('consentMoreBtn').onclick=function(){
+  var d=document.getElementById('consentMoreDetail');
+  var open=d.style.display==='none'; d.style.display=open?'block':'none';
+  this.textContent = open?'접기 ▴':'자세히 보기 ▾';
+};
+function showConsent(s){
+  document.getElementById('consentFace').textContent=initial(s.name);
+  document.getElementById('consentName').textContent=s.name+' '+(s.gender==='남'?'할아버지':'할머니');
+  document.getElementById('consentMoreDetail').style.display='none';
+  document.getElementById('consentMoreBtn').textContent='자세히 보기 ▾';
+  document.getElementById('consentModal').classList.add('on');
+  speak(CONSENT_LINE);   // 목록 화면에서 미리 합성해둠 → 여기선 즉시 재생
+  document.getElementById('consentNo').onclick=function(){
+    document.getElementById('consentModal').classList.remove('on');
+  };
+  document.getElementById('consentYes').onclick=function(){
+    var btn=this; btn.disabled=true;
+    var centerId = CTX.isMaster ? (s.centerId||'demo-center') : CTX.orgId;
+    _db.collection('consents').add({
+      centerId: centerId, seniorId: s.id, seniorName: s.name,
+      guardianName: s.name, relation: '본인', phone: '', type: 'self',
+      agreedGeneral: true, agreedSensitive: true, consentVersion: 'v1-2026-07',
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function(){
+      return _db.collection('seniors').doc(s.id).update({
+        consentGiven: true, consentAt: firebase.firestore.FieldValue.serverTimestamp(), consentType: 'self'
+      });
+    }).then(function(){
+      s.consentGiven=true;
+      document.getElementById('consentModal').classList.remove('on');
+      showStartModal(s);
+    }).catch(function(e){ toast('저장 실패: '+(e.code||e.message)); })
+    .finally(function(){ btn.disabled=false; });
+  };
+}
+</script>
+</body>
+</html>

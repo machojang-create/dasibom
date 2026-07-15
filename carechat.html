@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>봄이와 대화 — 다시봄 돌봄</title>
+<meta name="description" content="주야간보호센터 공용 태블릿 — 어르신과 봄이의 대화">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#F5F1E8; --paper:#FBF8F0; --ink:#1A2416; --muted:#5C6152;
+  --sage:#4B6B3B; --sage-deep:#33492A; --gold:#C9A961; --line:#E0DAC9;
+  --danger:#B23A2E;
+}
+html,body{width:100%;height:100%;overflow:hidden}
+body{font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--cream);color:var(--ink);font-weight:700;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(245,241,232,.97);border-bottom:2px solid var(--line);flex-shrink:0}
+.h-who{display:flex;align-items:center;gap:12px}
+.h-who .face{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#B7C9A6,#8FAE79);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;font-weight:800}
+.h-who .name{font-size:19px;font-weight:800;color:var(--sage-deep)}
+.btn{min-height:52px;padding:0 20px;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-ghost{background:#fff;border:2px solid var(--line);color:var(--sage-deep)}
+
+#chatArea{flex:1;overflow-y:auto;padding:24px 18px 12px;display:flex;flex-direction:column;gap:16px;max-width:760px;margin:0 auto;width:100%}
+.bubble-row{display:flex;gap:10px;align-items:flex-end}
+.bubble-row.senior{flex-direction:row-reverse}
+.bavatar{width:38px;height:38px;border-radius:50%;background:var(--sage);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bubble-row.senior .bavatar{background:linear-gradient(135deg,#B7C9A6,#8FAE79)}
+.bubble{max-width:72%;padding:16px 20px;border-radius:22px;font-size:19px;line-height:1.6;font-weight:700}
+.bubble-row.bom .bubble{background:var(--paper);border:2px solid var(--line);border-bottom-left-radius:6px;color:var(--ink)}
+.bubble-row.senior .bubble{background:var(--sage);color:#fff;border-bottom-right-radius:6px}
+.thinking{display:flex;gap:5px;padding:8px 4px}
+.thinking span{width:8px;height:8px;border-radius:50%;background:var(--muted);opacity:.4;animation:blink 1.2s infinite}
+.thinking span:nth-child(2){animation-delay:.2s}
+.thinking span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:.9}}
+
+#inputBar{flex-shrink:0;padding:16px 18px 22px;background:rgba(245,241,232,.97);border-top:2px solid var(--line)}
+.inrow{max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:center}
+#txtInput{flex:1;min-height:60px;padding:0 20px;border:2px solid var(--line);border-radius:30px;font-size:19px;font-family:inherit;background:#fff;color:var(--ink)}
+#txtInput:focus{outline:none;border-color:var(--sage)}
+.round-btn{width:60px;height:60px;border-radius:50%;border:none;flex-shrink:0;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+#micBtn{background:#fff;border:2px solid var(--line);color:var(--sage-deep)}
+#micBtn.listening{background:var(--danger);color:#fff;border-color:var(--danger);animation:pulse 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(178,58,46,.5)}70%{box-shadow:0 0 0 14px rgba(178,58,46,0)}100%{box-shadow:0 0 0 0 rgba(178,58,46,0)}}
+#sendBtn{background:var(--sage);color:#fff}
+#sendBtn:disabled{opacity:.5}
+.stt-hint{max-width:760px;margin:8px auto 0;font-size:13.5px;color:var(--muted);text-align:center}
+
+.toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:16px 30px;font-size:17px;z-index:500;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+
+.mv{position:fixed;inset:0;background:rgba(26,36,22,.72);z-index:200;display:none;align-items:center;justify-content:center;padding:20px}
+.mv.on{display:flex}
+.mbox{background:var(--paper);border-radius:24px;width:100%;max-width:420px;padding:32px 28px;text-align:center}
+.mbox h3{font-size:22px;font-weight:800;color:var(--sage-deep);margin-bottom:10px}
+.mbox p{font-size:16px;color:var(--muted);line-height:1.7;margin-bottom:22px}
+.mrow{display:flex;gap:12px}
+.mrow .btn{flex:1}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+<script src="/questions_v3.js?v=6"></script>
+<script src="/dasibom-caregreet.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="h-who"><div class="face" id="seniorFace"></div><div class="name" id="seniorName"></div></div>
+  <button class="btn btn-danger" id="btnEnd">대화 종료</button>
+</header>
+
+<div id="chatArea"></div>
+
+<div id="inputBar">
+  <div class="inrow">
+    <button class="round-btn" id="micBtn" title="말하기">🎤</button>
+    <input type="text" id="txtInput" placeholder="여기에 말씀을 적어주세요" maxlength="300">
+    <button class="round-btn" id="sendBtn" title="보내기">➤</button>
+  </div>
+  <div class="stt-hint" id="sttHint"></div>
+</div>
+
+<!-- ════ 자서전 선물 연출 — 봄이 등장 → 감성 멘트 → 3D 책 펼침 ════ -->
+<style>
+#giftFx{position:fixed;inset:0;z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 24px;background:radial-gradient(ellipse at 50% 36%,rgba(200,140,70,.30) 0%,transparent 60%),linear-gradient(180deg,#0a0805 0%,#1c0e06 55%,#0a0805 100%);opacity:0;transition:opacity .7s ease;overflow:hidden}
+#giftFx.on{display:flex}
+#giftFx.lit{opacity:1}
+.gf-petal{position:fixed;top:-40px;font-size:22px;pointer-events:none;z-index:1;animation:gfFall linear forwards}
+@keyframes gfFall{0%{transform:translateY(-40px) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(105vh) rotate(540deg);opacity:.2}}
+#gfBom{width:150px;height:150px;background:#fff;border-radius:50%;object-fit:cover;object-position:center top;box-shadow:0 16px 36px rgba(0,0,0,.32),0 0 0 4px rgba(255,255,255,.14);animation:gfPop .6s cubic-bezier(.2,.9,.3,1.4);position:relative;z-index:2}
+@keyframes gfPop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+#gfLines{position:relative;z-index:2;min-height:120px;margin-top:18px;display:flex;flex-direction:column;gap:10px;max-width:420px}
+.gf-line{font-size:18px;line-height:1.7;color:#EDE3D0;opacity:0;transform:translateY(10px);transition:opacity .8s,transform .8s;font-weight:700}
+.gf-line.show{opacity:1;transform:translateY(0)}
+.gf-line.gold{font-family:'Nanum Myeongjo','Batang',serif;color:#F0D483;font-size:20px;font-weight:800}
+#gfBtn{position:relative;z-index:2;margin-top:22px;max-width:320px;width:100%;padding:17px 24px;border:none;border-radius:50px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:17px;font-weight:800;cursor:pointer;display:none}
+/* 책 */
+#gfBookStage{display:none;perspective:1800px;position:relative;z-index:2}
+.gfb-book{position:relative;width:min(64vw,300px);aspect-ratio:5/7;margin:0 auto;transform-style:preserve-3d;animation:gfbRise 1.4s cubic-bezier(.2,.8,.3,1) both}
+@keyframes gfbRise{0%{transform:translateY(46px) scale(.82);opacity:0}100%{transform:translateY(0) scale(1);opacity:1}}
+.gfb-page{position:absolute;inset:0;background:linear-gradient(135deg,#FBF6EA,#F3EAD5);border-radius:6px 14px 14px 6px;box-shadow:0 18px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:26px 20px;text-align:center}
+.gfb-ded-title{font-family:'Nanum Myeongjo','Batang',serif;font-size:20px;font-weight:800;color:#4E3B22;line-height:1.5;word-break:keep-all}
+.gfb-ded-msg{font-size:14.5px;color:#7c6b50;line-height:1.9}
+.gfb-ded-from{font-size:12.5px;color:#a4906c;margin-top:4px}
+.gfb-leaf{position:absolute;inset:0;background:linear-gradient(120deg,#FDFAF2,#F6EEDC);border-radius:6px 14px 14px 6px;transform-origin:left center;transition:transform 1.5s cubic-bezier(.55,.06,.28,.99);backface-visibility:hidden;box-shadow:2px 6px 18px rgba(0,0,0,.18)}
+.gfb-cover{position:absolute;inset:0;transform-origin:left center;transform-style:preserve-3d;transition:transform 1.9s cubic-bezier(.6,.04,.26,1)}
+.gfb-cover-front,.gfb-cover-back{position:absolute;inset:0;backface-visibility:hidden;border-radius:6px 14px 14px 6px}
+.gfb-cover-front{background:linear-gradient(150deg,#2d4226,#1F2A1A 70%);box-shadow:0 22px 60px rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.gfb-cover-back{background:linear-gradient(200deg,#20301c,#182315);transform:rotateY(180deg)}
+.gfb-frame{border:2px solid rgba(240,212,131,.75);border-radius:8px;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:18px 12px;position:relative}
+.gfb-frame:before{content:'';position:absolute;inset:5px;border:1px solid rgba(240,212,131,.3);border-radius:5px}
+.gfb-title{font-family:'Nanum Myeongjo','Batang',serif;font-size:21px;font-weight:800;color:#F0D483;line-height:1.5;text-shadow:0 2px 14px rgba(0,0,0,.4);word-break:keep-all;padding:0 6px}
+.gfb-author{font-size:13px;color:rgba(240,212,131,.8);letter-spacing:2px}
+.gfb-open .gfb-cover{transform:rotateY(-178deg)}
+.gfb-open .gfb-leaf{transform:rotateY(-172deg);transition-delay:.9s}
+#gfHint{margin-top:24px;color:#bba883;font-size:14px;min-height:20px;animation:gfPulse 1.6s ease-in-out infinite;position:relative;z-index:2}
+@keyframes gfPulse{0%,100%{opacity:.45}50%{opacity:1}}
+/* 책 읽기 화면 */
+#bookView{position:fixed;inset:0;z-index:390;display:none;flex-direction:column;background:var(--cream)}
+#bookView.on{display:flex}
+.bv-head{flex-shrink:0;padding:16px 20px;background:var(--sage-deep);color:#F0D483;text-align:center}
+.bv-head .t{font-family:'Nanum Myeongjo','Batang',serif;font-size:21px;font-weight:800}
+.bv-head .s{font-size:13px;color:rgba(240,212,131,.75);margin-top:3px}
+.bv-body{flex:1;overflow-y:auto;padding:24px 20px 40px;max-width:680px;margin:0 auto;width:100%}
+.bv-ch{margin-bottom:30px}
+.bv-ch-name{font-family:'Nanum Myeongjo','Batang',serif;font-size:19px;font-weight:800;color:var(--sage-deep);border-bottom:2px solid var(--gold);padding-bottom:8px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bv-tts{flex-shrink:0;border:2px solid var(--line);background:#fff;border-radius:50px;padding:8px 16px;font-size:13.5px;font-weight:800;color:var(--sage-deep);cursor:pointer;font-family:inherit}
+.bv-p{font-size:17.5px;line-height:2;color:#33402E;margin-bottom:16px;word-break:keep-all}
+.bv-foot{flex-shrink:0;padding:14px 20px 22px;background:var(--paper);border-top:2px solid var(--line);display:flex;gap:10px;max-width:680px;margin:0 auto;width:100%}
+.bv-foot .btn{flex:1}
+</style>
+<div id="giftFx">
+  <img id="gfBom" src="/img/bom_wink.png" alt="봄이" onerror="this.src='/img/bom_smile.png'">
+  <div id="gfLines"></div>
+  <button id="gfBtn">선물 받기 🎁</button>
+  <div id="gfBookStage">
+    <div class="gfb-book" id="gfbBook">
+      <div class="gfb-page">
+        <div style="font-size:24px">🌸</div>
+        <div class="gfb-ded-title" id="gfbDedTitle"></div>
+        <div class="gfb-ded-msg" id="gfbDedMsg"></div>
+        <div class="gfb-ded-from" id="gfbDedFrom"></div>
+      </div>
+      <div class="gfb-leaf"></div>
+      <div class="gfb-cover">
+        <div class="gfb-cover-front">
+          <div class="gfb-frame">
+            <div class="gfb-title" id="gfbTitle"></div>
+            <div class="gfb-author" id="gfbAuthor"></div>
+          </div>
+        </div>
+        <div class="gfb-cover-back"></div>
+      </div>
+    </div>
+  </div>
+  <div id="gfHint"></div>
+</div>
+
+<!-- 자서전 읽기 화면 -->
+<div id="bookView">
+  <div class="bv-head"><div class="t" id="bvTitle"></div><div class="s" id="bvSub"></div></div>
+  <div class="bv-body" id="bvBody"></div>
+  <div class="bv-foot">
+    <button class="btn btn-ghost" id="bvClose">다 읽었어요</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- 종료 확인 -->
+<div class="mv" id="endModal">
+  <div class="mbox">
+    <h3>대화를 마칠까요?</h3>
+    <p>오늘 나눈 이야기를 정리해서<br>기록으로 남겨둘게요.</p>
+    <div class="mrow">
+      <button class="btn btn-ghost" onclick="document.getElementById('endModal').classList.remove('on')">계속 대화하기</button>
+      <button class="btn btn-danger" id="endConfirm">종료하기</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var FB_CFG={apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",authDomain:"mylife-650f0.firebaseapp.com",projectId:"mylife-650f0",storageBucket:"mylife-650f0.firebasestorage.app",messagingSenderId:"512010655611",appId:"1:512010655611:web:32b153b836b23ae96a8fde"};
+var MASTER=['machojang@gmail.com','machojang@naver.com'];
+if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+var _auth=firebase.auth(), _db=firebase.firestore(), _fn=firebase.app().functions('asia-northeast3');
+_auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+var SENIOR=null, SESSION_ID=null, CTX={uid:null,email:null,isMaster:false,orgId:null};
+var ENDED=false, seniorTurns=0, transitionShown=false;
+// 선물 연출 데모(?giftdemo=1) — 시연·품질 확인용, 로그인·저장 없음
+var GIFT_DEMO = new URLSearchParams(location.search).get('giftdemo')==='1';
+
+function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},2200); }
+function initial(name){ return (name||'').trim().charAt(0)||'봄'; }
+
+(function loadSenior(){
+  if(GIFT_DEMO){
+    SENIOR={id:'demo',name:'순자',gender:'여'};
+    document.getElementById('seniorFace').textContent=initial(SENIOR.name);
+    document.getElementById('seniorName').textContent='선물 연출 데모';
+    setTimeout(function(){
+      giftSequence({ memoirTitle:'', memoirBook:{ done:true, sections:{
+        0:'된장찌개 냄새가 골목 끝까지 번지던 저녁이었다. 강원도 산골, 굴뚝마다 연기가 피어오르면 어머니는 나를 부르셨다.\n\n지금 돌이켜보면 그 좁은 부엌이 세상에서 가장 넓은 곳이었다.',
+        3:'아버지는 말수가 적은 분이셨다. 그래도 밥상머리에서 슬며시 반찬을 내 쪽으로 밀어주시던 그 손길을 잊지 못한다.\n\n그 시절을 생각하면 가슴 한켠이 먹먹해지는 줄도 몰랐다.',
+        13:'요즘은 손주들 웃음소리가 제일 좋다. 별것 아닌 하루가 이렇게 고마운 것인 줄, 살아보니 알겠다.'
+      }}});
+    }, 700);
+  } else {
+    try{
+      var raw=sessionStorage.getItem('dasibom_active_senior');
+      if(!raw){ location.href='/kiosk'; return; }
+      SENIOR=JSON.parse(raw);
+    }catch(e){ location.href='/kiosk'; return; }
+    document.getElementById('seniorFace').textContent=initial(SENIOR.name);
+    document.getElementById('seniorName').textContent=SENIOR.name+' '+(SENIOR.gender==='남'?'할아버지':'할머니');
+  }
+})();
+
+_auth.onAuthStateChanged(function(u){
+  if(GIFT_DEMO) return; // 데모는 로그인·세션 생성 없음
+  if(!u || u.isAnonymous){ location.href='/kiosk'; return; }
+  CTX.uid=u.uid; CTX.email=u.email||'';
+  CTX.isMaster = MASTER.indexOf(CTX.email)>=0;
+  if(CTX.isMaster){ startSession(); return; }
+  _db.collection('admin_roles').doc(u.uid).get().then(function(doc){
+    if(doc.exists && doc.data().status==='approved' && ['org_admin','caregiver'].indexOf(doc.data().role)>=0){
+      CTX.orgId=doc.data().orgId||null;
+      startSession();
+    } else {
+      location.href='/kiosk';
+    }
+  }).catch(function(){ location.href='/kiosk'; });
+});
+
+function startSession(){
+  var centerId = CTX.isMaster ? (SENIOR.centerId||'demo-center') : CTX.orgId;
+  _db.collection('care_sessions').add({
+    centerId: centerId,
+    seniorId: SENIOR.id, seniorName: SENIOR.name,
+    staffUid: CTX.uid, staffEmail: CTX.email,
+    startedAt: firebase.firestore.FieldValue.serverTimestamp(),
+    status: 'active', turns: []
+  }).then(function(ref){
+    SESSION_ID=ref.id;
+    memoirEntry();
+  }).catch(function(e){ toast('세션 시작 실패: '+(e.code||e.message)); });
+}
+
+/* ════ 프로필 기반 자서전 — 답변·진행·완성본 전부 seniors/{id}에 저장(기기 무관) ════ */
+var MEMOIR={ awaiting:false, idx:-1, data:null, generating:false };
+var MEMOIR_ACKS=[
+  '정말 소중한 이야기예요. 들려주셔서 고마워요 🌸',
+  '와… 듣기만 해도 그 시절이 그려져요.',
+  '마음이 따뜻해지는 이야기네요. 꼭 간직할게요.',
+  '그런 일이 있으셨군요. 봄이가 잘 새겨둘게요 🌱'
+];
+function _mToday(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function _mNextTenAM(){ var d=new Date(); d.setDate(d.getDate()+1); d.setHours(10,0,0,0); return d.getTime(); }
+function freeQList(){
+  var pool=(window.QPOOL||[]);
+  return pool.filter(function(q){ return q.tier==='free' && !q.reserve; });
+}
+// {호칭} → "성함님" 치환 + 조사 교정('님'은 받침 有)
+function resolveQ(q){
+  var h=SENIOR.name+'님';
+  return String(q.bom||'')
+    .replace(/\{호칭\}은/g,h+'은').replace(/\{호칭\}이/g,h+'이')
+    .replace(/\{호칭\}을/g,h+'을').replace(/\{호칭\}/g,h);
+}
+function memoirEntry(){
+  _db.collection('seniors').doc(SENIOR.id).get().then(function(doc){
+    var S=doc.exists?doc.data():{};
+    MEMOIR.data=S;
+    var answers=S.memoirAnswers||{};
+    var answered=Object.keys(answers).length;
+    var sp=S.memoirSurprise;
+    var bookDone=S.memoirBook && S.memoirBook.done;
+    // ① 선물 도착: 익일 10시 지남 + 책 완성 + 미전달 → 봄이 선물 연출
+    if(sp && !sp.delivered && bookDone && Date.now()>=sp.readyAt){ giftSequence(S); return; }
+    // ② 15개 완료 상태
+    if(answered>=15){
+      if(!bookDone){ resumeGeneration(S); } // 생성 미완이면 조용히 이어서 (안내 없음 — 서프라이즈 보호)
+      var greet=bomCareGreet(S,sHonor());   // ★문구는 공용 모듈 — 키오스크가 '대화 시작' 모달에서 미리 합성해둠 → 즉시 재생
+      addBubble('bom',greet); speak(greet); saveTurn('bom',greet);
+      if(bookDone && sp && sp.delivered) addBookAgainButton(S); // 이미 받은 책 다시 보기
+      return;
+    }
+    // ③ 오늘 몫 확인
+    var today=_mToday(), qd=S.memoirQDates||{};
+    var todayCount=Object.keys(qd).filter(function(k){ return qd[k]===today; }).length;
+    if(todayCount>=3){
+      var g=bomCareGreet(S,sHonor());
+      addBubble('bom',g); speak(g); saveTurn('bom',g);
+      return;
+    }
+    // ④ 오늘의 자서전 질문 시작
+    var greet2=bomCareGreet(S,sHonor());
+    addBubble('bom',greet2); speak(greet2); saveTurn('bom',greet2);
+    setTimeout(function(){ askNextMemoirQ(); }, 1200);
+  }).catch(function(e){
+    var greet='안녕하세요 '+sHonor()+'! 오늘 만나서 정말 반가워요 🌱 오늘 하루는 어떠셨어요?';
+    addBubble('bom',greet); speak(greet); saveTurn('bom',greet);
+    console.error('memoirEntry 실패(일반대화로 진행)', e);
+  });
+}
+function askNextMemoirQ(){
+  var list=freeQList(); var answers=(MEMOIR.data&&MEMOIR.data.memoirAnswers)||{};
+  var idx=-1;
+  for(var i=0;i<list.length && i<15;i++){ if(!answers[i]){ idx=i; break; } }
+  if(idx<0) return;
+  MEMOIR.awaiting=true; MEMOIR.idx=idx;
+  var qText=resolveQ(list[idx]);
+  addBubble('bom', qText); speak(qText); saveTurn('bom', qText);
+  // ★다음 질문을 지금 미리 합성 — 어르신이 답하는 동안 준비돼서, 다음 질문은 뜨자마자 목소리가 나옴
+  if(idx+1<list.length && idx+1<15) prewarm(resolveQ(list[idx+1]));
+}
+function handleMemoirAnswer(msg){
+  var idx=MEMOIR.idx; MEMOIR.awaiting=false;
+  var today=_mToday();
+  if(!MEMOIR.data.memoirAnswers) MEMOIR.data.memoirAnswers={};
+  if(!MEMOIR.data.memoirQDates) MEMOIR.data.memoirQDates={};
+  MEMOIR.data.memoirAnswers[idx]=msg; MEMOIR.data.memoirQDates[idx]=today;
+  var upd={}; upd['memoirAnswers.'+idx]=msg; upd['memoirQDates.'+idx]=today;
+  _db.collection('seniors').doc(SENIOR.id).update(upd).catch(function(e){ console.error('답변 저장 실패',e); toast('저장에 문제가 있었어요'); });
+  var answered=Object.keys(MEMOIR.data.memoirAnswers).length;
+  var qd=MEMOIR.data.memoirQDates;
+  var todayCount=Object.keys(qd).filter(function(k){ return qd[k]===today; }).length;
+  var ack=MEMOIR_ACKS[answered%MEMOIR_ACKS.length];
+  setTimeout(function(){
+    addBubble('bom', ack); speak(ack); saveTurn('bom', ack);
+    setTimeout(function(){
+      if(answered>=15){ memoirComplete(); }
+      else if(todayCount>=3){
+        var m='오늘 이야기는 여기까지 들을게요 🌸 내일 또 궁금한 게 많거든요! 이제 편하게 저랑 수다 떨어요.';
+        addBubble('bom',m); speak(m); saveTurn('bom',m);
+        if(seniorTurns>=3 && !transitionShown){ transitionShown=true; setTimeout(showTransitionCTA,600); }
+      }
+      else askNextMemoirQ();
+    }, 1400);
+  }, 700);
+}
+function memoirComplete(){
+  var m=sHonor()+'… 열다섯 밤의 이야기를 모두 들려주셨어요. 봄이가 이 이야기들을 아주 소중하게, 정성껏 엮어볼게요 🌸 기대해 주세요!';
+  addBubble('bom',m); speak(m); saveTurn('bom',m);
+  _db.collection('seniors').doc(SENIOR.id).update({
+    memoirSurprise:{ readyAt:_mNextTenAM(), delivered:false, ts:Date.now() }
+  }).catch(function(e){ console.error(e); });
+  resumeGeneration(MEMOIR.data);
+}
+// ── 책 생성(백그라운드) — 섹션별 진행 저장이라 끊겨도 다음 진입 시 이어서 ──
+function resumeGeneration(S){
+  if(MEMOIR.generating) return; MEMOIR.generating=true;
+  var list=freeQList();
+  var answers=S.memoirAnswers||{};
+  var sections=(S.memoirBook&&S.memoirBook.sections)||{};
+  var fn=_fn.httpsCallable('generateSection');
+  var queue=[];
+  for(var i=0;i<15;i++){ if(answers[i] && !sections[i]) queue.push(i); }
+  function next(){
+    if(!queue.length){
+      _db.collection('seniors').doc(SENIOR.id).update({ 'memoirBook.done':true, 'memoirBook.generatedAt':Date.now() })
+        .catch(function(e){ console.error(e); });
+      MEMOIR.generating=false; return;
+    }
+    var i=queue.shift(); var q=list[i];
+    fn({ question:resolveQ(q), answer:answers[i], chapterName:q.cat, paraCount:(String(answers[i]).length>80?2:1), pkg:'free' })
+      .then(function(r){
+        var upd={}; upd['memoirBook.sections.'+i]=(r.data&&r.data.text)||'';
+        return _db.collection('seniors').doc(SENIOR.id).update(upd);
+      })
+      .then(function(){ setTimeout(next, 800); })
+      .catch(function(e){ console.error('생성 실패 idx'+i, e); MEMOIR.generating=false; }); // 다음 진입 시 재개
+  }
+  next();
+}
+/* ── 봄이 선물 연출 ── */
+function giftSequence(S){
+  var fx=document.getElementById('giftFx');
+  var linesEl=document.getElementById('gfLines');
+  var ht=sHonor();
+  var lines=[
+    {t:ht+', 어젯밤 봄이는 잠을 이루지 못했어요.'},
+    {t:ht+'께서 들려주신 이야기들이 자꾸만 마음에 맴돌아서요.'},
+    {t:'그래서 밤새 한 장 한 장, 정성껏 엮었어요.'},
+    {t:'세상에 단 한 권뿐인 책 — 지금 선물해 드릴게요 🌸', gold:true}
+  ];
+  linesEl.innerHTML='';
+  document.getElementById('gfBom').style.display='';
+  document.getElementById('gfBtn').style.display='none';
+  document.getElementById('gfBookStage').style.display='none';
+  document.getElementById('gfHint').textContent='';
+  fx.classList.add('on');
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ fx.classList.add('lit'); }); });
+  gfPetals();
+  // ★연출 시작과 동시에 모든 줄(+책 펼침 대사)을 미리 합성 — 줄은 1.7초 간격이라 그 사이 다 준비됨.
+  //   이게 없으면 줄이 뜬 뒤에야 합성이 시작돼 목소리가 뒤늦게 따라붙음.
+  lines.forEach(function(l){ prewarm(l.t); });
+  prewarm(ht+'께서 살아오신 날들이, 한 권의 책이 되었습니다');
+  lines.forEach(function(l,i){
+    var d=document.createElement('div'); d.className='gf-line'+(l.gold?' gold':''); d.textContent=l.t;
+    linesEl.appendChild(d);
+    // 각 줄이 뜨는 순간 = 미리 합성해둔 음성 즉시 재생 → 텍스트와 봄이 목소리가 함께 나옴
+    setTimeout(function(){ d.classList.add('show'); speak(l.t); }, 600+i*1700);
+  });
+  setTimeout(function(){
+    var b=document.getElementById('gfBtn'); b.style.display='';
+    b.onclick=function(){ giftBook(S); };
+  }, 600+lines.length*1700);
+}
+function giftBook(S){
+  document.getElementById('gfBom').style.display='none';
+  document.getElementById('gfLines').innerHTML='';
+  document.getElementById('gfBtn').style.display='none';
+  var title=(S.memoirTitle||'').trim() || (SENIOR.name+'님의 이야기');
+  document.getElementById('gfbTitle').textContent=title;
+  document.getElementById('gfbAuthor').textContent='— '+SENIOR.name+' 지음 —';
+  document.getElementById('gfbDedTitle').textContent=title;
+  document.getElementById('gfbDedMsg').innerHTML=sHonor()+'께서 살아오신 날들이<br>한 권의 책이 되었습니다.';
+  var d=new Date();
+  document.getElementById('gfbDedFrom').textContent=d.getFullYear()+'년 '+(d.getMonth()+1)+'월 · 봄이 드림 🌱';
+  document.getElementById('gfbBook').classList.remove('gfb-open');
+  document.getElementById('gfBookStage').style.display='block';
+  document.getElementById('gfHint').textContent='책을 살짝 눌러보세요';
+  var fx=document.getElementById('giftFx');
+  var opened=false, done=false, autoT, finT;
+  function openIt(){
+    if(opened) return; opened=true; clearTimeout(autoT);
+    document.getElementById('gfHint').textContent='';
+    document.getElementById('gfbBook').classList.add('gfb-open');
+    speak(sHonor()+'께서 살아오신 날들이, 한 권의 책이 되었습니다'); // 봄이 프리미엄 음성
+    finT=setTimeout(finish, 5200);
+  }
+  function finish(){
+    if(done) return; done=true; clearTimeout(finT);
+    if(!GIFT_DEMO) _db.collection('seniors').doc(SENIOR.id).update({ 'memoirSurprise.delivered':true }).catch(function(e){ console.error(e); });
+    fx.classList.remove('lit');
+    setTimeout(function(){ fx.classList.remove('on'); fx.onclick=null; openBookView(S); }, 750);
+  }
+  fx.onclick=function(){ if(opened){ finish(); } else { openIt(); } };
+  autoT=setTimeout(openIt, 2800);
+}
+function gfPetals(){
+  var em=['🌸','✨','🌷','💛','🎉'];
+  for(var i=0;i<24;i++){ (function(n){ setTimeout(function(){
+    var s=document.createElement('span'); s.className='gf-petal'; s.textContent=em[n%em.length];
+    s.style.left=(Math.random()*100)+'vw';
+    s.style.animationDuration=(3+Math.random()*2.5)+'s';
+    s.style.fontSize=(16+Math.random()*16)+'px';
+    document.body.appendChild(s);
+    setTimeout(function(){ if(s.parentNode) s.parentNode.removeChild(s); }, 6500);
+  }, n*180); })(i); }
+}
+/* ── 자서전 읽기 화면 ── */
+function openBookView(S){
+  var list=freeQList();
+  var sections=(S.memoirBook&&S.memoirBook.sections)||{};
+  var title=(S.memoirTitle||'').trim() || (SENIOR.name+'님의 이야기');
+  document.getElementById('bvTitle').textContent=title;
+  document.getElementById('bvSub').textContent=new Date().getFullYear()+'년 · '+SENIOR.name+'님의 자서전';
+  var byCat={}, order=[];
+  for(var i=0;i<15;i++){
+    var q=list[i]; if(!q || !sections[i]) continue;
+    if(!byCat[q.cat]){ byCat[q.cat]=[]; order.push(q.cat); }
+    byCat[q.cat].push(sections[i]);
+  }
+  var body=document.getElementById('bvBody');
+  // 책 읽어주기(브라우저 TTS) 제거됨 (2026-07-08) — 봄이 튜토리얼 모드로 향후 재도입 예정
+  body.innerHTML = order.map(function(cat){
+    var paras=byCat[cat].join('\n\n').split(/\n\n+/).map(function(p){ return '<div class="bv-p">'+esc(p)+'</div>'; }).join('');
+    return '<div class="bv-ch"><div class="bv-ch-name"><span>🌸 '+esc(cat)+'</span></div>'+paras+'</div>';
+  }).join('') || '<div class="bv-p" style="text-align:center;color:var(--muted)">책을 준비하고 있어요. 잠시 후 다시 열어주세요.</div>';
+  document.getElementById('bookView').classList.add('on');
+  document.getElementById('bvClose').onclick=function(){ location.href='/kiosk'; };
+}
+function addBookAgainButton(S){
+  var wrap=document.getElementById('chatArea');
+  var row=document.createElement('div'); row.className='bubble-row bom';
+  row.innerHTML='<div class="bavatar">🌱</div><div class="bubble" style="display:flex;flex-direction:column;gap:10px">'
+    +'<span>지난번에 선물해 드린 자서전, 다시 보고 싶으세요?</span>'
+    +'<button type="button" id="bookAgainBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:12px 20px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit">📖 내 자서전 보기</button></div>';
+  wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
+  document.getElementById('bookAgainBtn').onclick=function(){ openBookView(S); };
+}
+
+/* ── 채팅 버블 ── */
+function addBubble(role, text){
+  var wrap=document.getElementById('chatArea');
+  var row=document.createElement('div'); row.className='bubble-row '+role;
+  var av=document.createElement('div'); av.className='bavatar'; av.textContent = role==='bom' ? '🌱' : initial(SENIOR.name);
+  var b=document.createElement('div'); b.className='bubble'; b.textContent=text;
+  row.appendChild(role==='senior'?b:av); row.appendChild(role==='senior'?av:b);
+  wrap.appendChild(row);
+  wrap.scrollTop=wrap.scrollHeight;
+  return row;
+}
+function addThinking(){
+  var wrap=document.getElementById('chatArea');
+  var row=document.createElement('div'); row.className='bubble-row bom'; row.id='thinkingRow';
+  row.innerHTML='<div class="bavatar">🌱</div><div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>';
+  wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
+}
+function removeThinking(){ var el=document.getElementById('thinkingRow'); if(el) el.remove(); }
+
+function saveTurn(role, text){
+  if(!SESSION_ID) return;
+  _db.collection('care_sessions').doc(SESSION_ID).update({
+    turns: firebase.firestore.FieldValue.arrayUnion({ role:role, text:text, ts:Date.now() })
+  }).catch(function(e){ console.error('turn save fail', e); });
+}
+
+/* ── 봄이 성함+호칭 ("김순자 할머니") ── */
+function sHonor(){ return SENIOR.name+' '+(SENIOR.gender==='남'?'할아버지':'할머니'); }
+
+/* ── TTS (봄이 프리미엄 음성 — 정해진 대사에만. 자유대화 AI 응답엔 호출 안 함) ──
+   서버(bomVoiceTTS)가 텍스트 캐시라 같은 문구는 최초 1회만 실제 합성됨.
+   성함 포함 문구는 그때그때 합성되나, 오디오 파일을 기기에 저장하진 않음(재생 후 메모리에서만). */
+/* ★봄이 음성 타이밍 표준(스킬 bom-voice-timing) — 곧 나올 대사는 prewarm()으로 '미리' 합성해둔다.
+   안 그러면 대사 차례에 서버 왕복(1~2초)이 그제서야 시작돼 텍스트만 먼저 뜨고 음성이 한참 뒤에 나옴. */
+var _ttsMem={}, _ttsPend={}, _ttsSeq=0;
+// ★정규화는 dasibom-caregreet.js의 bomVoiceClean — carekiosk가 미리 합성할 때와 '같은 문자열'이어야 캐시 적중.
+function ttsClean(text){ return window.bomVoiceClean ? bomVoiceClean(text) : String(text||'').replace(/[🌸✦→·🎉🌷💛🌱📖]/g,' ').replace(/\s+/g,' ').trim(); }
+function ttsFetch(t){
+  if(_ttsMem[t]) return Promise.resolve(_ttsMem[t]);
+  if(_ttsPend[t]) return _ttsPend[t];                 // 프리워밍과 재생이 같은 문구를 두 번 합성하지 않도록
+  var p;
+  try{
+    p=_fn.httpsCallable('bomVoiceTTS')({ text:t }).then(function(res){
+      delete _ttsPend[t];
+      var b64=res&&res.data&&res.data.audioBase64; if(!b64) return null;
+      var url='data:audio/mpeg;base64,'+b64; _ttsMem[t]=url; return url;
+    }).catch(function(){ delete _ttsPend[t]; return null; });   // 실패 시 무음
+  }catch(e){ return Promise.resolve(null); }
+  _ttsPend[t]=p; return p;
+}
+function prewarm(text){ var t=ttsClean(text); if(t) ttsFetch(t); }   // 미리 합성만(재생X)
+function speak(text){
+  var t=ttsClean(text); if(!t) return;
+  try{ if('speechSynthesis' in window) speechSynthesis.cancel(); }catch(e){}
+  try{ _bomAudio.pause(); }catch(e){}
+  var my=++_ttsSeq;
+  ttsFetch(t).then(function(url){
+    if(!url || my!==_ttsSeq) return;                  // 다음 대사에 밀렸으면 재생 안 함(밀린 음성 방지)
+    try{ _bomAudio.src=url; _bomAudio.currentTime=0; _bomAudio.play().catch(function(){}); }catch(e){}
+  });
+}
+var _bomAudio=new Audio();
+// 자동재생 잠금 해제 — 첫 터치 때 '실제 길이 있는' 무음 재생으로 오디오 요소를 깨워둠(서버 왕복 후 재생 허용)
+(function(){
+  function silentWav(){ var sr=8000,n=1200,dl=n*2,len=44+dl,b=new Uint8Array(len),dv=new DataView(b.buffer);
+    function s(o,str){for(var i=0;i<str.length;i++)b[o+i]=str.charCodeAt(i);}
+    s(0,'RIFF');dv.setUint32(4,36+dl,true);s(8,'WAVE');s(12,'fmt ');dv.setUint32(16,16,true);dv.setUint16(20,1,true);dv.setUint16(22,1,true);
+    dv.setUint32(24,sr,true);dv.setUint32(28,sr*2,true);dv.setUint16(32,2,true);dv.setUint16(34,16,true);s(36,'data');dv.setUint32(40,dl,true);
+    var bin='';for(var i=0;i<len;i++)bin+=String.fromCharCode(b[i]);return 'data:audio/wav;base64,'+btoa(bin); }
+  var done=false;
+  function unlock(){ if(done) return; done=true;
+    try{ _bomAudio.src=silentWav(); var p=_bomAudio.play(); if(p&&p.then) p.then(function(){},function(){}); }catch(e){}
+    ['pointerdown','touchstart','click','keydown'].forEach(function(ev){ document.removeEventListener(ev,unlock,true); });
+  }
+  ['pointerdown','touchstart','click','keydown'].forEach(function(ev){ document.addEventListener(ev,unlock,true); });
+})();
+
+/* ── 메시지 전송 ── */
+var sending=false;
+function sendMessage(){
+  if(sending || ENDED) return;
+  var input=document.getElementById('txtInput');
+  var msg=(input.value||'').trim();
+  if(!msg) return;
+  input.value='';
+  addBubble('senior', msg);
+  saveTurn('senior', msg);
+  seniorTurns++;
+  // 자서전 질문에 대한 답변이면 AI 호출 없이 프로필에 저장 + 다음 질문으로
+  if(MEMOIR.awaiting){ handleMemoirAnswer(msg); return; }
+  sending=true;
+  document.getElementById('sendBtn').disabled=true;
+  addThinking();
+  _fn.httpsCallable('chatBomCare')({ message: msg, seniorName: SENIOR.name })
+    .then(function(res){
+      removeThinking();
+      var text=(res.data && res.data.text) || '음... 잘 못 들었어요, 다시 한번 말씀해 주실래요?';
+      addBubble('bom', text);
+      saveTurn('bom', text);
+      // 자유대화(AI 응답)는 음성 없이 텍스트만 — 매번 다른 문장이라 비용+어색함(Macho 확정)
+      if(seniorTurns>=3 && !transitionShown){ transitionShown=true; setTimeout(showTransitionCTA, 500); }
+    })
+    .catch(function(e){
+      removeThinking();
+      var msg2='죄송해요, 지금 대답하기가 어려워요. 잠시 후 다시 말씀해 주세요.';
+      addBubble('bom', msg2);
+      toast(e.code||e.message);
+    })
+    .finally(function(){ sending=false; document.getElementById('sendBtn').disabled=false; });
+}
+
+/* ── 3번 대화 후 전환 카드 — 강제 종료가 아니라 "구경하러 가기" 제안만, 대화는 계속 가능 ── */
+function showTransitionCTA(){
+  var wrap=document.getElementById('chatArea');
+  var row=document.createElement('div'); row.className='bubble-row bom';
+  row.innerHTML='<div class="bavatar">🌱</div>'
+    +'<div class="bubble" style="display:flex;flex-direction:column;gap:12px">'
+    +'<span>오늘 이야기 들려주셔서 정말 고마워요 🌱 이제 재미난 것들도 구경하러 가볼까요?</span>'
+    +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">구경하러 가기 →</button>'
+    +'</div>';
+  wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
+  document.getElementById('goBrowseBtn').onclick=goBrowse;
+}
+function goBrowse(){
+  var btn=document.getElementById('goBrowseBtn'); if(btn){ btn.disabled=true; btn.textContent='정리하는 중…'; }
+  finishSession().then(function(){
+    try{
+      sessionStorage.removeItem('dasibom_active_senior');
+      sessionStorage.setItem('dasibom_kiosk_browse','1');
+      sessionStorage.removeItem('dasibom_kiosk_banner_shown');
+    }catch(e){}
+    location.href='/';
+  });
+}
+document.getElementById('sendBtn').onclick=sendMessage;
+document.getElementById('txtInput').addEventListener('keydown', function(e){ if(e.key==='Enter') sendMessage(); });
+
+/* ── STT (지원 브라우저에서만; 실기기 검증 전 보조 수단으로만 제공) ── */
+var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+var recog=null, listening=false;
+if(SR){
+  recog=new SR();
+  recog.lang='ko-KR'; recog.continuous=false; recog.interimResults=false;
+  recog.onresult=function(e){
+    var t=e.results[0][0].transcript;
+    document.getElementById('txtInput').value=t;
+    sendMessage();
+  };
+  recog.onerror=function(){ listening=false; document.getElementById('micBtn').classList.remove('listening'); };
+  recog.onend=function(){ listening=false; document.getElementById('micBtn').classList.remove('listening'); };
+  document.getElementById('micBtn').onclick=function(){
+    if(listening){ recog.stop(); return; }
+    try{ recog.start(); listening=true; document.getElementById('micBtn').classList.add('listening'); }
+    catch(e){}
+  };
+} else {
+  document.getElementById('micBtn').style.display='none';
+  document.getElementById('sttHint').textContent='이 기기는 음성 인식을 지원하지 않아요. 화면을 눌러 글자로 말씀해 주세요.';
+}
+
+/* ── 세션 마감 공통 로직 — status:ended + 발화 추출. 성공/실패 상관없이 resolve(다음 화면 전환은 호출부가 결정) ── */
+function finishSession(){
+  if(!SESSION_ID) return Promise.resolve();
+  ENDED=true;
+  return _db.collection('care_sessions').doc(SESSION_ID).update({
+    status:'ended', endedAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    return _fn.httpsCallable('extractCareInsights')({ sessionId: SESSION_ID });
+  }).catch(function(e){
+    console.error('세션 마감 오류', e);
+  });
+}
+
+/* ── 대화 종료(스태프용 — 다음 어르신을 위해 키오스크 프로필 화면으로 복귀) ── */
+document.getElementById('btnEnd').onclick=function(){ document.getElementById('endModal').classList.add('on'); };
+document.getElementById('endConfirm').onclick=function(){
+  var btn=this; btn.disabled=true; btn.textContent='정리하는 중…';
+  finishSession().then(function(){
+    try{ sessionStorage.removeItem('dasibom_active_senior'); }catch(e){}
+    toast('오늘 대화를 기록했어요');
+    setTimeout(function(){ location.href='/kiosk'; }, 900);
+  });
+};
+</script>
+</body>
+</html>
