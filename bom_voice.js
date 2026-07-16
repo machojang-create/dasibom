@@ -143,7 +143,17 @@
     try { audio.pause(); audio.src = url; audio.currentTime = 0; var p = audio.play(); if (p && p.catch) p.catch(function () {}); } catch (e) {}
   }
 
-  function clean(text) { return String(text || '').replace(/[🌸✦→·🎉🌷💛🌱]/g, ' ').replace(/\s+/g, ' ').trim(); }
+  /* TTS용 정규화 — 이모지는 '서러게이트 쌍'(내부 2글자)이라 [🌸🎉…] 같은 문자 클래스는 반쪽 단위로
+     매칭된다. 그래서 목록에 없는 이모지(🎙️ 등)도 앞 반쪽만 지워져 '고아 반쪽'이 남았고,
+     ElevenLabs가 invalid_unicode(HTTP 400)로 전부 거부 → 해당 문구 영구 무음(2026-07-16 토론장 건).
+     → 어차피 읽어줄 수 없는 글자들이므로: 모든 이모지(쌍)를 통째로 제거 + 홀로 남은 반쪽도 제거. */
+  function clean(text) {
+    return String(text || '')
+      .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, ' ') // 모든 이모지·아스트랄 문자(쌍 그대로)
+      .replace(/[\uD800-\uDFFF]/g, ' ')                // 짝 잃은 반쪽(안전판 — 이게 400의 원인)
+      .replace(/[☀-➿️‍✦→·]/g, ' ') // ☀~➿ 기호 + 변형선택자(FE0F)·ZWJ(200D)·✦→·
+      .replace(/\s+/g, ' ').trim();
+  }
 
   // firebase 준비 여부(앱 초기화 + 로그인까지) — memoir처럼 firebase를 늦게 로드하는 페이지 대응
   // 준비 = 앱 초기화 + 로그인 + ★functions 모듈까지. functions를 빼먹으면 아직 안 온 페이지에서
@@ -181,7 +191,7 @@
           if (!b64) { resolve(null); return; }
           var url = 'data:audio/mpeg;base64,' + b64;
           _mem[t] = url; resolve(url);
-        }).catch(function (e) { delete _pending[t]; try { console.warn('[봄이보이스] 합성 실패:', e && (e.code || e.message)); } catch (_) {} resolve(null); });
+        }).catch(function (e) { delete _pending[t]; try { console.warn('[봄이보이스] 합성 실패:', e && e.code, e && e.message); } catch (_) {} resolve(null); });
       });
     });
     _pending[t] = p;
@@ -194,15 +204,21 @@
     isOn: isOn,
     setOn: function (v) { try { localStorage.setItem('dasibom_bomvoice', v ? '1' : '0'); } catch (e) {} if (!v) this.stop(); },
     // 단순 재생(준비되는 대로) — 온보딩·가이드·선물연출 등
-    say: function (text) {
+    // stillWanted(선택): 재생 '직전'에 한 번 더 묻는 함수. false면 버림.
+    //   (합성이 오래 걸리는 사이 어르신이 그 화면을 떠났으면 뒷북 음성을 내지 않기 위함)
+    say: function (text, stillWanted) {
       if (!isOn()) return;
       var t = clean(text); if (!t) return;
       var my = ++_reqSeq;
-      fetchAudio(t).then(function (url) { if (url && my === _reqSeq) playDataUrl(url); });
+      fetchAudio(t).then(function (url) {
+        if (!url || my !== _reqSeq) return;
+        if (stillWanted && !stillWanted()) return;
+        playDataUrl(url);
+      });
     },
     // ★빠르게 준비될 때만 재생(느리면 스킵) — 자동 인사가 창 열고 한참 뒤 어색하게 나오는 것 방지.
     //   미리 prefetch돼 있으면 즉시, 아니면 maxMs 안에 준비돼야 재생. 초과하면 조용히 넘어감.
-    sayIfQuick: function (text, maxMs) {
+    sayIfQuick: function (text, maxMs, stillWanted) {
       if (!isOn()) return;
       var t = clean(text); if (!t) return;
       var my = ++_reqSeq, dropped = false;
@@ -210,6 +226,7 @@
       fetchAudio(t).then(function (url) {
         clearTimeout(to);
         if (dropped || my !== _reqSeq) return; // 너무 늦었거나 다음 요청에 밀림 → 재생 안 함
+        if (stillWanted && !stillWanted()) return; // 그 화면을 이미 떠났으면 뒷북 금지
         if (url) playDataUrl(url);
       });
     },

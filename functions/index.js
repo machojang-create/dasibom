@@ -1338,7 +1338,12 @@ exports.bomVoiceTTS = functions
     if (!context.auth) {
       throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
     }
-    const text = String((data && data.text) || '').trim().slice(0, 500);
+    // ⚠️slice가 이모지(서러게이트 쌍) 한가운데를 자를 수 있고, 구버전 클라이언트 정규화도
+    // 고아 반쪽을 만들었음 → ElevenLabs가 invalid_unicode(HTTP 400)로 전부 거부(= 그 문구 영구 무음).
+    // 여기서 최종 방어: 짝 잃은 반쪽을 지우고 넘긴다(2026-07-16 토론장 무음 사건).
+    const text = String((data && data.text) || '').trim().slice(0, 500)
+      .replace(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/g, '')
+      .replace(/(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/g, '');
     if (!text) {
       throw new functions.https.HttpsError('invalid-argument', '텍스트가 필요합니다.');
     }

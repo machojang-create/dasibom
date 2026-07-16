@@ -47,7 +47,7 @@
         }
         firebase.auth().signInAnonymously().catch(function () {});
       } catch (e) {}
-      add('/bom_voice.js?v=11', null);
+      add('/bom_voice.js?v=12', null);
       // 어르신 콘텐츠 이용 측정(센터 리포트의 팩트 지표) — 키오스크 구경 모드일 때만 동작.
       // 파일럿도 카드이므로 함께 로드. 개인 사용자에겐 아무 일도 하지 않음.
       add('/dasibom-kiosk-usage.js', null);
@@ -86,13 +86,15 @@
   //   프리페치로 다음 대사를 미리 받아 음성이 텍스트를 최대한 바짝 따라오게 함(안 보이는 버그 없이).
   function say(t) { if (!t) return; whenVoice(function () { try { BomVoice.say(fill(t)); } catch (e) {} }, 15000); }
   // 자동 인사용: 빨리 준비되면 재생, 늦으면 스킵(창 열고 한참 뒤 어색한 음성 방지)
+  // "아직 환영 말풍선을 보고 계신가" — 음성 재생 직전에도 다시 묻는다(투어 진입·닫힘 후 뒷북 방지)
+  function welcomeOn() { return _idx < 0 && bubbleEl && bubbleEl.style.display !== 'none'; }
   function sayQuick(t) {
     if (!t) return;
     whenVoice(function () {
-      // 로드가 늦어 환영이 뒤늦게 준비됐어도, 어르신이 아직 환영 말풍선을 보고 있을 때만 재생
-      // (투어로 넘어갔거나 닫았으면 끼어들지 않음 — 투어 음성과 겹침 방지)
-      if (_idx >= 0 || !bubbleEl || bubbleEl.style.display === 'none') return;
-      try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 2800) : BomVoice.say(fill(t)); } catch (e) {}
+      if (!welcomeOn()) return;
+      // 상한 9초: 첫 방문은 (모듈 로드→익명 로그인→합성 왕복)이 2.8초를 넘겨 환영이 통째로 버려졌음.
+      // 말풍선이 계속 떠 있는 화면이라, 읽고 계시는 동안 몇 초 늦게 나오는 건 자연스럽다.
+      try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 9000, welcomeOn) : BomVoice.say(fill(t)); } catch (e) {}
     }, 10000);
   }
   function prefetch(t) { if (!t) return; whenVoice(function () { try { if (BomVoice.prefetch) BomVoice.prefetch(fill(t)); } catch (e) {} }, 10000); }

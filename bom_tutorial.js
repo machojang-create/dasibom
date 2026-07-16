@@ -4,7 +4,7 @@
    작은 봄이 버튼으로 남아 탭하면 다시 도와줌(상시 도우미 통합).
 
    페이지 사용법:
-     1) <script src="bom_voice.js?v=11" defer></script>   ← 음성(없어도 무음으로 동작)
+     1) <script src="bom_voice.js?v=12" defer></script>   ← 음성(없어도 무음으로 동작)
      2) <script src="bom_tutorial.js?v=1" defer></script>
      3) <script>window.BOM_TUT = {
           key:'trendy',                    // 콘텐츠 식별자(1회 플래그 dasibom_tut_v2_<key>)
@@ -106,12 +106,15 @@
   // ★음성 타이밍 통일 규칙: 텍스트는 항상 즉시 표시, 봄이 음성은 준비되는 대로. 프리페치로 음성이 바짝 따라오게.
   function say(t) { if (!t) return; whenVoice(function () { try { BomVoice.say(fill(t)); } catch (e) {} }, 15000); }
   // 자동 인사용: 빨리 준비되면 재생, 늦으면 스킵(창 열고 한참 뒤 어색한 음성 방지)
+  // "아직 환영 말풍선을 보고 계신가" — 음성 재생 직전에도 다시 묻는다(투어 진입·닫힘 후 뒷북 방지)
+  function welcomeOn() { return _tourIdx < 0 && bubbleEl && bubbleEl.style.display !== 'none'; }
   function sayQuick(t) {
     if (!t) return;
     whenVoice(function () {
-      // 뒤늦게 준비됐어도 어르신이 아직 환영 말풍선을 보고 있을 때만(투어 진입·닫힘 후엔 끼어들지 않음)
-      if (_tourIdx >= 0 || !bubbleEl || bubbleEl.style.display === 'none') return;
-      try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 2800) : BomVoice.say(fill(t)); } catch (e) {}
+      if (!welcomeOn()) return;
+      // 상한 9초: 첫 방문은 (모듈 로드→익명 로그인→합성 왕복)이 2.8초를 넘겨 환영이 통째로 버려졌음.
+      // 말풍선이 계속 떠 있는 화면이라, 읽고 계시는 동안 몇 초 늦게 나오는 건 자연스럽다.
+      try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 9000, welcomeOn) : BomVoice.say(fill(t)); } catch (e) {}
     }, 10000);
   }
   function prefetch(t) { if (!t) return; whenVoice(function () { try { if (BomVoice.prefetch) BomVoice.prefetch(fill(t)); } catch (e) {} }, 10000); }

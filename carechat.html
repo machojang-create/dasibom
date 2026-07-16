@@ -548,7 +548,11 @@ function sHonor(){ return SENIOR.name+' '+(SENIOR.gender==='남'?'할아버지':
    안 그러면 대사 차례에 서버 왕복(1~2초)이 그제서야 시작돼 텍스트만 먼저 뜨고 음성이 한참 뒤에 나옴. */
 var _ttsMem={}, _ttsPend={}, _ttsSeq=0;
 // ★정규화는 dasibom-caregreet.js의 bomVoiceClean — carekiosk가 미리 합성할 때와 '같은 문자열'이어야 캐시 적중.
-function ttsClean(text){ return window.bomVoiceClean ? bomVoiceClean(text) : String(text||'').replace(/[🌸✦→·🎉🌷💛🌱📖]/g,' ').replace(/\s+/g,' ').trim(); }
+function ttsClean(text){
+  if(window.bomVoiceClean) return bomVoiceClean(text);
+  // 폴백도 반쪽 안전하게(이모지 나열 클래스는 고아 서러게이트를 만들어 TTS 400 → 무음)
+  return String(text||'').replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g,' ').replace(/[\uD800-\uDFFF]/g,' ').replace(/[☀-➿️‍✦→·]/g,' ').replace(/\s+/g,' ').trim();
+}
 function ttsFetch(t){
   if(_ttsMem[t]) return Promise.resolve(_ttsMem[t]);
   if(_ttsPend[t]) return _ttsPend[t];                 // 프리워밍과 재생이 같은 문구를 두 번 합성하지 않도록

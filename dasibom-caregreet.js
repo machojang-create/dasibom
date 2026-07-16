@@ -14,7 +14,14 @@
   //   완전히 같은 문자열을 보내야 캐시가 적중한다. 한쪽만 🌸를 지워도 프리워밍이 통째로 헛돎.
   //   → 그래서 정규화도 문구와 함께 여기서만 정의한다.
   window.bomVoiceClean = function (text) {
-    return String(text || '').replace(/[🌸✦→·🎉🌷💛🌱📖]/g, ' ').replace(/\s+/g, ' ').trim();
+    // 이모지 목록 나열 금지 — 문자 클래스는 이모지를 반쪽 단위로 매칭해서 목록에 없는
+    // 이모지의 앞 반쪽만 지우고 고아 반쪽을 남김 → ElevenLabs invalid_unicode(HTTP 400) 전체 거부.
+    // (2026-07-16 토론장 무음 사건. bom_voice.js clean()과 같은 수술 — 항상 함께 고칠 것)
+    return String(text || '')
+      .replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, ' ') // 모든 이모지(쌍 그대로)
+      .replace(/[\uD800-\uDFFF]/g, ' ')                // 짝 잃은 반쪽(400의 원인)
+      .replace(/[☀-➿️‍✦→·]/g, ' ')
+      .replace(/\s+/g, ' ').trim();
   };
 
   function today() {
