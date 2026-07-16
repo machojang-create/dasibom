@@ -26,6 +26,8 @@
       { "source": "/care-consent",        "destination": "/careconsent.html" },
       { "source": "/care-consent/**",     "destination": "/careconsent.html" },
       { "source": "/family",              "destination": "/family.html" },
+      { "source": "/refund",              "destination": "/refund.html" },
+      { "source": "/subscribe",           "destination": "/subscribe.html" },
       { "source": "/memoir",              "destination": "/memoir_v8.html" },
       { "source": "/memoir/**",           "destination": "/memoir_v8.html" },
       { "source": "/health",              "destination": "/health_magnifier.html" },
@@ -81,7 +83,7 @@
         ]
       },
       {
-        "source": "/@(memoir|health|game|arcade|matgo|nostalgia|trendy|library|letter|people|terms|privacy|admin|dream|gag|maeum|debate|maeumlab|kiosk|care-report|care-consent|portfolio)",
+        "source": "/@(memoir|health|game|arcade|matgo|nostalgia|trendy|library|letter|people|terms|privacy|refund|subscribe|family|admin|dream|gag|maeum|debate|maeumlab|kiosk|care-report|care-consent|portfolio)",
         "headers": [
           { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
         ]
