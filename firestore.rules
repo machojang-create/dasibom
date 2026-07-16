@@ -177,6 +177,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ── 유입/전환 집계(traffic_daily) — 조작 방지 위해 Functions(logTraffic)만 씀 ──
+    match /traffic_daily/{day} {
+      allow read:  if request.auth != null
+                   && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      allow write: if false;
+    }
+
     // AI 발화분석(통합돌봄) 일일 사용량 — Cloud Functions(Admin SDK)만 기록, 마스터만 조회
     match /usage_care_daily/{id} {
       allow read: if request.auth != null && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];

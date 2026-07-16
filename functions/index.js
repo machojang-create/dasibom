@@ -838,6 +838,36 @@ exports.familyReport = functions
   });
 
 // ════════════════════════════════════════
+// 유입/전환 측정 (2026-07-16) — 네이버 검색광고 10만원 테스트의 '측정기'.
+//   광고·바이럴로 들어온 사람이 실제로 핵심 행동(자서전 시작·구독 도달·공유)까지
+//   갔는지 서버에서 집계. 클라가 traffic_daily를 직접 못 쓰게(조작 방지) 함수로만.
+//   개인정보 저장 안 함 — 익명 집계 카운터만.
+// ════════════════════════════════════════
+const TRAFFIC_EVENTS = ['visit', 'memoir_start', 'subscribe_view', 'family_view', 'share_click', 'share_open'];
+exports.logTraffic = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data) => {
+    const ev = String((data && data.event) || '');
+    if (TRAFFIC_EVENTS.indexOf(ev) < 0) return { ok: false };
+    const src = String((data && data.src) || 'direct').slice(0, 40).replace(/[^\w.\-가-힣]/g, '') || 'direct';
+    const camp = String((data && data.camp) || '').slice(0, 40).replace(/[^\w.\-가-힣]/g, '');
+    const day = new Date().toISOString().slice(0, 10);
+    const inc = admin.firestore.FieldValue.increment(1);
+    const upd = {};
+    upd['total'] = inc;
+    upd['ev.' + ev] = inc;
+    upd['src.' + (src || 'direct')] = inc;
+    upd['evsrc.' + ev + '__' + (src || 'direct')] = inc;   // 이벤트×소스 교차(전환율 계산용)
+    if (camp) upd['camp.' + camp] = inc;
+    upd['updatedAt'] = admin.firestore.FieldValue.serverTimestamp();
+    try {
+      await admin.firestore().collection('traffic_daily').doc(day).set(upd, { merge: true });
+      return { ok: true };
+    } catch (e) { return { ok: false }; }
+  });
+
+// ════════════════════════════════════════
 // 센터 프로그램 리포트 (2026-07-16) — 키오스크를 안 쓰는 센터용.
 //   어르신들이 '개인 폰'으로 QR(?center=ID)을 찍어 계정에 센터 꼬리표가 붙으면,
 //   그 계정들의 이용을 센터 단위로 집계한다(집에서 쓴 것까지 = 프로그램 효과의 증거).

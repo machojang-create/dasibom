@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dasibomlife.com/family">
+<meta property="og:title" content="봄이가 전하는 우리 가족 소식">
+<meta property="og:description" content="어르신 곁의 AI 친구 봄이가, 이번 주 부모님 소식을 살며시 전해드려요.">
+<meta property="og:image" content="https://dasibomlife.com/og-image.png">
+<meta property="og:site_name" content="다시봄">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="봄이가 전하는 우리 가족 소식">
+<meta name="twitter:description" content="어르신 곁의 AI 친구 봄이가, 이번 주 부모님 소식을 살며시 전해드려요.">
+<meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
 <title>봄이가 전하는 우리 가족 소식 — 다시봄</title>
 <meta name="description" content="어르신 곁의 AI 친구 봄이가, 가족에게 이번 주 소식을 살짝 전해드려요.">
 <meta name="robots" content="noindex">
@@ -268,8 +279,10 @@ body{font-family:var(--sans);color:var(--ink);line-height:1.6;-webkit-font-smoot
 
     $('loading').style.display='none';
     $('report').style.display='block'; // ''는 스타일시트의 display:none으로 되돌아감
+    try{ window.DasibomShare && DasibomShare.track('family_view'); }catch(e){}
   }
 })();
 </script>
+<script src="/dasibom-share.js?v=1"></script>
 </body>
 </html>
