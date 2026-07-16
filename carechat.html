@@ -78,7 +78,7 @@ img.bavatar{background:#fff;object-fit:cover;object-position:center top;border:2
 <header>
   <div class="h-who"><div class="face" id="seniorFace"></div><div class="name" id="seniorName"></div></div>
   <div class="h-act">
-    <button class="btn btn-go" id="btnBrowse">구경하러 가기 →</button>
+    <button class="btn btn-go" id="btnBrowse">🎮 놀거리 보러 가기</button>
     <button class="btn btn-danger" id="btnEnd">대화 종료</button>
   </div>
 </header>
@@ -307,6 +307,8 @@ function memoirEntry(){
     if(todayCount>=3){
       var g=bomCareGreet(S,sHonor());
       addBubble('bom',g); speak(g); saveTurn('bom',g);
+      // 인사가 "같이 구경 가실래요?"로 끝나므로 버튼이 바로 따라와야 한다
+      if(!transitionShown){ transitionShown=true; setTimeout(function(){ showTransitionCTA('저 따라오세요! 재미난 것들 보여드릴게요 🌸'); },800); }
       return;
     }
     // ④ 오늘의 자서전 질문 시작
@@ -347,9 +349,11 @@ function handleMemoirAnswer(msg){
     setTimeout(function(){
       if(answered>=15){ memoirComplete(); }
       else if(todayCount>=3){
-        var m='오늘 이야기는 여기까지 들을게요 🌸 내일 또 궁금한 게 많거든요! 이제 편하게 저랑 수다 떨어요.';
+        var m='오늘 이야기는 여기까지 들을게요 🌸 내일 또 궁금한 게 많거든요! 그런데 '+sHonor()+', 다시봄에는 게임이랑 옛날 사진 같은 구경거리가 정말 많답니다. 저랑 같이 구경 가실래요?';
         addBubble('bom',m); speak(m); saveTurn('bom',m);
-        if(seniorTurns>=3 && !transitionShown){ transitionShown=true; setTimeout(showTransitionCTA,600); }
+        // 봄이가 방금 "같이 구경 가요"라고 했으니 버튼도 반드시 같이 떠야 한다
+        // (전엔 seniorTurns>=3 조건에 걸려 말만 하고 버튼이 없는 경우가 있었음)
+        if(!transitionShown){ transitionShown=true; setTimeout(function(){ showTransitionCTA('저 따라오세요! 재미난 것들 보여드릴게요 🌸'); },800); }
       }
       else askNextMemoirQ();
     }, 1400);
@@ -619,14 +623,15 @@ function sendMessage(){
     .finally(function(){ sending=false; document.getElementById('sendBtn').disabled=false; });
 }
 
-/* ── 3번 대화 후 전환 카드 — 강제 종료가 아니라 "구경하러 가기" 제안만, 대화는 계속 가능 ── */
-function showTransitionCTA(){
+/* ── 3번 대화 후 전환 카드 — 강제 종료가 아니라 "놀거리 보러 가기" 제안만, 대화는 계속 가능 ── */
+function showTransitionCTA(txt){
+  // txt: 직전 대사와 겹치지 않게 호출부가 문맥에 맞는 한마디를 넘길 수 있음(없으면 기본 멘트)
   var wrap=document.getElementById('chatArea');
   var row=document.createElement('div'); row.className='bubble-row bom';
   row.innerHTML=BOM_AV
     +'<div class="bubble" style="display:flex;flex-direction:column;gap:12px">'
-    +'<span>오늘 이야기 들려주셔서 정말 고마워요 🌱 이제 재미난 것들도 구경하러 가볼까요?</span>'
-    +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">구경하러 가기 →</button>'
+    +'<span>'+(txt||'오늘 이야기 들려주셔서 정말 고마워요 🌱 게임이랑 옛날 사진 같은 재미난 놀거리도 있는데, 보러 가실래요?')+'</span>'
+    +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">🎮 놀거리 보러 가기</button>'
     +'</div>';
   wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
   document.getElementById('goBrowseBtn').onclick=function(){ goBrowse(this); };
@@ -690,7 +695,7 @@ function finishSession(){
   });
 }
 
-/* ── 구경하러 가기(어르신용 — 신원 유지한 채 다시봄 홈으로. 말풍선 CTA와 같은 동작) ── */
+/* ── 놀거리 보러 가기(어르신용 — 신원 유지한 채 다시봄 홈으로. 말풍선 CTA와 같은 동작) ── */
 document.getElementById('btnBrowse').onclick=function(){ goBrowse(this); };
 
 /* ── 대화 종료(스태프용 — 다음 어르신을 위해 키오스크 프로필 화면으로 복귀) ── */

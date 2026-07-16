@@ -44,7 +44,7 @@
     // ③ 오늘 몫(3개) 이미 완료
     var qd = S.memoirQDates || {}, t = today();
     var todayCount = Object.keys(qd).filter(function (k) { return qd[k] === t; }).length;
-    if (todayCount >= 3) return '안녕하세요 ' + honor + '! 오늘 들려주실 이야기는 벌써 다 들었어요 🌸 이제 편하게 저랑 수다 떨어요!';
+    if (todayCount >= 3) return '안녕하세요 ' + honor + '! 오늘 들려주실 이야기는 벌써 다 들었어요 🌸 다시봄에 재미난 구경거리가 많은데, 저랑 같이 구경 가실래요?';
 
     // ④ 오늘의 자서전 질문 시작
     return answered === 0
