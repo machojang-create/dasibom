@@ -539,13 +539,24 @@ function bomSystemPrompt(extra) {
 const MEM_FACTS_MAX = 12;
 const MEM_RECENT_MAX = 3;
 const MEM_FACT_LEN = 60;
+/* snippets = 자서전 '재료'로 쓰는 발화 원문.
+   ★facts와 용도가 다르다: facts는 프롬프트에 넣는 요약(토큰 아껴야 함),
+     snippets는 프롬프트에 안 들어가고 자서전 회상(findRecall)에만 쓰임 → 토큰 영향 0.
+     자서전엔 어르신 말투 그대로 담아야 해서 요약이 아니라 원문이 필요함.
+   기존엔 이게 localStorage(memoir_chatlog)에만 있어서 기기를 바꾸면 통째로 사라졌음. */
+const MEM_SNIPPETS_MAX = 40;
+const MEM_SNIPPET_LEN = 200;
 
 async function loadBomMemory(uid) {
   try {
     const d = await admin.firestore().collection('bom_memory').doc(uid).get();
     if (!d.exists) return null;
     const m = d.data();
-    return { facts: (m.facts || []).slice(0, MEM_FACTS_MAX), recent: (m.recent || []).slice(0, MEM_RECENT_MAX) };
+    return {
+      facts: (m.facts || []).slice(0, MEM_FACTS_MAX),
+      recent: (m.recent || []).slice(0, MEM_RECENT_MAX),
+      snippets: (m.snippets || []).slice(-MEM_SNIPPETS_MAX)
+    };
   } catch (e) { return null; }
 }
 
@@ -730,11 +741,19 @@ ${turns.join('\n')}`;
     const summary = String(ex.summary || '').slice(0, 60).trim();
     const recent = (summary ? prev.recent.concat([summary]) : prev.recent).slice(-MEM_RECENT_MAX);
 
+    /* 자서전 재료(snippets): 어르신 말씀 원문을 그대로 누적.
+       ★프롬프트엔 넣지 않는다 → 토큰 비용 0. 자서전 회상(findRecall)에서만 읽음.
+       4턴마다 최근 8턴을 보내므로 겹침이 확정 → 중복 제거 필수. */
+    const prevSnips = prev.snippets || [];
+    const snippets = prevSnips
+      .concat(turns.filter((t) => t.length >= 6 && prevSnips.indexOf(t) < 0))
+      .slice(-MEM_SNIPPETS_MAX);
+
     await admin.firestore().collection('bom_memory').doc(uid).set({
-      facts, recent, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      facts, recent, snippets, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    return { ok: true, facts: facts.length, added: newFacts.length };
+    return { ok: true, facts: facts.length, added: newFacts.length, snippets: snippets.length };
   });
 
 // ════════════════════════════════════════

@@ -1056,6 +1056,7 @@ async function autoSignIn(){
         _authReady = true;
         // 소셜 로그인 사용자만 Firestore에서 복원
         if(isSocialUser()) await loadFromFirestore(user.uid);
+        loadServerSnippets(user.uid); // 봄이와 나눈 이야기(서버) — 자서전 회상 재료. await 안 함(늦게 와도 됨)
         updateAuthUI(user);
       }else{
         await _auth.signInAnonymously();
@@ -1924,12 +1925,31 @@ function _qKeywords(q){
   if(CAT_KW[q.cat]) return CAT_KW[q.cat];
   return (String(q.gist||q.h||'').match(/[가-힣]{2,}/g)||[]).slice(0,6);
 }
+/* 봄이와 나눈 이야기 서버본(bom_memory.snippets).
+   기존엔 재료가 localStorage(memoir_chatlog)뿐이라 기기를 바꾸면 통째로 사라졌다.
+   구독자는 이게 서버에 쌓여서 어느 기기에서든 자서전이 계속 두꺼워진다. */
+var _srvSnips=[];
+function loadServerSnippets(uid){
+  if(!_db || !uid) return;
+  _db.collection('bom_memory').doc(uid).get().then(function(d){
+    if(!d.exists) return;
+    _srvSnips=(d.data().snippets||[]).filter(function(t){ return typeof t==='string'; });
+    if(_srvSnips.length && QS[APP.curQ]){
+      try{ renderRecall(APP.curQ, QS[APP.curQ]); }catch(e){} // 이미 그린 화면이면 다시(로드가 늦게 끝났을 수 있음)
+    }
+  }).catch(function(){}); // 권한·오프라인이면 로컬 재료만으로 동작
+}
 function findRecall(q){
-  var log; try{ log=JSON.parse(localStorage.getItem('memoir_chatlog')||'[]'); }catch(e){ return null; }
-  if(!log || !log.length) return null;
+  var pool=_srvSnips.slice();
+  try{
+    (JSON.parse(localStorage.getItem('memoir_chatlog')||'[]')||[]).forEach(function(item){
+      var t=String(item.t||''); if(t && pool.indexOf(t)<0) pool.push(t);
+    });
+  }catch(e){}
+  if(!pool.length) return null;
   var kws=_qKeywords(q), best=null, bestScore=0;
-  log.forEach(function(item){
-    var t=String(item.t||''); if(t.length<6) return;
+  pool.forEach(function(t){
+    if(!t || t.length<6) return;
     var score=0; kws.forEach(function(k){ if(t.indexOf(k)>-1) score++; });
     if(score>bestScore){ bestScore=score; best=t; }
   });
