@@ -78,7 +78,7 @@ img.bavatar{background:#fff;object-fit:cover;object-position:center top;border:2
 <header>
   <div class="h-who"><div class="face" id="seniorFace"></div><div class="name" id="seniorName"></div></div>
   <div class="h-act">
-    <button class="btn btn-go" id="btnBrowse">🎮 놀거리 보러 가기</button>
+    <button class="btn btn-go" id="btnBrowse">🌱 다시봄 구경 가기</button>
     <button class="btn btn-danger" id="btnEnd">대화 종료</button>
   </div>
 </header>
@@ -631,7 +631,7 @@ function showTransitionCTA(txt){
   row.innerHTML=BOM_AV
     +'<div class="bubble" style="display:flex;flex-direction:column;gap:12px">'
     +'<span>'+(txt||'오늘 이야기 들려주셔서 정말 고마워요 🌱 게임이랑 옛날 사진 같은 재미난 놀거리도 있는데, 보러 가실래요?')+'</span>'
-    +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">🎮 놀거리 보러 가기</button>'
+    +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">🌱 다시봄 구경 가기</button>'
     +'</div>';
   wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
   document.getElementById('goBrowseBtn').onclick=function(){ goBrowse(this); };
