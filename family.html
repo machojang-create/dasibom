@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>봄이가 전하는 우리 가족 소식 — 다시봄</title>
+<meta name="description" content="어르신 곁의 AI 친구 봄이가, 가족에게 이번 주 소식을 살짝 전해드려요.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── 자녀 안심 리포트: '앱 화면'이 아니라 '집에서 온 편지' ──
+   어르신 화면(--ts 배율)과 달리 열람자는 자녀(40~60대 모바일) — 종이 편지 무드로 라이트 고정 */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --cream:#F5F1E8; --paper:#FDFBF5; --ink:#22301E; --sub:#6B7261; --faint:#98A08D;
+  --sage:#4B6B3B; --sage-deep:#33492A; --gold:#C9A961; --gold-deep:#A88434;
+  --line:#E6DFCE; --dot-off:#E9E3D2;
+  --serif:'Nanum Myeongjo','Batang',serif;
+  --sans:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+html{background:#EFEAE0}
+body{font-family:var(--sans);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(ellipse 90% 34% at 50% -4%, rgba(201,169,97,.16), transparent 62%),
+    linear-gradient(180deg,#F7F3EA 0%, #EFEAE0 100%);
+  min-height:100vh}
+.page{max-width:460px;margin:0 auto;padding:0 18px 56px}
+
+/* ── 봉투 여는 히어로 ── */
+.hero{text-align:center;padding:52px 8px 10px;position:relative}
+.hero .stamp{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--gold-deep);
+  letter-spacing:.14em;border:1px solid rgba(201,169,97,.55);border-radius:50px;padding:7px 16px;background:rgba(255,255,255,.55)}
+.hero .face-ring{width:104px;height:104px;margin:26px auto 0;border-radius:50%;padding:4px;
+  background:conic-gradient(from 210deg, #E3CE9C, #C9A961 30%, #F0E3C2 55%, #C9A961 80%, #E3CE9C);
+  box-shadow:0 18px 40px -18px rgba(90,70,20,.45)}
+.hero .face-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;background:#fff;border:3px solid #fff;display:block}
+.hero h1{font-family:var(--serif);font-weight:800;font-size:31px;line-height:1.34;margin-top:22px;color:var(--sage-deep);word-break:keep-all}
+.hero .range{margin-top:10px;font-size:14px;color:var(--sub);font-weight:600;letter-spacing:.02em}
+.hero .whisper{margin-top:16px;font-size:15px;color:var(--sub);word-break:keep-all}
+.hero .whisper b{color:var(--sage);font-weight:800}
+
+/* ── 통계 타일: 숫자가 주인공(스탯 타일 — 차트 아님) ── */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:30px}
+.tile{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:18px 8px 15px;text-align:center;
+  box-shadow:0 10px 26px -20px rgba(60,50,20,.5)}
+.tile .num{font-family:var(--serif);font-weight:800;font-size:34px;color:var(--sage-deep);line-height:1;letter-spacing:-.01em}
+.tile .num small{font-size:16px;font-weight:700;color:var(--sub);margin-left:1px}
+.tile .lbl{margin-top:8px;font-size:12.5px;color:var(--sub);font-weight:700;word-break:keep-all}
+
+/* ── 카드 공통 ── */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:24px 22px;margin-top:16px;
+  box-shadow:0 14px 34px -24px rgba(60,50,20,.5)}
+.card h2{font-size:13px;font-weight:800;color:var(--gold-deep);letter-spacing:.12em;display:flex;align-items:center;gap:8px}
+.card h2::after{content:'';flex:1;height:1px;background:var(--line)}
+.card .h-sub{font-family:var(--serif);font-size:19px;font-weight:800;color:var(--ink);margin-top:10px;word-break:keep-all;line-height:1.5}
+
+/* ── 이번 주 함께한 날: 7일 점 (단일 색상 — 채움=함께한 날) ── */
+.week{display:flex;justify-content:space-between;margin-top:20px;padding:0 2px}
+.day{display:flex;flex-direction:column;align-items:center;gap:9px;flex:1}
+.day .w{font-size:12px;font-weight:700;color:var(--faint)}
+.day .dot{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:13.5px;font-weight:800;border:1.5px solid var(--dot-off);color:transparent;background:transparent;
+  transition:transform .2s}
+.day .dot.on{background:var(--sage);border-color:var(--sage);color:#fff;box-shadow:0 6px 14px -6px rgba(75,107,59,.55)}
+.day.today .w{color:var(--sage);font-weight:800}
+.day.today .dot{outline:2px solid rgba(201,169,97,.7);outline-offset:3px}
+.week-note{margin-top:18px;font-size:14px;color:var(--sub);text-align:center;word-break:keep-all}
+.week-note b{color:var(--sage-deep)}
+
+/* ── 자서전 카드: 작은 책 + 진행 ── */
+.book-row{display:flex;gap:18px;align-items:center;margin-top:18px}
+.book{width:74px;height:100px;flex:none;border-radius:5px 11px 11px 5px;position:relative;
+  background:linear-gradient(120deg,#3E5733,#2C3F24 70%);
+  box-shadow:inset 4px 0 0 rgba(255,255,255,.09), 0 12px 22px -12px rgba(30,40,20,.6)}
+.book::before{content:'';position:absolute;inset:7px 7px;border:1px solid rgba(201,169,97,.75);border-radius:3px 8px 8px 3px}
+.book .bt{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;
+  font-family:var(--serif);font-size:11.5px;font-weight:800;color:#F0E3C2;text-align:center;line-height:1.55;word-break:keep-all}
+.book-info{flex:1;min-width:0}
+.book-info .cnt{font-size:15px;color:var(--sub);word-break:keep-all}
+.book-info .cnt b{font-family:var(--serif);font-size:24px;color:var(--sage-deep)}
+.bar{height:10px;border-radius:50px;background:var(--dot-off);margin-top:12px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:50px;background:linear-gradient(90deg,#C9A961,#B08D3F);
+  box-shadow:inset 0 -2px 3px rgba(0,0,0,.12);transition:width .9s cubic-bezier(.2,.8,.3,1)}
+.book-new{margin-top:12px;font-size:14px;color:var(--sub);word-break:keep-all}
+.book-new b{color:var(--gold-deep)}
+
+/* ── 봄이 귓속말(최근 이야기 요약) ── */
+.quotes{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.q{background:#F4F8EF;border:1px solid #DFE9D4;border-radius:16px 16px 16px 5px;padding:14px 16px;
+  font-size:15px;color:#33402E;word-break:keep-all;line-height:1.65;display:flex;gap:10px}
+.q .leaf{flex:none}
+
+/* ── 맺음 + CTA ── */
+.close-line{margin-top:34px;text-align:center;font-family:var(--serif);font-size:17.5px;font-weight:700;
+  color:var(--sage-deep);line-height:1.8;word-break:keep-all;padding:0 8px}
+.cta{display:block;margin:22px auto 0;width:fit-content;background:linear-gradient(145deg,#4B6B3B,#33492A);
+  color:#F5F1E8;text-decoration:none;font-weight:800;font-size:16px;padding:16px 30px;border-radius:50px;
+  box-shadow:0 14px 30px -14px rgba(51,73,42,.65)}
+.cta:active{transform:scale(.98)}
+
+/* ── 사실 원칙 고지 + 브랜드 ── */
+.trust{margin-top:36px;border-top:1px dashed var(--line);padding-top:18px;text-align:center;
+  font-size:12.5px;color:var(--faint);line-height:1.8;word-break:keep-all}
+.brand{margin-top:14px;text-align:center;font-weight:800;color:var(--sage);font-size:14px;letter-spacing:.22em}
+
+/* ── 상태 화면 ── */
+#loading,#errBox{text-align:center;padding:110px 24px}
+#loading .pulse{width:76px;height:76px;border-radius:50%;margin:0 auto 20px;background:#fff;overflow:hidden;
+  animation:breath 1.6s ease-in-out infinite;box-shadow:0 12px 26px -14px rgba(60,50,20,.4)}
+#loading .pulse img{width:100%;height:100%;object-fit:cover;object-position:center top}
+@keyframes breath{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+#loading p,#errBox p{color:var(--sub);font-size:15.5px;word-break:keep-all;line-height:1.7}
+#errBox h2{font-family:var(--serif);color:var(--sage-deep);font-size:22px;margin:16px 0 10px}
+#report{display:none}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}#loading .pulse{animation:none}}
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
+</head>
+<body>
+<div class="page">
+
+  <div id="loading">
+    <div class="pulse"><img src="/img/bom_smile.png" alt="봄이"></div>
+    <p>봄이가 소식을 정리하고 있어요…</p>
+  </div>
+
+  <div id="errBox" style="display:none">
+    <div class="pulse" style="width:76px;height:76px;border-radius:50%;margin:0 auto;overflow:hidden;background:#fff"><img src="/img/bom_calm.png" alt="봄이" style="width:100%;height:100%;object-fit:cover;object-position:center top"></div>
+    <h2>소식을 찾지 못했어요</h2>
+    <p>링크가 잘못되었거나 만료된 것 같아요.<br>어르신 휴대폰의 다시봄에서<br>‘가족에게 소식 보내기’를 다시 눌러 받아보세요.</p>
+  </div>
+
+  <div id="report">
+    <header class="hero">
+      <span class="stamp">🌱 봄이의 가족 소식</span>
+      <div class="face-ring"><img src="/img/bom_smile.png" alt="봄이"></div>
+      <h1 id="heroTitle">어르신의 요즘</h1>
+      <div class="range" id="heroRange"></div>
+      <p class="whisper" id="heroWhisper"></p>
+    </header>
+
+    <section class="tiles" aria-label="이번 주 요약">
+      <div class="tile"><div class="num" id="tChats">0<small>번</small></div><div class="lbl">이번 주 봄이와<br>나눈 대화</div></div>
+      <div class="tile"><div class="num" id="tDays">0<small>일</small></div><div class="lbl">이번 주<br>함께한 날</div></div>
+      <div class="tile"><div class="num" id="tMemoir">0<small>번째</small></div><div class="lbl">자서전에<br>담긴 기억</div></div>
+    </section>
+
+    <section class="card">
+      <h2>이번 주</h2>
+      <div class="h-sub">봄이와 도란도란, 함께한 날이에요</div>
+      <div class="week" id="weekDots"></div>
+      <div class="week-note" id="weekNote"></div>
+    </section>
+
+    <section class="card" id="memoirCard">
+      <h2>인생 자서전</h2>
+      <div class="h-sub" id="bookHead">이야기가 한 권의 책이 되는 중이에요</div>
+      <div class="book-row">
+        <div class="book"><div class="bt" id="bookTitle">나의<br>이야기</div></div>
+        <div class="book-info">
+          <div class="cnt"><b id="bookCnt">0</b><span id="bookMax"> / 15개의 기억</span></div>
+          <div class="bar"><i id="bookBar" style="width:0%"></i></div>
+          <div class="book-new" id="bookNew"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="quoteCard" style="display:none">
+      <h2>봄이의 귓속말</h2>
+      <div class="h-sub">요즘 이런 이야기를 나눴어요</div>
+      <div class="quotes" id="quotes"></div>
+    </section>
+
+    <p class="close-line" id="closeLine"></p>
+    <a class="cta" href="https://dasibomlife.com">다시봄 구경하러 가기 →</a>
+
+    <div class="trust">
+      이 소식은 어르신께서 직접 보내주신 링크로만 볼 수 있어요.<br>
+      실제 이용 기록으로만 정리하며, 건강·기분·인지 상태를 평가하지 않아요.
+    </div>
+    <div class="brand">다 시 봄</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  firebase.initializeApp({ apiKey:'AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0', authDomain:'mylife-650f0.firebaseapp.com',
+    projectId:'mylife-650f0', storageBucket:'mylife-650f0.firebasestorage.app',
+    messagingSenderId:'512010655611', appId:'1:512010655611:web:32b153b836b23ae96a8fde' });
+
+  function $(id){ return document.getElementById(id); }
+  function fail(){ $('loading').style.display='none'; $('errBox').style.display=''; }
+
+  var token=(new URLSearchParams(location.search)).get('f')||'';
+  if(!/^[a-f0-9]{32}$/.test(token)){ fail(); return; }
+
+  firebase.app().functions('asia-northeast3').httpsCallable('familyReport')({ token:token })
+    .then(function(res){ render(res.data||{}); })
+    .catch(function(){ fail(); });
+
+  var WD=['일','월','화','수','목','금','토'];
+  function md(s){ return parseInt(s.slice(5,7),10)+'월 '+parseInt(s.slice(8,10),10)+'일'; }
+
+  function render(r){
+    var days=(r.days||[]).slice();            // [0]=오늘 … [13]=13일 전
+    var week=days.slice(0,7).reverse();       // 옛날→오늘
+    var last=days.slice(7,14);
+    var chats=week.reduce(function(a,d){return a+d.n;},0);
+    var activeDays=week.filter(function(d){return d.n>0;}).length;
+    var lastChats=last.reduce(function(a,d){return a+d.n;},0);
+
+    var who=(r.name?r.name+'님':'어르신');
+    $('heroTitle').textContent=who+'의 요즘';
+    if(week.length) $('heroRange').textContent=md(week[0].d)+' – '+md(week[week.length-1].d);
+    $('heroWhisper').innerHTML = chats>0
+      ? '이번 주 '+who+'과 <b>'+chats+'번</b> 이야기 나눴어요. 잘 지내고 계시니, 마음 놓으세요 🌱'
+      : '이번 주는 조용히 지나갔어요. 안부 전화 한 통, 오늘 어떠세요?';
+
+    $('tChats').innerHTML=chats+'<small>번</small>';
+    $('tDays').innerHTML=activeDays+'<small>일</small>';
+
+    var wrap=$('weekDots'); wrap.innerHTML='';
+    week.forEach(function(d,i){
+      var el=document.createElement('div');
+      el.className='day'+(i===week.length-1?' today':'');
+      var w=WD[new Date(d.d+'T12:00:00Z').getUTCDay()];
+      el.innerHTML='<span class="w">'+w+'</span><span class="dot'+(d.n>0?' on':'')+'">'+(d.n>0?d.n:'')+'</span>';
+      wrap.appendChild(el);
+    });
+    $('weekNote').innerHTML = lastChats>0
+      ? '지난주에는 <b>'+lastChats+'번</b> 이야기했어요.'
+      : (chats>0 ? '이번 주, 봄이와의 이야기가 시작됐어요.' : '봄이는 늘 같은 자리에서 기다리고 있어요.');
+
+    var m=r.memoir;
+    if(m && m.answered>0){
+      $('tMemoir').innerHTML=m.answered+'<small>번째</small>';
+      $('bookCnt').textContent=m.answered;
+      $('bookMax').textContent=' / '+(m.maxQ||15)+'개의 기억';
+      $('bookBar').style.width=Math.min(100, Math.round(m.answered/(m.maxQ||15)*100))+'%';
+      if(m.title) $('bookTitle').innerHTML=String(m.title).slice(0,24).replace(/[&<>"]/g,'');
+      $('bookNew').innerHTML = m.newThisWeek>0
+        ? '이번 주에 <b>새 기억 '+m.newThisWeek+'개</b>가 책에 담겼어요.'
+        : '다음 이야기를 기다리고 있어요.';
+      if(m.answered>=(m.maxQ||15)) $('bookHead').textContent='한 권의 책이 완성됐어요 — 곧 만나보세요';
+    }else{
+      $('tMemoir').innerHTML='0<small>번째</small>';
+      $('bookHead').textContent='자서전은 아직 첫 장을 기다리고 있어요';
+      $('bookNew').textContent='봄이가 매일 조금씩, 살아오신 이야기를 여쭤볼 거예요.';
+    }
+
+    var rec=(r.recent||[]).filter(Boolean);
+    if(rec.length){
+      $('quoteCard').style.display='';
+      var qs=$('quotes'); qs.innerHTML='';
+      rec.forEach(function(s){
+        var q=document.createElement('div'); q.className='q';
+        q.innerHTML='<span class="leaf">🌱</span><span>'+String(s).replace(/[&<>"]/g,'')+'</span>';
+        qs.appendChild(q);
+      });
+    }
+
+    $('closeLine').textContent = chats>0
+      ? '오늘도 '+who+' 곁에는 봄이가 있어요.'
+      : who+'께 봄이가 다시 말을 걸어볼게요.';
+
+    $('loading').style.display='none';
+    $('report').style.display='block'; // ''는 스타일시트의 display:none으로 되돌아감
+  }
+})();
+</script>
+</body>
+</html>

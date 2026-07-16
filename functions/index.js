@@ -757,6 +757,87 @@ ${turns.join('\n')}`;
   });
 
 // ════════════════════════════════════════
+// 자녀 안심 리포트 (2026-07-16) — 구독 팩 ③. 지불자(자녀)를 잡는 유일한 조각.
+//   어르신이 '가족에게 소식 보내기'로 링크를 만들면(= 본인 동의), 자녀는 로그인 없이
+//   그 링크로 리포트를 봄. 토큰이 곧 열쇠 — 데이터 조립은 전부 서버(Admin)에서만 하고
+//   클라이언트에 개별 컬렉션을 열지 않는다.
+//   ★사실만: 이용 횟수·함께한 날·자서전 진행. 감정·건강·인지 평가 절대 금지(carereport와 동일 원칙).
+// ════════════════════════════════════════
+function _dayKey(offsetDays) {
+  const d = new Date(Date.now() - offsetDays * 86400000);
+  return d.toISOString().slice(0, 10); // usage_chat_daily와 같은 UTC 기준 키
+}
+
+// 어르신 쪽: 가족 링크 생성(1인 1토큰 재사용)
+exports.createFamilyLink = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 15, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const name = String((data && data.name) || '').slice(0, 20).trim();
+
+    const uref = admin.firestore().collection('users').doc(uid);
+    const u = await uref.get();
+    let token = u.exists ? u.data().familyToken : null;
+    if (token) {
+      if (name) admin.firestore().collection('family_links').doc(token).set({ name }, { merge: true }).catch(() => {});
+      return { token };
+    }
+    token = require('crypto').randomBytes(16).toString('hex');
+    await admin.firestore().collection('family_links').doc(token).set({
+      uid, name, views: 0, createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    await uref.set({ familyToken: token }, { merge: true });
+    return { token };
+  });
+
+// 자녀 쪽: 토큰 → 리포트 (로그인 불요 — 토큰(128bit 난수)이 곧 접근권한)
+exports.familyReport = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 20, memory: '256MB' })
+  .https.onCall(async (data) => {
+    const token = String((data && data.token) || '').trim();
+    if (!/^[a-f0-9]{32}$/.test(token)) throw new functions.https.HttpsError('invalid-argument', '링크가 올바르지 않습니다.');
+    const linkDoc = await admin.firestore().collection('family_links').doc(token).get();
+    if (!linkDoc.exists) throw new functions.https.HttpsError('not-found', '만료되었거나 없는 링크입니다.');
+    const link = linkDoc.data();
+    const uid = link.uid;
+
+    // 열람 집계(파일럿 지표: 자녀가 실제로 열어보는가) — 실패해도 리포트는 나감
+    linkDoc.ref.set({ views: admin.firestore.FieldValue.increment(1), lastViewedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true }).catch(() => {});
+
+    // ① 최근 14일 봄이 대화 (usage_chat_daily/{uid}_{day}.n)
+    const dayKeys = []; for (let i = 0; i < 14; i++) dayKeys.push(_dayKey(i));
+    const usageSnaps = await admin.firestore().getAll(
+      ...dayKeys.map((d) => admin.firestore().collection('usage_chat_daily').doc(uid + '_' + d)));
+    const days = usageSnaps.map((s, i) => ({ d: dayKeys[i], n: s.exists ? (s.data().n || 0) : 0 }));
+
+    // ② 자서전 진행 (memoirs/{uid}) — 답변 개수·이번 주 새로 담긴 기억 수·제목. 내용은 절대 안 보냄.
+    let memoir = null;
+    try {
+      const m = await admin.firestore().collection('memoirs').doc(uid).get();
+      if (m.exists) {
+        const md = m.data();
+        const answered = Object.keys(md.answers || {}).length;
+        const week = new Set(); for (let i = 0; i < 7; i++) week.add(_dayKey(i));
+        const newThisWeek = Object.values(md.qDates || {}).filter((d) => week.has(d)).length;
+        memoir = { answered, maxQ: md.maxQ || 15, title: md.bookTitle || '', newThisWeek };
+      }
+    } catch (e) {}
+
+    // ③ 봄이가 기억한 최근 이야기 한 줄(bom_memory.recent — 구독 기능. 요약만, 원문 안 보냄)
+    let recent = [];
+    try {
+      const bm = await admin.firestore().collection('bom_memory').doc(uid).get();
+      if (bm.exists) recent = (bm.data().recent || []).slice(-3);
+    } catch (e) {}
+
+    const createdAt = link.createdAt && link.createdAt.toMillis ? link.createdAt.toMillis() : null;
+    return { name: link.name || '', days, memoir, recent, since: createdAt };
+  });
+
+// ════════════════════════════════════════
 // 봄이 공용 AI 폼 (2026-07-10) — 모든 파일럿 앱(에버링크/다시봄 콘텐츠)이 공유하는 봄이 페르소나 AI 엔드포인트.
 //   client: askBom(app, task, input, {json}) → 이 함수. 봄이 페르소나는 여기 한 곳에만 정의(교체·업그레이드도 여기서).
 //   각 앱은 app별 task(고유 지시)와 input(사용자 입력)만 넘김. gemini.key 재사용, 앱+uid 하루 캡(usage_pilot_daily).

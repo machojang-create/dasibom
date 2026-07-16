@@ -170,6 +170,13 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // ── 자녀 안심 리포트 링크(family_links) ──────────────────────────
+    //   토큰 문서 자체가 접근 열쇠라 클라이언트에 절대 열지 않음.
+    //   생성=createFamilyLink, 열람=familyReport (둘 다 Functions/Admin).
+    match /family_links/{token} {
+      allow read, write: if false;
+    }
+
     // AI 발화분석(통합돌봄) 일일 사용량 — Cloud Functions(Admin SDK)만 기록, 마스터만 조회
     match /usage_care_daily/{id} {
       allow read: if request.auth != null && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];

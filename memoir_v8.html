@@ -893,6 +893,15 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       <button id="btnPublishLib" style="padding:13px 22px;border:1.5px solid #0e9d7d;border-radius:50px;background:#fff;color:#0e9d7d;font-size:14.5px;font-weight:700;cursor:pointer">📚 공개 서재에 올리기</button>
       <div style="font-size:12px;color:#999;margin-top:7px;line-height:1.6">올리면 공개 서재에서 누구나 읽을 수 있어요. '나만 보기' 이야기는 빠지며, 언제든 내릴 수 있습니다.</div>
     </div>
+    <!-- 자녀 안심 리포트(구독 팩 ③) — 책을 보내는 이 순간이 자녀에게 닿는 순간 -->
+    <div style="margin-top:14px;border-top:1px dashed #ddd;padding-top:16px">
+      <button id="btnFamilyLink" style="padding:14px 24px;border:none;border-radius:50px;background:linear-gradient(145deg,#C9A961,#A88434);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit">💌 우리 아이에게 매주 내 소식 보내기</button>
+      <div style="font-size:12px;color:#999;margin-top:7px;line-height:1.6">봄이가 함께한 일주일을 예쁜 소식지로 정리해 드려요. 대화 내용은 담기지 않아요.</div>
+      <div id="familyResult" style="display:none;margin-top:10px">
+        <input id="familyUrl" readonly style="width:100%;max-width:440px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box" onclick="this.select()">
+        <div style="margin-top:8px"><button id="btnCopyFamily" style="padding:8px 18px;border:none;border-radius:8px;background:#1F2A1A;color:#fff;cursor:pointer;font-family:inherit">소식 링크 복사</button></div>
+      </div>
+    </div>
   </div>
   <!-- ★공유로 들어온 자식용 제안 — 본문을 '다 읽은 뒤'에만 나옴.
        가격표를 먼저 보여주면 "비싼데?"가 되고, 엄마 글을 먼저 읽으면 "더 듣고 싶다"가 됨. -->
@@ -2460,6 +2469,26 @@ async function toggleLibraryPublish(){
 
 // 글씨 크기(body.ts-N → --ts)·다크 모드: 공용 a11y.js가 담당 (전 페이지 통일, 구버전 컨트롤 제거)
 
+// ── 자녀 안심 리포트 링크(구독 팩 ③) — 어르신 본인이 만들어 본인 메신저로 보냄(공유링크와 같은 원칙) ──
+async function makeFamilyLink(){
+  try{
+    if(!_auth || !_auth.currentUser){ popToast('로그인 후 보낼 수 있어요'); return; }
+    var btn=el('btnFamilyLink'); btn.disabled=true; btn.textContent='소식지를 준비하는 중…';
+    var name=''; try{ name=(_hsafe()||'').replace(/\s*(할머니|할아버지)\s*$/,''); }catch(e){}
+    var r=await firebase.app().functions('asia-northeast3').httpsCallable('createFamilyLink')({ name:name });
+    var url=location.origin+'/family?f='+r.data.token;
+    el('familyUrl').value=url; el('familyResult').style.display='block';
+    btn.disabled=false; btn.textContent='💌 우리 아이에게 매주 내 소식 보내기';
+    popToast('가족 소식 링크가 만들어졌어요 ✓', 4000);
+    if(navigator.share){
+      try{ await navigator.share({ title:'봄이가 전하는 내 소식', text:'요즘 나 어떻게 지내는지, 봄이가 예쁘게 정리해준대. 한번 열어봐.', url:url }); }catch(e){}
+    }
+  }catch(e){
+    var b=el('btnFamilyLink'); if(b){ b.disabled=false; b.textContent='💌 우리 아이에게 매주 내 소식 보내기'; }
+    popToast('잠시 후 다시 시도해 주세요');
+  }
+}
+
 // ── D-2 공유링크 ──
 async function makeShareLink(){
   try{
@@ -2640,6 +2669,10 @@ document.addEventListener('DOMContentLoaded',function(){
   el('btnMakeShare').addEventListener('click',makeShareLink);
   el('btnCopyShare').addEventListener('click',copyShare);
   if(el('btnPublishLib')) el('btnPublishLib').addEventListener('click',toggleLibraryPublish);
+  if(el('btnFamilyLink')) el('btnFamilyLink').addEventListener('click',makeFamilyLink);
+  if(el('btnCopyFamily')) el('btnCopyFamily').addEventListener('click',function(){
+    var i=el('familyUrl'); i.select(); try{ document.execCommand('copy'); popToast('소식 링크를 복사했어요 ✓'); }catch(e){}
+  });
 
   initPkgCards();
   el('btnPkgSelect').addEventListener('click',function(){
