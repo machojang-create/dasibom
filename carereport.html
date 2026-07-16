@@ -204,6 +204,7 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -236,6 +237,17 @@ header h1{font-size:22px;font-weight:800;color:var(--sage-deep)}
     <div id="ovWatchWrap" style="margin-top:22px">
       <div class="sec-h"><h2 id="ovWatchTitle">👀 요즘 안 오시는 어르신</h2></div>
       <div id="ovWatchList"></div>
+    </div>
+
+    <!-- 개인 폰 프로그램(QR 연결 계정) — 키오스크 없이 교육 프로그램으로 도입한 센터용.
+         수업 때 QR을 찍은 어르신 계정의 이용(집에서 쓴 것 포함 = 프로그램 효과의 증거)을 집계 -->
+    <div id="phoneProgWrap" style="margin-top:22px;display:none">
+      <div class="sec-h">
+        <h2>📱 스마트폰 프로그램 참여 현황</h2>
+        <span class="note">수업 때 QR로 연결된 어르신들의 이용 — 자택 이용까지 잡힙니다</span>
+      </div>
+      <div class="stat-grid" id="phoneProgStats"></div>
+      <div class="note" id="phoneProgNote" style="margin-top:4px"></div>
     </div>
   </div>
 
@@ -405,7 +417,36 @@ function enter(){
     arr.sort(function(a,b){ return (a.name||'').localeCompare(b.name||'','ko'); });
     arr.forEach(function(s){ var o=document.createElement('option'); o.value=s.id; o.textContent=s.name+(s.gender==='남'?' (할아버지)':' (할머니)'); sel.appendChild(o); });
     loadOverview(arr);
+    loadPhoneProgram();
   }).catch(function(e){ document.getElementById('loginErr').textContent='어르신 목록 불러오기 실패: '+(e.code||e.message); });
+}
+
+/* ── 개인 폰 프로그램 집계 — 서버(centerUsersReport)가 QR 연결 계정들의 이용을 모아줌.
+     연결 계정이 0이면 섹션 자체를 숨김(키오스크 센터에는 없는 개념이라 소음 방지). */
+function loadPhoneProgram(){
+  try{
+    firebase.app().functions('asia-northeast3').httpsCallable('centerUsersReport')({ centerId: CTX.orgId||'' })
+      .then(function(res){
+        var r=res.data||{};
+        if(!r.members){ return; }
+        document.getElementById('phoneProgWrap').style.display='';
+        var week=(r.days||[]).slice().reverse(); // 옛날→오늘
+        var bestDay=week.reduce(function(a,d){ return d.users>a.users?d:a; },{users:0});
+        var tiles=[
+          {n:r.members, sub:'명', l:'연결된 어르신 (QR 등록)'},
+          {n:r.active7, sub:'명', l:'이번 주 이용 어르신'+(r.members?' · '+Math.round(r.active7/r.members*100)+'%':'')},
+          {n:r.chats7, sub:'회', l:'이번 주 봄이와 대화'},
+          {n:r.memoirAnswers, sub:'개', l:'자서전에 담긴 기억 ('+r.memoirActive+'명 참여)'}
+        ];
+        document.getElementById('phoneProgStats').innerHTML=tiles.map(function(t){
+          return '<div class="stat-tile"><div class="n">'+t.n+'<span class="n-sub">'+t.sub+'</span></div><div class="l">'+t.l+'</div></div>';
+        }).join('');
+        document.getElementById('phoneProgNote').textContent = bestDay.users>0
+          ? '가장 활발했던 날: '+bestDay.d.slice(5).replace('-','/')+' ('+bestDay.users+'명이 '+bestDay.chats+'회 대화). 수업이 없는 날의 이용은 어르신이 자택에서 직접 이용하신 기록입니다.'
+          : '아직 이번 주 이용 기록이 없습니다.';
+      })
+      .catch(function(){ /* 함수 미배포·권한 등 — 섹션 숨김 유지 */ });
+  }catch(e){}
 }
 
 /* ── 센터 전체 현황(이번 달) — 실무에서 매일 볼 만한 요약 ── */

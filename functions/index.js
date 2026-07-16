@@ -838,6 +838,69 @@ exports.familyReport = functions
   });
 
 // ════════════════════════════════════════
+// 센터 프로그램 리포트 (2026-07-16) — 키오스크를 안 쓰는 센터용.
+//   어르신들이 '개인 폰'으로 QR(?center=ID)을 찍어 계정에 센터 꼬리표가 붙으면,
+//   그 계정들의 이용을 센터 단위로 집계한다(집에서 쓴 것까지 = 프로그램 효과의 증거).
+//   ★사실만: 인원·대화수·활동일·자서전 진행. 개별 대화 내용은 절대 안 나감.
+// ════════════════════════════════════════
+exports.centerUsersReport = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 30, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    // 승인된 센터 스태프(자기 센터만) 또는 master
+    const MASTERS = ['machojang@gmail.com', 'machojang@naver.com'];
+    const email = (context.auth.token && context.auth.token.email) || '';
+    let orgId = String((data && data.centerId) || '').trim().toLowerCase();
+    if (MASTERS.indexOf(email) < 0) {
+      const role = await admin.firestore().collection('admin_roles').doc(context.auth.uid).get();
+      if (!role.exists || role.data().status !== 'approved') {
+        throw new functions.https.HttpsError('permission-denied', '센터 계정으로 로그인해 주세요.');
+      }
+      orgId = role.data().orgId; // 자기 센터로 강제 — 남의 센터 조회 불가
+    }
+    if (!orgId) throw new functions.https.HttpsError('invalid-argument', '센터 ID가 필요합니다.');
+
+    const members = await admin.firestore().collection('users')
+      .where('centerId', '==', orgId).limit(200).get();
+    if (members.empty) return { orgId, members: 0, days: [], chats7: 0, active7: 0, memoirAnswers: 0, memoirActive: 0 };
+
+    const uids = members.docs.map((d) => d.id);
+    const dayKeys = []; for (let i = 0; i < 7; i++) dayKeys.push(_dayKey(i));
+
+    // 이용: uid × 최근 7일 (200명 상한 × 7 = 최대 1,400건 getAll 배치)
+    const refs = [];
+    uids.forEach((uid) => dayKeys.forEach((d) => refs.push(admin.firestore().collection('usage_chat_daily').doc(uid + '_' + d))));
+    const snaps = refs.length ? await admin.firestore().getAll(...refs) : [];
+    const perDay = {}; dayKeys.forEach((d) => { perDay[d] = { chats: 0, users: 0 }; });
+    const activeUids = new Set();
+    snaps.forEach((s, i) => {
+      if (!s.exists) return;
+      const d = dayKeys[i % 7], n = s.data().n || 0;
+      if (n > 0) { perDay[d].chats += n; perDay[d].users += 1; activeUids.add(uids[Math.floor(i / 7)]); }
+    });
+
+    // 자서전 진행 합계
+    const memSnaps = await admin.firestore().getAll(
+      ...uids.map((uid) => admin.firestore().collection('memoirs').doc(uid)));
+    let memoirAnswers = 0, memoirActive = 0;
+    memSnaps.forEach((s) => {
+      if (!s.exists) return;
+      const c = Object.keys(s.data().answers || {}).length;
+      if (c > 0) { memoirAnswers += c; memoirActive += 1; }
+    });
+
+    return {
+      orgId,
+      members: uids.length,
+      days: dayKeys.map((d) => ({ d, chats: perDay[d].chats, users: perDay[d].users })), // [0]=오늘
+      chats7: dayKeys.reduce((a, d) => a + perDay[d].chats, 0),
+      active7: activeUids.size,
+      memoirAnswers, memoirActive
+    };
+  });
+
+// ════════════════════════════════════════
 // 봄이 공용 AI 폼 (2026-07-10) — 모든 파일럿 앱(에버링크/다시봄 콘텐츠)이 공유하는 봄이 페르소나 AI 엔드포인트.
 //   client: askBom(app, task, input, {json}) → 이 함수. 봄이 페르소나는 여기 한 곳에만 정의(교체·업그레이드도 여기서).
 //   각 앱은 app별 task(고유 지시)와 input(사용자 입력)만 넘김. gemini.key 재사용, 앱+uid 하루 캡(usage_pilot_daily).

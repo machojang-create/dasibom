@@ -2121,6 +2121,36 @@
       else { renderLoggedOut(); }
     }
   });
+
+  /* ── 센터 프로그램 연결 고리 (2026-07-16) ──────────────────────────────
+     노인센터 수업 첫 시간에 QR(dasibomlife.com?center=001)을 찍으면 이 계정에
+     센터 꼬리표가 '한 번' 붙는다. 이후엔 집에서 그냥 공식 주소로 들어와도
+     같은 계정이라 이용 기록이 센터 리포트로 집계됨(QR은 문이 아니라 등록 도장).
+     키오스크(공용 태블릿)를 안 쓰는 센터용 — 어르신은 개인 폰의 일반 이용자 그대로. */
+  (function(){
+    var cid = null;
+    try {
+      cid = new URLSearchParams(location.search).get('center');
+      if (cid) { cid = cid.trim().toLowerCase(); localStorage.setItem('dasibom_center', cid); }
+      else { cid = localStorage.getItem('dasibom_center'); } // 예전에 찍었는데 서버 기록 전에 이탈했던 경우 재시도
+      if (!cid || !/^[a-z0-9_-]{2,20}$/.test(cid)) return;
+      if (localStorage.getItem('dasibom_center_synced') === cid) return; // 이미 계정에 기록됨
+    } catch(e) { return; }
+    var done = false;
+    firebase.auth().onAuthStateChanged(function(u){
+      if (!u || done) return; done = true;
+      firebase.firestore().collection('users').doc(u.uid).set({
+        centerId: cid,
+        centerJoinedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).then(function(){
+        try { localStorage.setItem('dasibom_center_synced', cid); } catch(e) {}
+        // 새로 찍은 그 자리에서만 한 번 인사(집에서 재방문 때는 조용히)
+        if (location.search.indexOf('center=') > -1 && typeof popToast === 'function') {
+          popToast('이제 센터 선생님들과 봄이가 함께 챙겨드려요 🌱', 4000);
+        }
+      }).catch(function(){ done = false; }); // 실패하면 다음 방문에 재시도
+    });
+  })();
 </script>
 
 <script src="/comments.js?v=1"></script>
