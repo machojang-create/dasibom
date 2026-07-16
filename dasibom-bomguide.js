@@ -71,12 +71,31 @@
   }
   ensureVoice(); // ★즉시 시작 — 페이지 로드와 병렬로 음성 인프라 준비(가이드 열릴 때까지 안 기다림)
   function stopVoice() { if (window.BomVoice) { try { BomVoice.stop(); } catch (e) {} } }
+  /* bom_voice.js가 로드될 때까지 기다렸다가 실행. ★기존엔 'BomVoice 없으면 조용히 무시'라서
+     파일럿(firebase→bom_voice 직렬 로드로 3~5초)에선 환영 설명이 항상 무음이었고,
+     투어 버튼을 누를 때쯤에야 로드가 끝나 투어부터만 소리가 났음(2026-07-16 Macho 발견, 토론장). */
+  function whenVoice(cb, maxMs) {
+    var t0 = Date.now();
+    (function poll() {
+      if (window.BomVoice) return cb();
+      if (Date.now() - t0 >= (maxMs || 10000)) return;
+      setTimeout(poll, 150);
+    })();
+  }
   // ★음성 타이밍 통일 규칙: 텍스트는 항상 즉시 표시(절대 숨기지 않음), 봄이 음성은 준비되는 대로 재생.
   //   프리페치로 다음 대사를 미리 받아 음성이 텍스트를 최대한 바짝 따라오게 함(안 보이는 버그 없이).
-  function say(t) { if (window.BomVoice && t) { try { BomVoice.say(fill(t)); } catch (e) {} } }
+  function say(t) { if (!t) return; whenVoice(function () { try { BomVoice.say(fill(t)); } catch (e) {} }, 15000); }
   // 자동 인사용: 빨리 준비되면 재생, 늦으면 스킵(창 열고 한참 뒤 어색한 음성 방지)
-  function sayQuick(t) { if (window.BomVoice && t) { try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 2800) : BomVoice.say(fill(t)); } catch (e) {} } }
-  function prefetch(t) { if (window.BomVoice && BomVoice.prefetch && t) { try { BomVoice.prefetch(fill(t)); } catch (e) {} } }
+  function sayQuick(t) {
+    if (!t) return;
+    whenVoice(function () {
+      // 로드가 늦어 환영이 뒤늦게 준비됐어도, 어르신이 아직 환영 말풍선을 보고 있을 때만 재생
+      // (투어로 넘어갔거나 닫았으면 끼어들지 않음 — 투어 음성과 겹침 방지)
+      if (_idx >= 0 || !bubbleEl || bubbleEl.style.display === 'none') return;
+      try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 2800) : BomVoice.say(fill(t)); } catch (e) {}
+    }, 10000);
+  }
+  function prefetch(t) { if (!t) return; whenVoice(function () { try { if (BomVoice.prefetch) BomVoice.prefetch(fill(t)); } catch (e) {} }, 10000); }
 
   // ── 섹션 스포트라이트: bom_tutorial.js와 동일 컨셉(오프스크린 가드 + rAF 추적) ──
   function clearSpot() { if (spotEl) spotEl.classList.remove('on'); }

@@ -92,11 +92,29 @@
   }
 
   function stopVoice() { if (window.BomVoice) { try { BomVoice.stop(); } catch (e) {} } }
+  /* bom_voice.js가 로드될 때까지 기다렸다가 실행. ★기존엔 'BomVoice 없으면 조용히 무시'라서
+     로드가 말풍선보다 늦는 첫 방문엔 환영 설명이 무음이었음(2026-07-16 Macho 발견, 토론장에서.
+     dasibom-bomguide.js와 같은 수술 — 두 파일은 항상 함께 고칠 것). */
+  function whenVoice(cb, maxMs) {
+    var t0 = Date.now();
+    (function poll() {
+      if (window.BomVoice) return cb();
+      if (Date.now() - t0 >= (maxMs || 10000)) return;
+      setTimeout(poll, 150);
+    })();
+  }
   // ★음성 타이밍 통일 규칙: 텍스트는 항상 즉시 표시, 봄이 음성은 준비되는 대로. 프리페치로 음성이 바짝 따라오게.
-  function say(t) { if (window.BomVoice && t) { try { BomVoice.say(fill(t)); } catch (e) {} } }
+  function say(t) { if (!t) return; whenVoice(function () { try { BomVoice.say(fill(t)); } catch (e) {} }, 15000); }
   // 자동 인사용: 빨리 준비되면 재생, 늦으면 스킵(창 열고 한참 뒤 어색한 음성 방지)
-  function sayQuick(t) { if (window.BomVoice && t) { try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 2800) : BomVoice.say(fill(t)); } catch (e) {} } }
-  function prefetch(t) { if (window.BomVoice && BomVoice.prefetch && t) { try { BomVoice.prefetch(fill(t)); } catch (e) {} } }
+  function sayQuick(t) {
+    if (!t) return;
+    whenVoice(function () {
+      // 뒤늦게 준비됐어도 어르신이 아직 환영 말풍선을 보고 있을 때만(투어 진입·닫힘 후엔 끼어들지 않음)
+      if (_tourIdx >= 0 || !bubbleEl || bubbleEl.style.display === 'none') return;
+      try { BomVoice.sayIfQuick ? BomVoice.sayIfQuick(fill(t), 2800) : BomVoice.say(fill(t)); } catch (e) {}
+    }, 10000);
+  }
+  function prefetch(t) { if (!t) return; whenVoice(function () { try { if (BomVoice.prefetch) BomVoice.prefetch(fill(t)); } catch (e) {} }, 10000); }
   function clearSpot() { if (spotEl) spotEl.classList.remove('on'); }
 
   function showBubble() { bubbleEl.style.display = ''; faceEl.classList.remove('pulse'); }
