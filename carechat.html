@@ -20,6 +20,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .h-who .name{font-size:19px;font-weight:800;color:var(--sage-deep)}
 .btn{min-height:52px;padding:0 20px;border:none;border-radius:14px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btn-danger{background:var(--danger);color:#fff}
+.h-act{display:flex;align-items:center;gap:10px}
+/* 어르신용 나가는 길 — 상시 노출.
+   말풍선 CTA(showTransitionCTA)는 대화가 이어지면 위로 밀려 사라지고, 재방문·15문항 완료 땐 아예 안 뜬다.
+   그러면 봄이와 이야기가 끝난 뒤 다시봄 콘텐츠로 갈 길이 없어져 체류가 여기서 끊긴다. */
+.btn-go{background:var(--gold,#C9A961);color:#1A2416}
 .btn-ghost{background:#fff;border:2px solid var(--line);color:var(--sage-deep)}
 
 #chatArea{flex:1;overflow-y:auto;padding:24px 18px 12px;display:flex;flex-direction:column;gap:16px;max-width:760px;margin:0 auto;width:100%}
@@ -72,7 +77,10 @@ img.bavatar{background:#fff;object-fit:cover;object-position:center top;border:2
 
 <header>
   <div class="h-who"><div class="face" id="seniorFace"></div><div class="name" id="seniorName"></div></div>
-  <button class="btn btn-danger" id="btnEnd">대화 종료</button>
+  <div class="h-act">
+    <button class="btn btn-go" id="btnBrowse">구경하러 가기 →</button>
+    <button class="btn btn-danger" id="btnEnd">대화 종료</button>
+  </div>
 </header>
 
 <div id="chatArea"></div>
@@ -621,10 +629,12 @@ function showTransitionCTA(){
     +'<button type="button" id="goBrowseBtn" style="align-self:flex-start;background:#C9A961;color:#1A2416;border:none;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit">구경하러 가기 →</button>'
     +'</div>';
   wrap.appendChild(row); wrap.scrollTop=wrap.scrollHeight;
-  document.getElementById('goBrowseBtn').onclick=goBrowse;
+  document.getElementById('goBrowseBtn').onclick=function(){ goBrowse(this); };
 }
-function goBrowse(){
-  var btn=document.getElementById('goBrowseBtn'); if(btn){ btn.disabled=true; btn.textContent='정리하는 중…'; }
+function goBrowse(srcBtn){
+  // 호출부 2곳: 말풍선 CTA(인자 없음) / 헤더 상시 버튼(자기 자신을 넘김)
+  var btn=srcBtn||document.getElementById('goBrowseBtn'); if(btn){ btn.disabled=true; btn.textContent='정리하는 중…'; }
+  var hb=document.getElementById('btnBrowse'); if(hb) hb.disabled=true; // 두 번 눌러 중복 기록되는 것 방지
   finishSession().then(function(){
     try{
       // ★어르신 신원을 유지한 채 구경 모드로 — 센터 리포트의 '이용 기록'(어떤 카드를 몇 분)을
@@ -671,11 +681,17 @@ function finishSession(){
   return _db.collection('care_sessions').doc(SESSION_ID).update({
     status:'ended', endedAt: firebase.firestore.FieldValue.serverTimestamp()
   }).then(function(){
+    // 어르신이 한 마디도 안 하셨으면 분석할 게 없다. 그냥 두면 왕복 후 '발화 없음'으로 실패해
+    // 나가는 데만 3~4초 멈춘다(키오스크에선 고장으로 보임). 호출 자체를 건너뛴다.
+    if(seniorTurns<1) return;
     return _fn.httpsCallable('extractCareInsights')({ sessionId: SESSION_ID });
   }).catch(function(e){
-    console.error('세션 마감 오류', e);
+    console.error('세션 마감 오류', e); // 삼켜서 항상 resolve — 실패해도 어르신은 나갈 수 있어야 함
   });
 }
+
+/* ── 구경하러 가기(어르신용 — 신원 유지한 채 다시봄 홈으로. 말풍선 CTA와 같은 동작) ── */
+document.getElementById('btnBrowse').onclick=function(){ goBrowse(this); };
 
 /* ── 대화 종료(스태프용 — 다음 어르신을 위해 키오스크 프로필 화면으로 복귀) ── */
 document.getElementById('btnEnd').onclick=function(){ document.getElementById('endModal').classList.add('on'); };
