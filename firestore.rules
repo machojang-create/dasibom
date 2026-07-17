@@ -301,6 +301,13 @@ service cloud.firestore {
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }
 
+    // 이벤트 팝업(진입 모달) — 누구나 읽기, 마스터만 관리
+    match /popups/{pid} {
+      allow read: if true;
+      allow write: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
     // 쿠폰 — 인증 사용자 읽기(검증용), 마스터만 관리
     match /coupons/{code} {
       allow read: if request.auth != null;

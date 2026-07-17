@@ -837,6 +837,30 @@
   @keyframes chUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
   @keyframes chFadeIn{from{opacity:0}to{opacity:1}}
   @media(max-width:580px){.ch-vline{display:none}.ch-meanings{gap:28px;flex-direction:column}}
+
+  /* ── 히어로 이벤트 슬라이드 (브랜드 영상 위 크로스페이드 오버레이) ── */
+  .hero-slides{position:absolute;inset:0;z-index:14;pointer-events:none;}
+  .hero-slide{position:absolute;inset:0;opacity:0;transition:opacity .9s ease;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 26px;pointer-events:none;}
+  .hero-slide.on{opacity:1;pointer-events:auto;}
+  .hs-bg{position:absolute;inset:0;background-size:cover;background-position:center;transform:scale(1.04);}
+  .hs-scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,20,8,.58) 0%,rgba(8,20,8,.5) 45%,rgba(8,20,8,.76) 100%);}
+  .hs-inner{position:relative;z-index:2;max-width:780px;width:100%;}
+  .hs-badge{display:inline-block;font-size:12.5px;font-weight:800;letter-spacing:.16em;color:#20301C;background:rgba(201,169,97,.92);padding:7px 18px;border-radius:50px;margin-bottom:24px;}
+  .hs-title{font-family:"Nanum Myeongjo",serif;font-size:clamp(32px,6.5vw,58px);line-height:1.28;font-weight:800;color:#F8F4EB;text-shadow:0 4px 40px rgba(0,0,0,.5);word-break:keep-all;}
+  .hs-body{margin-top:20px;font-size:clamp(16px,2.4vw,20px);line-height:1.7;color:rgba(245,241,232,.86);word-break:keep-all;}
+  .hs-cta{display:inline-flex;align-items:center;gap:10px;margin-top:34px;padding:16px 34px;border-radius:50px;background:linear-gradient(145deg,#D6B35F,#B8912F);color:#241B06;font-size:17px;font-weight:800;text-decoration:none;box-shadow:0 14px 34px -14px rgba(180,140,50,.7);transition:transform .25s;}
+  .hs-cta:hover{transform:translateY(-2px);}
+  /* 내비게이션 */
+  .hero-dots{position:absolute;bottom:74px;left:50%;transform:translateX(-50%);z-index:22;display:none;gap:9px;align-items:center;}
+  .hero-dots.show{display:flex;}
+  .hero-dot{width:9px;height:9px;padding:0;border:none;border-radius:50%;background:rgba(245,241,232,.38);cursor:pointer;transition:all .3s;}
+  .hero-dot.on{background:#C9A961;width:28px;border-radius:5px;}
+  .hero-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:22;width:46px;height:46px;border-radius:50%;border:1px solid rgba(245,241,232,.25);background:rgba(20,30,18,.35);backdrop-filter:blur(4px);color:rgba(245,241,232,.85);font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:background .25s;}
+  .hero-arrow.show{display:flex;}
+  .hero-arrow:hover{background:rgba(201,169,97,.35);}
+  .hero-arrow.prev{left:16px;}
+  .hero-arrow.next{right:16px;}
+  @media(max-width:580px){.hero-arrow{display:none!important}.hero-dots{bottom:58px}}
   /* Wisdom section */
   #wisdom-section{scroll-margin-top:80px;padding:72px 0 0;background:var(--cream);}
   /* 한 줄 공감 (커뮤니티) */
@@ -1533,6 +1557,12 @@
     <div class="ch-scroll-bar"></div>
     <span class="ch-scroll-txt">scroll</span>
   </div>
+
+  <!-- 이벤트 슬라이드(Firestore popups) — 브랜드 영상 위 크로스페이드. 이벤트 없으면 숨김 -->
+  <div class="hero-slides" id="heroSlides"></div>
+  <button class="hero-arrow prev" id="heroPrev" aria-label="이전" type="button">‹</button>
+  <button class="hero-arrow next" id="heroNext" aria-label="다음" type="button">›</button>
+  <div class="hero-dots" id="heroDots"></div>
 </header>
 
 <!-- 오늘의 지혜 -->
@@ -3637,6 +3667,66 @@ body.dark .bom-guide-text{color:#c8bba4}
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initBanners);
   else initBanners();
+})();
+</script>
+
+<!-- ════ 히어로 이벤트 슬라이드 로더 (Firestore popups) ════ -->
+<script>
+(function(){
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function init(){
+    if(!window.firebase||!firebase.firestore){ setTimeout(init,600); return; }
+    var slidesEl=document.getElementById('heroSlides'), dotsEl=document.getElementById('heroDots');
+    var prevB=document.getElementById('heroPrev'), nextB=document.getElementById('heroNext');
+    if(!slidesEl) return;
+    // 복합 인덱스 회피: ts로만 정렬해 최근 것 가져오고 active는 클라이언트에서 필터(슬라이드는 소수)
+    firebase.firestore().collection('popups').orderBy('ts','desc').limit(12).get()
+      .then(function(snap){
+        var evs=snap.docs.map(function(d){ return d.data(); }).filter(function(x){ return x.active!==false; }).slice(0,6);
+        if(!evs.length) return;                 // 이벤트 없음 → 순수 브랜드 히어로 그대로
+        // 이벤트 슬라이드 DOM 생성 (index 0 = 브랜드, 1..N = 이벤트)
+        evs.forEach(function(x){
+          var s=document.createElement('div'); s.className='hero-slide';
+          var bg = x.imageUrl ? '<div class="hs-bg" style="background-image:url('+esc(x.imageUrl).replace(/'/g,'')+')"></div>'
+                              : '<div class="hs-bg" style="background:linear-gradient(135deg,'+(x.color||'#33492A')+',#20301C)"></div>';
+          var cta = x.link ? '<a class="hs-cta" href="'+esc(x.link)+'">'+esc(x.linkText||'자세히 보기')+' →</a>' : '';
+          s.innerHTML = bg + '<div class="hs-scrim"></div><div class="hs-inner">'
+            + (x.badge?'<span class="hs-badge">'+esc(x.badge)+'</span>':'<span class="hs-badge">다시봄 소식</span>')
+            + '<div class="hs-title">'+esc(x.title||'')+'</div>'
+            + (x.body?'<div class="hs-body">'+esc(x.body)+'</div>':'')
+            + cta + '</div>';
+          slidesEl.appendChild(s);
+        });
+        var slides=[].slice.call(slidesEl.querySelectorAll('.hero-slide'));
+        var total=slides.length+1;            // +1 = 브랜드 슬라이드
+        var idx=0, timer=null;
+        // 도트 (브랜드 포함)
+        for(var i=0;i<total;i++){ (function(i){
+          var b=document.createElement('button'); b.className='hero-dot'+(i===0?' on':'');
+          b.setAttribute('aria-label',(i===0?'브랜드':'이벤트 '+i)); b.onclick=function(){ go(i); rest(); };
+          dotsEl.appendChild(b);
+        })(i); }
+        dotsEl.classList.add('show'); prevB.classList.add('show'); nextB.classList.add('show');
+        function go(n){
+          idx=(n+total)%total;
+          slides.forEach(function(s,i){ s.classList.toggle('on', i===idx-1); }); // idx 0=브랜드(전부 off)
+          [].forEach.call(dotsEl.children,function(d,i){ d.classList.toggle('on', i===idx); });
+        }
+        function next(){ go(idx+1); } function prev(){ go(idx-1); }
+        function start(){ stop(); timer=setInterval(next,6000); } function stop(){ if(timer) clearInterval(timer); }
+        function rest(){ start(); }
+        prevB.onclick=function(){ prev(); rest(); }; nextB.onclick=function(){ next(); rest(); };
+        // 마우스 올리면 정지, 스와이프(모바일)
+        var hero=document.querySelector('.cine-hero');
+        hero.addEventListener('mouseenter',stop); hero.addEventListener('mouseleave',start);
+        var tx=0;
+        hero.addEventListener('touchstart',function(e){ tx=e.touches[0].clientX; stop(); },{passive:true});
+        hero.addEventListener('touchend',function(e){ var dx=e.changedTouches[0].clientX-tx; if(Math.abs(dx)>50){ dx<0?next():prev(); } start(); },{passive:true});
+        start();
+      }).catch(function(){});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
 })();
 </script>
 </body>

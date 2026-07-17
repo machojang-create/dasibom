@@ -283,6 +283,8 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.16C6.51 42.62 14.62 48 24 48z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.16C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.16C12.43 13.72 17.74 9.5 24 9.5z"/></svg>
       Google로 로그인
     </button>
+    <button class="btn-google" id="btnLoginKakao" style="background:#FEE500;color:#391B1B;border:none;margin-top:8px">💬 카카오로 로그인</button>
+    <button class="btn-google" id="btnLoginNaver" style="background:#03C75A;color:#fff;border:none;margin-top:8px">N 네이버로 로그인</button>
     <div id="loginErr" class="login-err"></div>
   </div>
 </div>
@@ -341,6 +343,8 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     <button class="admin-tab role-master" data-tab="bots" onclick="switchTab('bots')" style="display:none">🤖 봇 심기</button>
     <button class="admin-tab role-master" data-tab="notices" onclick="switchTab('notices')" style="display:none">📢 공지사항</button>
     <button class="admin-tab role-master" data-tab="banners" onclick="switchTab('banners')" style="display:none">🎉 이벤트배너</button>
+    <button class="admin-tab role-master" data-tab="slides" onclick="switchTab('slides')" style="display:none">🖼️ 히어로슬라이드</button>
+    <button class="admin-tab role-master" data-tab="traffic" onclick="switchTab('traffic')" style="display:none">📈 광고지표</button>
     <button class="admin-tab role-master" data-tab="coupons" onclick="switchTab('coupons')" style="display:none">🎟️ 쿠폰</button>
     <button class="admin-tab role-master" data-tab="reports" onclick="switchTab('reports')" style="display:none">🚨 신고</button>
     <button class="admin-tab role-master" data-tab="survey" onclick="switchTab('survey')" style="display:none">📋 설문</button>
@@ -523,23 +527,68 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
       <div class="stat-card yellow"><div class="stat-num" id="stCommentToday">-</div><div class="stat-lbl">오늘 댓글·한줄공감</div></div>
       <div class="stat-card orange"><div class="stat-num" id="stAvgLen">-</div><div class="stat-lbl">평균 답변 글자수</div></div>
     </div>
-    <div class="stats-note">⚠ 실결제 매출·유료회원 통계는 결제(PortOne) 연동 전까지 제공되지 않습니다. 패키지 선택 분포는 "결제 의향" 참고용 수치입니다.<br>⚠ 누적 접속일수(재접속율 등)는 오늘 배포 시점부터 새로 쌓이는 지표입니다 — 이전 방문 기록은 소급 집계되지 않습니다.</div>
+
+    <div class="stats-section-title">🧩 콘텐츠 사용성 (베타 테스트)</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stArcade">-</div><div class="stat-lbl">오락실 랭킹 등록(누적)</div></div>
+      <div class="stat-card green"><div class="stat-num" id="stMatgo">-</div><div class="stat-lbl">봄이와 맞고 이용자</div></div>
+      <div class="stat-card yellow"><div class="stat-num" id="stTrendySub">-</div><div class="stat-lbl">신조어 제보</div></div>
+      <div class="stat-card orange"><div class="stat-num" id="stTrendyVote">-</div><div class="stat-lbl">신조어 투표</div></div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stReactions">-</div><div class="stat-lbl">감정표현 반응(누적)</div></div>
+      <div class="stat-card green"><div class="stat-num" id="stLibLikes">-</div><div class="stat-lbl">서재 좋아요</div></div>
+      <div class="stat-card yellow"><div class="stat-num" id="stLibComments">-</div><div class="stat-lbl">서재 댓글</div></div>
+      <div class="stat-card orange"><div class="stat-num" id="stShared">-</div><div class="stat-lbl">공유링크 생성</div></div>
+    </div>
+    <div class="stats-twocol">
+      <div class="stats-panel">
+        <div class="stats-panel-title">오락실 게임별 랭킹 등록 분포</div>
+        <div id="distArcade" class="bar-list"></div>
+      </div>
+      <div class="stats-panel">
+        <div class="stats-panel-title">한 줄 공감 — 콘텐츠별 분포(봇 제외)</div>
+        <div id="distScope" class="bar-list"></div>
+      </div>
+    </div>
+    <div class="stats-twocol">
+      <div class="stats-panel">
+        <div class="stats-panel-title">최근 7일 활동 추이(AI 생성+봄이 채팅)</div>
+        <div id="dist7d" class="bar-list"></div>
+      </div>
+      <div class="stats-panel">
+        <div class="stats-panel-title">돌봄 키오스크 — 이번 달</div>
+        <div id="distCare" class="bar-list"></div>
+      </div>
+    </div>
+
+    <div class="stats-note">⚠ 실결제 매출·유료회원 통계는 결제(PortOne) 연동 전까지 제공되지 않습니다. 패키지 선택 분포는 "결제 의향" 참고용 수치입니다.<br>⚠ 누적 접속일수(재접속율 등)는 오늘 배포 시점부터 새로 쌓이는 지표입니다 — 이전 방문 기록은 소급 집계되지 않습니다.<br>⚠ 말동무 사전 '나만의 앨범'은 본인만 읽을 수 있는 개인 데이터라 집계에서 제외됩니다.</div>
   </div>
 
   <!-- 봇 심기 -->
   <div id="tabBots" class="admin-body" style="display:none">
     <div class="stats-section-title">🤖 봇 댓글 심기</div>
 
-    <!-- 자동 모드 -->
+    <!-- 서버 자동화 -->
+    <div style="background:#14261a;border:1.5px solid #2f9e6c66;border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:700;color:#4fd39a;margin-bottom:8px">🌱 매일 자동 심기 (서버 스케줄러)</div>
+      <div style="font-size:13px;color:#aab;margin-bottom:14px;line-height:1.7">
+        이제 <b>매일 아침 7시(KST)에 서버가 자동으로</b> 오늘치 댓글을 심습니다. 아래 버튼들은 더 이상 매일 누르지 않아도 됩니다.<br>
+        오늘치를 지금 바로 확인하고 싶으면 아래 버튼을 눌러보세요 (이미 심어져 있으면 건너뜁니다).
+      </div>
+      <button onclick="runSeedNow()" style="padding:12px 26px;border:none;border-radius:10px;background:#2f9e6c;color:#fff;font-size:14px;font-weight:700;cursor:pointer">🌱 오늘치 지금 확인/심기</button>
+    </div>
+
+    <!-- 자동 모드(수동, 레거시) -->
     <div style="background:#1a2040;border:1.5px solid #7c9cff44;border-radius:14px;padding:20px;margin-bottom:16px">
       <div style="font-size:15px;font-weight:700;color:#7c9cff;margin-bottom:8px">⚡ 자동 모드 (오늘 하루)</div>
       <div style="font-size:13px;color:#aab;margin-bottom:14px;line-height:1.7">
-        오늘 하루치만, 봇 수와 상관없이 <b>완전 랜덤</b>하게 댓글을 심습니다.<br>
-        몇 개가 됐든 하루 안에서 랜덤 시간으로 배분됩니다.
+        오늘 하루(오전 8시~오후 10시) 동안 <b>10~90분 랜덤 간격</b>으로 한 개씩 순서대로 댓글을 심습니다.<br>
+        자연스럽게 하루 종일 띄엄띄엄 달리며, 아래 최대 개수에 도달하면 멈춥니다.
       </div>
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px">
-        <label style="color:#aab;font-size:13px">하루 최대 댓글 수
-          <input id="botAutoCount" type="number" value="100" min="1" max="500"
+        <label style="color:#aab;font-size:13px">최대 댓글 수
+          <input id="botAutoCount" type="number" value="20" min="1" max="50"
             style="width:80px;margin-left:8px;padding:7px 10px;border-radius:8px;border:1px solid #444;background:#111;color:#fff;font-size:14px">
         </label>
       </div>
@@ -573,6 +622,15 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     </div>
 
     <div id="botLog" style="background:#111;border-radius:10px;padding:16px;font-size:13px;color:#8f8;font-family:monospace;min-height:120px;max-height:360px;overflow-y:auto;white-space:pre-wrap">준비 완료.</div>
+
+    <!-- 봇 댓글 현황판 -->
+    <div style="background:#1e2130;border:1.5px solid #444;border-radius:14px;padding:20px;margin-top:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div style="font-size:15px;font-weight:700;color:#e0e0e0">📍 봇 댓글 현황 — 실제로 어디에 몇 개 달렸는지</div>
+        <button onclick="loadBotStatus()" style="padding:8px 16px;border:none;border-radius:8px;background:#7c9cff;color:#fff;font-size:13px;font-weight:700;cursor:pointer">↻ 새로고침</button>
+      </div>
+      <div id="botStatusBox" style="font-size:13px;color:#aab;line-height:1.7">아직 조회 안 함 — 새로고침을 눌러주세요.</div>
+    </div>
   </div>
 
   <!-- 편집 모달 -->
@@ -622,6 +680,41 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
   <div id="bannerList" style="display:flex;flex-direction:column;gap:8px"></div>
 </div>
 
+<!-- 히어로 슬라이드 관리 -->
+<div id="tabSlides" class="admin-body" style="display:none">
+  <div class="stats-section-title">🖼️ 히어로 슬라이드 (메인 영상 위 슬라이드)</div>
+  <div style="color:#888;font-size:13px;margin-bottom:14px;line-height:1.6">활성 슬라이드가 있으면 홈 상단 영상 위로 자동 회전합니다(6초). 이미지는 <b>/img/파일.jpg</b> 또는 전체 URL. 없으면 색상 배경.</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    <input id="slTitle" placeholder="제목 (예: 봄맞이 자서전 이벤트)" style="grid-column:1/3;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="slBody" placeholder="설명 한 줄 (선택)" style="grid-column:1/3;padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="slImg" placeholder="이미지 URL (선택, /img/… 또는 https://…)" style="padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="slBadge" placeholder="배지 문구 (선택, 기본 '다시봄 소식')" style="padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="slLink" placeholder="링크 (선택, 예: /memoir)" style="padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+    <input id="slLinkText" placeholder="버튼 문구 (선택, 기본 '자세히 보기')" style="padding:10px 14px;border-radius:10px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0;font-size:14px">
+  </div>
+  <button onclick="addSlide()" style="padding:10px 20px;background:#0e9d7d;border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;margin-bottom:16px">슬라이드 추가</button>
+  <div id="slideList" style="display:flex;flex-direction:column;gap:8px"></div>
+</div>
+
+<!-- 광고지표 (traffic_daily) -->
+<div id="tabTraffic" class="admin-body" style="display:none">
+  <div class="stats-section-title">📈 광고·유입 지표</div>
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+    <label style="color:#aab0c0;font-size:13px">최근</label>
+    <select id="trDays" onchange="loadTraffic()" style="padding:8px 12px;border-radius:8px;border:1.5px solid #2e3a5c;background:#141c34;color:#e8e8f0">
+      <option value="7">7일</option><option value="14" selected>14일</option><option value="30">30일</option>
+    </select>
+    <button onclick="loadTraffic()" style="padding:8px 16px;background:#7c9cff;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">새로고침</button>
+  </div>
+  <div id="trTiles" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:22px"></div>
+  <div class="stats-section-title" style="font-size:13px">유입 소스별 (방문 → 구독보기 전환)</div>
+  <div id="trBySource" style="margin-bottom:22px"></div>
+  <div class="stats-section-title" style="font-size:13px">캠페인별 방문</div>
+  <div id="trByCamp" style="margin-bottom:22px"></div>
+  <div class="stats-section-title" style="font-size:13px">날짜별</div>
+  <div id="trByDay"></div>
+</div>
+
 <!-- 쿠폰 관리 -->
 <div id="tabCoupons" class="admin-body" style="display:none">
   <div class="stats-section-title">🎟️ 쿠폰 관리</div>
@@ -667,7 +760,11 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
 </div>
 
 <!-- 질문 풀 v3 (회원 답변 → 질문 매핑용) -->
-<script src="questions_v3.js"></script>
+<script src="/questions_v3.js?v=6"></script>
+
+<!-- 카카오 SDK (센터 스태프 카카오 로그인용) -->
+<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"></script>
+<script>try{ Kakao.init('870c36c36fea1421ed701cefe6fc6562'); }catch(e){}</script>
 
 <!-- Firebase SDKs -->
 <script>
@@ -818,6 +915,24 @@ function init(){
     _auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
       .catch(function(e){ document.getElementById('loginErr').textContent = e.message; });
   };
+  // 센터 스태프용 카카오/네이버 로그인 — 콜백(auth/kakao|naver/callback.html)에서
+  // dasibom_login_target='admin'을 보고 실제 로그인 후 /admin으로 돌아온다.
+  document.getElementById('btnLoginKakao').onclick = function(){
+    sessionStorage.setItem('dasibom_login_target', 'admin');
+    if(typeof Kakao === 'undefined' || !Kakao.Auth){
+      document.getElementById('loginErr').textContent = '카카오 SDK 로드 실패. 잠시 후 다시 시도해 주세요.';
+      return;
+    }
+    Kakao.Auth.authorize({ redirectUri: 'https://dasibomlife.com/auth/kakao/callback.html' });
+  };
+  document.getElementById('btnLoginNaver').onclick = function(){
+    sessionStorage.setItem('dasibom_login_target', 'admin');
+    var state = Math.random().toString(36).slice(2);
+    sessionStorage.setItem('naver_state', state);
+    location.href = 'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=bgI3PFJTzufz_2aWDfvF&redirect_uri='
+      + encodeURIComponent('https://dasibomlife.com/auth/naver/callback.html')
+      + '&state=' + encodeURIComponent(state);
+  };
   document.getElementById('btnLogout').onclick = function(){ _auth.signOut(); };
   document.getElementById('btnGateLogout').onclick = function(){ _auth.signOut(); };
   document.getElementById('btnApply').onclick = submitApplication;
@@ -913,21 +1028,55 @@ function barList(elId, rows, opt){
 }
 function loadStatsExtra(){
   if(_statsExtra) return Promise.resolve(_statsExtra);
+  function safeGet(c){ return _db.collection(c).get().catch(function(){ return {forEach:function(){}}; }); }
   return Promise.all([
-    _db.collection('usage_daily').get().catch(function(){ return {forEach:function(){}}; }),
-    _db.collection('usage_chat_daily').get().catch(function(){ return {forEach:function(){}}; }),
-    _db.collection('comments').get().catch(function(){ return {forEach:function(){}}; }),
-    _db.collection('wisdom_comments').where('day','==',_todayStr()).get().catch(function(){ return {forEach:function(){}}; }),
-    _db.collection('survey').get().catch(function(){ return {forEach:function(){}}; })
+    safeGet('usage_daily'),                                                                          // 0
+    safeGet('usage_chat_daily'),                                                                     // 1
+    safeGet('comments'),                                                                             // 2
+    _db.collection('wisdom_comments').where('day','==',_todayStr()).get().catch(function(){ return {forEach:function(){}}; }), // 3
+    safeGet('survey'),                                                                               // 4
+    safeGet('arcade_scores'),                                                                        // 5
+    safeGet('game_stats'),                                                                           // 6
+    safeGet('trendy_submissions'),                                                                   // 7
+    safeGet('trendy_votes'),                                                                         // 8
+    safeGet('reactions'),                                                                            // 9
+    safeGet('library_likes'),                                                                        // 10
+    safeGet('library_comments'),                                                                     // 11
+    safeGet('shared'),                                                                               // 12
+    safeGet('care_sessions')                                                                         // 13
   ]).then(function(snaps){
     var today = _todayStr();
     var genToday = 0, chatToday = 0, commentToday = 0, survey = [];
-    snaps[0].forEach(function(d){ if(d.id.indexOf('_'+today)>-1) genToday += (d.data().n||0); });
-    snaps[1].forEach(function(d){ if(d.id.indexOf('_'+today)>-1) chatToday += (d.data().n||0); });
-    snaps[2].forEach(function(d){ var ts=d.data().ts; var day=ts&&ts.toDate?ts.toDate().toISOString().slice(0,10):null; if(day===today) commentToday++; });
+    var byDay = {}; // 'YYYY-MM-DD' → {gen,chat} (최근 7일 추이용)
+    snaps[0].forEach(function(d){ var day=d.id.slice(-10); var n=d.data().n||0; if(!byDay[day]) byDay[day]={gen:0,chat:0}; byDay[day].gen+=n; if(day===today) genToday+=n; });
+    snaps[1].forEach(function(d){ var day=d.id.slice(-10); var n=d.data().n||0; if(!byDay[day]) byDay[day]={gen:0,chat:0}; byDay[day].chat+=n; if(day===today) chatToday+=n; });
+    var scopeCnt = {}; // 한줄공감 콘텐츠별(스코프 접두어, 봇 제외)
+    snaps[2].forEach(function(d){
+      var x=d.data(); var ts=x.ts; var day=ts&&ts.toDate?ts.toDate().toISOString().slice(0,10):null;
+      if(day===today) commentToday++;
+      if(String(x.uid||'').indexOf('bot_')===0) return;
+      var pfx=String(x.scope||'기타').split(':')[0]; scopeCnt[pfx]=(scopeCnt[pfx]||0)+1;
+    });
     snaps[3].forEach(function(){ commentToday++; });
     snaps[4].forEach(function(d){ survey.push(d.data()); });
-    _statsExtra = { genToday:genToday, chatToday:chatToday, commentToday:commentToday, survey:survey };
+    var arcadeByGame={}, arcadeN=0;
+    snaps[5].forEach(function(d){ arcadeN++; var g=d.data().game||'?'; arcadeByGame[g]=(arcadeByGame[g]||0)+1; });
+    var matgoN=0; snaps[6].forEach(function(d){ if(d.data().matgo) matgoN++; });
+    var trendySub=0; snaps[7].forEach(function(){ trendySub++; });
+    var trendyVote=0; snaps[8].forEach(function(){ trendyVote++; });
+    var reactSum=0; snaps[9].forEach(function(d){ var x=d.data(); Object.keys(x).forEach(function(k){ if(typeof x[k]==='number') reactSum+=x[k]; }); });
+    var libLikes=0; snaps[10].forEach(function(){ libLikes++; });
+    var libComments=0; snaps[11].forEach(function(){ libComments++; });
+    var sharedN=0; snaps[12].forEach(function(){ sharedN++; });
+    var careThisMonth=0, careSeniors={}, ym=today.slice(0,7);
+    snaps[13].forEach(function(d){
+      var x=d.data(); var t=x.startedAt&&x.startedAt.toDate?x.startedAt.toDate():null;
+      if(t && t.toISOString().slice(0,7)===ym && x.status==='ended'){ careThisMonth++; if(x.seniorId) careSeniors[x.seniorId]=1; }
+    });
+    _statsExtra = { genToday:genToday, chatToday:chatToday, commentToday:commentToday, survey:survey,
+      byDay:byDay, scopeCnt:scopeCnt, arcadeByGame:arcadeByGame, arcadeN:arcadeN, matgoN:matgoN,
+      trendySub:trendySub, trendyVote:trendyVote, reactSum:reactSum, libLikes:libLikes,
+      libComments:libComments, sharedN:sharedN, careThisMonth:careThisMonth, careSeniorN:Object.keys(careSeniors).length };
     return _statsExtra;
   });
 }
@@ -1048,6 +1197,37 @@ function renderStats(){
     });
     if(!ex.survey.length){ surveyRows=[]; }
     barList('distSurvey', surveyRows, {suffix:'명'});
+
+    // ── 콘텐츠 사용성 (베타) ──
+    document.getElementById('stArcade').textContent = ex.arcadeN;
+    document.getElementById('stMatgo').textContent = ex.matgoN;
+    document.getElementById('stTrendySub').textContent = ex.trendySub;
+    document.getElementById('stTrendyVote').textContent = ex.trendyVote;
+    document.getElementById('stReactions').textContent = ex.reactSum;
+    document.getElementById('stLibLikes').textContent = ex.libLikes;
+    document.getElementById('stLibComments').textContent = ex.libComments;
+    document.getElementById('stShared').textContent = ex.sharedN;
+
+    var gameNames = { blast:'추억의 벽돌깨기', match3:'같은그림 맞추기', bubble:'버블 터뜨리기' };
+    barList('distArcade', Object.keys(ex.arcadeByGame).map(function(k){
+      return {lbl:gameNames[k]||k, val:ex.arcadeByGame[k]};
+    }).sort(function(a,b){ return b.val-a.val; }), {suffix:'건'});
+
+    var scopeNames = { nostalgia:'그때그시절', library:'공개서재', game:'게임', arcade:'오락실', trendy:'말동무사전' };
+    barList('distScope', Object.keys(ex.scopeCnt).map(function(k){
+      return {lbl:scopeNames[k]||k, val:ex.scopeCnt[k]};
+    }).sort(function(a,b){ return b.val-a.val; }).slice(0,8), {suffix:'건'});
+
+    var days=[]; for(var i=6;i>=0;i--){ var dd=new Date(); dd.setDate(dd.getDate()-i); days.push(dd.toISOString().slice(0,10)); }
+    barList('dist7d', days.map(function(day){
+      var v=ex.byDay[day]||{gen:0,chat:0};
+      return {lbl:day.slice(5).replace('-','/'), val:v.gen+v.chat};
+    }), {suffix:'건'});
+
+    barList('distCare', [
+      {lbl:'대화 세션(종료)', val:ex.careThisMonth},
+      {lbl:'참여 어르신', val:ex.careSeniorN}
+    ], {suffix:'건'});
   });
 }
 
@@ -1319,7 +1499,7 @@ function hide(id){ document.getElementById(id).style.display='none'; }
 
 /* ── 탭 전환 ── */
 function switchTab(tab) {
-  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals', stats:'tabStats', bots:'tabBots', notices:'tabNotices', banners:'tabBanners', coupons:'tabCoupons', reports:'tabReports', survey:'tabSurvey' };
+  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals', stats:'tabStats', bots:'tabBots', notices:'tabNotices', banners:'tabBanners', slides:'tabSlides', traffic:'tabTraffic', coupons:'tabCoupons', reports:'tabReports', survey:'tabSurvey' };
   document.querySelectorAll('.admin-tab').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-tab') === tab);
   });
@@ -1330,9 +1510,12 @@ function switchTab(tab) {
   if (tab === 'stats') renderStats();
   if (tab === 'notices') loadNotices();
   if (tab === 'banners') loadBanners();
+  if (tab === 'slides') loadSlides();
+  if (tab === 'traffic') loadTraffic();
   if (tab === 'coupons') loadCoupons();
   if (tab === 'reports') loadReports();
   if (tab === 'survey') loadSurvey();
+  if (tab === 'bots') loadBotStatus();
 }
 
 /* ── 관리자 권한(역할) — 신청·승인 (MVP, Firestore admin_roles 문서 기반) ──
@@ -1368,6 +1551,8 @@ function applyRoleGating(role){
   tabVis('bots', isMaster);
   tabVis('notices', isMaster);
   tabVis('banners', isMaster);
+  tabVis('slides', isMaster);
+  tabVis('traffic', isMaster);
   tabVis('coupons', isMaster);
   tabVis('reports', isMaster);
   tabVis('survey', isMaster);
@@ -1376,41 +1561,110 @@ function applyRoleGating(role){
 /* ════════════════════════════════════════════
    🤖 봇 심기
 ════════════════════════════════════════════ */
+/* 각 봇에게 고정된 말투(style)를 부여 — 같은 사람이 쓴 것처럼 일관된 개성이 생긴다.
+   warm(다정형, 이모지·감탄사 많음) / formal(존댓말 딱딱, 꾸밈 없음) /
+   dialect(사투리 말끝) / short(단답형, 짧게 툭툭) / casual(보통) */
 var BOT_PERSONAS = [
-  {id:'b01',name:'박순애'},{id:'b02',name:'김영식'},{id:'b03',name:'이정분'},
-  {id:'b04',name:'최한수'},{id:'b05',name:'윤명자'},{id:'b06',name:'강철수'},
-  {id:'b07',name:'오숙자'},{id:'b08',name:'조병태'},{id:'b09',name:'한미순'},
-  {id:'b10',name:'신기수'},{id:'b11',name:'백정희'},{id:'b12',name:'문영호'},
-  {id:'b13',name:'임순임'},{id:'b14',name:'양종석'},{id:'b15',name:'서명희'},
-  {id:'b16',name:'남기현'},{id:'b17',name:'고순분'},{id:'b18',name:'노태갑'},
-  {id:'b19',name:'황정숙'},{id:'b20',name:'전병식'},{id:'b21',name:'송민자'},
-  {id:'b22',name:'권기호'},{id:'b23',name:'심보람'},{id:'b24',name:'방진수'},
-  {id:'b25',name:'홍순례'},{id:'b26',name:'류병철'},{id:'b27',name:'차영숙'},
-  {id:'b28',name:'엄기봉'},{id:'b29',name:'구명숙'},{id:'b30',name:'맹순길'}
-];
-var NS_CMTS = [
-  '그 시절이 정말 그립네요','맞아요 저도 꼭 그랬어요','정말 공감이 가요',
-  '보니까 눈물이 나요','그때가 좋았는데요','정겨운 기억이에요',
-  '세월이 참 빠르네요','이런 추억이 있네요','마음이 따뜻해져요',
-  '참 좋은 시절이었죠','갑자기 생각이 나요','우리 어릴 때 얘기네요',
-  '이게 다 추억이네요','맞아요 공감해요','그립고도 아련해요'
-];
-var WS_CMTS = [
-  '오늘도 좋은 말씀 감사해요','마음에 새기겠습니다','오늘 힘이 납니다',
-  '참 맞는 말씀이에요','봄이 덕분에 힘내요','고마운 하루가 될 것 같아요',
-  '이 말씀 오래 기억할게요','아침부터 기분이 좋아요','따뜻한 하루 시작해요',
-  '공감이 가는 말씀이에요','오늘도 잘 보내겠습니다','좋은 글 감사합니다',
-  '마음이 따뜻해지네요','힘이 되는 말씀이에요','참 좋은 말씀이에요'
+  {id:'b01',name:'박순애',style:'warm'},{id:'b02',name:'김영식',style:'formal'},
+  {id:'b03',name:'이정분',style:'dialect'},{id:'b04',name:'최한수',style:'short'},
+  {id:'b05',name:'윤명자',style:'casual'},{id:'b06',name:'강철수',style:'formal'},
+  {id:'b07',name:'오숙자',style:'warm'},{id:'b08',name:'조병태',style:'short'},
+  {id:'b09',name:'한미순',style:'dialect'},{id:'b10',name:'신기수',style:'casual'},
+  {id:'b11',name:'백정희',style:'warm'},{id:'b12',name:'문영호',style:'formal'},
+  {id:'b13',name:'임순임',style:'dialect'},{id:'b14',name:'양종석',style:'short'},
+  {id:'b15',name:'서명희',style:'casual'},{id:'b16',name:'남기현',style:'formal'},
+  {id:'b17',name:'고순분',style:'warm'},{id:'b18',name:'노태갑',style:'short'},
+  {id:'b19',name:'황정숙',style:'dialect'},{id:'b20',name:'전병식',style:'casual'},
+  {id:'b21',name:'송민자',style:'warm'},{id:'b22',name:'권기호',style:'formal'},
+  {id:'b23',name:'심보람',style:'casual'},{id:'b24',name:'방진수',style:'short'},
+  {id:'b25',name:'홍순례',style:'dialect'},{id:'b26',name:'류병철',style:'formal'},
+  {id:'b27',name:'차영숙',style:'warm'},{id:'b28',name:'엄기봉',style:'short'},
+  {id:'b29',name:'구명숙',style:'casual'},{id:'b30',name:'맹순길',style:'dialect'}
 ];
 
+var NS_OPEN = ['','아 ','와 ','이야 ','어머 ','오랜만에 ','진짜 ','오 ','오늘 ','우와 ','또 ','헉 '];
+var NS_CORE = [
+  '그 시절이 정말 그립네요','저도 딱 이랬어요','정말 공감이 가요','보니까 눈물나요',
+  '그때가 좋았는데요','정겨운 기억이에요','세월 참 빠르네요','이런 추억이 있었죠',
+  '마음이 따뜻해지네요','참 좋은 시절이었어요','갑자기 옛날 생각나요','우리 어릴 때 얘기네요',
+  '이게 다 추억이죠','공감 백 프로예요','그립고도 아련하네요','사진 보니 옛 생각나요',
+  '저희 동네도 이랬어요','이런 거 진짜 오랜만에 봐요','친구들이랑 이런 얘기 많이 했죠',
+  '요즘 애들은 모를 거예요','그땐 다들 이렇게 살았죠','어머니 생각나네요',
+  '아버지가 자주 하시던 얘기예요','추억팔이 제대로 하네요','이런 콘텐츠 참 좋아요',
+  '매일 기다려지는 코너예요','옆지기랑 같이 봤어요','손주한테도 얘기해줘야겠어요',
+  '오랜만에 웃으면서 봤어요','그때 그 골목이 눈에 선하네요','추억은 사라지지 않네요',
+  '참 정겹습니다','이 나이 되니 더 그립네요','한참을 들여다봤어요','눈물 날 뻔했어요',
+  '완전 기억나요','이 얘기 들으니 옛날 생각나요','친정 생각이 나네요',
+  '옛날 사진첩 꺼내봐야겠어요','이런 거 보면 기분이 좋아져요','옛 친구한테 전화해야겠어요',
+  '요새는 통 안 보이는 풍경이네요','그 시절 참 순박했죠','생각지도 못한 걸 봤네요',
+  '동창들 모임에서 얘기해야겠어요','우리 애들도 좀 봤으면 좋겠네요','참 세월 무상하네요'
+];
+var NS_TAIL = ['','ㅎㅎ','ㅎㅎㅎ','~','정말로요','그러네요','좋네요','네요','너무요','진짜'];
+var NS_SHORT = ['그립네요','좋아요 ㅎㅎ','맞아요','정말 그러네요','아 옛날 생각나요','완전 공감이요','추억이네요 ㅎㅎ','좋은 글이에요','저도요','딱 그때 생각나요','참 좋았는데','눈물나네요 진짜'];
+var NS_DIALECT_TAIL = ['참말로 그립네예','그러네예','아이고 옛날 생각나네','고마 반갑습니다','참말로','그카니까요'];
+
+var WS_OPEN = ['','오늘도 ','아침부터 ','정말 ','참 ','오늘따라 ','읽고 나니 ','다시 한번 ','늘 '];
+var WS_CORE = [
+  '좋은 말씀 감사해요','마음에 새기겠습니다','힘이 납니다','맞는 말씀이에요',
+  '봄이 덕분에 힘내요','고마운 하루가 될 것 같아요','이 말씀 오래 기억할게요',
+  '기분이 좋아져요','따뜻한 하루 시작해요','공감이 가는 말씀이에요','잘 보내겠습니다',
+  '좋은 글 감사합니다','마음이 따뜻해지네요','힘이 되는 말씀이에요','지혜로운 말씀이네요',
+  '하루도 힘내볼게요','마음이 편안해져요','새겨듣겠습니다','많은 위로가 됐어요',
+  '좋은 하루 되세요','이렇게 살아야겠어요','자녀들한테도 전해줘야겠어요',
+  '기다려지는 말씀이에요','감사한 마음으로 시작합니다','더 와닿네요','되새겨봅니다',
+  '힘이 나요','건강하세요','마음에 깊이 남습니다','고맙습니다 봄이야','잘 읽었어요',
+  '용기가 생기네요','하루를 열어봅니다','마음 한켠이 따뜻해요',
+  '오늘 하루 버틸 힘이 생기네요','이런 말씀 매일 듣고 싶어요','가슴에 새기고 갑니다'
+];
+var WS_TAIL = ['','ㅎㅎ','~','정말로요','오늘도요','네요','늘 감사해요','참 좋아요'];
+var WS_SHORT = ['좋아요','감사해요','오늘도 힘내요','공감해요','좋은 말씀이에요','고마워요 봄이야','새겨둘게요','힘이 되네요','좋은 하루예요','와닿네요'];
+var WS_DIALECT_TAIL = ['참말로 고맙습니데이','그러네예 참','고마 힘이 나네','참말로 좋은 말씀'];
+
 function _rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+/* 스타일별로 결합 확률·어미를 다르게 해서 "봇 같은 획일함"을 없앤다.
+   persona가 있으면 그 사람 말투로, 없으면 기본(casual) 톤으로 생성. */
+function _genUnique(openArr, coreArr, tailArr, usedSet, persona, shortArr, dialectTailArr){
+  var style = (persona && persona.style) || 'casual';
+  for(var tries=0; tries<60; tries++){
+    var t;
+    if(style==='short' && Math.random()<0.55 && shortArr && shortArr.length){
+      t = _rnd(shortArr);
+    } else if(style==='formal'){
+      // 격식체: 앞머리·말끝 꾸밈 최소화, 코어 문장만 담백하게
+      t = _rnd(coreArr);
+    } else if(style==='warm'){
+      // 다정형: 앞머리+본문+말끝을 거의 항상 다 붙여 표현이 풍부함
+      t = (_rnd(openArr) + _rnd(coreArr) + ' ' + _rnd(tailArr)).trim();
+    } else if(style==='dialect' && dialectTailArr && dialectTailArr.length && Math.random()<0.6){
+      t = (_rnd(openArr) + _rnd(coreArr) + ' ' + _rnd(dialectTailArr)).trim();
+    } else {
+      t = (_rnd(openArr) + _rnd(coreArr) + (Math.random()<0.5?(' '+_rnd(tailArr)):'')).trim();
+    }
+    if(t.length>28) t = t.slice(0,28).trim();
+    if(t && !usedSet.has(t)){ usedSet.add(t); return t; }
+  }
+  // 풀이 바닥나면(극히 드묾) 숫자를 붙여서라도 중복을 피한다
+  var fallback = _rnd(coreArr).slice(0,24) + (usedSet.size%100);
+  usedSet.add(fallback);
+  return fallback;
+}
+
+async function _fetchExistingTexts(db, col, field, value){
+  var set = new Set();
+  try{
+    var snap = await db.collection(col).where(field,'==',value).get();
+    snap.forEach(function(d){ var t=d.data().text; if(t) set.add(t); });
+  }catch(e){}
+  return set;
+}
 function _botLog(msg){ var el=document.getElementById('botLog'); el.textContent+='\n'+msg; el.scrollTop=el.scrollHeight; }
 function _botLogClear(){ document.getElementById('botLog').textContent=''; }
 function _nsScope(dayMs){
   var start=new Date(2025,0,1).getTime();
   return 'nostalgia:'+((Math.floor((dayMs-start)/86400000)%300+300)%300);
 }
-function _dayKey(d){ return d.toISOString().slice(0,10); }
+function _dayKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
 
 // 옵션 입력값 미리보기
 (function(){
@@ -1423,6 +1677,12 @@ function _dayKey(d){ return d.toISOString().slice(0,10); }
   document.addEventListener('input',function(e){ if(e.target&&(e.target.id==='botInterval'||e.target.id==='botCount'||e.target.id==='botDays')) upd(); });
 })();
 
+function _botAuthCheck(){
+  var email=_auth&&_auth.currentUser&&_auth.currentUser.email;
+  if(!email){ _botLog('❌ 로그인 상태가 아니에요. 새로고침 후 다시 로그인해 주세요.'); return false; }
+  if(!ADMIN_EMAILS.includes(email)){ _botLog('❌ 봇 심기는 마스터 계정('+ADMIN_EMAILS.join(', ')+')만 가능해요. 현재 계정: '+email); return false; }
+  return true;
+}
 async function _writeDocs(docs){
   var db=firebase.firestore();
   var BATCH_MAX=490;
@@ -1430,7 +1690,12 @@ async function _writeDocs(docs){
     var chunk=docs.slice(s,s+BATCH_MAX);
     var batch=db.batch();
     chunk.forEach(function(item){ batch.set(db.collection(item.col).doc(), item.data); });
-    await batch.commit();
+    try{
+      await batch.commit();
+    }catch(e){
+      _botLog('❌ 저장 실패('+(s+chunk.length)+'/'+docs.length+'): '+(e.code||e.message));
+      throw e;
+    }
     _botLog('  ✓ '+(s+chunk.length)+'/'+docs.length+' 저장');
   }
 }
@@ -1438,38 +1703,54 @@ async function _writeDocs(docs){
 /* ── 자동 모드: 오늘 하루, 완전 랜덤 ── */
 async function seedBotsAuto(){
   _botLogClear();
-  var maxCount=parseInt(document.getElementById('botAutoCount').value)||100;
-  maxCount=Math.min(500,Math.max(1,maxCount));
+  if(!_botAuthCheck())return;
+  var capCount=parseInt(document.getElementById('botAutoCount').value)||20;
+  capCount=Math.min(50,Math.max(1,capCount));
+  var GAP_MIN=10, GAP_MAX=90; // 댓글 사이 랜덤 간격(분)
   var NOW=Date.now();
   var todayMid=new Date(); todayMid.setHours(0,0,0,0);
   var dayMs=todayMid.getTime();
   var nsScope=_nsScope(dayMs);
   var wisKey=_dayKey(new Date(dayMs));
 
-  _botLog('⚡ 자동 모드: 오늘('+wisKey+') 최대 '+maxCount+'개 랜덤 심기');
+  _botLog('⚡ 자동 모드: 오늘('+wisKey+') '+GAP_MIN+'~'+GAP_MAX+'분 간격, 최대 '+capCount+'개 랜덤 심기');
 
-  // 오늘 8am~22pm(840분) 안에서 완전 랜덤 timestamp 생성
+  var db=firebase.firestore();
+  var nsUsed=await _fetchExistingTexts(db,'comments','scope',nsScope);
+  var wsUsed=await _fetchExistingTexts(db,'wisdom_comments','day',wisKey);
+  _botLog('  기존 문구 '+nsUsed.size+'(그때그시절) / '+wsUsed.size+'(오늘의지혜) 확인 — 절대 중복 안 되게 생성합니다.');
+
+  // 오늘 8am~22pm 동안 10~90분 랜덤 간격으로 하나씩 순차 배치
+  // comments/wisdom_comments 번갈아 심어서 한쪽으로 몰리지 않게 함
   var DAY_START=dayMs+8*3600000;
   var DAY_END  =dayMs+22*3600000;
   var docs=[];
-  for(var i=0;i<maxCount;i++){
-    var ts=DAY_START+Math.random()*(DAY_END-DAY_START);
+  var t=DAY_START+(GAP_MIN+Math.random()*(GAP_MAX-GAP_MIN))*60000;
+  while(t<DAY_END&&docs.length<capCount){
     var bot=_rnd(BOT_PERSONAS);
-    var tsObj=new Date(ts);
-    if(Math.random()<0.5){
-      docs.push({col:'comments',data:{scope:nsScope,text:_rnd(NS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
+    var tsObj=new Date(t);
+    if(docs.length%2===0){
+      docs.push({col:'comments',data:{scope:nsScope,text:_genUnique(NS_OPEN,NS_CORE,NS_TAIL,nsUsed,bot,NS_SHORT,NS_DIALECT_TAIL),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
     } else {
-      docs.push({col:'wisdom_comments',data:{day:wisKey,text:_rnd(WS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
+      docs.push({col:'wisdom_comments',data:{day:wisKey,text:_genUnique(WS_OPEN,WS_CORE,WS_TAIL,wsUsed,bot,WS_SHORT,WS_DIALECT_TAIL),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
     }
+    t+=(GAP_MIN+Math.random()*(GAP_MAX-GAP_MIN))*60000;
   }
   _botLog('총 '+docs.length+'건 생성 → Firestore 저장 중...');
-  await _writeDocs(docs);
-  _botLog('\n✅ 자동 심기 완료!');
+  try{
+    await _writeDocs(docs);
+    _botLog('\n✅ 자동 심기 완료!');
+    loadBotStatus();
+  }catch(e){
+    _botLog('\n❌ 심기 실패: '+(e.code||e.message));
+    alert('봇 심기 실패: '+(e.code||e.message));
+  }
 }
 
 /* ── 커스텀 모드 ── */
 async function seedBots(){
   _botLogClear();
+  if(!_botAuthCheck())return;
   var db=firebase.firestore();
   var botCount =Math.min(30,Math.max(1,parseInt(document.getElementById('botCount').value)||30));
   var interval =Math.max(30,parseInt(document.getElementById('botInterval').value)||90); // 분
@@ -1508,13 +1789,15 @@ async function seedBots(){
       }
     }
 
+    var nsUsed=await _fetchExistingTexts(db,'comments','scope',nsScope);
+    var wsUsed=await _fetchExistingTexts(db,'wisdom_comments','day',wisKey);
     slots.forEach(function(ts,i){
       var bot=_rnd(activeBots);
       var tsObj=new Date(ts);
       if(i%2===0){
-        docs.push({col:'comments',data:{scope:nsScope,text:_rnd(NS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
+        docs.push({col:'comments',data:{scope:nsScope,text:_genUnique(NS_OPEN,NS_CORE,NS_TAIL,nsUsed,bot,NS_SHORT,NS_DIALECT_TAIL),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
       } else {
-        docs.push({col:'wisdom_comments',data:{day:wisKey,text:_rnd(WS_CMTS),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
+        docs.push({col:'wisdom_comments',data:{day:wisKey,text:_genUnique(WS_OPEN,WS_CORE,WS_TAIL,wsUsed,bot,WS_SHORT,WS_DIALECT_TAIL),uid:'bot_'+bot.id,ts:firebase.firestore.Timestamp.fromDate(tsObj)}});
       }
     });
     _botLog('  day+'+(d)+' '+wisKey+': '+slots.length+'건');
@@ -1522,8 +1805,14 @@ async function seedBots(){
 
   if(!docs.length){ _botLog('ℹ 심을 데이터 없음'); return; }
   _botLog('\n총 '+docs.length+'건 저장 중...');
-  await _writeDocs(docs);
-  _botLog('\n✅ 커스텀 심기 완료!');
+  try{
+    await _writeDocs(docs);
+    _botLog('\n✅ 커스텀 심기 완료!');
+    loadBotStatus();
+  }catch(e){
+    _botLog('\n❌ 심기 실패: '+(e.code||e.message));
+    alert('봇 심기 실패: '+(e.code||e.message));
+  }
 }
 
 async function clearBots(){
@@ -1538,6 +1827,81 @@ async function clearBots(){
     _botLog('  '+col+': '+snap.size+'건 삭제');
   }
   _botLog('✅ 총 '+total+'건 삭제 완료');
+  loadBotStatus();
+}
+
+/* ── 서버 스케줄러 즉시 실행(테스트/오늘 재실행) ── */
+async function runSeedNow(){
+  _botLogClear();
+  _botLog('🌱 서버에 오늘치 심기 요청 중...');
+  try{
+    var fn=firebase.app().functions('asia-northeast3').httpsCallable('seedDailyBotCommentsOnDemand');
+    var res=await fn();
+    if(res.data.skipped){ _botLog('ℹ 오늘치가 이미 있어서 건너뛰었습니다.'); }
+    else{ _botLog('✅ '+res.data.count+'건 심기 완료!'); }
+    loadBotStatus();
+  }catch(e){
+    _botLog('❌ 실패: '+(e.code||e.message));
+    alert('심기 실패: '+(e.code||e.message));
+  }
+}
+
+/* ── 봇 댓글 현황판: 실제 어디에 몇 개 심어졌는지 집계 ── */
+async function loadBotStatus(){
+  var box=document.getElementById('botStatusBox');
+  box.innerHTML='조회 중...';
+  try{
+    var db=firebase.firestore();
+    var now=Date.now();
+    var out='';
+    var grandTotal=0, grandVisible=0;
+
+    // comments: scope별 집계 (그때그시절/서재 등 공용)
+    var cSnap=await db.collection('comments').where('uid','>=','bot_').where('uid','<','bot`').get();
+    var byScope={};
+    cSnap.forEach(function(d){
+      var x=d.data();
+      var key=x.scope||'(scope 없음)';
+      if(!byScope[key]) byScope[key]={total:0,visible:0};
+      byScope[key].total++;
+      var ms=(x.ts&&x.ts.toMillis)?x.ts.toMillis():0;
+      if(ms&&ms<=now) byScope[key].visible++;
+    });
+    var scopeKeys=Object.keys(byScope).sort();
+    out+='<div style="font-weight:700;color:#fff;margin:6px 0 4px">💬 comments (그때그시절 등) — 총 '+cSnap.size+'건</div>';
+    if(!scopeKeys.length){ out+='<div style="color:#888;padding-left:8px">봇 댓글 없음</div>'; }
+    scopeKeys.forEach(function(k){
+      var s=byScope[k];
+      grandTotal+=s.total; grandVisible+=s.visible;
+      out+='<div style="padding-left:8px">· <b style="color:#fff">'+k+'</b> — 총 '+s.total+'건 (지금 노출: <span style="color:'+(s.visible>0?'#8f8':'#f88')+'">'+s.visible+'건</span>, 대기중: '+(s.total-s.visible)+'건)</div>';
+    });
+
+    // wisdom_comments: day별 집계 (오늘의 지혜)
+    var wSnap=await db.collection('wisdom_comments').where('uid','>=','bot_').where('uid','<','bot`').get();
+    var byDay={};
+    wSnap.forEach(function(d){
+      var x=d.data();
+      var key=x.day||'(day 없음)';
+      if(!byDay[key]) byDay[key]={total:0,visible:0};
+      byDay[key].total++;
+      var ms=(x.ts&&x.ts.toMillis)?x.ts.toMillis():0;
+      if(ms&&ms<=now) byDay[key].visible++;
+    });
+    var dayKeys=Object.keys(byDay).sort();
+    out+='<div style="font-weight:700;color:#fff;margin:14px 0 4px">✦ wisdom_comments (오늘의 지혜) — 총 '+wSnap.size+'건</div>';
+    if(!dayKeys.length){ out+='<div style="color:#888;padding-left:8px">봇 댓글 없음</div>'; }
+    dayKeys.forEach(function(k){
+      var s=byDay[k];
+      grandTotal+=s.total; grandVisible+=s.visible;
+      var todayMark=(k===_dayKey(new Date()))?' (오늘)':'';
+      out+='<div style="padding-left:8px">· <b style="color:#fff">'+k+todayMark+'</b> — 총 '+s.total+'건 (지금 노출: <span style="color:'+(s.visible>0?'#8f8':'#f88')+'">'+s.visible+'건</span>, 대기중: '+(s.total-s.visible)+'건)</div>';
+    });
+
+    out='<div style="margin-bottom:10px">전체 봇 댓글 '+grandTotal+'건 중 지금 화면에 보이는 것은 <b style="color:#8f8">'+grandVisible+'건</b>입니다. (나머지는 예약된 미래 시각이라 아직 안 보이는 게 정상)</div>'+out;
+    box.innerHTML=out;
+  }catch(e){
+    box.innerHTML='<span style="color:#f88">조회 실패: '+(e.code||e.message)+'</span>';
+  }
 }
 
 function submitApplication(){
@@ -2006,6 +2370,96 @@ window.delBanner=function(id){
   if(!confirm('배너를 삭제할까요?')) return;
   _db.collection('event_banners').doc(id).delete().then(loadBanners).catch(function(e){ alert(e.message); });
 };
+
+/* ── 히어로 슬라이드 (popups) ── */
+function loadSlides(){
+  var el=document.getElementById('slideList');
+  el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">불러오는 중…</div>';
+  _db.collection('popups').orderBy('ts','desc').limit(20).get().then(function(snap){
+    if(snap.empty){ el.innerHTML='<div style="color:#888;font-size:14px;padding:12px">등록된 슬라이드가 없습니다.</div>'; return; }
+    el.innerHTML=snap.docs.map(function(d){
+      var x=d.data(), active=x.active!==false;
+      var thumb = x.imageUrl ? '<div style="width:64px;height:40px;border-radius:6px;background:#000 center/cover url('+esc(x.imageUrl).replace(/'/g,'')+');flex:none"></div>'
+                             : '<div style="width:64px;height:40px;border-radius:6px;background:'+(x.color||'#33492A')+';flex:none"></div>';
+      return '<div style="background:#1a2040;border-radius:10px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:12px">'
+        +'<div style="display:flex;align-items:center;gap:12px;min-width:0">'
+        +'<span style="width:12px;height:12px;border-radius:50%;background:'+(active?'#4caf50':'#888')+';flex:none"></span>'+thumb
+        +'<div style="min-width:0"><div style="font-weight:700;color:#e8e8f0;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.title||'(제목없음)')+'</div>'
+        +(x.body?'<div style="color:#aab0c0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(x.body)+'</div>':'')
+        +(x.link?'<div style="color:#7c9cff;font-size:11px">'+esc(x.link)+'</div>':'')+'</div></div>'
+        +'<div style="display:flex;gap:6px;flex:none">'
+        +'<button onclick="toggleSlide(\''+d.id+'\','+active+')" style="border:none;background:'+(active?'#555':'#4caf50')+';color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">'+(active?'숨김':'활성')+'</button>'
+        +'<button onclick="delSlide(\''+d.id+'\')" style="border:none;background:#e05c5c;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;font-size:12px">삭제</button>'
+        +'</div></div>';
+    }).join('');
+  }).catch(function(e){ el.innerHTML='<div style="color:#ff6b6b;padding:12px">로드 실패: '+e.message+'</div>'; });
+}
+window.addSlide=function(){
+  var g=function(id){ return (document.getElementById(id).value||'').trim(); };
+  var title=g('slTitle');
+  if(!title){ alert('제목을 입력해 주세요'); return; }
+  _db.collection('popups').add({
+    title:title, body:g('slBody'), imageUrl:g('slImg'), badge:g('slBadge'),
+    link:g('slLink'), linkText:g('slLinkText'), color:'#33492A',
+    active:true, ts:firebase.firestore.FieldValue.serverTimestamp()
+  }).then(function(){
+    ['slTitle','slBody','slImg','slBadge','slLink','slLinkText'].forEach(function(id){ document.getElementById(id).value=''; });
+    loadSlides();
+  }).catch(function(e){ alert('추가 실패: '+e.message); });
+};
+window.toggleSlide=function(id,active){ _db.collection('popups').doc(id).update({active:!active}).then(loadSlides).catch(function(e){ alert(e.message); }); };
+window.delSlide=function(id){ if(!confirm('슬라이드를 삭제할까요?')) return; _db.collection('popups').doc(id).delete().then(loadSlides).catch(function(e){ alert(e.message); }); };
+
+/* ── 광고·유입 지표 (traffic_daily) ── */
+function loadTraffic(){
+  var days=parseInt((document.getElementById('trDays')||{}).value||'14',10);
+  var ids=[]; for(var i=0;i<days;i++){ ids.push(new Date(Date.now()-i*86400000).toISOString().slice(0,10)); }
+  var tiles=document.getElementById('trTiles');
+  tiles.innerHTML='<div style="color:#888;grid-column:1/-1;padding:12px">불러오는 중…</div>';
+  Promise.all(ids.map(function(id){ return _db.collection('traffic_daily').doc(id).get(); }))
+    .then(function(snaps){
+      var SRC_LABEL={naver:'네이버',google:'구글',kakao:'카카오/다음',sns:'SNS',direct:'직접·기타'};
+      var EV_LABEL={visit:'방문',subscribe_view:'구독 조회',memoir_start:'자서전 시작',family_view:'가족리포트 열람',share_click:'공유 클릭',share_open:'공유 완료'};
+      var tot={}, ev={}, src={}, camp={}, evsrc={}, byDay=[];
+      snaps.forEach(function(s,i){
+        var d=s.exists?s.data():{}; var vTotal=d.total||0;
+        byDay.push({ day:ids[i], total:vTotal, sub:(d.ev&&d.ev.subscribe_view)||0, visit:(d.ev&&d.ev.visit)||0 });
+        function acc(dst,obj){ if(!obj) return; Object.keys(obj).forEach(function(k){ dst[k]=(dst[k]||0)+obj[k]; }); }
+        tot.total=(tot.total||0)+vTotal; acc(ev,d.ev); acc(src,d.src); acc(camp,d.camp); acc(evsrc,d.evsrc);
+      });
+      // 상단 타일
+      function tile(n,l,c){ return '<div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:16px"><div style="font-size:26px;font-weight:800;color:'+(c||'#e8e8f0')+'">'+(n||0).toLocaleString()+'</div><div style="font-size:12px;color:#aab0c0;margin-top:4px">'+l+'</div></div>'; }
+      var visits=ev.visit||0, subv=ev.subscribe_view||0;
+      tiles.innerHTML = tile(visits,'방문(세션)','#7c9cff') + tile(ev.memoir_start,'자서전 시작','#4caf50')
+        + tile(subv,'구독 조회','#f5c842') + tile(ev.family_view,'가족리포트 열람','#13d3a6')
+        + tile((ev.share_click||0),'공유 클릭','#e29a3c') + tile(visits?Math.round(subv/visits*100)+'%':'0%','구독전환율','#ff7ab6');
+      // 소스별
+      function rows(obj,labelMap,extra){
+        var keys=Object.keys(obj).sort(function(a,b){ return obj[b]-obj[a]; });
+        if(!keys.length) return '<div style="color:#888;font-size:13px;padding:10px">데이터 없음</div>';
+        var max=obj[keys[0]]||1;
+        return '<div style="display:flex;flex-direction:column;gap:6px">'+keys.map(function(k){
+          var v=obj[k], ex=extra?extra(k,v):'';
+          return '<div style="display:flex;align-items:center;gap:10px;background:#161a24;border-radius:8px;padding:9px 12px">'
+            +'<div style="width:120px;flex:none;color:#e8e8f0;font-size:13px;font-weight:700">'+esc((labelMap&&labelMap[k])||k)+'</div>'
+            +'<div style="flex:1;background:#242838;border-radius:5px;height:10px;overflow:hidden"><div style="height:100%;width:'+Math.round(v/max*100)+'%;background:#7c9cff"></div></div>'
+            +'<div style="width:56px;text-align:right;color:#aab0c0;font-size:13px">'+v.toLocaleString()+'</div>'+ex+'</div>';
+        }).join('')+'</div>';
+      }
+      document.getElementById('trBySource').innerHTML=rows(src,SRC_LABEL,function(k){
+        var v=(evsrc['visit__'+k]||src[k]||0), sv=(evsrc['subscribe_view__'+k]||0);
+        return '<div style="width:58px;text-align:right;color:#f5c842;font-size:12px">'+(v?Math.round(sv/v*100):0)+'%</div>';
+      });
+      document.getElementById('trByCamp').innerHTML = Object.keys(camp).length ? rows(camp) : '<div style="color:#888;font-size:13px;padding:10px">캠페인(utm_campaign) 데이터 없음</div>';
+      // 날짜별
+      document.getElementById('trByDay').innerHTML='<div style="display:flex;flex-direction:column;gap:4px">'+byDay.map(function(r){
+        return '<div style="display:flex;gap:12px;background:#161a24;border-radius:8px;padding:8px 12px;font-size:13px">'
+          +'<span style="width:90px;color:#aab0c0">'+r.day.slice(5)+'</span>'
+          +'<span style="color:#7c9cff;width:80px">방문 '+r.visit+'</span>'
+          +'<span style="color:#f5c842">구독조회 '+r.sub+'</span></div>';
+      }).join('')+'</div>';
+    }).catch(function(e){ tiles.innerHTML='<div style="color:#ff6b6b;grid-column:1/-1;padding:12px">로드 실패: '+e.message+'</div>'; });
+}
 
 /* ══════════════════════════════════════════
    쿠폰 관리
