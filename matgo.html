@@ -369,7 +369,58 @@ function renderStats(){
   var el=document.getElementById('myStats'); if(!el) return;
   var L=levelOf(STATS.points);
   el.textContent='🏅 Lv.'+L.lv+' '+L.name+' · '+STATS.points+'P · '+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')
-    +(L.next!==null?' · 다음 레벨까지 '+(L.next-STATS.points)+'P':'');
+    +(L.next!==null?' · 다음 레벨까지 '+(L.next-STATS.points)+'P':'')
+    +(IS_PREMIUM?'':' · 오늘 '+playsToday()+'/'+DAILY_CAP+'판');
+}
+
+/* ══════════════════════════════════════════════════════════
+   하루 플레이 제한 (2026-07-17 Macho 확정)
+   1판 평균 2분 × 10판 = 20분. 그 이상은 목·눈 피로 → 봄이가 건강을 걱정하며 오늘을 마무리.
+   ★프리미엄(users.subscribed)은 무제한. 결제 오픈 전이라 지금은 전원 제한(천장은 결제 후 열림).
+   ★포인트로 판수를 더 사게 하지 않는다 — "건강 걱정돼요" 해놓고 "포인트 내면 더 됨"이면 돌봄이 가짜가 됨.
+   ══════════════════════════════════════════════════════════ */
+var DAILY_CAP=10;
+var IS_PREMIUM=false;
+function todayKey(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); } // 기기 로컬(KST) 기준 — UTC면 오전 9시에 날짜가 바뀜
+var PLAYS={d:'',n:0};
+try{ var _p=JSON.parse(localStorage.getItem('matgo_plays')); if(_p&&_p.d) PLAYS=_p; }catch(e){}
+function playsToday(){ if(PLAYS.d!==todayKey()) PLAYS={d:todayKey(),n:0}; return PLAYS.n; }
+function savePlays(){
+  try{ localStorage.setItem('matgo_plays',JSON.stringify(PLAYS)); }catch(e){}
+  statsFB().then(function(uid){
+    if(!uid) return;
+    firebase.firestore().collection('game_stats').doc(uid)
+      .set({ matgoPlays: PLAYS }, { merge:true }).catch(function(){});
+  });
+}
+function bumpPlays(){ playsToday(); PLAYS.n++; savePlays(); renderStats(); }
+function mHonor(){ try{ return localStorage.getItem('dasibom_honorific')||'할배'; }catch(e){ return '할배'; } }
+function canPlay(){ return IS_PREMIUM || playsToday()<DAILY_CAP; }
+// 봄이가 건강을 걱정하며 오늘을 접는 안내 (혼내는 게 아니라 챙기는 톤)
+function showDailyLimit(){
+  modal('🌸 오늘은 여기까지 해요',
+    '<span class="big">🍵</span>'+
+    '아이고 '+mHonor()+', 벌써 열 판이나 치셨어요!<br>이렇게 오래 앉아 계시면 목도 뻐근하시고 눈도 침침해지세요.<br><br>'+
+    '저랑은 오늘 딱 여기까지만 하시고, <b>내일 또 치시죠</b>.<br>제가 여기서 기다리고 있을게요 🌸',
+    [{label:'그래, 내일 또 보자', fn:function(){ location.href='/'; }},
+     {label:'다른 놀거리 구경', sub:true, fn:function(){ location.href='/'; }}]);
+}
+// 새 판은 반드시 이 문을 통과 (첫 진입·다시 하기·한 판 더 모두)
+function tryNewGame(){
+  if(!canPlay()){ showDailyLimit(); return; }
+  bumpPlays();
+  newGame();
+}
+// 프리미엄 여부 조회(비동기) — 10판째 이전에 도착하므로 게이트에 지장 없음.
+// ★반드시 statsFB 정의(_statsFbReady 초기화) 이후에 호출할 것 → 스크립트 맨 아래에서 실행.
+function loadPremium(){
+  statsFB().then(function(uid){
+    if(!uid) return;
+    firebase.firestore().collection('users').doc(uid).get().then(function(d){
+      IS_PREMIUM = !!(d.exists && d.data().subscribed===true);
+      renderStats();
+    }).catch(function(){});
+  });
 }
 // Firebase 지연 로드(정산 때만 필요) + 익명 로그인. 실패해도 게임엔 지장 없음
 var _statsFbReady=null;
@@ -1378,7 +1429,7 @@ function endGame(winner){
   if(winner===null){
     STATS.draws++; STATS.points+=1; saveStats(); // 참가 포인트
     modal('나가리', '둘 다 점수를 내지 못했어요.<span class="big">😅</span>무승부입니다!<br><span style="font-size:13px;color:var(--muted)">참가 포인트 +1P</span>',
-      [{label:'다시 하기',fn:newGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
+      [{label:'다시 하기',fn:tryNewGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
     return;
   }
   var w=G[winner], l=G[winner==='me'?'ai':'me'];
@@ -1418,13 +1469,14 @@ function endGame(winner){
     '<tr><td><b>최종</b></td><td><b>'+total+'점</b></td></tr></table>'+
     ptLine+
     (isMe?'대단하세요! 한 판 더 어떠세요?':'봄이가 운이 좋았네요. 복수전 가시죠!'),
-    [{label:'한 판 더!',fn:newGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
+    [{label:'한 판 더!',fn:tryNewGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
 }
 
 document.getElementById('sndBtn').textContent=SND_ON?'🔊':'🔇';
 document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
 renderStats();
-newGame();
+loadPremium();   // statsFB 정의 이후에 호출(위 주석 참고)
+tryNewGame();
 </script>
 <script src="/dasibom-share.js?v=1"></script>
 </body>
