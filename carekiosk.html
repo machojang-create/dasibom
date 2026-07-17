@@ -468,5 +468,12 @@ function showConsent(s){
   };
 }
 </script>
+<script src="/dasibom-bompop.js"></script>
+<script>
+  // 팝업 좌측 상단에 봄이가 걸쳐 등장(브랜딩 공용 규칙)
+  BomPop.bind({ overlay:'#startModal', box:'.mbox', face:'bom_smile' }); // 대화 시작
+  BomPop.bind({ overlay:'#seniorModal', box:'.mbox', face:'bom_smile' }); // 어르신 등록
+  BomPop.bind({ overlay:'#consentModal', box:'.mbox', face:'bom_calm' }); // 동의 확인
+</script>
 </body>
 </html>

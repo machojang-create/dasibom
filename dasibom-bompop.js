@@ -10,8 +10,12 @@
    사용법(페이지당 두 줄):
      <script src="/dasibom-bompop.js"></script>
      <script>BomPop.bind({ overlay:'#mmOverlay', box:'.mm-box', face:'bom_smile' });</script>
-   opts: overlay(열림을 나타내는 요소) · box(모서리를 따라갈 상자) · openClass(기본 'on')
+   opts: overlay(팝업 오버레이) · box(모서리를 따라갈 상자)
          · face(bom_smile·bom_grin·bom_wink·bom_calm …) · offset {x,y}
+         · openClass(선택) — 지정하면 그 클래스로 열림 판정
+   ★열림 판정 기본값 = "보이면 열린 것"(실측 가시성). 페이지마다 여는 방식이
+     제각각이라('on'/'active'/'open'/style.display, library는 'hidden'이라 반대)
+     클래스명을 외우면 깨진다. 결국 다 '보이게 되는' 것이므로 가시성으로 통일.
    ══════════════════════════════════════════════════════════ */
 (function () {
   if (window.BomPop) return;
@@ -28,6 +32,19 @@
     '@media (prefers-reduced-motion:reduce){.dsb-bompop{transition:none}}';
 
   var el = null, imgEl = null, curBox = null, raf = null;
+
+  /* "보이면 열린 것" — 클래스/스타일 무엇으로 열든 결국 화면에 나타난다는 사실만 본다.
+     ★opacity는 일부러 보지 않는다: 팝업들이 페이드인 애니메이션(예: index .story-modal의
+       smFade 0→1)을 쓰는데, 클래스가 바뀌는 순간의 opacity는 아직 0이라 '닫힘'으로 오판한다.
+       클래스 변경은 그때 한 번뿐이라 이후 영영 안 뜬다. 바인딩 대상은 모두 display로 여닫으므로
+       display·visibility·크기만으로 충분하다. */
+  function isVisible(node) {
+    if (!node) return false;
+    var cs = getComputedStyle(node);
+    if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+    var r = node.getBoundingClientRect();
+    return r.width > 1 && r.height > 1;
+  }
 
   function ensure() {
     if (el) return;
@@ -74,12 +91,12 @@
     /* 오버레이의 열림(클래스 토글)을 지켜보다가 자동으로 붙였다 뗀다 */
     bind: function (opts) {
       opts = opts || {};
-      var openClass = opts.openClass || 'on';
       function start() {
         var ov = typeof opts.overlay === 'string' ? document.querySelector(opts.overlay) : opts.overlay;
         if (!ov) return;
         function sync() {
-          var open = ov.classList.contains(openClass);
+          // 기본은 가시성 판정. openClass를 준 곳만 클래스로 판정.
+          var open = opts.openClass ? ov.classList.contains(opts.openClass) : isVisible(ov);
           // ★박스는 반드시 이 오버레이 안에서 찾는다 — 한 페이지에 같은 클래스(.mm-box 등)를
           //   쓰는 팝업이 여러 개라 document 전역에서 찾으면 숨겨진 다른 팝업을 잡는다.
           var box = typeof opts.box === 'string' ? ov.querySelector(opts.box) : opts.box;
