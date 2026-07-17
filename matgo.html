@@ -121,11 +121,6 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .mm-title{font-family:'Nanum Myeongjo',serif;font-size:22px;font-weight:800;color:var(--sage-deep);margin-bottom:10px}
 .mm-body{font-size:15px;line-height:1.75;color:var(--ink-2);margin-bottom:16px}
 .mm-body .big{font-size:34px;display:block;margin:6px 0}
-/* 팝업에 등장하는 봄이 — 금색 링에 담긴 밝은 얼굴(다시봄 공용 봄이 표기 규칙과 동일: 원형·위쪽 기준 크롭) */
-.mm-body .bom-pop{width:92px;height:92px;margin:2px auto 12px;border-radius:50%;padding:3px;
-  background:conic-gradient(from 210deg,#E3CE9C,#C9A961 40%,#F0E3C2 60%,#C9A961 85%,#E3CE9C);
-  box-shadow:0 12px 26px -12px rgba(90,70,20,.5)}
-.mm-body .bom-pop img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;background:#fff;border:2.5px solid #fff;display:block}
 .mm-btn{display:block;width:100%;min-height:50px;border:none;border-radius:14px;background:var(--sage);color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px}
 .mm-btn.sub{background:#fff;border:1.5px solid var(--cream-2);color:var(--muted)}
 .mm-score-table{width:100%;font-size:14px;margin:10px 0;border-collapse:collapse}
@@ -406,14 +401,11 @@ function bumpPlays(){ playsToday(); PLAYS.n++; savePlays(); renderStats(); }
    늦게(Firestore) 도착해도 그때부터 정확히 불림. */
 function mHonor(){ try{ return localStorage.getItem('dasibom_honorific')||'어르신'; }catch(e){ return '어르신'; } }
 function fillHonor(t){ return String(t==null?'':t).replace(/\{호칭\}/g, mHonor()); }
-// 팝업(모달) 안에 봄이 얼굴을 세운다 — 봄이가 안내자로 등장하는 자리엔 이걸 쓸 것.
-// face: bom_smile(밝음)·bom_grin·bom_calm(차분)·bom_wink 등 /img/*.png
-function bomPop(face){ return '<span class="bom-pop"><img src="/img/'+(face||'bom_smile')+'.png" alt="봄이"></span>'; }
+// (봄이 팝업 등장은 공용 모듈 dasibom-bompop.js가 담당 — 모달 좌측 상단에 걸쳐 등장)
 function canPlay(){ return IS_PREMIUM || playsToday()<DAILY_CAP; }
 // 봄이가 건강을 걱정하며 오늘을 접는 안내 (혼내는 게 아니라 챙기는 톤)
 function showDailyLimit(){
   modal('🌸 오늘은 여기까지 해요',
-    bomPop('bom_smile')+
     '아이고 '+mHonor()+', 벌써 열 판이나 치셨어요!<br>이렇게 오래 앉아 계시면 목도 뻐근하시고 눈도 침침해지세요.<br><br>'+
     '저랑은 오늘 딱 여기까지만 하시고, <b>내일 또 치시죠</b>.<br>제가 여기서 기다리고 있을게요 🌸',
     [{label:'그래, 내일 또 보자', fn:function(){ location.href='/'; }},
@@ -1505,5 +1497,12 @@ loadPremium();   // statsFB 정의 이후에 호출(위 주석 참고)
 tryNewGame();
 </script>
 <script src="/dasibom-share.js?v=1"></script>
+<script src="/dasibom-bompop.js"></script>
+<script>
+// 맞고의 팝업 3종 모두에 봄이가 좌측 상단으로 고개를 내민다(브랜딩 통일)
+BomPop.bind({ overlay:'#mmOverlay',   box:'.mm-box', face:'bom_smile' }); // 결과·안내
+BomPop.bind({ overlay:'#chOverlay',   box:'.mm-box', face:'bom_grin'  }); // 고/스톱 선택
+BomPop.bind({ overlay:'#toneOverlay', box:'.mm-box', face:'bom_wink'  }); // 봄이 말투 고르기
+</script>
 </body>
 </html>
