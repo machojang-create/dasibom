@@ -54,6 +54,43 @@ header{position:sticky;top:0;background:rgba(247,243,234,.95);backdrop-filter:bl
 .cta[disabled]{opacity:.92;cursor:default}
 .soon{margin-top:12px;font-size:13px;color:rgba(243,239,226,.7)}
 
+/* ── 요금제 2단계 ── */
+.plans{margin-top:26px;display:flex;flex-direction:column;gap:14px}
+.plan{background:var(--paper);border:1.5px solid var(--line);border-radius:22px;padding:22px 20px;box-shadow:0 12px 30px -22px rgba(60,50,20,.5);position:relative}
+.plan.featured{border-color:var(--gold);box-shadow:0 16px 40px -18px rgba(160,120,40,.5)}
+.plan .tag{position:absolute;top:-11px;left:20px;background:linear-gradient(145deg,#D6B35F,#B8912F);color:#241B06;font-size:12px;font-weight:800;padding:5px 13px;border-radius:50px}
+.plan .pn{font-family:var(--serif);font-size:21px;font-weight:800;color:var(--sage-deep)}
+.plan .pp{margin-top:6px;display:flex;align-items:baseline;gap:3px}
+.plan .pp b{font-family:var(--serif);font-size:34px;font-weight:800;color:var(--ink)}
+.plan .pp span{font-size:15px;font-weight:700;color:var(--sub)}
+.plan .pd{margin-top:4px;font-size:13px;color:var(--faint)}
+.plan ul{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:9px}
+.plan li{font-size:14.5px;color:var(--ink);line-height:1.5;word-break:keep-all;padding-left:26px;position:relative}
+.plan li::before{content:'✓';position:absolute;left:2px;top:0;color:var(--sage);font-weight:800}
+.plan li.pro::before{content:'★';color:var(--gold-deep)}
+.plan .pick{display:block;width:100%;margin-top:18px;border:none;border-radius:50px;font-family:inherit;font-weight:800;font-size:16px;padding:15px;cursor:pointer}
+.plan .pick.basic{background:#EAF2E2;color:var(--sage-deep)}
+.plan .pick.prem{background:linear-gradient(145deg,#4B6B3B,#33492A);color:#F5F1E8}
+
+/* ── 결제화면 ── */
+.checkout{margin-top:6px}
+.co-back{background:none;border:none;color:var(--sage);font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;padding:6px 0;margin-bottom:10px}
+.co-title{font-family:var(--serif);font-size:24px;font-weight:800;color:var(--sage-deep);margin-bottom:16px}
+.co-sum{background:linear-gradient(150deg,#3B5730,#2C3F24);border-radius:20px;padding:22px 22px;color:#F3EFE2}
+.co-sum .r{display:flex;justify-content:space-between;align-items:center;font-size:15px;padding:5px 0}
+.co-sum .r.big{font-size:17px;font-weight:800;border-top:1px solid rgba(243,239,226,.2);margin-top:8px;padding-top:14px}
+.co-sum .r.big b{font-family:var(--serif);font-size:26px}
+.co-sum .note{margin-top:12px;font-size:12.5px;color:rgba(243,239,226,.7);line-height:1.6;word-break:keep-all}
+.agrees{margin-top:18px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:8px 16px}
+.agree{display:flex;align-items:flex-start;gap:11px;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink);cursor:pointer;line-height:1.5}
+.agree:last-child{border-bottom:none}
+.agree input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:var(--sage)}
+.agree a{color:var(--sage);font-weight:700}
+.agree .req{color:#B23A2E;font-weight:800}
+.pay-methods{margin-top:16px;font-size:13.5px;color:var(--sub);text-align:center}
+.pay-btn{display:block;width:100%;margin-top:12px;border:none;border-radius:50px;font-family:inherit;font-weight:800;font-size:18px;padding:17px;cursor:pointer;background:linear-gradient(145deg,#D6B35F,#B8912F);color:#241B06;box-shadow:0 14px 30px -14px rgba(160,120,30,.7);transition:opacity .2s}
+.pay-btn:disabled{opacity:.45;cursor:default;box-shadow:none}
+
 .disclose{margin-top:26px;background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:18px 20px}
 .disclose h4{font-size:13px;font-weight:800;color:var(--gold-deep);letter-spacing:.06em;margin-bottom:10px}
 .disclose ul{list-style:none;display:flex;flex-direction:column;gap:8px}
@@ -96,11 +133,50 @@ header{position:sticky;top:0;background:rgba(247,243,234,.95);backdrop-filter:bl
     </div>
   </div>
 
-  <div class="price">
-    <div class="amt">4,900<small>원 / 월</small></div>
-    <div class="sub">하루 163원. 부모님께 매일 말동무 한 명을 선물하는 값이에요.</div>
-    <button class="cta" id="ctaBtn" disabled>결제 준비 중이에요</button>
-    <div class="soon">곧 만나요 — 구독은 준비가 끝나는 대로 열립니다.</div>
+  <!-- 요금제 선택 -->
+  <div class="plans" id="plansView">
+    <div class="plan">
+      <div class="pn">기본</div>
+      <div class="pp"><b>4,900</b><span>원 / 월</span></div>
+      <div class="pd">하루 163원 · 부모님께 매일 말동무 한 명</div>
+      <ul>
+        <li>나를 기억해 주는 말동무</li>
+        <li>매일 자라나는 인생 자서전</li>
+        <li>자녀에게 가는 매주 소식</li>
+      </ul>
+      <button class="pick basic" data-plan="basic">기본으로 시작하기</button>
+    </div>
+    <div class="plan featured">
+      <div class="tag">곧 공개</div>
+      <div class="pn">프리미엄</div>
+      <div class="pp"><b>준비 중</b></div>
+      <div class="pd">기본의 모든 것에 프리미엄 콘텐츠를 더한 요금제를 준비하고 있어요.</div>
+      <ul>
+        <li>기본 요금제의 모든 혜택</li>
+        <li class="pro">오디오 방송(삼국지·조선야사 등) 다시듣기 <b>(예정)</b></li>
+        <li class="pro">앞으로 추가되는 프리미엄 콘텐츠 <b>(예정)</b></li>
+      </ul>
+      <button class="pick prem" data-plan="premium" disabled style="opacity:.6;cursor:default">준비 중이에요</button>
+    </div>
+  </div>
+
+  <!-- 결제화면 (요금제 선택 시 표시) -->
+  <div class="checkout" id="checkoutView" style="display:none">
+    <button class="co-back" id="coBack">‹ 요금제 다시 고르기</button>
+    <div class="co-title">주문 확인</div>
+    <div class="co-sum">
+      <div class="r"><span id="coPlanName">기본 구독</span><span id="coCycle">매월 자동결제</span></div>
+      <div class="r big"><span>월 이용요금</span><b id="coPrice">4,900원</b></div>
+      <div class="note">첫 결제 후 매월 같은 날 자동 갱신됩니다. 언제든 해지할 수 있고, 해지하면 다음 결제부터 청구되지 않아요. 부가세 포함.</div>
+    </div>
+    <div class="agrees">
+      <label class="agree"><input type="checkbox" class="ag-req"><span><b class="req">[필수]</b> <a href="/terms" target="_blank">이용약관</a> 및 <a href="/privacy" target="_blank">개인정보처리방침</a>에 동의합니다.</span></label>
+      <label class="agree"><input type="checkbox" class="ag-req"><span><b class="req">[필수]</b> 정기결제(자동갱신)와 <a href="/refund" target="_blank">취소·환불 정책</a>에 동의합니다.</span></label>
+      <label class="agree"><input type="checkbox" class="ag-req"><span><b class="req">[필수]</b> 디지털 콘텐츠는 이용 개시 후 청약철회가 제한될 수 있음을 확인했습니다.</span></label>
+    </div>
+    <div class="pay-methods">결제 수단: 신용·체크카드 (결제대행 PortOne 예정)</div>
+    <button class="pay-btn" id="payBtn" disabled>결제하기</button>
+    <div class="soon" style="color:var(--faint);text-align:center;margin-top:12px">🌱 결제 기능은 곧 열립니다. 지금은 미리 둘러보실 수 있어요.</div>
   </div>
 
   <div class="freenote">
@@ -119,7 +195,7 @@ header{position:sticky;top:0;background:rgba(247,243,234,.95);backdrop-filter:bl
   <div class="disclose">
     <h4>결제 전 꼭 확인해 주세요</h4>
     <ul>
-      <li>상품: 다시봄 월 구독(정기결제) · 이용요금 <b>월 4,900원</b>(부가세 포함)</li>
+      <li>상품: 다시봄 월 구독(정기결제) · 이용요금 <b>기본 월 4,900원</b>(부가세 포함) · 프리미엄 요금제 준비 중</li>
       <li>결제일에 <b>매월 자동 갱신</b>되며, 언제든 해지할 수 있어요. 해지하면 다음 결제부터 청구되지 않아요.</li>
       <li>구독은 디지털 콘텐츠로 결제 즉시 이용이 시작돼, 이용 개시 후에는 청약철회가 제한될 수 있어요.</li>
       <li>취소·환불 기준은 <a href="/refund">취소·환불 정책</a>을, 전체 조건은 <a href="/terms">이용약관</a>을 확인해 주세요.</li>
@@ -134,6 +210,42 @@ header{position:sticky;top:0;background:rgba(247,243,234,.95);backdrop-filter:bl
 </div>
 <script src="/dasibom-bizinfo.js?v=1"></script>
 <script src="/dasibom-share.js?v=1"></script>
-<script>try{ if(window.DasibomShare) DasibomShare.track('subscribe_view'); else window.addEventListener('load',function(){ window.DasibomShare&&DasibomShare.track('subscribe_view'); }); }catch(e){}</script>
+<script>
+(function(){
+  function track(ev){ try{ window.DasibomShare && DasibomShare.track(ev); }catch(e){} }
+  // 페이지 열람 집계
+  if(window.DasibomShare) track('subscribe_view'); else window.addEventListener('load',function(){ track('subscribe_view'); });
+
+  var PLANS={ basic:{name:'기본 구독', price:'4,900원'}, premium:{name:'프리미엄 구독', price:'9,900원'} };
+  var plansView=document.getElementById('plansView'), checkoutView=document.getElementById('checkoutView');
+  function toCheckout(plan){
+    var p=PLANS[plan]||PLANS.basic;
+    document.getElementById('coPlanName').textContent=p.name;
+    document.getElementById('coPrice').textContent=p.price;
+    plansView.style.display='none'; checkoutView.style.display='';
+    window.scrollTo({top:0,behavior:'smooth'});
+    track('checkout_view');
+  }
+  [].forEach.call(document.querySelectorAll('.pick'),function(b){
+    b.addEventListener('click',function(){ toCheckout(b.getAttribute('data-plan')); });
+  });
+  document.getElementById('coBack').addEventListener('click',function(){
+    checkoutView.style.display='none'; plansView.style.display=''; window.scrollTo({top:0,behavior:'smooth'});
+  });
+  // 필수 동의 모두 체크되면 결제 버튼 활성
+  var reqs=[].slice.call(document.querySelectorAll('.ag-req')), payBtn=document.getElementById('payBtn');
+  function refresh(){ payBtn.disabled = !reqs.every(function(c){ return c.checked; }); }
+  reqs.forEach(function(c){ c.addEventListener('change',refresh); });
+  // 결제하기 — PortOne 미연동. 실제 청구 없음(미끼 금지). 연동 시 이 자리에서 결제창 호출.
+  payBtn.addEventListener('click',function(){
+    if(payBtn.disabled) return;
+    if(window.DasibomShare && DasibomShare.share){ /* no-op */ }
+    var t=document.createElement('div');
+    t.textContent='🌱 결제 기능은 곧 열려요. 준비되면 가장 먼저 알려드릴게요.';
+    t.style.cssText='position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:#22301E;color:#F5F1E8;padding:15px 24px;border-radius:50px;font-size:15px;font-weight:700;z-index:9999;box-shadow:0 12px 28px -12px rgba(0,0,0,.5);max-width:90vw;text-align:center;font-family:inherit';
+    document.body.appendChild(t); setTimeout(function(){ t.remove(); },3200);
+  });
+})();
+</script>
 </body>
 </html>

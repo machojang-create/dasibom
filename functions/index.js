@@ -843,22 +843,25 @@ exports.familyReport = functions
 //   갔는지 서버에서 집계. 클라가 traffic_daily를 직접 못 쓰게(조작 방지) 함수로만.
 //   개인정보 저장 안 함 — 익명 집계 카운터만.
 // ════════════════════════════════════════
-const TRAFFIC_EVENTS = ['visit', 'memoir_start', 'subscribe_view', 'family_view', 'share_click', 'share_open'];
+const TRAFFIC_EVENTS = ['visit', 'memoir_start', 'subscribe_view', 'checkout_view', 'family_view', 'share_click', 'share_open'];
 exports.logTraffic = functions
   .region('asia-northeast3')
   .runWith({ timeoutSeconds: 10, memory: '128MB' })
   .https.onCall(async (data) => {
     const ev = String((data && data.event) || '');
     if (TRAFFIC_EVENTS.indexOf(ev) < 0) return { ok: false };
-    const src = String((data && data.src) || 'direct').slice(0, 40).replace(/[^\w.\-가-힣]/g, '') || 'direct';
-    const camp = String((data && data.camp) || '').slice(0, 40).replace(/[^\w.\-가-힣]/g, '');
+    const clean = (v) => String(v || '').slice(0, 40).replace(/[^\w.\-가-힣]/g, '');
+    const src = clean((data && data.src) || 'direct') || 'direct';
+    const med = clean(data && data.med);   // utm_medium: cpc(광고)·organic·social 등 — 같은 소스의 유·무료 구분
+    const camp = clean(data && data.camp);
     const day = new Date().toISOString().slice(0, 10);
     const inc = admin.firestore.FieldValue.increment(1);
     const upd = {};
     upd['total'] = inc;
     upd['ev.' + ev] = inc;
-    upd['src.' + (src || 'direct')] = inc;
-    upd['evsrc.' + ev + '__' + (src || 'direct')] = inc;   // 이벤트×소스 교차(전환율 계산용)
+    upd['src.' + src] = inc;
+    upd['evsrc.' + ev + '__' + src] = inc;   // 이벤트×소스 교차(전환율 계산용)
+    if (med) upd['med.' + med] = inc;
     if (camp) upd['camp.' + camp] = inc;
     upd['updatedAt'] = admin.firestore.FieldValue.serverTimestamp();
     try {

@@ -707,9 +707,11 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     <button onclick="loadTraffic()" style="padding:8px 16px;background:#7c9cff;border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer">새로고침</button>
   </div>
   <div id="trTiles" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:22px"></div>
-  <div class="stats-section-title" style="font-size:13px">유입 소스별 (방문 → 구독보기 전환)</div>
+  <div class="stats-section-title" style="font-size:13px">유입 채널별 (소스 · 방문 → 구독조회 전환율)</div>
   <div id="trBySource" style="margin-bottom:22px"></div>
-  <div class="stats-section-title" style="font-size:13px">캠페인별 방문</div>
+  <div class="stats-section-title" style="font-size:13px">매체별 (utm_medium · 광고 cpc vs 자연유입 구분)</div>
+  <div id="trByMed" style="margin-bottom:22px"></div>
+  <div class="stats-section-title" style="font-size:13px">캠페인별 방문 (utm_campaign)</div>
   <div id="trByCamp" style="margin-bottom:22px"></div>
   <div class="stats-section-title" style="font-size:13px">날짜별</div>
   <div id="trByDay"></div>
@@ -2420,12 +2422,12 @@ function loadTraffic(){
     .then(function(snaps){
       var SRC_LABEL={naver:'네이버',google:'구글',kakao:'카카오/다음',sns:'SNS',direct:'직접·기타'};
       var EV_LABEL={visit:'방문',subscribe_view:'구독 조회',memoir_start:'자서전 시작',family_view:'가족리포트 열람',share_click:'공유 클릭',share_open:'공유 완료'};
-      var tot={}, ev={}, src={}, camp={}, evsrc={}, byDay=[];
+      var tot={}, ev={}, src={}, med={}, camp={}, evsrc={}, byDay=[];
       snaps.forEach(function(s,i){
         var d=s.exists?s.data():{}; var vTotal=d.total||0;
         byDay.push({ day:ids[i], total:vTotal, sub:(d.ev&&d.ev.subscribe_view)||0, visit:(d.ev&&d.ev.visit)||0 });
         function acc(dst,obj){ if(!obj) return; Object.keys(obj).forEach(function(k){ dst[k]=(dst[k]||0)+obj[k]; }); }
-        tot.total=(tot.total||0)+vTotal; acc(ev,d.ev); acc(src,d.src); acc(camp,d.camp); acc(evsrc,d.evsrc);
+        tot.total=(tot.total||0)+vTotal; acc(ev,d.ev); acc(src,d.src); acc(med,d.med); acc(camp,d.camp); acc(evsrc,d.evsrc);
       });
       // 상단 타일
       function tile(n,l,c){ return '<div style="background:#1a1d27;border:1px solid #2a2d3a;border-radius:12px;padding:16px"><div style="font-size:26px;font-weight:800;color:'+(c||'#e8e8f0')+'">'+(n||0).toLocaleString()+'</div><div style="font-size:12px;color:#aab0c0;margin-top:4px">'+l+'</div></div>'; }
@@ -2450,6 +2452,8 @@ function loadTraffic(){
         var v=(evsrc['visit__'+k]||src[k]||0), sv=(evsrc['subscribe_view__'+k]||0);
         return '<div style="width:58px;text-align:right;color:#f5c842;font-size:12px">'+(v?Math.round(sv/v*100):0)+'%</div>';
       });
+      var MED_LABEL={cpc:'광고(cpc)',organic:'자연 검색',social:'소셜',referral:'외부 링크',email:'이메일'};
+      document.getElementById('trByMed').innerHTML = Object.keys(med).length ? rows(med,MED_LABEL) : '<div style="color:#888;font-size:13px;padding:10px">매체(utm_medium) 데이터 없음 — 광고 링크에 &utm_medium=cpc 를 붙이면 잡힙니다</div>';
       document.getElementById('trByCamp').innerHTML = Object.keys(camp).length ? rows(camp) : '<div style="color:#888;font-size:13px;padding:10px">캠페인(utm_campaign) 데이터 없음</div>';
       // 날짜별
       document.getElementById('trByDay').innerHTML='<div style="display:flex;flex-direction:column;gap:4px">'+byDay.map(function(r){

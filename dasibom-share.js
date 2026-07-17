@@ -52,7 +52,7 @@
   // firebase functions 준비되면 logTraffic 호출(최대 ~8초 대기). 없으면 스킵.
   function callLog(event) {
     var ft = firstTouch();
-    var payload = { event: event, src: ft.src || 'direct', camp: ft.camp || '' };
+    var payload = { event: event, src: ft.src || 'direct', med: ft.med || '', camp: ft.camp || '' };
     var tries = 0;
     (function go() {
       try {
