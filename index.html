@@ -1610,6 +1610,11 @@
   </div>
 </section>
 
+<!-- 다시봄 꽃잎(포인트) — 잔액 + 친구 초대(공유) -->
+<section style="background:var(--cream);padding:8px 0 40px">
+  <div class="wrap"><div id="dsbPointsCard"></div></div>
+</section>
+
 <!-- 그때 그 시절 미리보기 -->
 <section class="ns-prev" id="ns-prev-section">
   <div class="wrap">
@@ -1937,9 +1942,11 @@
 <script src="/dasibom-share.js?v=1"></script>
 <script src="/dasibom-points.js?v=1"></script>
 <script>
-  // 홈 방문 = 일일 출석 포인트(하루 1회). ?ref= 공유 유입은 dasibom-points.js가 자동 처리.
-  try{ if(window.DasibomPoints) DasibomPoints.earn('attend');
-       else window.addEventListener('load',function(){ window.DasibomPoints&&DasibomPoints.earn('attend'); }); }catch(e){}
+  // 홈 방문 = 일일 출석 꽃잎(하루 1회). ?ref= 공유 유입은 dasibom-points.js가 자동 처리.
+  (function(){
+    function go(){ if(!window.DasibomPoints) return false; DasibomPoints.earn('attend'); DasibomPoints.card('dsbPointsCard'); return true; }
+    if(!go()) window.addEventListener('load',go);
+  })();
 </script>
 
 <!-- 로그인 모달 -->

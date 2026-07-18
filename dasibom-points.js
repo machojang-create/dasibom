@@ -17,6 +17,26 @@
 (function () {
   if (window.DasibomPoints) return;
 
+  /* ★화폐 이름·아이콘 — 여기 한 줄만 바꾸면 전 페이지 반영.
+     후보 아이콘: 🌸(분홍) 🌼(노랑) 🌷 🏵️ 💮 / 이름: 꽃잎·봄씨앗 등 */
+  var POINT_NAME = '꽃잎';
+  var POINT_ICON = '🌸';
+  var _refUrl = null;   // 공유 링크 캐시(클릭 시 동기 공유용)
+
+  // 실제 공유/복사 — 반드시 사용자 클릭 컨텍스트 안에서 동기 호출될 것
+  function doShare(url) {
+    var payload = {
+      title: '다시봄 — 다시 오는 봄, 다시 보는 인생',
+      text: '봄이랑 매일 도란도란, 옛 추억도 다시 보고. 같이 해요 🌸',
+      url: url
+    };
+    if (navigator.share) { navigator.share(payload).catch(function () {}); return; }
+    var done = function () { toast('링크를 복사했어요. 친구에게 붙여넣어 보내주세요 🌸'); };
+    if (navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(url).then(done).catch(function () { legacyCopy(url, done); });
+    else legacyCopy(url, done);
+  }
+
   function fn(name) {
     try {
       if (window.firebase && firebase.apps && firebase.apps.length && typeof firebase.functions === 'function')
@@ -64,7 +84,7 @@
         f({ event: event }).then(function (r) {
           try { localStorage.setItem(lk, '1'); } catch (e) {}   // 오늘은 더 안 부름(지급/이미받음 무관)
           var d = r && r.data;
-          if (d && d.ok && d.awarded && !opt.silent) toast('🌸 다시봄 포인트 +' + d.awarded);
+          if (d && d.ok && d.awarded && !opt.silent) { toast(POINT_ICON + ' ' + POINT_NAME + ' +' + d.awarded); refreshBadges(); }
         }).catch(function () {});
       });
     },
@@ -79,17 +99,85 @@
         } catch (e) { cb(null); }
       });
     },
-    // 내 공유 링크(?ref=토큰 포함) 발급
+    // 내 공유 링크(?ref=토큰 포함) 발급. 한 번 받으면 캐시(_refUrl)해서 클릭 시 즉시 사용.
     refLink: function (cb) {
+      if (_refUrl) { cb(_refUrl); return; }
       whenReady(function () {
         var f = fn('createRefLink'); if (!f) { cb(null); return; }
         f({}).then(function (r) {
           var t = r && r.data && r.data.token;
-          cb(t ? (location.origin + '/?ref=' + t) : null);
+          _refUrl = t ? (location.origin + '/?ref=' + t) : null;
+          cb(_refUrl);
         }).catch(function () { cb(null); });
       });
+    },
+    name: POINT_NAME, icon: POINT_ICON,
+
+    // 친구에게 알리기(선물 프레임). ★공유·복사는 사용자 클릭 순간에 실행돼야 함
+    //   (링크를 그때 비동기로 받으면 클릭 권한이 만료돼 공유창·복사가 막힘) →
+    //   카드 마운트 때 미리 발급해둔 _refUrl을 동기적으로 쓴다.
+    invite: function () {
+      var url = _refUrl;
+      if (!url) {   // 아직 준비 전(드묾) — 최선의 노력으로 발급 후 시도
+        this.refLink(function (u) { if (u) doShare(u); else toast('잠시 후 다시 시도해 주세요'); });
+        return;
+      }
+      doShare(url);
+    },
+
+    // 잔액+초대 카드를 elId 요소에 렌더. 시니어용 큰 글씨·큰 버튼.
+    card: function (elId) {
+      var host = typeof elId === 'string' ? document.getElementById(elId) : elId;
+      if (!host) return;
+      host.innerHTML =
+        '<div class="dsbpt-card">' +
+        '<div class="dsbpt-bal"><span class="dsbpt-ic">' + POINT_ICON + '</span>' +
+        '<span class="dsbpt-num" data-dsbpt-badge>0</span><span class="dsbpt-unit">' + POINT_NAME + '</span></div>' +
+        '<p class="dsbpt-desc">친구가 내 링크로 들어오면 <b>' + POINT_ICON + ' 80' + POINT_NAME + '</b>을 드려요.<br>좋은 걸 나누고 ' + POINT_NAME + '도 모아보세요.</p>' +
+        '<button class="dsbpt-btn" type="button">친구에게 알리고 ' + POINT_NAME + ' 받기 →</button>' +
+        '</div>';
+      injectCSS();
+      host.querySelector('.dsbpt-btn').addEventListener('click', function () { DasibomPoints.invite(); });
+      this.balance(function (b) { if (b != null) fillBadges(b); });
+      this.refLink(function () {});   // ★링크 미리 발급(클릭 시 즉시 공유되도록)
     }
   };
+
+  // 화면의 모든 잔액 배지 갱신
+  function fillBadges(n) {
+    var els = document.querySelectorAll('[data-dsbpt-badge]');
+    for (var i = 0; i < els.length; i++) els[i].textContent = Number(n).toLocaleString();
+  }
+  function refreshBadges() { DasibomPoints.balance(function (b) { if (b != null) fillBadges(b); }); }
+
+  function legacyCopy(text, cb) {
+    try {
+      var ta = document.createElement('textarea'); ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px'; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy'); document.body.removeChild(ta); cb && cb();
+    } catch (e) {}
+  }
+
+  var _cssDone = false;
+  function injectCSS() {
+    if (_cssDone) return; _cssDone = true;
+    var s = document.createElement('style');
+    s.textContent =
+      ".dsbpt-card{background:linear-gradient(150deg,#FBF6EA,#F3ECD8);border:1px solid #E7DCBE;border-radius:22px;" +
+      "padding:22px 22px 20px;text-align:center;box-shadow:0 14px 34px -22px rgba(120,90,20,.5);" +
+      "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:460px;margin:0 auto}" +
+      ".dsbpt-bal{display:flex;align-items:center;justify-content:center;gap:8px}" +
+      ".dsbpt-ic{font-size:30px}" +
+      ".dsbpt-num{font-family:'Nanum Myeongjo','Batang',serif;font-size:40px;font-weight:800;color:#33492A;line-height:1}" +
+      ".dsbpt-unit{font-size:18px;font-weight:800;color:#5C6152;align-self:flex-end;margin-bottom:5px}" +
+      ".dsbpt-desc{margin:12px 0 16px;font-size:14.5px;line-height:1.65;color:#6B7261;word-break:keep-all}" +
+      ".dsbpt-desc b{color:#A88434}" +
+      ".dsbpt-btn{display:block;width:100%;border:none;border-radius:50px;padding:15px;cursor:pointer;" +
+      "font-family:inherit;font-weight:800;font-size:16px;color:#241B06;background:linear-gradient(145deg,#D6B35F,#B8912F);" +
+      "box-shadow:0 12px 26px -12px rgba(160,120,30,.7)}" +
+      ".dsbpt-btn:active{transform:scale(.99)}";
+    document.head.appendChild(s);
+  }
 
   // ── 공유 유입 자동 처리: ?ref= 있으면 저장했다가 로그인 후 1회 claim ──
   function handleReferral() {
