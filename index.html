@@ -1935,6 +1935,12 @@
 </footer>
 <script src="/dasibom-bizinfo.js?v=1"></script>
 <script src="/dasibom-share.js?v=1"></script>
+<script src="/dasibom-points.js?v=1"></script>
+<script>
+  // 홈 방문 = 일일 출석 포인트(하루 1회). ?ref= 공유 유입은 dasibom-points.js가 자동 처리.
+  try{ if(window.DasibomPoints) DasibomPoints.earn('attend');
+       else window.addEventListener('load',function(){ window.DasibomPoints&&DasibomPoints.earn('attend'); }); }catch(e){}
+</script>
 
 <!-- 로그인 모달 -->
 <div class="modal-overlay" id="login-modal" onclick="closeLoginOutside(event)">

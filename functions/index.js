@@ -871,6 +871,106 @@ exports.logTraffic = functions
   });
 
 // ════════════════════════════════════════
+// 다시봄 포인트 엔진 (2026-07-18) — 콘텐츠 이용·공유로 획득, 육성/오디오 하수구로 소비.
+//   ★포인트는 반드시 서버에서만 지급(클라가 찍으면 경제 붕괴). users.dsbPoints 잔액.
+//   ★화투 코인(game_stats)과 완전 별개 — 섞이지 않음.
+//   지급 원칙: 콘텐츠별 '실제 행동 1회' → 하루 1회. 공유는 '받은 사람 실제 유입' 시 공유자에게.
+// ════════════════════════════════════════
+const PT_AWARD = {   // 서버 권위 지급표(클라가 보낸 액수는 절대 안 믿음)
+  attend: 10, memoir: 50, brain: 30, arcade: 30, matgo: 30,
+  nostalgia: 10, trendy: 10, dream: 10, maeum: 10, gag: 10, debate: 10, maeumlab: 10
+};
+const PT_REFERRAL = 80;       // 공유 → 유입 1건당 공유자 지급
+const PT_REFERRAL_CAP = 10;   // 공유자 하루 유입보상 상한(스팸 농장 차단)
+
+function ptDay() { return new Date().toISOString().slice(0, 10); }
+
+// 콘텐츠 이용 포인트 — 하루 1회/콘텐츠. 실제 행동을 한 클라가 호출.
+exports.awardPoints = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const ev = String((data && data.event) || '');
+    const amt = PT_AWARD[ev];
+    if (!amt) return { ok: false, reason: 'bad_event' };
+    const day = ptDay();
+    const dref = admin.firestore().collection('points_daily').doc(uid + '_' + day);
+    const uref = admin.firestore().collection('users').doc(uid);
+    try {
+      const res = await admin.firestore().runTransaction(async (tx) => {
+        const d = await tx.get(dref);
+        const earned = (d.exists && d.data().earned) || {};
+        if (earned[ev]) return { ok: false, reason: 'already', awarded: 0 };  // 오늘 이미 받음
+        earned[ev] = true;
+        tx.set(dref, { earned, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(amt) }, { merge: true });
+        return { ok: true, awarded: amt };
+      });
+      if (res.ok) {
+        const u = await uref.get();
+        res.balance = (u.exists && u.data().dsbPoints) || 0;
+      }
+      return res;
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
+// 공유 링크 토큰 발급(재사용) — 공유자 식별용
+exports.createRefLink = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const uref = admin.firestore().collection('users').doc(uid);
+    const u = await uref.get();
+    let token = u.exists && u.data().refToken;
+    if (!token) {
+      token = require('crypto').randomBytes(9).toString('hex');
+      await admin.firestore().collection('ref_links').doc(token).set({ uid, createdAt: admin.firestore.FieldValue.serverTimestamp() });
+      await uref.set({ refToken: token }, { merge: true });
+    }
+    return { token };
+  });
+
+// 공유로 들어온 사람(수신자)이 호출 → 공유자에게 포인트. 수신자당 평생 1회, 공유자 하루 상한.
+exports.claimReferral = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const rid = context.auth.uid;                 // 수신자(들어온 사람)
+    const token = String((data && data.token) || '').trim();
+    if (!/^[a-f0-9]{18}$/.test(token)) return { ok: false, reason: 'bad_token' };
+    const link = await admin.firestore().collection('ref_links').doc(token).get();
+    if (!link.exists) return { ok: false, reason: 'no_link' };
+    const sid = link.data().uid;                  // 공유자
+    if (sid === rid) return { ok: false, reason: 'self' };  // 자기 링크 자기가
+
+    const rref = admin.firestore().collection('referrals').doc(rid);   // 수신자 1인 1회
+    const day = ptDay();
+    const capRef = admin.firestore().collection('points_daily').doc(sid + '_' + day);
+    const sref = admin.firestore().collection('users').doc(sid);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const already = await tx.get(rref);
+        if (already.exists) return { ok: false, reason: 'already_referred' };  // 이 사람은 이미 누군가의 초대로 집계됨
+        const cap = await tx.get(capRef);
+        const refCount = (cap.exists && cap.data().refCount) || 0;
+        if (refCount >= PT_REFERRAL_CAP) {
+          tx.set(rref, { by: sid, at: admin.firestore.FieldValue.serverTimestamp(), capped: true }, { merge: true });
+          return { ok: false, reason: 'sharer_cap' };   // 공유자 상한 — 수신자는 기록하되 지급 안 함
+        }
+        tx.set(rref, { by: sid, at: admin.firestore.FieldValue.serverTimestamp() });
+        tx.set(capRef, { refCount: refCount + 1, uid: sid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        tx.set(sref, { dsbPoints: admin.firestore.FieldValue.increment(PT_REFERRAL) }, { merge: true });
+        return { ok: true, awardedToSharer: PT_REFERRAL };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
+// ════════════════════════════════════════
 // 센터 프로그램 리포트 (2026-07-16) — 키오스크를 안 쓰는 센터용.
 //   어르신들이 '개인 폰'으로 QR(?center=ID)을 찍어 계정에 센터 꼬리표가 붙으면,
 //   그 계정들의 이용을 센터 단위로 집계한다(집에서 쓴 것까지 = 프로그램 효과의 증거).

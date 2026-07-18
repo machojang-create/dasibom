@@ -4,15 +4,17 @@ service cloud.firestore {
 
     // 회원 프로필: 인증된 사용자만 접근
     //   ⚠️ '본인만'으로 못 조임 — handleSocialLogin이 provider/socialId로 남의 users를 교차조회함(아래 memoirs 주석 참고).
-    //   단 subscribed(구독 여부)만은 클라이언트가 절대 못 건드리게 한다.
-    //   이 필드 하나에 봄이 기억·대화 상한 100·자서전 재료 누적이 전부 걸려 있어서,
-    //   열어두면 로그인만 하면 누구나 결제 없이 구독을 켤 수 있다(= 결제 우회).
-    //   → 쓰기는 Cloud Functions(Admin SDK, 규칙 우회)만. PortOne 성공 콜백에서 여기 true.
+    //   단 아래 필드는 클라이언트가 절대 못 건드린다(서버=Functions만):
+    //     · subscribed  — 결제 우회 방지(구독 상태)
+    //     · dsbPoints    — 다시봄 포인트 잔액. 열어두면 누구나 무한 포인트 = 경제 붕괴
+    //     · refToken     — 공유 식별 토큰
+    //   → 쓰기는 Cloud Functions(Admin SDK, 규칙 우회)만.
     match /users/{userId} {
       allow read:   if request.auth != null;
-      allow create: if request.auth != null && !('subscribed' in request.resource.data);
+      allow create: if request.auth != null
+                    && !request.resource.data.keys().hasAny(['subscribed', 'dsbPoints', 'refToken']);
       allow update: if request.auth != null
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscribed']);
+                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscribed', 'dsbPoints', 'refToken']);
       allow delete: if request.auth != null;
     }
 
@@ -176,6 +178,11 @@ service cloud.firestore {
     match /family_links/{token} {
       allow read, write: if false;
     }
+
+    // ── 다시봄 포인트 엔진 — 전부 Functions(Admin)만. 클라가 손대면 무한 포인트 ──
+    match /points_daily/{id} { allow read, write: if false; }
+    match /ref_links/{token} { allow read, write: if false; }
+    match /referrals/{rid}   { allow read, write: if false; }
 
     // ── 유입/전환 집계(traffic_daily) — 조작 방지 위해 Functions(logTraffic)만 씀 ──
     match /traffic_daily/{day} {
