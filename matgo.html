@@ -36,7 +36,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .h-exit{border:1.5px solid rgba(63,90,48,.3);color:var(--sage-deep);background:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:50px;cursor:pointer;text-decoration:none;font-family:inherit;min-height:44px;display:inline-flex;align-items:center}
 
 /* ── 카드 ── */
-.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=3');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
+.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=4');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
 .card.hand{width:var(--hw);height:var(--hh);cursor:pointer;transition:transform .14s}
 .card.hand.sel{transform:translateY(-14px);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft),0 8px 14px rgba(0,0,0,.3)}
 .card.back{background-image:var(--cardback,repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px));background-size:cover;background-position:center;border-color:#5A2020}
@@ -80,7 +80,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .rv-inner.flipped{transform:rotateY(180deg)}
 .rv-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:8px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
 .rv-back{background:repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px);border:1.5px solid #5A2020}
-.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=3');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0}
+.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=4');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0}
 /* 내리치기: 착지 카드 펀치 + 판 전체 흔들림 */
 .card.slam{animation:slamIn .22s ease-out}
 @keyframes slamIn{0%{transform:scale(1.5)}55%{transform:scale(.94)}100%{transform:scale(1)}}
