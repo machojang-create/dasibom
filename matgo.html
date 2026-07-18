@@ -36,10 +36,10 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .h-exit{border:1.5px solid rgba(63,90,48,.3);color:var(--sage-deep);background:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:50px;cursor:pointer;text-decoration:none;font-family:inherit;min-height:44px;display:inline-flex;align-items:center}
 
 /* ── 카드 ── */
-.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=2');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
+.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=3');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
 .card.hand{width:var(--hw);height:var(--hh);cursor:pointer;transition:transform .14s}
 .card.hand.sel{transform:translateY(-14px);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft),0 8px 14px rgba(0,0,0,.3)}
-.card.back{background-image:none;background:repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px);border-color:#5A2020}
+.card.back{background-image:var(--cardback,repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px));background-size:cover;background-position:center;border-color:#5A2020}
 /* 짝이 있는 손패: 네온 테두리가 강하게 깜빡이며 둥실둥실 떠 있음 */
 .card.matchable::after{content:'';position:absolute;inset:-6px;border:4px solid #FFD54F;border-radius:11px;animation:mpulse .65s infinite alternate;pointer-events:none}
 .card.hand.matchable:not(.sel){animation:mfloat 1.3s ease-in-out infinite}
@@ -80,7 +80,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .rv-inner.flipped{transform:rotateY(180deg)}
 .rv-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:8px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
 .rv-back{background:repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px);border:1.5px solid #5A2020}
-.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=2');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0}
+.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=3');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0}
 /* 내리치기: 착지 카드 펀치 + 판 전체 흔들림 */
 .card.slam{animation:slamIn .22s ease-out}
 @keyframes slamIn{0%{transform:scale(1.5)}55%{transform:scale(.94)}100%{transform:scale(1)}}
@@ -130,6 +130,19 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 24px;font-size:14px;z-index:500;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 /* 말투 선택 */
 .tone-list{display:flex;flex-direction:column;gap:8px}
+/* 화투 상점 */
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-height:56vh;overflow-y:auto;padding:2px}
+.shop-item{display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.shop-thumb{position:relative;border-radius:11px;overflow:hidden;aspect-ratio:186/290;background:#eee;box-shadow:0 4px 12px -6px rgba(0,0,0,.4)}
+.shop-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.shop-thumb .tick{position:absolute;top:5px;right:5px;background:#2E7D46;color:#fff;font-size:11px;font-weight:800;border-radius:50px;padding:2px 7px}
+.shop-thumb.on{outline:3px solid var(--gold,#C9A961);outline-offset:-1px}
+.shop-name{font-size:12.5px;font-weight:800;color:var(--ink);text-align:center;line-height:1.2}
+.shop-buy{border:none;border-radius:9px;padding:8px 4px;font-family:inherit;font-weight:800;font-size:12.5px;cursor:pointer;line-height:1.2}
+.shop-buy.buy{background:var(--gold,#C9A961);color:#241B06}
+.shop-buy.equip{background:#EAF2E2;color:var(--sage-deep,#33492A)}
+.shop-buy.on{background:#2E7D46;color:#fff;cursor:default}
+.shop-buy:disabled{opacity:.5;cursor:default}
 .tone-item{display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;border:1.5px solid var(--cream-2);border-radius:14px;background:#fff;cursor:pointer;font-family:inherit;text-align:left;min-height:56px}
 .tone-item.on{border-color:var(--sage);background:rgba(92,122,74,.08)}
 .tone-item .te{font-size:26px;flex-shrink:0}
@@ -200,6 +213,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
      음악/효과음/말투 버튼은 data-dbh-keep 이라 홈버튼과 제목 사이에 그대로 남음. -->
 <header data-dasibom-header data-title="🎴 봄이와 맞고" data-accent="#3F5A30">
   <span style="display:flex;gap:8px" data-dbh-keep>
+    <button class="h-exit" id="shopBtn" onclick="openShop()" aria-label="화투 상점">🛍️</button>
     <button class="h-exit" id="toneBtn" onclick="openTonePicker()" aria-label="봄이 말투">🗣️</button>
     <button class="h-exit" id="bgmBtn" onclick="toggleBgm()" aria-label="배경음악">🎵</button>
     <button class="h-exit" id="sndBtn" onclick="toggleSnd()" aria-label="효과음">🔊</button>
@@ -263,6 +277,16 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
     <div class="mm-title">봄이 말투 고르기</div>
     <div class="mm-body" style="margin-bottom:10px">어떤 손녀로 함께할까요?<br><span style="font-size:12.5px;color:var(--muted)">언제든 다시 바꿀 수 있어요</span></div>
     <div id="toneList" class="tone-list"></div>
+  </div>
+</div>
+
+<!-- 화투 상점 (뒷면 스킨) -->
+<div class="mm-overlay" id="shopOverlay" onclick="if(event.target===this)this.classList.remove('on')">
+  <div class="mm-box" style="max-width:440px">
+    <div class="mm-title">🛍️ 화투 상점</div>
+    <div class="mm-body" style="margin-bottom:10px">카드 뒷면을 바꿔보세요.<br><span style="font-size:12.5px;color:var(--muted)">맞고를 이겨 모은 <b>🪙 코인</b>으로 살 수 있어요 · 한 번 사면 계속 내 것</span></div>
+    <div id="shopCoins" style="font-size:15px;font-weight:800;color:var(--sage-deep);margin-bottom:12px"></div>
+    <div id="shopGrid" class="shop-grid"></div>
   </div>
 </div>
 
@@ -354,6 +378,29 @@ function levelOf(pts){
 }
 var STATS={points:0,wins:0,losses:0,draws:0};
 try{ var s=JSON.parse(localStorage.getItem('matgo_stats')); if(s) STATS=s; }catch(e){}
+/* ── 화폐/레벨 분리(2026-07-18) ──
+   points = 쓰는 돈(코인). 상점 구매 시 차감.  xp = 누적(레벨 기준). 절대 안 깎임.
+   ★안 그러면 스킨 사서 포인트 줄면 레벨이 내려감. 기존 유저는 points를 xp 초기값으로 승계. */
+if(STATS.xp==null) STATS.xp = STATS.points||0;
+if(!Array.isArray(STATS.ownedSkins)) STATS.ownedSkins = [];
+if(STATS.equippedSkin===undefined) STATS.equippedSkin = null;
+
+/* 뒷면 스킨 카탈로그 — 이미지는 코드 생성(scripts/gen_card_backs.js), 저작권 우리 것. 겜블 요소 없음(직접 구매). */
+var SKIN_COST = 500;
+var SKINS = [
+  { id:'gold_frame', name:'금테두리' }, { id:'ink_wash', name:'수묵 산수' },
+  { id:'porcelain', name:'청화백자' }, { id:'plum', name:'홍매' },
+  { id:'najeon', name:'나전(자개)' }, { id:'noir', name:'먹빛 무지' },
+  { id:'saekdong', name:'색동' }, { id:'seigaiha', name:'청해파 물결' },
+  { id:'lattice', name:'완자 격자' }, { id:'spring', name:'봄 벚꽃' }
+];
+function skinUrl(id){ return '/img/hwatu/backs/'+id+'.png?v=1'; }
+// 장착된 스킨을 카드 뒷면에 반영. 없으면 변수 제거 → CSS 기본 그라데이션(fallback)이 뜸.
+function applyCardBack(){
+  var root=document.documentElement;
+  if(STATS.equippedSkin) root.style.setProperty('--cardback', "url('"+skinUrl(STATS.equippedSkin)+"')");
+  else root.style.removeProperty('--cardback');
+}
 function saveStats(){
   try{ localStorage.setItem('matgo_stats',JSON.stringify(STATS)); }catch(e){}
   renderStats();
@@ -367,9 +414,9 @@ function saveStats(){
 }
 function renderStats(){
   var el=document.getElementById('myStats'); if(!el) return;
-  var L=levelOf(STATS.points);
-  el.textContent='🏅 Lv.'+L.lv+' '+L.name+' · '+STATS.points+'P · '+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')
-    +(L.next!==null?' · 다음 레벨까지 '+(L.next-STATS.points)+'P':'')
+  var L=levelOf(STATS.xp);   // 레벨은 누적 xp 기준(코인 소비와 무관)
+  el.textContent='🏅 Lv.'+L.lv+' '+L.name+' · 🪙 '+STATS.points+'코인 · '+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')
+    +(L.next!==null?' · 다음 레벨까지 '+(L.next-STATS.xp)+'점':'')
     +(IS_PREMIUM?'':' · 오늘 '+playsToday()+'/'+DAILY_CAP+'판');
 }
 
@@ -483,7 +530,20 @@ statsFB().then(function(uid){
   firebase.firestore().collection('game_stats').doc(uid).get().then(function(snap){
     if(snap.exists && snap.data().matgo){
       var sv=snap.data().matgo;
-      if((sv.points||0)>=STATS.points){ STATS=sv; try{localStorage.setItem('matgo_stats',JSON.stringify(STATS));}catch(e){} renderStats(); }
+      // ★누적 xp 기준으로 최신 판단(코인은 구매로 줄어드니 기준 부적합). 구버전은 xp 없어 points로 폴백.
+      var svXp=(sv.xp!=null?sv.xp:sv.points)||0, myXp=(STATS.xp!=null?STATS.xp:STATS.points)||0;
+      if(svXp>=myXp){
+        // 보유 스킨은 절대 잃지 않게 합집합(다른 기기 구매분 보존)
+        var mine=STATS.ownedSkins||[];
+        STATS=sv;
+        if(STATS.xp==null) STATS.xp=STATS.points||0;
+        var union=(STATS.ownedSkins||[]).slice();
+        mine.forEach(function(id){ if(union.indexOf(id)<0) union.push(id); });
+        STATS.ownedSkins=union;
+        if(STATS.equippedSkin===undefined) STATS.equippedSkin=null;
+        try{localStorage.setItem('matgo_stats',JSON.stringify(STATS));}catch(e){}
+        renderStats(); applyCardBack();
+      }
     }
   }).catch(function(){});
 });
@@ -1005,6 +1065,40 @@ function openTonePicker(){
   document.getElementById('toneOverlay').classList.add('on');
 }
 
+/* ── 화투 상점 ── */
+function renderShop(){
+  document.getElementById('shopCoins').textContent='🪙 '+STATS.points+' 코인';
+  var grid=document.getElementById('shopGrid');
+  grid.innerHTML=SKINS.map(function(s){
+    var owned=STATS.ownedSkins.indexOf(s.id)>-1;
+    var equipped=STATS.equippedSkin===s.id;
+    var btn;
+    if(equipped) btn='<button class="shop-buy on" disabled>사용 중 ✓</button>';
+    else if(owned) btn='<button class="shop-buy equip" onclick="equipSkin(\''+s.id+'\')">사용하기</button>';
+    else { var can=STATS.points>=SKIN_COST;
+      btn='<button class="shop-buy buy" '+(can?'':'disabled')+' onclick="buySkin(\''+s.id+'\')">🪙 '+SKIN_COST+'</button>'; }
+    return '<div class="shop-item">'
+      +'<div class="shop-thumb'+(equipped?' on':'')+'"><img src="'+skinUrl(s.id)+'" alt="'+s.name+'">'
+      +(owned&&!equipped?'<span class="tick">보유</span>':'')+'</div>'
+      +'<div class="shop-name">'+s.name+'</div>'+btn+'</div>';
+  }).join('');
+}
+function openShop(){ renderShop(); document.getElementById('shopOverlay').classList.add('on'); }
+function buySkin(id){
+  if(STATS.ownedSkins.indexOf(id)>-1) return;          // 이미 보유(중복 결제 방지)
+  if(STATS.points<SKIN_COST){ toast('코인이 조금 모자라요. 한 판 더 이겨볼까요?'); return; }
+  STATS.points-=SKIN_COST;                              // ★코인만 차감(xp·레벨 불변)
+  STATS.ownedSkins.push(id);
+  STATS.equippedSkin=id;                                // 사면 바로 장착
+  saveStats(); applyCardBack(); renderStats(); renderShop();
+  var s=SKINS.filter(function(x){return x.id===id;})[0];
+  toast('‘'+(s?s.name:'')+'’ 뒷면을 장착했어요! 🎴');
+}
+function equipSkin(id){
+  if(STATS.ownedSkins.indexOf(id)<0) return;
+  STATS.equippedSkin=id; saveStats(); applyCardBack(); renderShop();
+}
+
 var _bomHideTimer=null, _bomLastAt=0, _bomLastPriority=0;
 // who='ai'(봄이가 함) → self 대사, who='me'(할배가 함) → user 대사. 생략 시 현재 턴 액터.
 function bomSay(cat, who, force){
@@ -1445,7 +1539,7 @@ function endGame(winner){
   sfx(winner==='me'?'win':winner==='ai'?'lose':'draw');
   bomSay(winner==='ai'?'win':winner==='me'?'lose':'draw','ai'); // 게임 결과는 봄이 관점 고정
   if(winner===null){
-    STATS.draws++; STATS.points+=1; saveStats(); // 참가 포인트
+    STATS.draws++; STATS.points+=1; STATS.xp+=1; saveStats(); // 참가 코인(+xp)
     modal('나가리', '둘 다 점수를 내지 못했어요.<span class="big">😅</span>무승부입니다!<br><span style="font-size:13px;color:var(--muted)">참가 포인트 +1P</span>',
       [{label:'다시 하기',fn:tryNewGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
     return;
@@ -1469,15 +1563,15 @@ function endGame(winner){
 
   var isMe=winner==='me';
   // 포인트·전적 정산: 승리=최종점수만큼, 패배=참가 1P
-  var oldLv=levelOf(STATS.points).lv;
+  var oldLv=levelOf(STATS.xp).lv;
   var earned=isMe?total:1;
-  STATS.points+=earned;
+  STATS.points+=earned; STATS.xp+=earned;   // 코인·xp 동시 적립(레벨은 xp 기준)
   if(isMe) STATS.wins++; else STATS.losses++;
   saveStats();
-  var newL=levelOf(STATS.points);
+  var newL=levelOf(STATS.xp);
   var lvUp=newL.lv>oldLv;
   var ptLine='<div style="margin:10px 0 4px;padding:10px;background:rgba(63,90,48,.08);border-radius:12px;font-size:14px;font-weight:800;color:var(--sage-deep)">'
-    +'✨ +'+earned+'P 획득 · 누적 '+STATS.points+'P<br>'
+    +'✨ +'+earned+'코인 획득 · 보유 '+STATS.points+'코인<br>'
     +'<span style="font-size:12.5px;font-weight:700">'+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')+' · Lv.'+newL.lv+' '+newL.name+'</span>'
     +(lvUp?'<br><span style="color:#B8860B">🎊 레벨 업! Lv.'+newL.lv+' '+newL.name+' 달성!</span>':'')
     +'</div>';
@@ -1493,6 +1587,7 @@ function endGame(winner){
 document.getElementById('sndBtn').textContent=SND_ON?'🔊':'🔇';
 document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
 renderStats();
+applyCardBack();  // 저장된 장착 스킨을 카드 뒷면에 반영
 loadPremium();   // statsFB 정의 이후에 호출(위 주석 참고)
 tryNewGame();
 </script>
@@ -1503,6 +1598,7 @@ tryNewGame();
 BomPop.bind({ overlay:'#mmOverlay',   box:'.mm-box', face:'bom_smile' }); // 결과·안내
 BomPop.bind({ overlay:'#chOverlay',   box:'.mm-box', face:'bom_grin'  }); // 고/스톱 선택
 BomPop.bind({ overlay:'#toneOverlay', box:'.mm-box', face:'bom_wink'  }); // 봄이 말투 고르기
+BomPop.bind({ overlay:'#shopOverlay', box:'.mm-box', face:'bom_grin'  }); // 화투 상점
 </script>
 </body>
 </html>
