@@ -704,18 +704,36 @@ exports.updateBomMemory = functions
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
     const uid = context.auth.uid;
 
-    // 구독자만 장기 기억을 쌓는다(무료는 세션 기억까지)
     let subscribed = false;
     try {
       const u = await admin.firestore().collection('users').doc(uid).get();
       subscribed = !!(u.exists && u.data().subscribed === true);
     } catch (e) {}
-    if (!subscribed) return { ok: false, reason: 'not_subscribed' };
 
     const turns = (Array.isArray(data && data.turns) ? data.turns : [])
       .filter((t) => t && t.role === 'user' && t.text)
       .map((t) => String(t.text).slice(0, 200));
     if (turns.length < 2) return { ok: false, reason: 'too_short' };
+
+    /* ★1단계 — 자서전 재료(snippets)는 무료 포함 전원 저장 (2026-07-20 Macho: A안)
+       자서전은 다시봄의 심장이고 원래 무료다. 그 재료가 유료 뒤에 잠겨 있으면
+       무료 사용자의 자서전이 얇아지고 바이럴도 약해진다.
+       ※AI를 안 쓰고 발화 원문만 쌓으므로 원가 0. 프롬프트에도 안 들어감.
+       유료 가치는 아래 2단계(facts=봄이가 기억하고 먼저 꺼내는 것)로 유지. */
+    try {
+      const cur = (await loadBomMemory(uid)) || {};
+      const prevSnips = cur.snippets || [];
+      const snippets = prevSnips
+        .concat(turns.filter((t) => t.length >= 6 && prevSnips.indexOf(t) < 0))
+        .slice(-MEM_SNIPPETS_MAX);
+      await admin.firestore().collection('bom_memory').doc(uid).set({
+        snippets, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    } catch (e) { /* 재료 저장 실패해도 아래는 계속 */ }
+
+    /* ★2단계 — 장기 기억(facts/recent) 추출은 구독자만.
+       이게 구독의 핵심 가치: "지난번에 무릎 아프시다더니 좀 어떠세요?" */
+    if (!subscribed) return { ok: true, snippetsOnly: true };
 
     // 남용 방지: uid당 하루 추출 상한
     const day = new Date().toISOString().slice(0, 10);
@@ -765,19 +783,12 @@ ${turns.join('\n')}`;
     const summary = String(ex.summary || '').slice(0, 60).trim();
     const recent = (summary ? prev.recent.concat([summary]) : prev.recent).slice(-MEM_RECENT_MAX);
 
-    /* 자서전 재료(snippets): 어르신 말씀 원문을 그대로 누적.
-       ★프롬프트엔 넣지 않는다 → 토큰 비용 0. 자서전 회상(findRecall)에서만 읽음.
-       4턴마다 최근 8턴을 보내므로 겹침이 확정 → 중복 제거 필수. */
-    const prevSnips = prev.snippets || [];
-    const snippets = prevSnips
-      .concat(turns.filter((t) => t.length >= 6 && prevSnips.indexOf(t) < 0))
-      .slice(-MEM_SNIPPETS_MAX);
-
+    // snippets는 위 1단계에서 이미 저장됨(전원 대상) — 여기선 기억만 갱신
     await admin.firestore().collection('bom_memory').doc(uid).set({
-      facts, recent, snippets, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      facts, recent, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
-    return { ok: true, facts: facts.length, added: newFacts.length, snippets: snippets.length };
+    return { ok: true, facts: facts.length, added: newFacts.length };
   });
 
 // ════════════════════════════════════════
