@@ -3245,6 +3245,13 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcp-chat-input:focus{border-color:#d4845a}
   .bcp-chat-send{flex-shrink:0;width:38px;height:38px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:15px;cursor:pointer}
   .bcp-chat-send:disabled{opacity:.5}
+  /* 말로 하기(음성 입력) — 타이핑이 힘든 어르신용. 지원 브라우저에서만 노출 */
+  .bcp-chat-mic{flex-shrink:0;width:38px;height:38px;border:1.5px solid #E6D8C4;border-radius:50%;background:#fff;
+    font-size:17px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
+  .bcp-chat-mic.listening{background:#d4584a;border-color:#d4584a;color:#fff;animation:bcpMicPulse 1s infinite}
+  @keyframes bcpMicPulse{0%{box-shadow:0 0 0 0 rgba(212,88,74,.5)}70%{box-shadow:0 0 0 10px rgba(212,88,74,0)}100%{box-shadow:0 0 0 0 rgba(212,88,74,0)}}
+  @media (prefers-reduced-motion:reduce){.bcp-chat-mic.listening{animation:none}}
+  body.dark .bcp-chat-mic{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
   .bcp-user-msg{background:#5b3a1a;color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;line-height:1.6;margin-bottom:14px;margin-left:38px;text-align:right}
   .bcp-typing-row{display:flex;align-items:center;gap:7px;margin-bottom:14px}
   .bcp-typing{display:inline-block;color:#b58a4a;font-size:13px}
@@ -3276,6 +3283,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     <div class="bcp-body" id="bcpBody"></div>
     <div class="bcp-chatrow">
       <input type="text" id="bcpInput" class="bcp-chat-input" placeholder="봄이에게 말 걸어보세요" maxlength="200">
+      <button id="bcpMic" class="bcp-chat-mic" aria-label="말로 하기" title="말로 하기" style="display:none">🎤</button>
       <button id="bcpSend" class="bcp-chat-send" aria-label="보내기">➤</button>
     </div>
   </div>
@@ -3663,10 +3671,44 @@ body.dark .bom-guide-text{color:#c8bba4}
       bomAppendBot('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱');
     }).finally(function(){ btn.disabled=false; });
   }
+  /* ── 말로 하기(음성 입력) — 타이핑이 힘든 어르신용 ──
+     자서전·케어챗과 같은 브라우저 음성인식(webkitSpeechRecognition).
+     ★지원 브라우저(크롬·엣지·안드로이드)에서만 버튼을 보여준다 — iOS 사파리는 미지원이라
+       버튼만 있고 안 되면 어르신이 "고장났다"고 느낌. 아예 숨기는 게 낫다.
+     인식되면 바로 전송(케어챗과 동일) — 어르신에게 단계를 하나라도 줄임. */
+  function _initBomMic(){
+    var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    var mic=document.getElementById('bcpMic'), inp=document.getElementById('bcpInput');
+    if(!SR || !mic || !inp) return;              // 미지원이면 버튼 숨긴 채로 둠
+    mic.style.display='flex';
+    var recog=null, listening=false;
+    function stopUI(){ listening=false; mic.classList.remove('listening'); inp.placeholder='봄이에게 말 걸어보세요'; }
+    mic.addEventListener('click',function(){
+      if(listening){ try{ recog&&recog.stop(); }catch(e){} stopUI(); return; }
+      try{
+        recog=new SR(); recog.lang='ko-KR'; recog.continuous=false; recog.interimResults=true;
+        recog.onresult=function(e){
+          var t='',fin=false;
+          for(var i=0;i<e.results.length;i++){ t+=e.results[i][0].transcript; if(e.results[i].isFinal) fin=true; }
+          inp.value=t;                            // 말하는 대로 보이게(어르신 안심)
+          if(fin && t.trim()){ stopUI(); bomSendChat(); }
+        };
+        recog.onerror=function(ev){
+          stopUI();
+          if(ev && (ev.error==='not-allowed'||ev.error==='service-not-allowed'))
+            bomAppendBot('마이크를 쓸 수 없어요. 브라우저에서 마이크 사용을 허락해 주시면 말로 하실 수 있어요 🌱');
+        };
+        recog.onend=stopUI;
+        recog.start(); listening=true; mic.classList.add('listening');
+        inp.placeholder='듣고 있어요… 편하게 말씀하세요';
+      }catch(e){ stopUI(); }
+    });
+  }
   document.addEventListener('DOMContentLoaded',function(){
     var btn=document.getElementById('bcpSend'), inp=document.getElementById('bcpInput');
     if(btn) btn.addEventListener('click',bomSendChat);
     if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter') bomSendChat(); });
+    _initBomMic();
   });
 })();
 </script>
