@@ -88,6 +88,22 @@
         }).catch(function () {});
       });
     },
+    // 콘텐츠 '실제 이용' 적립 — 페이지 열기만으론 안 주고, 일정 시간 머무름 + 조작 1회 후 지급.
+    //   React 파일럿 등 내부를 몰라도 붙는 범용 방식(탭만 훑는 어뷰징 차단).
+    earnOnEngage: function (event, opt) {
+      opt = opt || {};
+      var sec = opt.seconds || 8;
+      // 오늘 이미 받았으면 아예 리스너 안 검
+      try { var day = new Date().toISOString().slice(0, 10); if (localStorage.getItem('dsbpt_' + event + '_' + day)) return; } catch (e) {}
+      var timeOk = false, interacted = false, done = false, self = this;
+      var evs = ['pointerdown', 'keydown', 'touchstart'];
+      function onI() { interacted = true; go(); }
+      function cleanup() { evs.forEach(function (e) { document.removeEventListener(e, onI, true); }); }
+      function go() { if (done || !timeOk || !interacted) return; done = true; cleanup(); self.earn(event); }
+      evs.forEach(function (e) { document.addEventListener(e, onI, true); });
+      setTimeout(function () { timeOk = true; go(); }, sec * 1000);
+    },
+
     // 잔액 조회(본인 users 문서 읽기 — 규칙상 읽기 허용)
     balance: function (cb) {
       whenReady(function () {

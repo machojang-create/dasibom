@@ -2155,6 +2155,7 @@ function goNext(){
   var v=getVal();
   if(!validAnswer(v)){ popToast('조금만 더 들려주세요('+MIN_CHARS+'자 이상). 한 줄이면 충분해요 — 나머지는 봄이가 풀어써요. 어려우면 「이 질문 건너뛰기」'); return; }
   commit();
+  try{ window.DasibomPoints && DasibomPoints.earn('memoir'); }catch(e){}  // 답변 저장 = 자서전 꽃잎(하루1회)
   recordConsumed(APP.curQ);
   var maxQ=APP.maxQ; var next=APP.curQ+1;
   // 유료 전환 게이트: 무료 15문항 후 로그인 요청
@@ -2783,5 +2784,6 @@ document.addEventListener('DOMContentLoaded',function(){
   BomPop.bind({ overlay:'#modalBg', box:'.modal-box', face:'bom_smile' }); // 공용 알림
   BomPop.bind({ overlay:'#loginModalBg', box:'.lm-box', face:'bom_smile' }); // 로그인
 </script>
+<script src="/dasibom-points.js?v=1"></script>
 </body>
 </html>

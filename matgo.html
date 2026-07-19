@@ -462,6 +462,7 @@ function showDailyLimit(){
 function tryNewGame(){
   if(!canPlay()){ showDailyLimit(); return; }
   bumpPlays();
+  try{ window.DasibomPoints && DasibomPoints.earn('matgo'); }catch(e){}  // 한 판 시작 = 맞고 꽃잎(하루1회)
   newGame();
 }
 // 프리미엄 여부 조회(비동기) — 10판째 이전에 도착하므로 게이트에 지장 없음.
@@ -1600,5 +1601,6 @@ BomPop.bind({ overlay:'#chOverlay',   box:'.mm-box', face:'bom_grin'  }); // 고
 BomPop.bind({ overlay:'#toneOverlay', box:'.mm-box', face:'bom_wink'  }); // 봄이 말투 고르기
 BomPop.bind({ overlay:'#shopOverlay', box:'.mm-box', face:'bom_grin'  }); // 화투 상점
 </script>
+<script src="/dasibom-points.js?v=1"></script>
 </body>
 </html>
