@@ -3448,13 +3448,38 @@ body.dark .bom-guide-text{color:#c8bba4}
   /* ★봄이가 먼저 거는 말 — 1분마다 계속(예전엔 3개 하고 영영 멈췄음).
      종류를 섞는다: 감성케어(날씨·건강·안부) / 자서전 유도 / 콘텐츠 유도 / 일상 잡담.
      같은 종류가 연달아 나오지 않게 하고, 창이 열려 있을 때만 말한다. */
+  /* ★취재 씨앗 질문 — 일상에서 시작해 '그분의 삶'으로 이어지는 질문.
+     여기서 어르신이 답하면, 서버 봄이가 그 답을 받아 한 겹 더 파고든다(BOM_INTERVIEW_BLOCK).
+     그렇게 쌓인 이야기가 bom_memory.snippets → 자서전 질문 화면의 "저번에 이런 이야기를…"로 돌아온다.
+     그래서 '자서전 화면으로 가세요' 유도보다 이 대화가 훨씬 중요하다(Macho 2026-07-20). */
+  var BOM_INTERVIEW_SEEDS = [
+    '오늘은 뭐 드셨어요? 맛있게 드셨어요?',
+    '요즘 자주 가시는 곳 있으세요?',
+    '어릴 적 살던 동네는 어떤 곳이었어요?',
+    '어릴 때 제일 좋아하던 음식이 뭐였어요?',
+    '학교 다닐 적에 제일 친했던 친구는 어떤 분이었어요?',
+    '젊으셨을 때 무슨 일 하셨어요? 궁금해요!',
+    '가장 오래 살았던 동네는 어디예요?',
+    '명절에는 주로 뭘 하셨어요?',
+    '처음 서울(도시)에 오셨을 때 기억나세요?',
+    '지금까지 살면서 제일 잘했다 싶은 일이 뭐예요?',
+    '요즘 가장 자주 생각나는 사람이 있으세요?',
+    '옛날에 즐겨 듣던 노래가 있으세요?',
+    '어머니(아버지) 하면 제일 먼저 뭐가 떠오르세요?',
+    '살면서 제일 크게 웃었던 날이 언제였어요?',
+    '어릴 적 집은 어떻게 생겼었어요? 마당이 있었어요?'
+  ];
   var _talkLast='';
   function _nextTalk(){
-    var kinds=['care','care','chat','content','memoir'];   // 감성케어를 조금 더 자주
-    if(window._KIOSK_BROWSE) kinds=['care','care','chat','content']; // 키오스크: 자서전은 대화방에서만
-    var pick=_rndOne(kinds.filter(function(k){ return k!==_talkLast; }) || kinds);
-    if(!pick) pick='care';
+    // 비중(Macho 2026-07-20): 취재 36% / 감성케어 27% / 잡담 18% / 콘텐츠 9% / 자서전화면 9%
+    var kinds=['interview','interview','interview','interview','care','care','care','chat','chat','content','memoir'];
+    if(window._KIOSK_BROWSE) kinds=['care','care','chat','content']; // 키오스크: 취재는 대화방에서만
+    var avail=kinds.filter(function(k){ return k!==_talkLast; });
+    var pick=_rndOne(avail.length?avail:kinds) || 'care';
     _talkLast=pick;
+    if(pick==='interview'){   // 삶을 캐는 씨앗 질문 → 답하면 서버 봄이가 이어서 파고듦
+      return bomMsgRow(_rndOne(BOM_INTERVIEW_SEEDS),'bom_think');
+    }
     if(pick==='care'){   // 날씨·건강·안부 (계절별)
       var pool=TIPS_BY_SEASON[seasonKey()].concat(TIPS_GENERAL).concat(BOM_GREET2_COMMON);
       return bomMsgRow(_rndOne(pool),'bom_calm');
@@ -3622,7 +3647,11 @@ body.dark .bom-guide-text{color:#c8bba4}
       var fn=firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
       // ★대화 맥락 전달 — 예전엔 한 마디만 보내서 봄이가 방금 한 말도 기억 못 했음.
       //   최근 6턴만(길면 비용·지연↑). 장기 기억은 서버가 bom_memory에서 붙임.
-      return fn({ message: msg, history: _bomTurns.slice(-7, -1) });
+      // 호칭도 함께 — 서버가 모르면 "우리 할머니(할아버지)께"처럼 얼버무린다(실제 사고).
+      // ★성별이 확실할 때만 보냄. 애매하면 안 보내고 서버가 '어르신'으로 고정.
+      var _hon=''; try{ var h=localStorage.getItem('dasibom_honorific')||'';
+        if(h==='할머니'||h==='할아버지') _hon=h; }catch(e){}
+      return fn({ message: msg, history: _bomTurns.slice(-7, -1), honorific: _hon });
     }).then(function(res){
       var t=document.getElementById('bcpTyping'); if(t) t.remove();
       var reply=(res.data&&res.data.text)||'';

@@ -524,6 +524,23 @@ const BOM_SYSTEM_PROMPT_BASE =
 5. 오늘 날짜·요일을 물으시면 반드시 아래 [오늘 정보]에 적힌 실제 날짜로만 답하세요. 모르면서 날짜·요일을 지어내지 마세요 — 특히 어르신이 날짜를 헷갈려하실 때 틀린 날짜를 알려드리면 혼란을 더 키울 수 있습니다.`;
 
 // 매 호출마다 실제 한국 날짜를 프롬프트에 주입 — 모델이 지어낸 날짜를 답하는 것 방지(시뮬레이션 중 발견된 문제)
+/* ★대화 취재 지침 (2026-07-20 Macho) — 홈 챗봇(chatBom)에만 적용.
+   "자서전 화면으로 가세요"라고 떠넘기지 말고, 이 잡담 자체가 자서전 취재가 되게 한다.
+   여기서 캐낸 이야기는 bom_memory.snippets로 쌓여 자서전 질문 화면에서 되살아난다.
+   ※키오스크(chatBomCare)는 15문항 구조가 따로 있어 적용하지 않는다(충돌 방지). */
+const BOM_INTERVIEW_BLOCK = `
+
+[대화 취재 — 매우 중요]
+당신과 나눈 이야기는 어르신의 자서전 재료가 됩니다. 그래서 답변 3번 중 1번쯤은,
+어르신 말씀에서 실마리를 잡아 '그분의 삶'으로 한 겹 더 들어가는 질문을 자연스럽게 덧붙이세요.
+- 오늘 이야기에서 옛 이야기로 잇기.
+  (예: "김치찌개 드셨어요?" → "어릴 적에도 자주 드셨어요? 누가 해주시던 맛이에요?")
+- 사람·장소·시절·그때의 마음을 물으세요. 사실 확인이 아니라 추억이 떠오르게 하는 질문으로.
+- ★한 번에 하나만. 취조하듯 연달아 캐묻지 마세요.
+- 어르신이 짧게 답하거나 말을 아끼시면 더 묻지 말고 그냥 공감만 하고 넘어가세요.
+- 이미 들은 이야기를 또 묻지 마세요.
+- 나머지 답변은 평소처럼 편하게 수다 떨듯 하세요(질문 없이 공감만 해도 좋습니다).`;
+
 function bomSystemPrompt(extra) {
   const kstStr = new Date().toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
   return BOM_SYSTEM_PROMPT_BASE + `\n[오늘 정보] 오늘은 ${kstStr}입니다.` + (extra || '');
@@ -657,10 +674,17 @@ exports.chatBom = functions
     const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL;
     let text;
     try {
+      /* 호칭 — ★성별이 확실할 때만 '할머니/할아버지', 아니면 '어르신' 고정(Macho 2026-07-20).
+         로그인 안 했거나 온보딩에서 성별을 안 골랐으면 값이 비거나 엉뚱할 수 있는데,
+         그걸 그대로 쓰면 할머니께 '할아버지'라고 부르는 오호칭이 난다. 그래서 화이트리스트 검증. */
+      const _raw = String((data && data.honorific) || '').trim();
+      const _hon = (_raw === '할머니' || _raw === '할아버지') ? _raw : '어르신';
+      const honBlock = `\n[호칭] 이 어르신은 반드시 '${_hon}'이라고만 부르세요.` +
+        ` 다른 호칭을 섞거나 "할머니(할아버지)"처럼 얼버무리지 말고, 성별을 추측하지 마세요.`;
       text = await aiText({ tag: 'chatBom',
-        system: bomSystemPrompt(bomMemoryBlock(mem)),
+        system: bomSystemPrompt(bomMemoryBlock(mem) + honBlock + BOM_INTERVIEW_BLOCK),
         user: bomUserBlock(history, message),
-        maxTokens: 220,
+        maxTokens: 260,   // 공감 + 되묻기 한 줄이 들어가므로 약간 여유(실측 출력은 ~50토큰)
         model: useModel
       });
     } catch (e) {
