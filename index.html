@@ -3415,10 +3415,12 @@ body.dark .bom-guide-text{color:#c8bba4}
   ];
 
   // ── 말풍선 순차 등장 — 한꺼번에 3개가 아니라 살아있는 사람처럼 시간차로 말을 건다 ──
-  var BCP_DELAY2 = 60000;   // [조정] 2번째(자서전 유도) 말풍선까지 간격
-  var BCP_DELAY3 = 150000;  // [조정] 3번째(콘텐츠/잡담) 말풍선까지 간격
-  var _bcpStage = 0;        // 이 페이지 방문 동안 몇 번째 말풍선까지 보여줬나 (재오픈 시 기다림 반복 방지)
+  var BCP_TALK_EVERY = 60000;  // [조정] 봄이가 먼저 말 거는 주기(1분). 창이 열려 있는 동안 계속.
   var _bcpTimers = [];
+  // ★첫 인사는 '한 마디'만 — 창을 열자마자 2개가 쌓여 있으면 어색하다.
+  //   두 번째 말("오늘 기분 어떠세요?" 등)은 1분 뒤 대화 주기로 자연스럽게 이어진다.
+  //   _bomFirstText: 방금 만든 인사의 순수 텍스트 → 음성이 '보이는 문장 그대로' 읽도록.
+  var _bomFirstText='';
   function _bubble1(){
     var ma={}; try{ ma=JSON.parse(localStorage.getItem('memoir_answers')||'{}'); }catch(e){}
     var answered=Object.keys(ma).filter(function(k){ return String(ma[k]||'').trim()!==''; }).length;
@@ -3428,23 +3430,8 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(firstToday && answered>0) greet='<b>'+esc(honTxt)+'</b>, 오늘도 와주셨네요! 기다리고 있었어요 🌸';
     else if(answered>0) greet='다시 오셨네요, <b>'+esc(honTxt)+'</b>! 🌸';
     else greet='안녕하세요, <b>'+esc(honTxt)+'</b>! 저는 봄이예요 🌸';
-    var pool2=(BOM_GREET2[_season]||[]).concat(BOM_GREET2_COMMON);
-    return bomMsgRow(greet,'bom_smile') + bomMsgRow(_rndOne(pool2),'bom_think');
-  }
-  function _bubble2(){
-    // 키오스크 세션: 자서전은 키오스크 대화로만 — 홈에선 유도하지 않고 가벼운 잡담만
-    if(window._KIOSK_BROWSE) return bomMsgRow(_rndOne(BOM_CHAT5), bomFaceFor('?'));
-    // 자서전 유도 — 탭하면 자서전 화면으로 이동(입력·예시가이드가 거기 있음). 오늘 몫 끝났으면 랜덤 잡담.
-    var qi=nextQuestions();
-    if(qi.list.length){
-      return bomMsgRow('저 '+esc(honTxt)+' 이야기가 또 궁금해졌어요. 오늘의 질문이에요 —','bom_wink')
-        + bomMsgRow('<a class="bcp-qprev" href="/memoir?continue=1" style="text-decoration:none;color:inherit;display:block">'+esc(qi.list[0])+'<span class="bcp-qarrow"> ›</span></a>','bom_sparkle');
-    }
-    return bomMsgRow(_rndOne(BOM_CHAT5), bomFaceFor('?'));
-  }
-  function _bubble3(){
-    var cMsg=bomContentMsg();
-    return bomMsgRow(cMsg || _rndOne(BOM_CHAT5), cMsg?'bom_wink':bomFaceFor('?'));
+    _bomFirstText=greet.replace(/<[^>]*>/g,'');
+    return bomMsgRow(greet,'bom_smile');
   }
   function _appendStaged(html){
     var b=document.getElementById('bcpBody'); if(!b) return;
@@ -3458,31 +3445,62 @@ body.dark .bom-guide-text{color:#c8bba4}
       bb.insertAdjacentHTML('beforeend',html); bb.scrollTop=bb.scrollHeight;
     },1200);
   }
-  function _advanceStage(n){
-    if(n<=_bcpStage) return;
-    _bcpStage=n;
-    _appendStaged(n===2?_bubble2():_bubble3());
+  /* ★봄이가 먼저 거는 말 — 1분마다 계속(예전엔 3개 하고 영영 멈췄음).
+     종류를 섞는다: 감성케어(날씨·건강·안부) / 자서전 유도 / 콘텐츠 유도 / 일상 잡담.
+     같은 종류가 연달아 나오지 않게 하고, 창이 열려 있을 때만 말한다. */
+  var _talkLast='';
+  function _nextTalk(){
+    var kinds=['care','care','chat','content','memoir'];   // 감성케어를 조금 더 자주
+    if(window._KIOSK_BROWSE) kinds=['care','care','chat','content']; // 키오스크: 자서전은 대화방에서만
+    var pick=_rndOne(kinds.filter(function(k){ return k!==_talkLast; }) || kinds);
+    if(!pick) pick='care';
+    _talkLast=pick;
+    if(pick==='care'){   // 날씨·건강·안부 (계절별)
+      var pool=TIPS_BY_SEASON[seasonKey()].concat(TIPS_GENERAL).concat(BOM_GREET2_COMMON);
+      return bomMsgRow(_rndOne(pool),'bom_calm');
+    }
+    if(pick==='content'){
+      var c=bomContentMsg();
+      if(c) return bomMsgRow(c,'bom_wink');
+    }
+    if(pick==='memoir'){
+      var qi=nextQuestions();
+      if(qi.list.length){
+        return bomMsgRow('저 '+esc(honTxt)+' 이야기가 또 궁금해졌어요. 오늘의 질문이에요 —','bom_wink')
+          + bomMsgRow('<a class="bcp-qprev" href="/memoir?continue=1" style="text-decoration:none;color:inherit;display:block">'+esc(qi.list[0])+'<span class="bcp-qarrow"> ›</span></a>','bom_sparkle');
+      }
+    }
+    return bomMsgRow(_rndOne(BOM_CHAT5), bomFaceFor('?'));   // 일상 잡담(폴백 겸용)
   }
-  window._bcpAdvance=_advanceStage; // QA용
+  function _startTalkCycle(){
+    _bcpTimers.forEach(clearInterval); _bcpTimers.forEach(clearTimeout); _bcpTimers=[];
+    _bcpTimers.push(setInterval(function(){
+      var p=document.getElementById('bomChatPanel');
+      if(!p || !p.classList.contains('open')) return;   // 닫혀 있으면 말하지 않음
+      _appendStaged(_nextTalk());
+    }, BCP_TALK_EVERY));
+  }
+  function _stopTalkCycle(){ _bcpTimers.forEach(clearInterval); _bcpTimers.forEach(clearTimeout); _bcpTimers=[]; }
+  window._bcpTalkNow=function(){ _appendStaged(_nextTalk()); };  // QA용
   function render(){
     var b=document.getElementById('bcpBody'); if(!b) return;
     _bomChatStarted=false; _bomFaceIdx=0;
-    _bcpTimers.forEach(clearTimeout); _bcpTimers=[];
-    // 이미 등장했던 말풍선까지는 즉시 복원, 나머지만 시간차 등장
-    var h=_bubble1();
-    if(_bcpStage>=2) h+=_bubble2();
-    if(_bcpStage>=3) h+=_bubble3();
-    b.innerHTML=h;
+    b.innerHTML=_bubble1();      // 첫 인사 한 마디만
     b.scrollTop=b.scrollHeight;
-    if(_bcpStage<2) _bcpTimers.push(setTimeout(function(){ _advanceStage(2); }, BCP_DELAY2));
-    if(_bcpStage<3) _bcpTimers.push(setTimeout(function(){ _advanceStage(3); }, BCP_DELAY3));
+    _startTalkCycle();           // 이후 1분마다 이어서 말 걸기
   }
   window.bomChatToggle=function(force){
     var p=document.getElementById('bomChatPanel'), g=document.getElementById('bomGreet'), dot=document.getElementById('bomDot');
     var isOpen=p.classList.contains('open')&&!p.classList.contains('closing');
     var open=(typeof force==='boolean')?force:!isOpen;
-    if(open){ render(); p.classList.remove('closing'); p.classList.add('open'); if(g)g.style.display='none'; if(dot)dot.style.display='none'; if(window.BomVoice) BomVoice.say('안녕하세요, 봄이예요! 무엇이든 편하게 물어보세요.'); }
+    if(open){
+      render(); p.classList.remove('closing'); p.classList.add('open');
+      if(g)g.style.display='none'; if(dot)dot.style.display='none';
+      // ★음성은 화면에 뜬 그 인사를 그대로 읽는다(예전엔 고정 대사라 글과 말이 달랐음)
+      if(window.BomVoice) BomVoice.say(_bomFirstText||'안녕하세요, 봄이예요!');
+    }
     else if(p.classList.contains('open')&&!p.classList.contains('closing')){
+      _stopTalkCycle();   // 닫으면 말 걸기 중단
       p.classList.add('closing');
       var done=function(){ p.classList.remove('open'); p.classList.remove('closing'); };
       var t=setTimeout(done,320);
