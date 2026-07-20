@@ -117,6 +117,20 @@ export default function App() {
     localStorage.setItem('plant_badges', JSON.stringify(badges));
   }, [badges]);
   
+  // 지난 방문 이후 마른 만큼 물 감소(하루 ~30%) — '데모 분단위'를 '실생활 일단위'로
+  useEffect(() => {
+    try {
+      const last = parseInt(localStorage.getItem('plant_last_seen') || '0', 10);
+      const now = Date.now();
+      localStorage.setItem('plant_last_seen', String(now));
+      if (!last) return;
+      const hours = (now - last) / 3600000;
+      if (hours < 1) return;
+      const dry = Math.min(90, Math.round(hours * 1.25));
+      setSlots(prev => prev.map(pl => pl ? { ...pl, waterLevel: Math.max(0, pl.waterLevel - dry) } : null));
+    } catch (e) {}
+  }, []);
+
   const [levelUpState, setLevelUpState] = useState({ active: false, index: -1 });
   const [graduationData, setGraduationData] = useState<{ isOpen: boolean, plant: UserPlant | null, index: number }>({ isOpen: false, plant: null, index: -1 });
   const [prevSlots, setPrevSlots] = useState(slots);
@@ -248,11 +262,19 @@ export default function App() {
       if (!targetPlant) return prev;
       const newPlant = { ...targetPlant };
 
-      let waterIncrease = type === 'water' ? 1 : type === 'normal_nut' ? 10 : 30;
+      let waterIncrease = type === 'water' ? 15 : type === 'normal_nut' ? 10 : 30;
       let levelIncrease = type === 'water' ? 0 : type === 'normal_nut' ? 1 : 2;
+      // 물주기: 하루 첫 물은 정성으로 쳐서 레벨+1 (자동 성장 폐지 — 매일 들르는 이유)
+      if (type === 'water') {
+        const today = new Date().toISOString().slice(0, 10);
+        if ((newPlant as any).lastWaterDay !== today) {
+          levelIncrease = 1;
+          (newPlant as any).lastWaterDay = today;
+        }
+      }
       
       // Time of day bonuses for water level
-      if (type === 'water' && timeOfDay === 'day') waterIncrease = 3;
+      if (type === 'water' && timeOfDay === 'day') waterIncrease = 25;
       if (type !== 'water' && timeOfDay === 'night') waterIncrease = Math.floor(waterIncrease * 1.5);
       
       newPlant.waterLevel = Math.min(100, newPlant.waterLevel + waterIncrease);
@@ -304,82 +326,34 @@ export default function App() {
   }, [currentSlotIndex]);
 
   useEffect(() => {
+    // 10분마다 날씨 따라 물만 마른다(자동 레벨업 폐지 — 성장은 손길과 영양제로만)
     const timer = setInterval(() => {
-      setSlots(prev => {
-        let totalYield = 0;
-        const newSlots = prev.map(p => {
-          if (!p) return null;
-          
-          const currentW = weatherRef.current;
-          let waterDelta = -1; // Default consumption
-          let levelDelta = 1;
-          let coinBonus = 0;
-
-          switch (currentW) {
-            case 'cloudy': waterDelta = -1; break;
-            case 'sunny': waterDelta = -2; coinBonus = 1; break;
-            case 'rainy': waterDelta = 5; coinBonus = -999; break; // Rain provides water, but no coins
-            case 'snowy': waterDelta = 0; levelDelta = 0; coinBonus = -999; break; // Frozen growth
-            case 'hot': waterDelta = -4; coinBonus = 3; break; // Fast consumption, high yield
-            case 'clear': waterDelta = -1; levelDelta = 2; coinBonus = 2; break; // Best weather
-            case 'typhoon': waterDelta = -3; levelDelta = 0; coinBonus = -999; break; // Destructive
-          }
-
-          let newWater = Math.max(0, Math.min(100, p.waterLevel + waterDelta));
-          let newStage = p.stage;
-          let newLevel = p.level;
-
-          // Penalty/Condition: Need water (>30) to grow
-          if (newWater > 30 && levelDelta > 0) {
-            newLevel = Math.min(10, newLevel + levelDelta);
-            if (newLevel >= 2 && p.stage === 'seed') newStage = 'sprout';
-            if (newLevel >= 5 && p.stage === 'sprout') newStage = 'mature';
-            // Reward/Condition: Graduation requires Max Level
-            if (newLevel >= 10 && p.stage === 'mature') newStage = 'old';
-          }
-
-          // (꽃잎 전환) 자동 코인 생성 제거 — 꽃잎은 서버에서만 발행된다. coinBonus는 성장연출용으로만 유지.
-          void coinBonus;
-
-          let phrase = p.phrase;
-          if (newStage === 'old' && p.stage !== 'old') {
-             const emotionalPhrases = GRADUATION_EMOTIONAL_PHRASES[p.type.dialect] || [];
-             phrase = emotionalPhrases[Math.floor(Math.random() * emotionalPhrases.length)] || p.phrase;
-          }
-          return { ...p, waterLevel: newWater, stage: newStage, level: newLevel, phrase };
-        });
-
-        void totalYield;
-        return newSlots;
-      });
-    }, 60000);
+      setSlots(prev => prev.map(p => {
+        if (!p) return null;
+        const currentW = weatherRef.current;
+        let waterDelta = -1;
+        switch (currentW) {
+          case 'sunny': waterDelta = -2; break;
+          case 'rainy': waterDelta = 5; break;
+          case 'snowy': waterDelta = 0; break;
+          case 'hot': waterDelta = -4; break;
+          case 'typhoon': waterDelta = -3; break;
+          default: waterDelta = -1;
+        }
+        return { ...p, waterLevel: Math.max(0, Math.min(100, p.waterLevel + waterDelta)) };
+      }));
+    }, 600000);
     return () => clearInterval(timer);
   }, []);
 
   useEffect(() => {
-    const seasonTimer = setInterval(() => {
-      setSeason(s => {
-        const seasons = ['spring', 'summer', 'autumn', 'winter'] as const;
-        const nextIndex = (seasons.indexOf(s) + 1) % seasons.length;
-        const nextSeason = seasons[nextIndex];
-        
-        // Update plant phrases
-        setSlots(prev => prev.map(p => {
-          if (!p) return null;
-          let phrase = p.phrase;
-          if (p.stage === 'old') {
-             const emotionalPhrases = GRADUATION_EMOTIONAL_PHRASES[p.type.dialect] || [];
-             phrase = emotionalPhrases[Math.floor(Math.random() * emotionalPhrases.length)] || p.phrase;
-          } else {
-             const phrases = DIALOGUES[`season_${nextSeason}` as keyof typeof DIALOGUES]?.[p.stage] || [];
-             phrase = phrases[Math.floor(Math.random() * phrases.length)] || p.phrase;
-          }
-          return { ...p, phrase };
-        }));
-
-        return nextSeason;
-      });
-    }, 60000); // 1 minute per season
+    // 계절은 실제 달력을 따른다(창밖과 같은 계절 — 1분 순환은 데모용이었음)
+    const bySeason = () => {
+      const m = new Date().getMonth() + 1;
+      return m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter';
+    };
+    setSeason(bySeason());
+    const seasonTimer = setInterval(() => setSeason(bySeason()), 3600000);
     return () => clearInterval(seasonTimer);
   }, []);
 
@@ -415,7 +389,7 @@ export default function App() {
 
         return newlyGenerated;
       });
-    }, 45000);
+    }, 600000);   // 날씨는 10분마다 — 정신없지 않게
     return () => clearInterval(weatherTimer);
   }, []);
 
@@ -538,8 +512,8 @@ export default function App() {
             </div>
           </div>
           <div className="flex gap-2">
-            <div className="flex items-center justify-center h-7 bg-purple-500/90 backdrop-blur-md rounded-full shadow border-2 border-white px-3 gap-1 text-white font-bold text-[10px]">
-              ✨ {timeOfDay === 'morning' ? '아침엔 쓰다듬기' : timeOfDay === 'day' ? '물주기 효율 3배' : '영양제 수분 1.5배'}
+            <div className="flex items-center justify-center h-8 bg-purple-500/90 backdrop-blur-md rounded-full shadow border-2 border-white px-3.5 gap-1 text-white font-bold text-[13px]">
+              {timeOfDay === 'morning' ? '🌅 아침엔 쓰다듬어 주세요' : timeOfDay === 'day' ? '☀️ 낮엔 물이 쑥쑥!' : '🌙 밤엔 영양제가 쑥쑥!'}
             </div>
           </div>
         </div>
@@ -579,23 +553,23 @@ export default function App() {
 
         {/* Bottom Actions */}
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 md:gap-4 px-2 pointer-events-auto">
-          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[85px] h-28 md:w-24 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[100px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'day' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
-            <Droplet className="w-7 h-7 md:w-8 md:h-8 mb-1 drop-shadow relative z-10" fill="currentColor" />
-            <span className="font-bold text-[11px] md:text-xs drop-shadow-md tracking-tight text-center relative z-10">{timeOfDay === 'day' ? <span className="text-yellow-200">+3%</span> : '+1%'}<br/>물주기</span>
-            <span className="font-medium text-[9px] md:text-[10px] bg-black/20 px-2 py-0.5 rounded-full mt-1 relative z-10">무료</span>
+            <Droplet className="w-8 h-8 md:w-9 md:h-9 mb-1 drop-shadow relative z-10" fill="currentColor" />
+            <span className="font-bold text-[15px] md:text-base drop-shadow-md tracking-tight text-center relative z-10">물주기</span>
+            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10">무료</span>
           </button>
-          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[85px] h-28 md:w-24 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[100px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
-            <Coins className="w-7 h-7 md:w-8 md:h-8 mb-1 drop-shadow relative z-10" />
-            <span className="font-bold text-[10px] md:text-[11px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">LV +1, {timeOfDay === 'night' ? <span className="text-yellow-200">물+15%</span> : '물+10%'}<br/>일반영양제</span>
-            <span className="font-medium text-[9px] md:text-[10px] bg-black/20 px-2 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3 h-3" />15</span>
+            <span className="text-2xl mb-0.5 relative z-10">🌿</span>
+            <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">영양제<br/><span className="text-[11px] font-semibold opacity-90">잎이 쑥 자라요</span></span>
+            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
           </button>
-          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[85px] h-28 md:w-24 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[100px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
-            <Coins className="w-7 h-7 md:w-8 md:h-8 mb-1 drop-shadow relative z-10" />
-            <span className="font-bold text-[10px] md:text-[11px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">LV +2, {timeOfDay === 'night' ? <span className="text-yellow-200">물+45%</span> : '물+30%'}<br/>고급영양제</span>
-            <span className="font-medium text-[9px] md:text-[10px] bg-black/20 px-2 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3 h-3" />40</span>
+            <span className="text-2xl mb-0.5 relative z-10">✨</span>
+            <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">고급 영양제<br/><span className="text-[11px] font-semibold opacity-90">쑥쑥 두 배!</span></span>
+            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />40</span>
           </button>
         </div>
       </div>

@@ -78,7 +78,7 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
        rim = "bg-[#f8b500]";
        text = "text-[#c59b3a]";
    } else if (potId === 'pot3') { // 무늬
-       bg = "bg-[#e0c396] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]";
+       bg = "bg-gradient-to-b from-[#e8cf9f] via-[#d9b87f] to-[#e0c396]";
        rim = "bg-[#c8986a]";
    } else if (potId === 'pot4') { // 백자
        bg = "bg-gradient-to-b from-[#ffffff] to-[#e6e6e6]";
@@ -89,7 +89,7 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
        rim = "bg-[#8bb399]";
        text = "text-[#3d5a48]";
    } else if (potId === 'pot6') { // 나무
-       bg = "bg-[#8b5a2b] bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]";
+       bg = "bg-gradient-to-b from-[#9a6a38] via-[#7c4f26] to-[#8b5a2b]";
        rim = "bg-[#6b4226]";
        text = "text-[#3d2314]";
    } else if (potId === 'pot7') { // 유리
@@ -97,11 +97,11 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
        rim = "bg-white/50 backdrop-blur-md";
        text = "text-white drop-shadow-md";
    } else if (potId === 'pot8') { // 대리석
-       bg = "bg-[#e8e8e8] bg-[url('https://www.transparenttextures.com/patterns/white-marble.png')]";
+       bg = "bg-gradient-to-br from-[#f4f4f4] via-[#dcdcdc] to-[#ececec]";
        rim = "bg-[#d0d0d0]";
        text = "text-[#4a4a4a]";
    } else if (potId === 'pot9') { // 돌
-       bg = "bg-[#8c8c8c] bg-[url('https://www.transparenttextures.com/patterns/concrete-wall.png')]";
+       bg = "bg-gradient-to-b from-[#9a9a9a] via-[#7f7f7f] to-[#8c8c8c]";
        rim = "bg-[#737373]";
        text = "text-[#262626]";
    } else if (potId === 'pot10') { // 테라코타
@@ -193,9 +193,18 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
            className="relative flex flex-col items-center z-10 transition-transform duration-300 group-hover:scale-105 group-active:scale-95 group-hover:-rotate-3"
         >
 
-          <div className="text-[6rem] md:text-[8rem] filter drop-shadow-2xl z-20 -mb-8 pointer-events-none">
+          <motion.div
+            animate={{ rotate: [-1.6, 1.6, -1.6] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            className={`filter drop-shadow-2xl z-20 -mb-8 pointer-events-none origin-bottom ${
+              plant.stage === 'seed' ? 'text-[3.5rem] md:text-[4.5rem]'
+              : plant.stage === 'sprout' ? 'text-[5rem] md:text-[6rem]'
+              : plant.stage === 'mature' ? 'text-[6.5rem] md:text-[8rem]'
+              : 'text-[8rem] md:text-[10rem]'
+            }`}
+          >
             {getEmoji(plant.type.type, plant.stage, plant.type.emoji)}
-          </div>
+          </motion.div>
           
           <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel)} />
         </motion.div>
@@ -206,7 +215,7 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -10, scale: 0.95 }}
-            className="absolute -top-[60px] md:-top-[76px] bg-white/95 backdrop-blur-sm text-gray-800 px-4 md:px-5 py-2 md:py-3 rounded-2xl md:rounded-3xl shadow-xl w-[220px] md:w-[260px] text-center break-keep font-bold text-sm md:text-base border-2 border-white pointer-events-none"
+            className="absolute -top-[72px] md:-top-[88px] bg-white/95 backdrop-blur-sm text-gray-800 px-5 md:px-6 py-3 md:py-3.5 rounded-2xl md:rounded-3xl shadow-xl w-[260px] md:w-[300px] text-center break-keep font-bold text-[16px] md:text-lg leading-relaxed border-2 border-white pointer-events-none"
           >
             {phrase}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r-2 border-b-2 border-transparent"></div>
@@ -252,7 +261,7 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
         <div className="space-y-2 md:space-y-2.5 relative z-10">
           {/* Growth Bar (Only growth bar is kept) */}
           <div className="bg-white/40 rounded-full p-1 border border-white/60 flex items-center shadow-inner">
-            <div className="px-2 text-[10px] md:text-xs font-bold text-green-700 w-14 md:w-16 flex items-center gap-1">
+            <div className="px-2 text-[13px] md:text-sm font-bold text-green-700 w-[70px] md:w-20 flex items-center gap-1">
                <Star className="w-3 h-3 fill-current" /> 레벨 {plant.level}
             </div>
             <div className="flex-1 bg-green-900/30 rounded-full h-3.5 md:h-4 mr-1 relative overflow-hidden">
@@ -262,7 +271,7 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
               >
                 <div className="absolute inset-0 bg-white/20"></div>
               </div>
-              <div className="absolute inset-0 flex items-center justify-center text-[9px] md:text-[10px] text-white font-bold drop-shadow-md">
+              <div className="absolute inset-0 flex items-center justify-center text-[12px] md:text-[13px] text-white font-bold drop-shadow-md">
                 {plant.stage === 'old' ? 'MAX' : <><AnimatedNumber value={parseFloat(growthPercent)} decimals={1} /> %</>}
               </div>
             </div>
