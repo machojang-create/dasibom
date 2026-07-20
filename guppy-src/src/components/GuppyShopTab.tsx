@@ -395,12 +395,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                 <p className="font-black text-slate-700 text-lg relative z-10">일반 구피</p>
                 <p className="text-xs text-slate-500 font-bold mb-4 relative z-10">확정 색상</p>
                 <button 
-                  onClick={() => handleBuy('normal', 30, true)}
-                  disabled={(petals ?? 0) < 30}
+                  onClick={() => handleBuy('normal', 200, true)}
+                  disabled={(petals ?? 0) < 200}
                   className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${gold >= 300 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}
                 >
                   <span>입양하기</span>
-                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 30</span>
+                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 200</span>
                 </button>
               </div>
 
@@ -420,12 +420,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                 <p className="font-black text-purple-700 text-lg relative z-10">희귀 구피</p>
                 <p className="text-xs text-slate-500 font-bold mb-4 relative z-10">확정 색상</p>
                 <button 
-                  onClick={() => handleBuy('rare', 50, true)}
-                  disabled={(petals ?? 0) < 50}
+                  onClick={() => handleBuy('rare', 1000, true)}
+                  disabled={(petals ?? 0) < 1000}
                   className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${gold >= 500 ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'}`}
                 >
                   <span>입양하기</span>
-                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 50</span>
+                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 1,000</span>
                 </button>
               </div>
 
@@ -445,12 +445,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                 <p className="font-black text-amber-600 text-lg relative z-10">전설 구피</p>
                 <p className="text-xs text-amber-500/70 font-bold mb-4 relative z-10">확정 색상</p>
                 <button 
-                  onClick={() => handleBuy('legendary', 120, true)}
-                  disabled={(petals ?? 0) < 120}
+                  onClick={() => handleBuy('legendary', 2000, true)}
+                  disabled={(petals ?? 0) < 2000}
                   className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${gold >= 1200 ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-slate-100 text-slate-400'}`}
                 >
                   <span>입양하기</span>
-                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 120</span>
+                  <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 2,000</span>
                 </button>
               </div>
             </div>
@@ -469,7 +469,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Random Normal */}
               <button 
-                onClick={() => handleBuy('normal', 10, false)} 
+                onClick={() => handleBuy('normal', 100, false)} 
                 disabled={gold < 100}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 100 ? 'hover:border-blue-300' : 'opacity-70'}`}
               >
@@ -477,12 +477,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <span className="text-xl">📦</span>
                   일반 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 100 ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 10</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 100 ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 100</span>
               </button>
               
               {/* Random Rare */}
               <button 
-                onClick={() => handleBuy('rare', 20, false)} 
+                onClick={() => handleBuy('rare', 500, false)} 
                 disabled={gold < 200}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 200 ? 'hover:border-purple-300' : 'opacity-70'}`}
               >
@@ -490,12 +490,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <span className="text-xl">📦✨</span>
                   희귀 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 200 ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 20</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 200 ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 500</span>
               </button>
               
               {/* Random Legendary */}
               <button 
-                onClick={() => handleBuy('legendary', 50, false)} 
+                onClick={() => handleBuy('legendary', 1000, false)} 
                 disabled={gold < 500}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 500 ? 'hover:border-amber-300' : 'opacity-70'}`}
               >
@@ -503,7 +503,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <span className="text-xl">📦🌟</span>
                   전설 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 500 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 50</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 500 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 1,000</span>
               </button>
             </div>
           </div>

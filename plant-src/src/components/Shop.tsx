@@ -34,7 +34,7 @@ export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: 
         
         <div className="grid grid-cols-2 gap-4 relative z-10 overflow-y-auto no-scrollbar pb-4 flex-1">
           {PLANT_TYPES.map(plant => {
-            const cannotAfford = money < 20;
+            const cannotAfford = money < 100;
             const isDisabled = isSlotFull || cannotAfford;
             return (
               <button 
@@ -47,7 +47,7 @@ export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: 
                   {plant.emoji}
                 </div>
                 <span className="text-[#e8f3ec] font-bold text-sm text-center">{plant.name}</span>
-                <span className={`text-xs mt-2 font-bold px-2 py-0.5 rounded-full ${cannotAfford ? 'text-red-400 bg-red-400/10' : 'text-[#d4af37] bg-[#d4af37]/10'}`}><Petal className="w-3 h-3 inline" /> 20 꽃잎</span>
+                <span className={`text-xs mt-2 font-bold px-2 py-0.5 rounded-full ${cannotAfford ? 'text-red-400 bg-red-400/10' : 'text-[#d4af37] bg-[#d4af37]/10'}`}><Petal className="w-3 h-3 inline" /> 100 꽃잎</span>
               </button>
             );
           })}
