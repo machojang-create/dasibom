@@ -1435,6 +1435,8 @@
     document.getElementById('di-enter-btn').addEventListener('click',function(){
       enterWrap.style.pointerEvents='none'; enterWrap.classList.remove('show');
       cascade.visible=true; cascadeActive=true; cascadeStart=clock.getElapsedTime();
+      // 안전장치: 연출(5초)이 어떤 이유로든 안 끝나면 강제 진입. 입장을 눌렀는데 못 들어가는 일은 없어야 함.
+      setTimeout(function(){ if(done) return; done=true; cascadeActive=false; window.onIntroComplete(); }, 12000);
     });
     // 건너뛰기
     document.getElementById('di-skip').addEventListener('click',function(){
@@ -2801,6 +2803,8 @@
       localStorage.setItem('dasibom_birthyear', String(state.year));
       localStorage.setItem('dasibom_onboarded', '1');
     }
+    // 홈 인사말은 페이지 로드 때 한 번만 그려지므로, 방금 고른 호칭을 즉시 다시 반영
+    if(window.refreshHomeGreet) window.refreshHomeGreet();
     ob.classList.add('dob-fade');
     ob.style.transition='opacity .6s ease';
     ob.style.opacity='0';
@@ -2850,7 +2854,7 @@
 /* ════════ 홈 호칭 인사 (온보딩 결과 반영) ════════
    저장된 dasibom_honorific 읽어 히어로 라벨을 개인 인사로
    (Headspace "Good Evening, Alex" 패턴) ════════ */
-(function(){
+window.refreshHomeGreet = function(){
   try{
     var h = localStorage.getItem('dasibom_honorific');
     if(!h) return; // 온보딩 안 한 사람은 기존 라벨 유지
@@ -2860,7 +2864,8 @@
     var part = (hr<11?'좋은 아침이에요':hr<17?'좋은 오후예요':hr<21?'좋은 저녁이에요':'편안한 밤이에요');
     el.textContent = h + ', ' + part;
   }catch(e){}
-})();
+};
+window.refreshHomeGreet();
 </script>
 
 <script>
@@ -3715,6 +3720,8 @@ body.dark .bom-guide-text{color:#c8bba4}
 
 <!-- ════ 이벤트 배너 + 공지 로더 ════ -->
 <style>
+/* nav(높이 74px, fixed)가 문서 최상단을 덮어 배너가 안 보이던 문제 — nav 바로 아래에 고정 */
+#eventBannerWrap{position:fixed;top:74px;left:0;right:0;z-index:49}
 .ev-banner{display:flex;align-items:center;justify-content:space-between;gap:10px;
   padding:11px 18px;font-size:14px;font-weight:700;color:#fff;cursor:pointer;
   border-bottom:1px solid rgba(255,255,255,.12);transition:opacity .2s}

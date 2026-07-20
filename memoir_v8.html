@@ -309,7 +309,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .q-private-btn{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;font-weight:600;padding:7px 14px;border-radius:50px;border:1.5px solid var(--sepiaP,#e7ddcf);background:#fff;color:var(--sepia,#9a8a7a);cursor:pointer}
 .q-private-btn.on{background:var(--green,#0e9d7d);color:#fff;border-color:transparent}
 .mode-row{display:flex;gap:8px;margin-bottom:16px}
-.mode-btn{flex:1;padding:9px 0;cursor:pointer;transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;border:1px solid var(--sepiaP)}
+.mode-btn{flex:1;padding:13px 0;cursor:pointer;transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;border:1px solid var(--sepiaP);min-height:46px}
 .mode-btn.on{background:var(--sepiaP);border-color:var(--sepiaL);color:var(--inkL)}
 .mode-btn:not(.on){background:transparent;color:var(--sepia)}
 .q-ta{width:100%;min-height:150px;padding:18px;background:var(--cream);border:1px solid var(--sepiaP);font-family:'Georgia','Batang',serif;font-size:calc(16px * var(--ts,1));color:var(--ink);line-height:2;resize:none;outline:none;box-sizing:border-box}
@@ -348,7 +348,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
   transition:all .2s;line-height:1.4;
 }
 .btn-q-next:active{transform:scale(.97)}
-.q-dashlink{background:none;border:none;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepiaL);cursor:pointer;opacity:.4;margin-top:4px;text-align:center}
+.q-dashlink{background:none;border:none;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;color:var(--sepiaL);cursor:pointer;opacity:.75;margin-top:4px;text-align:center;min-height:44px;padding:12px 8px}
 
 /* ── 제목 선택 화면 ── */
 #s-title{background:var(--warm);overflow-y:auto}
@@ -1802,7 +1802,7 @@ function renderDash(){
   el('progN').textContent=cnt;
   el('progOf').textContent='/ '+maxQ+' 완료';
   el('progFill').style.width=pct+'%';
-  if(pct>0)el('progLbl').textContent='당신의 이야기가 '+pct+'% 완성되었습니다';
+  el('progLbl').textContent = pct>0 ? '당신의 이야기가 '+pct+'% 완성되었습니다' : '첫 이야기를 기다리고 있어요';
   el('progSt').textContent=cnt===0?'아직 시작 전이에요':cnt<maxQ?'이어서 계속 써내려 가세요':'모든 이야기 완료 ✦';
 
   var btns=el('dashBtns'); btns.innerHTML='';
@@ -1855,6 +1855,13 @@ function renderDash(){
 }
 
 // 시작 진입점: 가격 비교 화면 없이 곧장 무료 15문항으로. 가격 제안은 자서전 완성 후 봄이가 묻는다(unlockPaidContinue).
+/* 인트로 대표 버튼 전용 — 이미 쓰신 내용이 있으면 절대 지우지 않고 이어쓰기로 보냄.
+   초기화는 대시보드 '처음부터'(확인창 있음)로만 가능. */
+function startOrContinue(){
+  var 쓴게있나 = APP.answers && Object.keys(APP.answers).length > 0;
+  if(쓴게있나){ renderDash(); go('s-dash'); return; }
+  startFreeJourney();
+}
 function startFreeJourney(){
   APP.pkg='free'; APP.maxQ=15; APP.printSet=null;
   APP.answers={}; APP.curQ=0; APP.preview=null; APP.bookTitle=''; APP.qDates={}; APP.qPrivate={};
@@ -1984,7 +1991,7 @@ function renderRecall(i,q){
   rc.innerHTML='<div style="background:#F2F8F0;border:1.5px solid #cfe6c8;border-radius:14px;padding:12px 14px;margin:2px 0 12px">'
     +'<div style="font-size:calc(13px*var(--ts,1));font-weight:800;color:#3d5c3a;margin-bottom:6px">💬 저번에 이런 이야기를 들려주셨어요</div>'
     +'<div style="font-size:calc(14px*var(--ts,1));color:#33402E;line-height:1.6;margin-bottom:10px">&ldquo;'+_rcEsc(rec.slice(0,120))+'&rdquo;</div>'
-    +'<button type="button" id="qrBtn" style="border:none;background:linear-gradient(135deg,#13d3a6,#0e9d7d);color:#fff;font-size:calc(13.5px*var(--ts,1));font-weight:800;padding:9px 16px;border-radius:50px;cursor:pointer;font-family:inherit">이 이야기 담기 ↓</button></div>';
+    +'<button type="button" id="qrBtn" style="border:none;background:linear-gradient(135deg,#13d3a6,#0e9d7d);color:#fff;font-size:calc(15px*var(--ts,1));font-weight:800;padding:13px 20px;border-radius:50px;cursor:pointer;font-family:inherit;min-height:44px">이 이야기 담기 ↓</button></div>';
   el('qrBtn').onclick=function(){
     setMode('text');
     var ta=el('tArea'); var cur=(ta.value||'').trim();
@@ -2672,7 +2679,7 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   }
 
-  el('btnStart').addEventListener('click',startFreeJourney);
+  el('btnStart').addEventListener('click',startOrContinue);
   el('btnContinue').addEventListener('click',function(){renderDash();go('s-dash');});
   el('btnDayDone').addEventListener('click',function(){renderDash();go('s-dash');});
   if(el('spHome')) el('spHome').addEventListener('click',function(){ location.href='/index.html'; });
@@ -2693,7 +2700,10 @@ document.addEventListener('DOMContentLoaded',function(){
     APP.pkg=card.dataset.pkg;
     APP.maxQ=Number(card.dataset.q);
     APP.printSet=selPrintSet;
-    APP.answers={};APP.curQ=0;APP.preview=null;APP.bookTitle='';APP.qDates={};APP.qPrivate={};
+    // 이미 쓰신 내용이 있으면 방식만 바꾸고 답변은 보존(2611행 의도와 일치) — 지우려면 대시보드 '처음부터'
+    if(!(APP.answers && Object.keys(APP.answers).length > 0)){
+      APP.answers={};APP.curQ=0;APP.preview=null;APP.bookTitle='';APP.qDates={};APP.qPrivate={};
+    }
     buildQuestionList();
     saveState();renderDash();go('s-dash');
   });

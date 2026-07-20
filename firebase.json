@@ -14,84 +14,252 @@
       "health_magnifier (1).html"
     ],
     "rewrites": [
-      { "source": "/auth/naver/callback.html", "destination": "/auth/naver/callback.html" },
-      { "source": "/admin",               "destination": "/admin.html" },
-      { "source": "/admin/**",            "destination": "/admin.html" },
-      { "source": "/kiosk",               "destination": "/carekiosk.html" },
-      { "source": "/kiosk/chat",          "destination": "/carechat.html" },
-      { "source": "/kiosk/chat/**",       "destination": "/carechat.html" },
-      { "source": "/kiosk/**",            "destination": "/carekiosk.html" },
-      { "source": "/care-report",         "destination": "/carereport.html" },
-      { "source": "/care-report/**",      "destination": "/carereport.html" },
-      { "source": "/care-consent",        "destination": "/careconsent.html" },
-      { "source": "/care-consent/**",     "destination": "/careconsent.html" },
-      { "source": "/family",              "destination": "/family.html" },
-      { "source": "/refund",              "destination": "/refund.html" },
-      { "source": "/subscribe",           "destination": "/subscribe.html" },
-      { "source": "/memoir",              "destination": "/memoir_v8.html" },
-      { "source": "/memoir/**",           "destination": "/memoir_v8.html" },
-      { "source": "/health",              "destination": "/health_magnifier.html" },
-      { "source": "/health/**",           "destination": "/health_magnifier.html" },
-      { "source": "/game",               "destination": "/game.html" },
-      { "source": "/game/**",            "destination": "/game.html" },
-      { "source": "/arcade",             "destination": "/arcade.html" },
-      { "source": "/arcade/**",          "destination": "/arcade.html" },
-      { "source": "/matgo",              "destination": "/matgo.html" },
-      { "source": "/matgo/**",           "destination": "/matgo.html" },
-      { "source": "/dream",              "destination": "/dream/index.html" },
-      { "source": "/gag",                "destination": "/gag/index.html" },
-      { "source": "/gag/**",             "destination": "/gag/index.html" },
-      { "source": "/maeum",              "destination": "/maeum/index.html" },
-      { "source": "/maeum/**",           "destination": "/maeum/index.html" },
-      { "source": "/maeumlab",           "destination": "/maeumlab/index.html" },
-      { "source": "/maeumlab/**",        "destination": "/maeumlab/index.html" },
-      { "source": "/debate",             "destination": "/debate/index.html" },
-      { "source": "/nostalgia",          "destination": "/nostalgia.html" },
-      { "source": "/nostalgia/**",       "destination": "/nostalgia.html" },
-      { "source": "/trendy",             "destination": "/trendy.html" },
-      { "source": "/trendy/**",          "destination": "/trendy.html" },
-      { "source": "/library",            "destination": "/library.html" },
-      { "source": "/library/**",         "destination": "/library.html" },
-      { "source": "/letter",             "destination": "/letter.html" },
-      { "source": "/letter/**",          "destination": "/letter.html" },
-      { "source": "/people",             "destination": "/people.html" },
-      { "source": "/terms",              "destination": "/terms.html" },
-      { "source": "/privacy",            "destination": "/privacy.html" },
-      { "source": "/portfolio",          "destination": "/portfolio/index.html" },
-      { "source": "/portfolio/**",       "destination": "/portfolio/index.html" },
-      { "source": "/**",                  "destination": "/index.html" }
+      {
+        "source": "/auth/naver/callback.html",
+        "destination": "/auth/naver/callback.html"
+      },
+      {
+        "source": "/admin",
+        "destination": "/admin.html"
+      },
+      {
+        "source": "/admin/**",
+        "destination": "/admin.html"
+      },
+      {
+        "source": "/kiosk",
+        "destination": "/carekiosk.html"
+      },
+      {
+        "source": "/kiosk/chat",
+        "destination": "/carechat.html"
+      },
+      {
+        "source": "/kiosk/chat/**",
+        "destination": "/carechat.html"
+      },
+      {
+        "source": "/kiosk/**",
+        "destination": "/carekiosk.html"
+      },
+      {
+        "source": "/care-report",
+        "destination": "/carereport.html"
+      },
+      {
+        "source": "/care-report/**",
+        "destination": "/carereport.html"
+      },
+      {
+        "source": "/care-consent",
+        "destination": "/careconsent.html"
+      },
+      {
+        "source": "/care-consent/**",
+        "destination": "/careconsent.html"
+      },
+      {
+        "source": "/family",
+        "destination": "/family.html"
+      },
+      {
+        "source": "/refund",
+        "destination": "/refund.html"
+      },
+      {
+        "source": "/subscribe",
+        "destination": "/subscribe.html"
+      },
+      {
+        "source": "/memoir",
+        "destination": "/memoir_v8.html"
+      },
+      {
+        "source": "/memoir/**",
+        "destination": "/memoir_v8.html"
+      },
+      {
+        "source": "/health",
+        "destination": "/health_magnifier.html"
+      },
+      {
+        "source": "/health/**",
+        "destination": "/health_magnifier.html"
+      },
+      {
+        "source": "/game",
+        "destination": "/game.html"
+      },
+      {
+        "source": "/game/**",
+        "destination": "/game.html"
+      },
+      {
+        "source": "/arcade",
+        "destination": "/arcade.html"
+      },
+      {
+        "source": "/arcade/**",
+        "destination": "/arcade.html"
+      },
+      {
+        "source": "/matgo",
+        "destination": "/matgo.html"
+      },
+      {
+        "source": "/matgo/**",
+        "destination": "/matgo.html"
+      },
+      {
+        "source": "/dream",
+        "destination": "/dream/index.html"
+      },
+      {
+        "source": "/gag",
+        "destination": "/gag/index.html"
+      },
+      {
+        "source": "/gag/**",
+        "destination": "/gag/index.html"
+      },
+      {
+        "source": "/maeum",
+        "destination": "/maeum/index.html"
+      },
+      {
+        "source": "/maeum/**",
+        "destination": "/maeum/index.html"
+      },
+      {
+        "source": "/maeumlab",
+        "destination": "/maeumlab/index.html"
+      },
+      {
+        "source": "/maeumlab/**",
+        "destination": "/maeumlab/index.html"
+      },
+      {
+        "source": "/debate",
+        "destination": "/debate/index.html"
+      },
+      {
+        "source": "/nostalgia",
+        "destination": "/nostalgia.html"
+      },
+      {
+        "source": "/nostalgia/**",
+        "destination": "/nostalgia.html"
+      },
+      {
+        "source": "/trendy",
+        "destination": "/trendy.html"
+      },
+      {
+        "source": "/trendy/**",
+        "destination": "/trendy.html"
+      },
+      {
+        "source": "/library",
+        "destination": "/library.html"
+      },
+      {
+        "source": "/library/**",
+        "destination": "/library.html"
+      },
+      {
+        "source": "/letter",
+        "destination": "/letter.html"
+      },
+      {
+        "source": "/letter/**",
+        "destination": "/letter.html"
+      },
+      {
+        "source": "/people",
+        "destination": "/people.html"
+      },
+      {
+        "source": "/terms",
+        "destination": "/terms.html"
+      },
+      {
+        "source": "/privacy",
+        "destination": "/privacy.html"
+      },
+      {
+        "source": "/portfolio",
+        "destination": "/portfolio/index.html"
+      },
+      {
+        "source": "/portfolio/**",
+        "destination": "/portfolio/index.html"
+      },
+      {
+        "source": "/**",
+        "destination": "/index.html"
+      }
     ],
     "headers": [
       {
+        "source": "/",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
         "source": "**/*.html",
         "headers": [
-          { "key": "Cache-Control",          "value": "no-cache, no-store, must-revalidate" },
-          { "key": "X-Frame-Options",        "value": "SAMEORIGIN" },
-          { "key": "X-Content-Type-Options", "value": "nosniff" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          },
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          }
         ]
       },
       {
         "source": "**/*.mp3",
         "headers": [
-          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
         ]
       },
       {
         "source": "/dasibom-*.js",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
         ]
       },
       {
         "source": "/@(memoir|health|game|arcade|matgo|nostalgia|trendy|library|letter|people|terms|privacy|refund|subscribe|family|admin|dream|gag|maeum|debate|maeumlab|kiosk|care-report|care-consent|portfolio)",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
         ]
       },
       {
         "source": "/@(memoir|health|game|arcade|matgo|nostalgia|trendy|library|letter|kiosk|care-report|care-consent)/**",
         "headers": [
-          { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
         ]
       }
     ]
