@@ -67,40 +67,20 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
   }, []);
 
   const PETAL_ITEM: Record<string, string> = { normal: 'guppy_special_normal', rare: 'guppy_special_rare', legendary: 'guppy_special_legendary' };
+  const RAND_ITEM: Record<string, string> = { normal: 'guppy_seed_rand_normal', rare: 'guppy_seed_rand_rare', legendary: 'guppy_seed_rand_legendary' };
   const handleBuy = (rarity: string, cost: number, isSpecial: boolean) => {
-    if (isSpecial) {
-      // 특별(한정) 품종은 다시봄 꽃잎으로 — 서버 차감 성공 시에만 입양
-      (spendPetal as any)(PETAL_ITEM[rarity], (ok: boolean) => {
-        if (!ok) return;
-        const spawnedData = onSpawn(rarity, true);
-        if (spawnedData) {
-          setRevealingGuppy(spawnedData);
-          setIsSpecialReveal(true);
-          setRevealed(true);
-          setIsHatching(false);
-        }
-      });
-      return;
-    }
-    if (gold >= cost) {
+    // 꽃잎 단일 화폐: 모든 입양은 서버 차감 성공 시에만
+    const item = isSpecial ? PETAL_ITEM[rarity] : RAND_ITEM[rarity];
+    (spendPetal as any)(item, (ok: boolean) => {
+      if (!ok) return;
       const spawnedData = onSpawn(rarity, isSpecial);
       if (spawnedData) {
-        setGold(prev => prev - cost);
         setRevealingGuppy(spawnedData);
         setIsSpecialReveal(isSpecial);
-        if (isSpecial) {
-          // Direct purchase bypasses seal state & reveals immediately with full fanfare
-          setRevealed(true);
-          setIsHatching(false);
-        } else {
-          // Random purchase needs clicking of the box/egg to crack open
-          setRevealed(false);
-          setIsHatching(false);
-        }
+        setRevealed(isSpecial);   // 랜덤은 알 깨기 연출 유지
+        setIsHatching(false);
       }
-    } else {
-      alert("조개가 부족합니다!");
-    }
+    });
   };
 
   const triggerHatchSequence = () => {
@@ -489,7 +469,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Random Normal */}
               <button 
-                onClick={() => handleBuy('normal', 100, false)} 
+                onClick={() => handleBuy('normal', 10, false)} 
                 disabled={gold < 100}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 100 ? 'hover:border-blue-300' : 'opacity-70'}`}
               >
@@ -497,12 +477,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <span className="text-xl">📦</span>
                   일반 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 100 ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}>🐚 100</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 100 ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 10</span>
               </button>
               
               {/* Random Rare */}
               <button 
-                onClick={() => handleBuy('rare', 200, false)} 
+                onClick={() => handleBuy('rare', 20, false)} 
                 disabled={gold < 200}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 200 ? 'hover:border-purple-300' : 'opacity-70'}`}
               >
@@ -510,12 +490,12 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <span className="text-xl">📦✨</span>
                   희귀 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 200 ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-400'}`}>🐚 200</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 200 ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 20</span>
               </button>
               
               {/* Random Legendary */}
               <button 
-                onClick={() => handleBuy('legendary', 500, false)} 
+                onClick={() => handleBuy('legendary', 50, false)} 
                 disabled={gold < 500}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 500 ? 'hover:border-amber-300' : 'opacity-70'}`}
               >
@@ -523,7 +503,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <span className="text-xl">📦🌟</span>
                   전설 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 500 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-400'}`}>🐚 500</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 500 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 50</span>
               </button>
             </div>
           </div>

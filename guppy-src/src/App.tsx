@@ -295,14 +295,14 @@ export default function App() {
     if (currentGuppies.length >= 10 && !achievementsRef.current.includes('10_guppies')) {
       achievementsRef.current.push('10_guppies');
       setAchievements(prev => [...prev, '10_guppies']);
-      setGold(g => g + 500);
-      showToast('대가족', '구피 10마리를 모았습니다! (500골드 지급)', '🐟');
+      setFoodInventory(prev => ({ ...prev, shrimp: prev.shrimp + 10 }));
+      showToast('대가족', '구피 10마리를 모았습니다! (새우 간식 10개!)', '🐟');
     }
     if (currentGuppies.some(g => g.data.rarity === '전설') && !achievementsRef.current.includes('first_legendary')) {
       achievementsRef.current.push('first_legendary');
       setAchievements(prev => [...prev, 'first_legendary']);
-      setGold(g => g + 1000);
-      showToast('전설의 시작', '전설 구피를 획득했습니다! (1000골드 지급)', '👑');
+      setFoodInventory(prev => ({ ...prev, krill: prev.krill + 10 }));
+      showToast('전설의 시작', '전설 구피를 획득했습니다! (크릴 간식 10개!)', '👑');
     }
   };
   const getInitialSeason = () => {
@@ -725,19 +725,18 @@ export default function App() {
 
 
   const handleCommune = useCallback((id: string) => {
-    if (gold >= 10) {
-      setGold(prev => prev - 10);
-      const updated = guppiesRef.current.map(g => g.id === id ? { ...g, xp: g.xp + 1, expression: "신남" } : g);
-      guppiesRef.current = updated;
-      setGuppiesState(updated);
-    }
-  }, [gold]);
+    // 꽃잎 단일화: 교감(쓰다듬기)은 무료 — 손길에 값을 매기지 않는다
+    const updated = guppiesRef.current.map(g => g.id === id ? { ...g, xp: g.xp + 1, expression: "신남" } : g);
+    guppiesRef.current = updated;
+    setGuppiesState(updated);
+  }, []);
 
   const handleRelease = useCallback((id: string, reward: number) => {
     const guppyToRelease = guppiesRef.current.find(g => g.id === id);
     if (!guppyToRelease) return;
     
-    setGold(prev => prev + reward);
+    // 꽃잎 단일화: 방생 보상은 화폐가 아니라 '떠나며 남긴 먹이'(아이템) — 클라 화폐 발행 금지 원칙
+    setFoodInventory(prev => ({ ...prev, premium: prev.premium + Math.max(1, Math.round(reward / 50)) }));
     
     // Calculate extra rewards based on rarity and level
     let extraRewards = [];
@@ -990,12 +989,7 @@ export default function App() {
             </div>
             <span className="font-bold text-lg">{petals.toLocaleString()}</span>
           </div>
-          <div className="flex flex-col items-center justify-center bg-blue-50 text-blue-800 rounded-2xl px-5 py-2 border border-blue-100 shadow-sm min-w-[110px]">
-            <div className="flex items-center gap-1.5 text-xs text-blue-500 font-bold">
-              <span className="text-sm">🐚</span> 바다 조개
-            </div>
-            <span className="font-bold text-lg">{Math.floor(gold).toLocaleString()}</span>
-          </div>
+          
           
           <div className="flex flex-col items-center justify-center bg-pink-50 text-pink-800 rounded-2xl px-5 py-2 border border-pink-100 shadow-sm min-w-[110px]">
             <div className="flex items-center gap-1.5 text-xs text-pink-500 font-bold">
@@ -1447,7 +1441,7 @@ export default function App() {
                               const statsBonus = Math.floor(guppy.stats.speed * 50);
                               const totalGold = baseBonus * rarityMultiplier + statsBonus;
                               
-                              setGold(prev => prev + totalGold);
+                              setFoodInventory(prev => ({ ...prev, premium: prev.premium + Math.max(1, Math.round(totalGold / 50)) }));
                               setGuppiesState(prev => prev.filter(g => g.id !== guppy.id));
                               guppiesRef.current = guppiesRef.current.filter(g => g.id !== guppy.id);
                               setSelectedGuppyId(null);

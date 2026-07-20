@@ -62,12 +62,14 @@ export const ManageTab = React.memo(function ManageTab({
     onCommune(id);
   };
 
-  const getExpectedGold = (guppy: GuppyInstance) => {
+  const _rawExpectedGold = (guppy: GuppyInstance) => {
     const baseBonus = guppy.level * 50;
     const rarityMultiplier = guppy.data.rarity === '전설' ? 5 : guppy.data.rarity === '희귀' ? 2 : 1;
     const statsBonus = Math.floor(guppy.stats.speed * 50);
     return baseBonus * rarityMultiplier + statsBonus;
   };
+
+  const getExpectedGold = (g: any) => Math.max(1, Math.round(_rawExpectedGold(g) / 50));
 
   const handleRelease = (id: string, reward: number) => {
     onRelease(id, reward);
@@ -195,13 +197,13 @@ export const ManageTab = React.memo(function ManageTab({
                 >
                   <Heart className="w-4 h-4" />
                   교감하기 (XP +1)
-                  <span className="text-xs flex items-center ml-1 text-slate-400"><span className="text-sm mr-0.5">🐚</span>10</span>
+                  <span className="text-xs flex items-center ml-1 text-slate-400"><span className="text-sm mr-0.5">🍿</span>10</span>
                 </button>
                 <button 
                   onClick={() => setReleasingGuppy(guppy)}
                   className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-colors"
                 >
-                  <span className="text-xs flex items-center mr-1"><span className="text-sm mr-0.5">🐚</span>{getExpectedGold(guppy)}</span>
+                  <span className="text-xs flex items-center mr-1"><span className="text-sm mr-0.5">🍿</span>{getExpectedGold(guppy)}</span>
                   자연 방출하기
                 </button>
               </div>
@@ -235,14 +237,14 @@ export const ManageTab = React.memo(function ManageTab({
               </div>
               <h3 className="text-xl font-black text-slate-800 mb-2">{releasingGuppy.data.guppy_name} 방생하기</h3>
               <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-                정말로 이 생물을 자연으로 돌려보내시겠습니까?<br/>방생 시 아래의 보상을 획득하며 되돌릴 수 없습니다.
+                정말로 이 생물을 자연으로 돌려보내시겠습니까?<br/>방생 시 아래의 먹이 선물을 획득하며 되돌릴 수 없습니다.
               </p>
               
               <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 w-full mb-6">
                 <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2">
                   <span>예상 보상 (골드)</span>
                   <span className="flex items-center text-blue-600 text-lg">
-                    <span className="mr-1">🐚</span>{getExpectedGold(releasingGuppy)}
+                    <span className="mr-1">🍿</span>{getExpectedGold(releasingGuppy)}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-slate-200">

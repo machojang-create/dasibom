@@ -51,13 +51,13 @@ export const ShopTab = React.memo(function ShopTab({
               <Coins className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight">바다 조개 상점</h2>
-              <p className="text-sm text-slate-500 font-medium mt-1">장식품과 고품질 먹이를 구매하세요</p>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight">꽃잎 상점</h2>
+              <p className="text-sm text-slate-500 font-medium mt-1">기본 밥은 무료! 좋은 먹이와 장식은 꽃잎으로</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-800 rounded-2xl border border-blue-100 shadow-sm">
-            <span className="text-xl">🐚</span>
-            <span className="font-black text-xl">{Math.floor(gold).toLocaleString()}</span>
+            <Petal className="w-5 h-5" />
+            <span className="font-black text-xl">{(petals ?? 0).toLocaleString()}</span>
           </div>
         </div>
 
@@ -90,19 +90,18 @@ export const ShopTab = React.memo(function ShopTab({
               </div>
               <button 
                 onClick={() => {
-                  const cost = foodTechLevel * 500;
-                  if (gold >= cost && foodTechLevel < 5) {
-                    setGold(prev => prev - cost);
-                    setFoodTechLevel(prev => prev + 1);
-                  }
+                  if (foodTechLevel >= 5) return;
+                  (spendPetal as any)('guppy_tech' + (foodTechLevel + 1), (ok: boolean) => {
+                    if (ok) setFoodTechLevel(prev => prev + 1);
+                  });
                 }}
-                disabled={foodTechLevel >= 5 || gold < foodTechLevel * 500}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-black text-sm flex flex-row sm:flex-col items-center justify-center gap-2 sm:gap-0 shadow-sm transition-colors w-full sm:w-auto shrink-0 ${foodTechLevel >= 5 ? 'bg-slate-200 text-slate-400' : gold >= foodTechLevel * 500 ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-slate-200 text-slate-400'}`}
+                disabled={foodTechLevel >= 5 || (petals ?? 0) < foodTechLevel * 50}
+                className={`px-4 sm:px-6 py-3 rounded-xl font-black text-sm flex flex-row sm:flex-col items-center justify-center gap-2 sm:gap-0 shadow-sm transition-colors w-full sm:w-auto shrink-0 ${foodTechLevel >= 5 ? 'bg-slate-200 text-slate-400' : (petals ?? 0) >= foodTechLevel * 50 ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-slate-200 text-slate-400'}`}
               >
                 {foodTechLevel >= 5 ? '최대 레벨 도달' : (
                   <>
                     <span>레벨업</span>
-                    <span className="text-xs font-bold opacity-90 mt-0.5 flex items-center gap-1">🐚 {foodTechLevel * 500}</span>
+                    <span className="text-xs font-bold opacity-90 mt-0.5 flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> {foodTechLevel * 50}</span>
                   </>
                 )}
               </button>
@@ -133,14 +132,14 @@ export const ShopTab = React.memo(function ShopTab({
                   가장 기본적인 물고기 사료입니다. 영양가는 평범하지만 배를 채우는 데에는 충분합니다.
                 </p>
                 <div className="flex gap-2 mt-auto">
-                  <button onClick={() => { if(gold>=10){ setGold(prev=>prev-10); setFoodInventory(prev=>({...prev, normal: prev.normal+10})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
+                  <button onClick={() => { setFoodInventory(prev=>({...prev, normal: prev.normal+10})); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5">10개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1">🐚 10</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1">무료</span>
                   </button>
-                  <button onClick={() => { if(gold>=45){ setGold(prev=>prev-45); setFoodInventory(prev=>({...prev, normal: prev.normal+50})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
+                  <button onClick={() => { setFoodInventory(prev=>({...prev, normal: prev.normal+50})); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-bl-lg z-10 scale-[0.85] origin-top-right sm:scale-100">10% 할인</div>
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5 mt-1 sm:mt-0 relative z-0">50개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0">🐚 45</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0">무료</span>
                   </button>
                 </div>
               </div>
@@ -169,14 +168,14 @@ export const ShopTab = React.memo(function ShopTab({
                   바삭하고 풍부한 유기농 영양이 듬뿍 들어간 플레이크입니다.
                 </p>
                 <div className="flex gap-2 mt-auto">
-                  <button onClick={() => { if(gold>=30){ setGold(prev=>prev-30); setFoodInventory(prev=>({...prev, premium: prev.premium+10})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
+                  <button onClick={() => { (spendPetal as any)('guppy_food_premium10',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, premium: prev.premium+10})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5">10개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1">🐚 30</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 3</span>
                   </button>
-                  <button onClick={() => { if(gold>=135){ setGold(prev=>prev-135); setFoodInventory(prev=>({...prev, premium: prev.premium+50})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
+                  <button onClick={() => { (spendPetal as any)('guppy_food_premium50',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, premium: prev.premium+50})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-bl-lg z-10 scale-[0.85] origin-top-right sm:scale-100">10% 할인</div>
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5 mt-1 sm:mt-0 relative z-0">50개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0">🐚 135</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 12</span>
                   </button>
                 </div>
               </div>
@@ -205,14 +204,14 @@ export const ShopTab = React.memo(function ShopTab({
                   물고기들이 가장 좋아하는 천연 새우를 건조하여 풍미를 살렸습니다.
                 </p>
                 <div className="flex gap-2 mt-auto">
-                  <button onClick={() => { if(gold>=70){ setGold(prev=>prev-70); setFoodInventory(prev=>({...prev, shrimp: prev.shrimp+10})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
+                  <button onClick={() => { (spendPetal as any)('guppy_food_shrimp10',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, shrimp: prev.shrimp+10})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5">10개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1">🐚 70</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 7</span>
                   </button>
-                  <button onClick={() => { if(gold>=315){ setGold(prev=>prev-315); setFoodInventory(prev=>({...prev, shrimp: prev.shrimp+50})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
+                  <button onClick={() => { (spendPetal as any)('guppy_food_shrimp50',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, shrimp: prev.shrimp+50})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-bl-lg z-10 scale-[0.85] origin-top-right sm:scale-100">10% 할인</div>
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5 mt-1 sm:mt-0 relative z-0">50개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0">🐚 315</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 30</span>
                   </button>
                 </div>
               </div>
@@ -241,14 +240,14 @@ export const ShopTab = React.memo(function ShopTab({
                   심해에서 채취한 최고급 영양 크릴. 폭발적인 성장을 보장합니다.
                 </p>
                 <div className="flex gap-2 mt-auto">
-                  <button onClick={() => { if(gold>=150){ setGold(prev=>prev-150); setFoodInventory(prev=>({...prev, krill: prev.krill+10})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
+                  <button onClick={() => { (spendPetal as any)('guppy_food_krill10',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, krill: prev.krill+10})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5">10개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1">🐚 150</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 15</span>
                   </button>
-                  <button onClick={() => { if(gold>=675){ setGold(prev=>prev-675); setFoodInventory(prev=>({...prev, krill: prev.krill+50})); } }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
+                  <button onClick={() => { (spendPetal as any)('guppy_food_krill50',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, krill: prev.krill+50})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
                     <div className="absolute top-0 right-0 bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-bl-lg z-10 scale-[0.85] origin-top-right sm:scale-100">10% 할인</div>
                     <span className="text-[11px] sm:text-xs font-bold mb-0.5 mt-1 sm:mt-0 relative z-0">50개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0">🐚 675</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 60</span>
                   </button>
                 </div>
               </div>

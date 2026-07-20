@@ -962,7 +962,13 @@ const PLANT_PRICES = {
   pot8: 300, pot9: 175, pot10: 90, pot11: 500, pot12: 25, pot13: 400,
   // 구피 키우기 — 특별(3시간 한정) 품종·장식은 꽃잎, 먹이·일반품종은 게임 내 조개
   guppy_special_normal: 30, guppy_special_rare: 50, guppy_special_legendary: 120,
-  guppy_decor_sand_castle: 50, guppy_decor_golden_statue: 200
+  guppy_decor_sand_castle: 50, guppy_decor_golden_statue: 200,
+  // 꽃잎 단일화(2026-07-20): 기본 밥=무료, 나머지 전부 꽃잎
+  guppy_seed_rand_normal: 10, guppy_seed_rand_rare: 20, guppy_seed_rand_legendary: 50,
+  guppy_food_premium10: 3, guppy_food_premium50: 12,
+  guppy_food_shrimp10: 7, guppy_food_shrimp50: 30,
+  guppy_food_krill10: 15, guppy_food_krill50: 60,
+  guppy_tech2: 50, guppy_tech3: 100, guppy_tech4: 150, guppy_tech5: 200
 };
 exports.spendPoints = functions
   .region('asia-northeast3')
