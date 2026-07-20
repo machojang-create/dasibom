@@ -19,53 +19,101 @@ const getEmoji = (type: string, stage: string, plantEmoji?: string) => {
   return '🌳'; 
 };
 
-const getFacialExpression = (water: number) => {
-  if (water === 0) { // Dead / X_X
-    return (
-      <svg width="40" height="20" viewBox="0 0 50 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-5 md:w-12 md:h-6">
+/* 대사(말투)에서 감정을 읽어 표정을 고른다.
+   우선순위: 물 없음(죽음) > 목마름(시듦) — 돌봄 신호가 대사 연기에 가려지면 안 됨.
+   그 위에서 대사 키워드로: 감동·신남·놀람·잔소리·궁금 > 물 기반 기본 표정. */
+type Mood = 'dead' | 'wilt' | 'moved' | 'excited' | 'surprised' | 'nag' | 'curious' | 'meh' | 'happy' | 'superhappy';
+
+const classifyMood = (water: number, phrase?: string): Mood => {
+  if (water === 0) return 'dead';
+  if (water <= 30) return 'wilt';
+  const t = phrase || '';
+  if (/고맙|고마워|사랑|좋은 사람|이뻐|이쁘|호강|감동|눈물|따숩|따뜻|보고 싶|반갑|평생/.test(t)) return 'moved';
+  if (/으아악|태풍|깜짝|번쩍|엄마야|워메|살려|대피|찢어|벼락|천둥/.test(t)) return 'surprised';
+  if (/단디|챙기|굶|퍼뜩|왜 인자|죽는 줄|잔소리|끼니|밥은|무릎|관절|옷은|늦었|어딜 갔다/.test(t)) return 'nag';
+  if (/운동회|신난|신났|튼튼|최고|덩실|씰룩|얼씨구|지화자|콧노래|살맛|끝내주|맹쿠로/.test(t)) return 'excited';
+  if (/\?|왔나$|뭐꼬|뭐당가|궁금|아이가\?|봤나|그란디/.test(t)) return 'curious';
+  if (water <= 50) return 'meh';
+  if (water >= 80) return 'superhappy';
+  return 'happy';
+};
+
+const getFacialExpression = (water: number, phrase?: string) => {
+  const mood = classifyMood(water, phrase);
+  const P = { width: 40, height: 20, viewBox: '0 0 50 24', fill: 'none', stroke: 'currentColor',
+    strokeWidth: 3.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const,
+    className: 'w-10 h-5 md:w-12 md:h-6' };
+  switch (mood) {
+    case 'dead': return (
+      <svg {...P} data-mood="dead">
         <path d="M 12 7 L 18 13 M 18 7 L 12 13" />
         <path d="M 32 7 L 38 13 M 38 7 L 32 13" />
         <path d="M 21 18 Q 25 14 29 18" />
-      </svg>
-    );
-  }
-  if (water <= 30) { // Sad / Crying
-    return (
-      <svg width="40" height="20" viewBox="0 0 50 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-5 md:w-12 md:h-6">
+      </svg>);
+    case 'wilt': return (
+      <svg {...P} data-mood="wilt">
         <path d="M 12 11 Q 15 8 18 11" />
         <path d="M 32 11 Q 35 8 38 11" />
-        <path d="M 15 14 L 15 16" strokeWidth="2.5" />
-        <path d="M 35 14 L 35 16" strokeWidth="2.5" />
+        <path d="M 15 14 L 15 16" strokeWidth={2.5} />
+        <path d="M 35 14 L 35 16" strokeWidth={2.5} />
         <path d="M 21 19 Q 25 16 29 19" />
-      </svg>
-    );
-  }
-  if (water <= 50) { // Meh
-    return (
-      <svg width="40" height="20" viewBox="0 0 50 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-5 md:w-12 md:h-6">
+      </svg>);
+    case 'moved': return (   /* 감동: 감은 눈웃음 + 볼 홍조 + 작은 하트 */
+      <svg {...P} data-mood="moved">
+        <path d="M 11 10 Q 15 6 19 10" />
+        <path d="M 31 10 Q 35 6 39 10" />
+        <circle cx="9" cy="15" r="2.6" fill="#f9a8c0" stroke="none" opacity="0.85" />
+        <circle cx="41" cy="15" r="2.6" fill="#f9a8c0" stroke="none" opacity="0.85" />
+        <path d="M 21 15 Q 25 20 29 15" />
+        <path d="M 44 4 c -1.4 -1.6 -4 -0.4 -4 1.5 c 0 1.6 2.2 3 4 4.3 c 1.8 -1.3 4 -2.7 4 -4.3 c 0 -1.9 -2.6 -3.1 -4 -1.5 Z" fill="#ef5d84" stroke="none" transform="scale(0.75) translate(15,-1)" />
+      </svg>);
+    case 'excited': return (  /* 신남: 반짝 눈(^^) + 활짝 벌린 입 */
+      <svg {...P} data-mood="excited">
+        <path d="M 11 11 L 15 7 L 19 11" />
+        <path d="M 31 11 L 35 7 L 39 11" />
+        <path d="M 20 15 Q 25 22 30 15 Z" fill="currentColor" stroke="none" />
+        <path d="M 20 15 L 30 15" strokeWidth={2.5} />
+      </svg>);
+    case 'surprised': return (  /* 놀람: 동그란 눈 + O 입 */
+      <svg {...P} data-mood="surprised">
+        <circle cx="15" cy="9" r="3.4" strokeWidth={3} />
+        <circle cx="35" cy="9" r="3.4" strokeWidth={3} />
+        <circle cx="25" cy="18" r="3.2" strokeWidth={3} />
+      </svg>);
+    case 'nag': return (   /* 잔소리: 처진 눈썹 + 삐죽 물결 입 */
+      <svg {...P} data-mood="nag">
+        <path d="M 10 6 L 19 9" strokeWidth={2.5} />
+        <path d="M 40 6 L 31 9" strokeWidth={2.5} />
+        <circle cx="15" cy="12" r="2.3" fill="currentColor" stroke="none" />
+        <circle cx="35" cy="12" r="2.3" fill="currentColor" stroke="none" />
+        <path d="M 20 18 Q 22.5 15.5 25 18 Q 27.5 20.5 30 18" />
+      </svg>);
+    case 'curious': return (  /* 궁금: 한쪽 눈썹 들고 갸웃 + 작은 o 입 */
+      <svg {...P} data-mood="curious">
+        <path d="M 10 5 Q 15 3 20 6" strokeWidth={2.5} />
+        <circle cx="15" cy="11" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="35" cy="9" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="26" cy="17" r="2.2" strokeWidth={2.5} />
+      </svg>);
+    case 'meh': return (
+      <svg {...P} data-mood="meh">
         <circle cx="15" cy="10" r="2.5" fill="currentColor" stroke="none" />
         <circle cx="35" cy="10" r="2.5" fill="currentColor" stroke="none" />
         <path d="M 22 17 L 28 17" />
-      </svg>
-    );
-  }
-  if (water >= 80) { // Super Happy
-    return (
-      <svg width="40" height="20" viewBox="0 0 50 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-5 md:w-12 md:h-6">
+      </svg>);
+    case 'superhappy': return (
+      <svg {...P} data-mood="superhappy">
         <path d="M 12 10 Q 15 6 18 10" />
         <path d="M 32 10 Q 35 6 38 10" />
         <path d="M 21 16 Q 25 21 29 16" />
-      </svg>
-    );
-  }
-  // Normal Happy
-  return (
-    <svg width="40" height="20" viewBox="0 0 50 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" className="w-10 h-5 md:w-12 md:h-6">
+      </svg>);
+    default: return (
+      <svg {...P} data-mood="happy">
         <circle cx="15" cy="10" r="2.5" fill="currentColor" stroke="none" />
         <circle cx="35" cy="10" r="2.5" fill="currentColor" stroke="none" />
         <path d="M 21 16 Q 25 20 29 16" />
-    </svg>
-  );
+      </svg>);
+  }
 };
 
 const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode }) => {
@@ -206,7 +254,7 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
             {getEmoji(plant.type.type, plant.stage, plant.type.emoji)}
           </motion.div>
           
-          <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel)} />
+          <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel, phrase)} />
         </motion.div>
         
         <AnimatePresence mode="wait">
