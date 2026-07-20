@@ -218,6 +218,36 @@ service cloud.firestore {
       );
     }
 
+    // ── 아재퀴즈(gag) 전용 — AI스튜디오 외부 프로젝트에서 이관(2026-07-20). 스키마가 공용 comments와 달라 분리 ──
+    // 주의: gag 앱의 userId는 firebase uid가 아니라 기기 로컬 랜덤 ID(localStorage.localUserId)라
+    //       uid 일치 검사 불가 — 인증 존재 + 필드 타입/크기 제한으로 방어(민감정보 아님).
+    match /gag_favorites/{id} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.resource.data.userId is string
+        && request.resource.data.userId.size() <= 40;
+      allow delete: if request.auth != null;
+    }
+    match /gag_history/{id} {
+      allow read: if request.auth != null;
+      allow create, update: if request.auth != null
+        && request.resource.data.userId is string
+        && request.resource.data.userId.size() <= 40;
+      allow delete: if false;
+    }
+    match /gag_comments/{id} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.content is string
+        && request.resource.data.content.size() > 0
+        && request.resource.data.content.size() <= 300
+        && request.resource.data.jokeId is string
+        && request.resource.data.jokeId.size() <= 80;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
     // 공용 한 줄 공감(서재·그때그시절·게임 등) — comments.js, scope 필드로 스레드 구분
     // 운영자는 봇 uid(bot_*)로도 작성 가능(봇 심기)
     match /comments/{cid} {
