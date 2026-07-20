@@ -741,8 +741,9 @@ function runCheck(){
             +'드시기 전에 의사·약사 선생님께 꼭 상담받으시고 복용하세요.'
             +'</div>';
         }
+        /* 공유 버튼 제거(2026-07-18 Macho 확정): 복용약·건기식 결과 공유는 약사법(의약품 광고)·
+           건기식 광고심의 위반 소지 — 건강돋보기엔 공유·포인트 지급 없음. shareResult()는 미사용으로 남김. */
         window._lastCheckShareText=buildShareText(sd,si,hits,worst);
-        el.innerHTML+='<button class="btn-share" onclick="shareResult()">📤 결과 공유하기</button>';
         saveCheckHistory(sd,si,hits.length,worst);
         updateCheckBtn();
         el.scrollIntoView({behavior:'smooth',block:'nearest'});
