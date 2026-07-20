@@ -58,16 +58,47 @@
   }
 
   var _t;
+  // 스프링 등장 + 적립일 땐 꽃잎이 흩날리는 연출(모션감소 설정 시 정적 페이드)
+  function _ensureToastCss() {
+    if (document.getElementById('dsbptToastCss')) return;
+    var s = document.createElement('style'); s.id = 'dsbptToastCss';
+    s.textContent =
+      '@keyframes dsbptPop{0%{opacity:0;transform:translateX(-50%) translateY(18px) scale(.6)}' +
+      '60%{opacity:1;transform:translateX(-50%) translateY(-4px) scale(1.06)}' +
+      '80%{transform:translateX(-50%) translateY(1px) scale(.98)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}' +
+      '@keyframes dsbptPetal{0%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)}' +
+      '18%{opacity:1}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(1.15) rotate(var(--pr))}}' +
+      '@media (prefers-reduced-motion:reduce){.dsbpt-toast{animation:none !important}.dsbpt-petal{display:none}}';
+    document.head.appendChild(s);
+  }
   function toast(msg) {
     try {
+      _ensureToastCss();
       var d = document.createElement('div');
+      d.className = 'dsbpt-toast';
       d.textContent = msg;
       d.style.cssText = 'position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#33492A;color:#F5F1E8;' +
         'padding:13px 22px;border-radius:50px;font-size:15px;font-weight:800;z-index:99999;box-shadow:0 12px 28px -12px rgba(0,0,0,.5);' +
-        "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:88vw;text-align:center;opacity:0;transition:opacity .3s";
+        "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:88vw;text-align:center;" +
+        'animation:dsbptPop .5s cubic-bezier(.34,1.7,.5,1) both';
       document.body.appendChild(d);
-      requestAnimationFrame(function () { d.style.opacity = '1'; });
-      clearTimeout(_t); _t = setTimeout(function () { d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 300); }, 2600);
+      // 적립(+N) 토스트에만 꽃잎 흩날리기
+      if (/\+\d/.test(msg)) {
+        for (var i = 0; i < 6; i++) {
+          var p = document.createElement('div');
+          p.className = 'dsbpt-petal';
+          var ang = (-90 + (i - 2.5) * 26) * Math.PI / 180;    // 부채꼴 위쪽으로
+          var dist = 54 + Math.random() * 46;
+          p.style.cssText = 'position:fixed;left:50%;bottom:112px;z-index:99999;font-size:' + (14 + Math.random() * 8) + 'px;' +
+            'pointer-events:none;--px:' + Math.round(Math.cos(ang) * dist) + 'px;--py:' + Math.round(Math.sin(ang) * dist - 26) + 'px;' +
+            '--pr:' + Math.round(-40 + Math.random() * 80) + 'deg;' +
+            'animation:dsbptPetal ' + (0.9 + Math.random() * 0.5) + 's ease-out ' + (i * 0.06) + 's both';
+          p.textContent = '🌸';
+          document.body.appendChild(p);
+          (function (pp) { setTimeout(function () { pp.remove(); }, 1900); })(p);
+        }
+      }
+      clearTimeout(_t); _t = setTimeout(function () { d.style.transition = 'opacity .3s'; d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 300); }, 2600);
     } catch (e) {}
   }
 

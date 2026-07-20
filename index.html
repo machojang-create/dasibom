@@ -298,6 +298,16 @@
     transition:transform .15s cubic-bezier(.2,.7,.2,1),box-shadow .35s ease,opacity .9s ease;
     transform-origin:center;will-change:transform;
   }
+  /* 카드 스프링 등장: 함께 보인 카드끼리 90ms 간격 순차(--stg는 관찰자가 부여).
+     fill-mode:backwards라 등장이 끝나면 위의 틸트 transform이 그대로 살아난다 */
+  .cards .card[data-reveal].in{animation:cardSpring .68s cubic-bezier(.34,1.56,.64,1) backwards;animation-delay:calc(var(--stg,0)*90ms)}
+  @keyframes cardSpring{
+    0%{opacity:0;transform:perspective(950px) translateY(48px) scale(.9)}
+    62%{opacity:1;transform:perspective(950px) translateY(-7px) scale(1.02)}
+    82%{transform:perspective(950px) translateY(2px) scale(.995)}
+    100%{opacity:1;transform:perspective(950px) translateY(0) scale(1)}
+  }
+  @media (prefers-reduced-motion:reduce){.cards .card[data-reveal].in{animation:none}}
   .card:active{--scale:.985}
   .card::before{
     content:"";position:absolute;inset:0;z-index:3;pointer-events:none;border-radius:inherit;
@@ -1055,11 +1065,12 @@
   position:absolute; inset:0;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:32px 24px; text-align:center;
-  opacity:0; transform:translateY(12px);
-  transition:opacity .55s ease, transform .55s ease;
+  opacity:0; transform:translateY(26px) scale(.96);
+  transition:opacity .5s ease, transform .6s cubic-bezier(.34,1.45,.5,1); /* 탄성 진입 */
   pointer-events:none;
 }
-#dasibom-onboarding .dob-screen.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+#dasibom-onboarding .dob-screen.show{ opacity:1; transform:translateY(0) scale(1); pointer-events:auto; }
+@media (prefers-reduced-motion:reduce){#dasibom-onboarding .dob-screen{transition:opacity .4s ease}}
 #dasibom-onboarding .dob-bom{
   width:clamp(150px,38vw,210px); height:auto; margin-bottom:18px;
   filter:drop-shadow(0 14px 28px rgba(180,120,80,0.22));
@@ -2259,7 +2270,12 @@
 
   // Reveal on scroll
   const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    // 같은 프레임에 함께 들어온 요소끼리만 순차(stagger) — 혼자 들어오면 지연 0
+    let stg = 0;
+    entries.forEach(e => { if(e.isIntersecting){
+      e.target.style.setProperty('--stg', String(stg++));
+      e.target.classList.add('in'); io.unobserve(e.target);
+    } });
   }, {threshold:0.12, rootMargin:'0px 0px -40px 0px'});
   document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
 
