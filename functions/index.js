@@ -713,7 +713,9 @@ exports.updateBomMemory = functions
     const turns = (Array.isArray(data && data.turns) ? data.turns : [])
       .filter((t) => t && t.role === 'user' && t.text)
       .map((t) => String(t.text).slice(0, 200));
-    if (turns.length < 2) return { ok: false, reason: 'too_short' };
+    // 한 마디짜리 대화도 자서전 재료가 됨("방직공장에서 10년 일했어") — 1단계는 AI 미사용(원가 0)이라 1턴부터 수용.
+    // 비용 드는 2단계는 아래에서 구독자+일일상한으로 따로 막혀 있음.
+    if (turns.length < 1) return { ok: false, reason: 'too_short' };
 
     /* ★1단계 — 자서전 재료(snippets)는 무료 포함 전원 저장 (2026-07-20 Macho: A안)
        자서전은 다시봄의 심장이고 원래 무료다. 그 재료가 유료 뒤에 잠겨 있으면

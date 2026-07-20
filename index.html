@@ -3248,10 +3248,10 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcp-chatrow{flex-shrink:0;display:flex;gap:8px;padding:8px 14px 10px;border-top:1px solid #F0E3D0;background:#fff}
   .bcp-chat-input{flex:1;min-width:0;padding:10px 14px;border:1.5px solid #E6D8C4;border-radius:50px;font-size:14px;font-family:inherit;outline:none;background:#FFFDF9;color:#2a241d}
   .bcp-chat-input:focus{border-color:#d4845a}
-  .bcp-chat-send{flex-shrink:0;width:38px;height:38px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:15px;cursor:pointer}
+  .bcp-chat-send{flex-shrink:0;width:46px;height:46px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:15px;cursor:pointer}
   .bcp-chat-send:disabled{opacity:.5}
   /* 말로 하기(음성 입력) — 타이핑이 힘든 어르신용. 지원 브라우저에서만 노출 */
-  .bcp-chat-mic{flex-shrink:0;width:38px;height:38px;border:1.5px solid #E6D8C4;border-radius:50%;background:#fff;
+  .bcp-chat-mic{flex-shrink:0;width:46px;height:46px;border:1.5px solid #E6D8C4;border-radius:50%;background:#fff;
     font-size:17px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
   .bcp-chat-mic.listening{background:#d4584a;border-color:#d4584a;color:#fff;animation:bcpMicPulse 1s infinite}
   @keyframes bcpMicPulse{0%{box-shadow:0 0 0 0 rgba(212,88,74,.5)}70%{box-shadow:0 0 0 10px rgba(212,88,74,0)}100%{box-shadow:0 0 0 0 rgba(212,88,74,0)}}
@@ -3539,6 +3539,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     }
     else if(p.classList.contains('open')&&!p.classList.contains('closing')){
       _stopTalkCycle();   // 닫으면 말 걸기 중단
+      _bomFlushMemory();  // 짧은 대화(4턴 미만)도 닫을 때 취재 — 안 보내면 새로고침에 날아감
       p.classList.add('closing');
       var done=function(){ p.classList.remove('open'); p.classList.remove('closing'); };
       var t=setTimeout(done,320);
@@ -3620,6 +3621,18 @@ body.dark .bom-guide-text{color:#c8bba4}
      _bomSyncMemory: 구독자면 서버가 발화에서 '사실'을 뽑아 bom_memory에 누적(장기 기억).
        매 턴 부르면 낭비라 4턴마다 한 번. 실패는 무음(대화를 막으면 안 됨). */
   var _bomTurns=[], _bomMemSynced=0;
+  // 닫기/이탈 시 남은 턴 전송 — 4턴 규칙에 안 걸린 짧은 대화도 자서전 재료로 남김
+  function _bomFlushMemory(){
+    var userTurns=_bomTurns.filter(function(t){ return t.role==='user'; });
+    if(userTurns.length<1 || userTurns.length<=_bomMemSynced) return;
+    _bomMemSynced=userTurns.length;
+    try{
+      firebase.app().functions('asia-northeast3').httpsCallable('updateBomMemory')({
+        turns: userTurns.slice(-8)
+      }).catch(function(){});
+    }catch(e){}
+  }
+  window.addEventListener('pagehide', _bomFlushMemory);
   function _bomSyncMemory(){
     var userTurns=_bomTurns.filter(function(t){ return t.role==='user'; });
     if(userTurns.length<2 || userTurns.length-_bomMemSynced<4) return;
