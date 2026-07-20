@@ -1329,6 +1329,8 @@
     setTimeout(function(){
       introEl.parentNode && introEl.parentNode.removeChild(introEl);
       if(window.startBomOnboarding){ window.startBomOnboarding(); }
+      // 소리 켜기 유도 — 온보딩이 떠 있으면 끝날 때까지 기다렸다가 나온다
+      if(window.__dsbSoundCheck) setTimeout(window.__dsbSoundCheck, 1600);
     },900);
   };
 
@@ -3201,6 +3203,13 @@ body.dark .bom-guide-text{color:#c8bba4}
   @keyframes bcPanelIn{0%{opacity:0;transform:translateY(24px) scale(.68)}55%{opacity:1;transform:translateY(-6px) scale(1.05)}78%{transform:translateY(2px) scale(.99)}100%{opacity:1;transform:none}}
   @keyframes bcPanelOut{0%{opacity:1;transform:none}28%{transform:scale(1.06)}100%{opacity:0;transform:translateY(16px) scale(.55)}}
   @media (prefers-reduced-motion:reduce){.bomchat-panel.open,.bomchat-panel.open.closing{animation-duration:.01s}}
+  /* ── 말랑말랑 말풍선: 꼬리 쪽에서 젤리처럼 튀어나옴 ── */
+  .bcp-row .bcp-msg{transform-origin:10px 100%;animation:bcpJelly .55s cubic-bezier(.34,1.56,.64,1)}
+  .bcp-user-msg{transform-origin:calc(100% - 10px) 100%;animation:bcpJelly .55s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes bcpJelly{0%{opacity:0;transform:scale(.55) translateY(12px)}55%{opacity:1;transform:scale(1.08,.92) translateY(-3px)}75%{transform:scale(.96,1.05)}90%{transform:scale(1.02,.98)}100%{opacity:1;transform:none}}
+  /* ── 누름 반응(살아있는 느낌) ── */
+  .bomchat-fab:active{transform:scale(.9);transition:transform .08s}
+  @media (prefers-reduced-motion:reduce){.bcp-row .bcp-msg,.bcp-user-msg{animation:none}}
   .bcp-head{flex-shrink:0;display:flex;align-items:center;gap:11px;padding:13px 16px;background:linear-gradient(135deg,#FFF3E0,#FFE0B2)}
   .bcp-face{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#fff;flex-shrink:0;box-shadow:0 0 0 2px rgba(255,255,255,.7)}
   .bcp-name{font-weight:800;font-size:15px;color:#5b3a1a;line-height:1.2}
@@ -3728,6 +3737,86 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(inp) inp.addEventListener('keydown',function(e){ if(e.key==='Enter') bomSendChat(); });
     _initBomMic();
   });
+})();
+</script>
+
+<!-- ════ 봄이 사운드 켜기 유도 — 첫 홈 진입 시 1회 (브라우저는 소리 자동재생을 막으므로,
+     이 팝업의 '좋아요' 탭이 곧 소리 잠금 해제 제스처가 된다) ════ -->
+<style>
+#dsbSoundInvite{position:fixed;right:20px;bottom:158px;z-index:9600;width:min(302px,calc(100vw - 40px));
+  background:linear-gradient(160deg,#FFF9EF,#FFEFD8);border-radius:22px;padding:18px 18px 16px;
+  box-shadow:0 18px 44px -12px rgba(90,60,20,.42);display:none;transform-origin:86% 112%;
+  font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}
+#dsbSoundInvite.on{display:block;animation:dsbSiPop .52s cubic-bezier(.34,1.7,.5,1)}
+@keyframes dsbSiPop{0%{opacity:0;transform:scale(.12) translateY(34px)}58%{opacity:1;transform:scale(1.07) translateY(-5px)}
+  78%{transform:scale(.97) translateY(0)}100%{opacity:1;transform:none}}
+#dsbSoundInvite .si-row{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+#dsbSoundInvite img{width:46px;height:46px;border-radius:50%;object-fit:cover;object-position:center top;background:#fff;box-shadow:0 0 0 2.5px #fff,0 4px 10px rgba(120,80,30,.25)}
+#dsbSoundInvite .si-text{font-size:15.5px;line-height:1.55;color:#4a3a26;font-weight:700}
+#dsbSoundInvite .si-btns{display:flex;flex-direction:column;gap:8px}
+#dsbSiYes{border:none;border-radius:14px;min-height:50px;font-size:16.5px;font-weight:800;cursor:pointer;
+  background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;box-shadow:0 6px 14px -6px rgba(180,100,40,.5)}
+#dsbSiNo{border:none;border-radius:14px;min-height:44px;font-size:14px;font-weight:700;cursor:pointer;background:rgba(0,0,0,.05);color:#8a6a48}
+#dsbSiYes:active,#dsbSiNo:active{transform:scale(.96)}
+@media (prefers-reduced-motion:reduce){#dsbSoundInvite.on{animation:none}}
+body.dark #dsbSoundInvite{background:linear-gradient(160deg,#2e2620,#3a2e22)}
+body.dark #dsbSoundInvite .si-text{color:#e8d9c2}
+</style>
+<div id="dsbSoundInvite" role="dialog" aria-label="봄이 소리 켜기">
+  <div class="si-row"><img src="/img/bom_smile.png" alt="봄이"><div class="si-text" id="dsbSiText">어르신, 제 목소리로 인사드리고 싶어요. 소리를 켜주시겠어요?</div></div>
+  <div class="si-btns">
+    <button id="dsbSiYes">🔊 좋아요, 소리 켜기</button>
+    <button id="dsbSiNo">지금은 조용히 볼게요</button>
+  </div>
+</div>
+<script>
+(function(){
+  function hon(){ try{ return localStorage.getItem('dasibom_honorific')||'어르신'; }catch(e){ return '어르신'; } }
+  function el(){ return document.getElementById('dsbSoundInvite'); }
+  function hide(){ var e=el(); if(e){ e.classList.remove('on'); e.style.display='none'; } }
+  function show(){
+    try{
+      if(localStorage.getItem('dasibom_sound_prompted')==='1') return;
+      if(sessionStorage.getItem('dasibom_kiosk_browse')) return;
+    }catch(e){}
+    var e=el(); if(!e||e.classList.contains('on')) return;
+    document.getElementById('dsbSiText').textContent=hon()+', 제 목소리로 인사드리고 싶어요. 소리를 켜주시겠어요?';
+    e.style.display=''; e.classList.add('on');
+  }
+  window.dasibomSoundInvite=show; // 인트로/온보딩 종료 지점에서도 호출
+  window.__dsbSoundCheck=function(){ setTimeout(check,400); }; // 인트로 완료 훅용(온보딩 대기 포함)
+  document.getElementById('dsbSiYes').addEventListener('click',function(){
+    try{
+      localStorage.setItem('dasibom_bomvoice','1');
+      localStorage.setItem('dasibom_sound','1');           // 다른 콘텐츠(BGM 등)가 참고할 전역 신호
+      localStorage.setItem('dasibom_sound_prompted','1');
+    }catch(e){}
+    hide();
+    var line=hon()+', 반가워요! 이제 제 목소리가 들리시죠? 심심하실 때 언제든 봄이를 불러 주세요';
+    var tries=0;(function speak(){ if(window.BomVoice){ try{ BomVoice.say(line); }catch(e){} return; } if(++tries<40) setTimeout(speak,150); })();
+  });
+  document.getElementById('dsbSiNo').addEventListener('click',function(){
+    try{ localStorage.setItem('dasibom_bomvoice','0'); localStorage.setItem('dasibom_sound_prompted','1'); }catch(e){}
+    hide();
+  });
+  // 재방문(인트로 없음) 경로 — 홈이 보이고 2초 뒤. 인트로/온보딩 중이면 그쪽 종료 훅이 부른다.
+  function check(){
+    var intro=document.getElementById('dasibom-intro');
+    if(intro&&document.body.contains(intro)&&!intro.classList.contains('di-hide')) return;
+    var ob=document.getElementById('dasibom-onboarding');
+    if(ob&&document.body.contains(ob)&&ob.offsetWidth>0&&getComputedStyle(ob).display!=='none'){
+      var iv=setInterval(function(){
+        var o=document.getElementById('dasibom-onboarding');
+        if(!o||!document.body.contains(o)||getComputedStyle(o).display==='none'||getComputedStyle(o).opacity==='0'){
+          clearInterval(iv); setTimeout(show,1200);
+        }
+      },600);
+      return;
+    }
+    show();
+  }
+  if(document.readyState!=='loading') setTimeout(check,2200);
+  else document.addEventListener('DOMContentLoaded',function(){ setTimeout(check,2200); });
 })();
 </script>
 
