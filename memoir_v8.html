@@ -1166,8 +1166,24 @@ async function handleNaverCodeCallback(code, state){
   try{
     var fn     = _functions.httpsCallable('naverAuth');
     var result = await fn({ code: code, state: state || '' });
-    var profile = result.data; // { id, name, email, uid }
-    await handleSocialLogin('naver', profile.id, profile.name, profile.email);
+    var profile = result.data; // { id, name, email, uid, customToken }
+    if (profile.customToken) {
+      // ★커스텀 토큰 방식(2026-07-20): uid가 naver_<id>로 고정되어 교차조회가 필요 없다.
+      //   게스트로 쓴 답변을 보존한 채 내 계정 문서와 병합 → 내 uid에 저장.
+      var guestAnswers = Object.assign({}, APP.answers);
+      await _auth.signInWithCustomToken(profile.customToken);
+      var myUid = _auth.currentUser.uid;
+      await saveUserProfile(myUid, 'naver', profile.id, profile.name, profile.email);
+      await loadFromFirestore(myUid);                       // 클라우드(내 문서) 우선 복원
+      APP.answers = Object.assign({}, guestAnswers, APP.answers);  // 게스트의 새 답변 보존
+      LS.save('answers', APP.answers);
+      await saveToFirestoreForce(APP.answers, APP.pkg, APP.bookTitle);
+      LS.save('socialProvider', 'naver'); LS.save('userName', profile.name || '');
+      closeLoginModal(); updateAuthUIBySocial('naver', profile.name || '');
+      popToast('네이버 로그인 완료! 이제 영구 저장됩니다 ✓', 4000);
+    } else {
+      await handleSocialLogin('naver', profile.id, profile.name, profile.email); // 구버전 폴백
+    }
     // 로그인 후 화면 이동
     var hasSaved = Object.keys(APP.answers).length > 0;
     if(hasSaved){ renderDash(); go('s-dash'); }
@@ -2420,7 +2436,8 @@ function showPreview(shared){
   el('pvCta').style.display = (shared || !isFree || BETA_MODE) ? 'none' : 'block';
   var _be=el('pvBetaEnd'); if(_be) _be.style.display = (!shared && isFree && BETA_MODE) ? 'block' : 'none';
   var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = shared ? 'none' : '';
-  var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '✓ 서재에 공개됨 — 내리기' : '📚 공개 서재에 올리기';
+  var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '📗 서재 공개 ON — 누르면 내려요' : '📕 서재 공개 OFF — 누르면 공개돼요';
+  if(_pb){ _pb.style.background = APP.libPublished ? '#0e9d7d' : '#fff'; _pb.style.color = APP.libPublished ? '#fff' : '#0e9d7d'; }
   var _back=el('btnPvBack'); if(_back) _back.style.display = shared ? 'none' : '';
   if(!shared && isFree && !BETA_MODE) renderProds();
   go('s-preview');
@@ -2464,7 +2481,7 @@ async function toggleLibraryPublish(){
     if(APP.libPublished){
       await docRef.set({ isPublic: false }, { merge: true });
       APP.libPublished = false; LS.save('libPub', false);
-      if(btn) btn.textContent = '📚 공개 서재에 올리기';
+      if(btn){ btn.textContent = '📕 서재 공개 OFF — 누르면 공개돼요'; btn.style.background='#fff'; btn.style.color='#0e9d7d'; }
       popToast('공개 서재에서 내렸습니다');
       renderDash();
       return;
@@ -2480,7 +2497,7 @@ async function toggleLibraryPublish(){
       publishedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
     APP.libPublished = true; LS.save('libPub', true);
-    if(btn) btn.textContent = '✓ 서재에 공개됨 — 내리기';
+    if(btn){ btn.textContent = '📗 서재 공개 ON — 누르면 내려요'; btn.style.background='#0e9d7d'; btn.style.color='#fff'; }
     popToast('공개 서재에 올렸습니다 📚');
     renderDash();
   }catch(e){ popToast('서재 게시 실패: ' + e.message); }

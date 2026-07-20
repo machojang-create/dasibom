@@ -9,22 +9,39 @@ service cloud.firestore {
     //     · dsbPoints    — 다시봄 포인트 잔액. 열어두면 누구나 무한 포인트 = 경제 붕괴
     //     · refToken     — 공유 식별 토큰
     //   → 쓰기는 Cloud Functions(Admin SDK, 규칙 우회)만.
+    // ★2026-07-20 조임: 카카오/네이버가 커스텀 토큰(uid=kakao_/naver_+id) 로그인으로 전환 완료되어
+    //   교차조회가 더는 필요 없음 → 본인+운영자만. (구버전 익명uid 데이터는 운영자가 수동 이관)
     match /users/{userId} {
-      allow read:   if request.auth != null;
-      allow create: if request.auth != null
+      function isMasterUsr() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      allow read: if (request.auth != null && request.auth.uid == userId) || isMasterUsr();
+      allow create: if request.auth != null && request.auth.uid == userId
                     && !request.resource.data.keys().hasAny(['subscribed', 'dsbPoints', 'refToken']);
-      allow update: if request.auth != null
-                    && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscribed', 'dsbPoints', 'refToken']);
-      allow delete: if request.auth != null;
+      allow update: if isMasterUsr()
+                    || (request.auth != null && request.auth.uid == userId
+                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscribed', 'dsbPoints', 'refToken']));
+      allow delete: if isMasterUsr();
+      // 게임 기록 등 하위컬렉션(brain_game 등)도 본인/운영자만
+      match /{subpath=**} {
+        allow read, write: if (request.auth != null && request.auth.uid == userId)
+          || (request.auth != null
+              && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com']);
+      }
     }
 
-    // 자서전 데이터: 인증된 사용자만 접근
-    // ⚠️ '본인(uid)만'으로 조이기 보류: 카카오/네이버 로그인이 익명 uid + socialId 매핑 구조라
-    //   client가 users를 provider/socialId로 교차조회하고 다른 uid의 memoir를 병합함(handleSocialLogin).
-    //   또 공개 서재(library)가 남의 isPublic 자서전을 읽음. 지금 조이면 로그인·서재 깨짐.
-    //   → 로그인 병합을 Cloud Function(admin)으로 옮긴 뒤 조일 것 (release_blockers #2).
+    // ★2026-07-20 조임: 본인 + 공개서재(isPublic) 열람 + 운영자. 커스텀 토큰 전환으로 가능해짐.
     match /memoirs/{userId} {
-      allow read, write: if request.auth != null;
+      function isMasterMem() {
+        return request.auth != null
+          && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      }
+      allow read: if (request.auth != null && request.auth.uid == userId)
+                  || resource.data.isPublic == true
+                  || isMasterMem();
+      allow create, update: if (request.auth != null && request.auth.uid == userId) || isMasterMem();
+      allow delete: if isMasterMem();
     }
 
     // 공유 자서전(공유링크 D-2): 링크 가진 사람은 읽기 / 생성·수정은 소유자만
