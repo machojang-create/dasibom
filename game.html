@@ -383,6 +383,12 @@ body.shake{animation:bShake .35s}
 /* MISSION CARDS */
 .mission-wrap{padding:18px 20px 0}
 .mission-cards{display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+/* 연출: 미션 카드 통통 순차 등장(2026-07-20) */
+.mcard{animation:mcardIn .6s cubic-bezier(.34,1.56,.64,1) backwards}
+.mcard:nth-child(1){animation-delay:.05s}.mcard:nth-child(2){animation-delay:.16s}.mcard:nth-child(3){animation-delay:.27s}
+@keyframes mcardIn{0%{opacity:0;transform:translateY(26px) scale(.94)}60%{opacity:1;transform:translateY(-4px) scale(1.015)}100%{opacity:1;transform:none}}
+.mcard:active{transform:scale(.97);transition:transform .1s}
+@media (prefers-reduced-motion:reduce){.mcard{animation:none}}
 .mcard{display:flex;align-items:center;gap:14px;background:#FFF9F0;border-radius:20px;padding:14px 16px;box-shadow:4px 4px 12px rgba(185,168,148,.3),-3px -3px 8px rgba(255,255,255,.85);cursor:pointer;border:none;width:100%;font-family:inherit;transition:transform .18s;text-align:left}
 .mcard:active{transform:scale(.97)}
 .mcard.mdone{background:linear-gradient(135deg,#F1F8E9,#DCEDC8)}
@@ -2402,6 +2408,7 @@ document.addEventListener('DOMContentLoaded',function(){
   initFB().then(function(){updateHomeDots();renderHomeCal();updateTodayPtsDisplay();renderMissionCards();renderCategoryList();renderRanking();});
 });
 </script>
+<script>window.DSB_SHARE={title:"오늘의 두뇌 운동 — 다시봄",text:"매일 3분, 재미있는 놀이로 머리를 깨워요"};</script>
 <script src="/dasibom-share.js?v=1"></script>
 <script src="/dasibom-bompop.js"></script>
 <script>

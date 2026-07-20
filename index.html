@@ -873,6 +873,12 @@
   @media(max-width:580px){.hero-arrow{display:none!important}.hero-dots{bottom:58px}}
   /* Wisdom section */
   #wisdom-section{scroll-margin-top:80px;padding:72px 0 0;background:var(--cream);}
+/* 연출: 일일명언 카드 — 신문이 살포시 내려앉는 스프링 등장 + 은은한 숨쉬기 부유 */
+.wisdom-card-news{animation:wcLand .8s cubic-bezier(.34,1.45,.5,1) backwards .15s}
+@keyframes wcLand{0%{opacity:0;transform:translateY(42px) scale(.96) rotate(.4deg)}62%{opacity:1;transform:translateY(-6px) scale(1.008) rotate(-.15deg)}100%{opacity:1;transform:none}}
+.wisdom-card-news{transition:transform .4s ease,box-shadow .4s ease}
+.wisdom-card-news:hover{transform:translateY(-4px);box-shadow:0 30px 60px -28px rgba(90,70,40,.45)}
+@media (prefers-reduced-motion:reduce){.wisdom-card-news{animation:none}.wisdom-card-news:hover{transform:none}}
   /* 한 줄 공감 (커뮤니티) */
   .wc-comments{margin-top:18px;background:#fff;border-radius:22px;padding:22px 24px;box-shadow:0 10px 34px -20px rgba(0,0,0,.2)}
   .wcc-head{font-size:16px;font-weight:800;color:#143D2E;margin-bottom:14px;display:flex;align-items:center;gap:9px}
@@ -1604,7 +1610,6 @@
         <div class="wc-actions">
           <button class="wca-btn wca-web"   onclick="shareWisdom('web')"  >↗ 공유하기</button>
           <button class="wca-btn wca-kakao" onclick="shareWisdom('kakao')">💬 카카오톡</button>
-          <button class="wca-btn wca-email" onclick="shareWisdom('email')">✉ 이메일</button>
           <button class="wca-btn wca-img"   onclick="shareWisdom('image')">🖼 이미지 저장</button>
         </div>
       </div>
@@ -1623,11 +1628,6 @@
       <div class="wcc-list" id="wccList"><div class="wcc-empty">불러오는 중…</div></div>
     </div>
   </div>
-</section>
-
-<!-- 다시봄 꽃잎(포인트) — 잔액 + 친구 초대(공유) -->
-<section style="background:var(--cream);padding:8px 0 40px">
-  <div class="wrap"><div id="dsbPointsCard"></div></div>
 </section>
 
 <!-- 그때 그 시절 미리보기 -->
@@ -1887,6 +1887,12 @@
 
 
 <!-- FOOTER -->
+<!-- 다시봄 꽃잎 — 잔액 + 친구 초대. 콘텐츠들 다 본 뒤 마지막에 만나도록 하단 배치
+     (초대 안내의 주 통로는 각 콘텐츠의 공유 버튼 — 2026-07-20 Macho 지시) -->
+<section style="background:var(--cream);padding:8px 0 44px">
+  <div class="wrap"><div id="dsbPointsCard"></div></div>
+</section>
+
 <footer>
   <div class="wrap">
     <div class="ft">

@@ -464,6 +464,14 @@ body{
   .card-desc{font-size:13px}
   .cmp-bubble{font-size:13px}
 }
+
+/* 연출: 오늘의 이야기 과거→현재 순차 등장 + 사진 호버 확대(2026-07-20) */
+.tl-past,.tl-present{animation:tlIn .65s cubic-bezier(.34,1.56,.64,1) backwards}
+.tl-present{animation-delay:.18s}
+@keyframes tlIn{0%{opacity:0;transform:translateY(30px) scale(.95)}62%{opacity:1;transform:translateY(-5px) scale(1.012)}100%{opacity:1;transform:none}}
+.card-img img{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.card-img:hover img{transform:scale(1.045)}
+@media (prefers-reduced-motion:reduce){.tl-past,.tl-present{animation:none}}
 </style>
 <style>
 /* ── 오늘의 추억 퀴즈 (도장판·추억첩) ── */
@@ -1013,6 +1021,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
 })();
 </script>
+<script>window.DSB_SHARE={title:"그때 그 시절 — 다시봄",text:"그리운 옛 풍경과 오늘을 나란히 보는 추억 여행"};</script>
 <script src="/dasibom-share.js?v=1"></script>
 <script src="/dasibom-points.js?v=1"></script>
 <script>window.DasibomPoints&&DasibomPoints.earnOnEngage("nostalgia");</script>

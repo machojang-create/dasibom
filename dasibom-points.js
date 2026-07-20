@@ -20,8 +20,21 @@
   /* ★화폐 이름·아이콘 — 여기 한 줄만 바꾸면 전 페이지 반영.
      후보 아이콘: 🌸(분홍) 🌼(노랑) 🌷 🏵️ 💮 / 이름: 꽃잎·봄씨앗 등 */
   var POINT_NAME = '꽃잎';
-  var POINT_ICON = '🌸';
-  var _refUrl = null;   // 공유 링크 캐시(클릭 시 동기 공유용)
+  var POINT_ICON = '🌸'; // 순수 텍스트 문맥(시스템 공유문 등)용
+  /* 화면 표시는 자체 SVG — 이모지 🌸가 윈도우 등에서 흰 별이 박힌 모양으로 렌더되어
+     '별모양'으로 보이는 문제(2026-07-20 Macho 지적). 5장 꽃잎+진분홍 꽃술, 별 없음. */
+  var PETAL_SVG = (function () {
+    var petals = '';
+    for (var a = 0; a < 360; a += 72) {
+      petals += '<ellipse cx="12" cy="6.6" rx="3.5" ry="5.1" fill="#F79BB8" transform="rotate(' + a + ' 12 12)"/>';
+    }
+    return '<svg viewBox="0 0 24 24" style="width:1em;height:1em;vertical-align:-0.12em" aria-hidden="true">' +
+      petals + '<circle cx="12" cy="12" r="2.7" fill="#E4587E"/></svg>';
+  })();
+  function escHtml(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  // 텍스트 속 🌸를 SVG 꽃잎으로 치환해 안전하게 HTML로
+  function withPetal(s) { return escHtml(s).split(POINT_ICON).join(PETAL_SVG); }
+  var _refUrl = null, _refToken = null;   // 공유 링크·토큰 캐시(클릭 시 동기 사용)
 
   // 실제 공유/복사 — 반드시 사용자 클릭 컨텍스트 안에서 동기 호출될 것
   function doShare(url) {
@@ -76,7 +89,7 @@
       _ensureToastCss();
       var d = document.createElement('div');
       d.className = 'dsbpt-toast';
-      d.textContent = msg;
+      d.innerHTML = withPetal(msg);
       d.style.cssText = 'position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#33492A;color:#F5F1E8;' +
         'padding:13px 22px;border-radius:50px;font-size:15px;font-weight:800;z-index:99999;box-shadow:0 12px 28px -12px rgba(0,0,0,.5);' +
         "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:88vw;text-align:center;" +
@@ -93,7 +106,7 @@
             'pointer-events:none;--px:' + Math.round(Math.cos(ang) * dist) + 'px;--py:' + Math.round(Math.sin(ang) * dist - 26) + 'px;' +
             '--pr:' + Math.round(-40 + Math.random() * 80) + 'deg;' +
             'animation:dsbptPetal ' + (0.9 + Math.random() * 0.5) + 's ease-out ' + (i * 0.06) + 's both';
-          p.textContent = '🌸';
+          p.innerHTML = PETAL_SVG;
           document.body.appendChild(p);
           (function (pp) { setTimeout(function () { pp.remove(); }, 1900); })(p);
         }
@@ -153,12 +166,15 @@
         var f = fn('createRefLink'); if (!f) { cb(null); return; }
         f({}).then(function (r) {
           var t = r && r.data && r.data.token;
+          _refToken = t || null;
           _refUrl = t ? (location.origin + '/?ref=' + t) : null;
           cb(_refUrl);
         }).catch(function () { cb(null); });
       });
     },
-    name: POINT_NAME, icon: POINT_ICON,
+    // 동기 토큰 접근(공유 URL에 ?ref= 붙이기용) — refLink()가 미리 발급해두면 값이 있다
+    refToken: function () { return _refToken; },
+    name: POINT_NAME, icon: POINT_ICON, iconSvg: PETAL_SVG,
 
     // 친구에게 알리기(선물 프레임). ★공유·복사는 사용자 클릭 순간에 실행돼야 함
     //   (링크를 그때 비동기로 받으면 클릭 권한이 만료돼 공유창·복사가 막힘) →
@@ -178,9 +194,9 @@
       if (!host) return;
       host.innerHTML =
         '<div class="dsbpt-card">' +
-        '<div class="dsbpt-bal"><span class="dsbpt-ic">' + POINT_ICON + '</span>' +
+        '<div class="dsbpt-bal"><span class="dsbpt-ic">' + PETAL_SVG + '</span>' +
         '<span class="dsbpt-num" data-dsbpt-badge>0</span><span class="dsbpt-unit">' + POINT_NAME + '</span></div>' +
-        '<p class="dsbpt-desc">친구가 내 링크로 들어오면 <b>' + POINT_ICON + ' 80' + POINT_NAME + '</b>을 드려요.<br>좋은 걸 나누고 ' + POINT_NAME + '도 모아보세요.</p>' +
+        '<p class="dsbpt-desc">친구가 내 링크로 들어오면 <b>' + PETAL_SVG + ' 80' + POINT_NAME + '</b>을 드려요.<br>좋은 걸 나누고 ' + POINT_NAME + '도 모아보세요.</p>' +
         '<button class="dsbpt-btn" type="button">친구에게 알리고 ' + POINT_NAME + ' 받기 →</button>' +
         '</div>';
       injectCSS();
@@ -245,6 +261,11 @@
   }
 
   window.DasibomPoints = DasibomPoints;
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', handleReferral);
-  else handleReferral();
+  function boot() {
+    handleReferral();
+    // 공유 토큰 선발급 — 모든 콘텐츠의 공유 버튼이 클릭 순간 동기로 ?ref=를 붙일 수 있게
+    DasibomPoints.refLink(function () {});
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
 })();
