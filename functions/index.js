@@ -953,6 +953,37 @@ exports.awardPoints = functions
     } catch (e) { return { ok: false, reason: 'error' }; }
   });
 
+/* ── 꽃잎 소비(하수구) — 수다쟁이 화분 상점(2026-07-20 이식) ──
+   가격은 서버 권위(클라 표시는 장식). 트랜잭션으로 잔액 검사→차감. */
+const PLANT_PRICES = {
+  normal_nut: 15, premium_nut: 40, seed: 20,
+  pot2: 50, pot3: 100, pot4: 150, pot5: 200, pot6: 75, pot7: 125,
+  pot8: 300, pot9: 175, pot10: 90, pot11: 500, pot12: 25, pot13: 400
+};
+exports.spendPoints = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const item = String((data && data.item) || '');
+    const cost = PLANT_PRICES[item];
+    if (!cost) return { ok: false, reason: 'bad_item' };
+    const uref = admin.firestore().collection('users').doc(uid);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const u = await tx.get(uref);
+        const bal = (u.exists && u.data().dsbPoints) || 0;
+        if (bal < cost) return { ok: false, reason: 'insufficient', balance: bal };
+        tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(-cost) }, { merge: true });
+        tx.set(admin.firestore().collection('points_spend').doc(), {
+          uid, item, cost, at: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return { ok: true, spent: cost, balance: bal - cost };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
 // 공유 링크 토큰 발급(재사용) — 공유자 식별용
 exports.createRefLink = functions
   .region('asia-northeast3')

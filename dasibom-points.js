@@ -151,12 +151,21 @@
     // 잔액 조회(본인 users 문서 읽기 — 규칙상 읽기 허용)
     balance: function (cb) {
       whenReady(function () {
-        try {
-          var uid = firebase.auth().currentUser.uid;
-          firebase.firestore().collection('users').doc(uid).get().then(function (d) {
-            cb((d.exists && d.data().dsbPoints) || 0);
-          }).catch(function () { cb(null); });
-        } catch (e) { cb(null); }
+        // React 콘텐츠 페이지는 firestore-compat이 없음(bomguide는 app·auth·functions만 로드)
+        // → 필요 시 여기서 한 번 로드(버전은 bomguide와 동일 9.23.0)
+        function go() {
+          try {
+            var uid = firebase.auth().currentUser.uid;
+            firebase.firestore().collection('users').doc(uid).get().then(function (d) {
+              cb((d.exists && d.data().dsbPoints) || 0);
+            }).catch(function () { cb(null); });
+          } catch (e) { cb(null); }
+        }
+        if (typeof firebase.firestore === 'function') { go(); return; }
+        var s = document.createElement('script');
+        s.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+        s.onload = go; s.onerror = function () { cb(null); };
+        document.head.appendChild(s);
       });
     },
     // 내 공유 링크(?ref=토큰 포함) 발급. 한 번 받으면 캐시(_refUrl)해서 클릭 시 즉시 사용.
@@ -170,6 +179,17 @@
           _refUrl = t ? (location.origin + '/?ref=' + t) : null;
           cb(_refUrl);
         }).catch(function () { cb(null); });
+      });
+    },
+    // 꽃잎 소비(하수구) — 서버가 가격·잔액 판정. cb(err, {ok, spent|reason, balance})
+    spend: function (item, cb) {
+      whenReady(function () {
+        var f = fn('spendPoints'); if (!f) { cb && cb({ code: 'unavailable' }); return; }
+        f({ item: String(item) }).then(function (r) {
+          var d = (r && r.data) || {};
+          if (d.balance != null) fillBadges(d.balance);
+          cb && cb(null, d);
+        }).catch(function (e) { cb && cb(e); });
       });
     },
     // 동기 토큰 접근(공유 URL에 ?ref= 붙이기용) — refLink()가 미리 발급해두면 값이 있다

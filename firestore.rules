@@ -198,6 +198,7 @@ service cloud.firestore {
 
     // ── 다시봄 포인트 엔진 — 전부 Functions(Admin)만. 클라가 손대면 무한 포인트 ──
     match /points_daily/{id} { allow read, write: if false; }
+    match /points_spend/{id} { allow read, write: if false; }  // 꽃잎 소비 로그 — Functions 전용
     match /ref_links/{token} { allow read, write: if false; }
     match /referrals/{rid}   { allow read, write: if false; }
 
