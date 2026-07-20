@@ -2133,7 +2133,7 @@
     const name = lsGet('userName') || (user && user.displayName) || (user && user.email) || '회원';
     const initial = name.charAt(0);
     const prov = getProviderBadge(user);
-    const pts = parseInt(localStorage.getItem('pts_total') || '0');
+    const pts = parseInt(localStorage.getItem('dsb_petal_cache') || '0'); // 꽃잎 잔액 캐시(서버 동기화는 syncNavPoints)
     el.innerHTML = `
       <div class="nav-user">
         <div class="nav-avatar">${initial}</div>
@@ -2142,8 +2142,8 @@
           <span class="nav-provider"><span class="nav-provider-badge ${prov.cls}">${prov.label}</span> 로그인</span>
         </div>
       </div>
-      <div class="nav-pts" id="nav-pts-badge" title="보유 포인트">
-        ⭐ <span class="np-num" id="nav-pts-num">${pts.toLocaleString()}</span>P
+      <div class="nav-pts" id="nav-pts-badge" title="보유 꽃잎">
+        ${(window.DasibomPoints&&DasibomPoints.iconSvg)||'🌸'} <span class="np-num" id="nav-pts-num">${pts.toLocaleString()}</span> 꽃잎
       </div>
       <a class="cta" href="/memoir">내 자서전</a>
       <button class="nav-logout" onclick="logout()">로그아웃</button>
@@ -2156,12 +2156,11 @@
     try {
       const db = firebase.firestore();
       db.collection('users').doc(user.uid).get().then(doc => {
-        if (doc.exists && doc.data().totalPoints != null) {
-          const total = doc.data().totalPoints;
-          localStorage.setItem('pts_total', total);
-          const el = document.getElementById('nav-pts-num');
-          if (el) el.textContent = total.toLocaleString();
-        }
+        // ★꽃잎(dsbPoints)이 대표 화폐 — 옛 게임포인트(totalPoints) 표기는 2026-07-20 폐기
+        const petal = (doc.exists && doc.data().dsbPoints != null) ? doc.data().dsbPoints : 0;
+        localStorage.setItem('dsb_petal_cache', petal);
+        const el = document.getElementById('nav-pts-num');
+        if (el) el.textContent = Number(petal).toLocaleString();
       }).catch(() => {});
     } catch(e) {}
   }

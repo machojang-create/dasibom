@@ -136,75 +136,60 @@
   }
   function mountShareBar(opt) {
     opt = opt || {};
-    if (document.getElementById('dsbShareFab')) return;
+    if (document.getElementById('dsbShareBar')) return;
     var st = document.createElement('style');
     st.textContent =
-      '#dsbShareFab{position:fixed;left:16px;bottom:18px;z-index:8400;border:none;border-radius:50px;padding:13px 18px;' +
-      'font-size:15px;font-weight:800;cursor:pointer;color:#fff;background:linear-gradient(135deg,#c8784a,#d4845a);' +
-      "font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-shadow:0 10px 24px -10px rgba(160,90,40,.6);min-height:48px}" +
-      '#dsbShareFab:active{transform:scale(.95)}' +
-      '#dsbShareSheet{position:fixed;left:16px;bottom:76px;z-index:8401;display:none;flex-direction:column;gap:8px;' +
-      'transform-origin:16% 108%}' +
-      '#dsbShareSheet.on{display:flex;animation:dsbShIn .42s cubic-bezier(.34,1.7,.5,1)}' +
-      '@keyframes dsbShIn{0%{opacity:0;transform:scale(.25) translateY(20px)}62%{opacity:1;transform:scale(1.05)}100%{opacity:1;transform:none}}' +
-      '#dsbShareSheet button{border:none;border-radius:14px;min-height:50px;padding:0 20px;font-size:15.5px;font-weight:800;' +
-      "cursor:pointer;text-align:left;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;" +
-      'background:rgba(35,30,24,.92);color:#fff;box-shadow:0 8px 20px -10px rgba(0,0,0,.5)}' +
-      '#dsbShareSheet button:active{transform:scale(.97)}' +
-      '#dsbShareSheet .dsb-sh-kakao{background:#FEE500;color:#191600}' +
-      '@media (prefers-reduced-motion:reduce){#dsbShareSheet.on{animation:none}}';
+      '#dsbShareBar{max-width:640px;margin:30px auto 26px;padding:0 18px}' +
+      '#dsbShareBar .dsb-sb-title{text-align:center;font-size:14.5px;font-weight:700;color:#8a6a48;margin-bottom:10px;' +
+      "font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}" +
+      '#dsbShareBar .dsb-sb-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
+      '@media(max-width:380px){#dsbShareBar .dsb-sb-row{grid-template-columns:1fr}}' +
+      '#dsbShareBar button{border:none;border-radius:16px;min-height:54px;font-size:16.5px;font-weight:800;cursor:pointer;' +
+      "font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;transition:transform .12s}" +
+      '#dsbShareBar button:active{transform:scale(.96)}' +
+      '#dsbShareBar .dsb-sb-web{background:rgba(35,30,24,.92);color:#fff;box-shadow:0 8px 20px -10px rgba(0,0,0,.45)}' +
+      '#dsbShareBar .dsb-sb-kakao{background:#FEE500;color:#191600;box-shadow:0 8px 20px -10px rgba(180,160,0,.5)}';
     document.head.appendChild(st);
-    var fab = document.createElement('button');
-    fab.id = 'dsbShareFab'; fab.type = 'button'; fab.textContent = '↗ 공유하기';
-    var sheet = document.createElement('div');
-    sheet.id = 'dsbShareSheet';
-    var html =
-      '<button type="button" data-k="web">↗ 공유하기</button>' +
-      '<button type="button" data-k="kakao" class="dsb-sh-kakao">💬 카카오톡</button>';
-    if (typeof opt.image === 'function') html += '<button type="button" data-k="image">🖼 이미지 저장</button>';
-    sheet.innerHTML = html;
-    document.body.appendChild(fab); document.body.appendChild(sheet);
+    var bar = document.createElement('section');
+    bar.id = 'dsbShareBar';
+    bar.innerHTML =
+      '<div class="dsb-sb-title">마음에 드셨다면 친구에게 선물해 보세요 — 친구가 오면 꽃잎 80장을 드려요</div>' +
+      '<div class="dsb-sb-row">' +
+      '<button type="button" class="dsb-sb-web">↗ 공유하기</button>' +
+      '<button type="button" class="dsb-sb-kakao">💬 카카오톡</button>' +
+      '</div>';
+    // 본문 흐름 속 맨 아래: footer 있으면 그 앞, 없으면(React 콘텐츠) body 끝
+    var ft = document.querySelector('footer');
+    if (ft && ft.parentNode) ft.parentNode.insertBefore(bar, ft);
+    else document.body.appendChild(bar);
     ensureKakao(function () {});   // 미리 로드(클릭 순간 팝업 차단 방지)
     function urlNow() { return withRef(opt.url || (location.origin + location.pathname)); }
     function textNow() { return (opt.text || document.title || '다시봄') + '\n다시봄에서 같이 봐요!'; }
-    fab.addEventListener('click', function () { sheet.classList.toggle('on'); });
-    sheet.addEventListener('click', function (e) {
-      var b = e.target.closest('button'); if (!b) return;
-      var k = b.getAttribute('data-k');
-      sheet.classList.remove('on');
+    bar.querySelector('.dsb-sb-web').addEventListener('click', function () {
       DasibomShare.track('share_click');
-      if (k === 'web') {
-        var u = urlNow();
-        if (navigator.share) {
-          navigator.share({ title: opt.title || document.title, text: opt.text || '', url: u })
-            .then(function () { DasibomShare.track('share_open'); setTimeout(rewardHint, 400); }).catch(function () {});
-        } else if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(u).then(function () { DasibomShare.track('share_open'); toast('링크를 복사했어요. 붙여넣기로 보내주세요 🌱'); setTimeout(rewardHint, 1200); });
-        } else { legacyCopy(u, function () { toast('링크를 복사했어요'); setTimeout(rewardHint, 1200); }); }
-      } else if (k === 'kakao') {
-        var u2 = urlNow();
-        ensureKakao(function (ok) {
-          if (ok) {
-            try {
-              Kakao.Share.sendDefault({ objectType: 'text', text: textNow(), link: { mobileWebUrl: u2, webUrl: u2 } });
-              DasibomShare.track('share_open'); setTimeout(rewardHint, 600);
-              return;
-            } catch (e) {}
-          }
-          // 폴백: 시스템 공유(카톡 선택 가능) 또는 복사
-          if (navigator.share) navigator.share({ title: opt.title || document.title, url: u2 }).then(function(){ setTimeout(rewardHint,400); }).catch(function(){});
-          else { legacyCopy(u2, function () { toast('링크를 복사했어요. 카카오톡에 붙여넣어 주세요'); setTimeout(rewardHint,1200); }); }
-        });
-      } else if (k === 'image') {
-        try { opt.image(); } catch (e) {}
-      }
+      var u = urlNow();
+      if (navigator.share) {
+        navigator.share({ title: opt.title || document.title, text: opt.text || '', url: u })
+          .then(function () { DasibomShare.track('share_open'); setTimeout(rewardHint, 400); }).catch(function () {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(u).then(function () { DasibomShare.track('share_open'); toast('링크를 복사했어요. 붙여넣기로 보내주세요 🌱'); setTimeout(rewardHint, 1200); });
+      } else { legacyCopy(u, function () { toast('링크를 복사했어요'); setTimeout(rewardHint, 1200); }); }
     });
-    // 바깥 탭 시 닫기
-    document.addEventListener('click', function (e) {
-      if (!sheet.classList.contains('on')) return;
-      if (e.target === fab || fab.contains(e.target) || sheet.contains(e.target)) return;
-      sheet.classList.remove('on');
-    }, true);
+    bar.querySelector('.dsb-sb-kakao').addEventListener('click', function () {
+      DasibomShare.track('share_click');
+      var u2 = urlNow();
+      ensureKakao(function (ok) {
+        if (ok) {
+          try {
+            Kakao.Share.sendDefault({ objectType: 'text', text: textNow(), link: { mobileWebUrl: u2, webUrl: u2 } });
+            DasibomShare.track('share_open'); setTimeout(rewardHint, 600);
+            return;
+          } catch (e) {}
+        }
+        if (navigator.share) navigator.share({ title: opt.title || document.title, url: u2 }).then(function(){ setTimeout(rewardHint,400); }).catch(function(){});
+        else { legacyCopy(u2, function () { toast('링크를 복사했어요. 카카오톡에 붙여넣어 주세요'); setTimeout(rewardHint,1200); }); }
+      });
+    });
   }
 
   function legacyCopy(text, cb) {
