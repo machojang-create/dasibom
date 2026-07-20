@@ -10,6 +10,8 @@ import Petal from './components/Petal';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
 const dsb = () => (window as any).DasibomPoints;
+/* 어항 정원 — 성능(저사양 폰)과 시각적 쾌적함을 위한 상한. 넘치면 방생으로 자리 마련 */
+const MAX_GUPPIES = 10;
 
 interface GuppyInstance {
   id: string;
@@ -170,6 +172,7 @@ export default function App() {
   const foodsRef = useRef<FoodInstance[]>([]);
   const bubblesRef = useRef<BubbleInstance[]>([]);
   
+  const frameParityRef = useRef(false);
   const [testExpression, setTestExpression] = useState<{title: string, desc: string, icon: string} | null>(null);
   const [waterQuality, setWaterQuality] = useState<number>(100);
   const [logs, setLogs] = useState<GuppyResponse[]>([]);
@@ -369,7 +372,7 @@ export default function App() {
     let currentBubbles = [...bubblesRef.current];
 
     // Spawn bubbles
-    if (Math.random() < 0.03) {
+    if (Math.random() < 0.03 && currentBubbles.length < 22) {
       currentBubbles.push({
         id: Math.random().toString(36).substr(2, 9),
         x: Math.random() * tankWidth,
@@ -464,6 +467,7 @@ export default function App() {
           
           babyStats.inheritance = Math.max(10, Math.min(99, babyStats.inheritance));
 
+          if (currentGuppies.length + newBabies.length >= MAX_GUPPIES) continue; // 정원 초과 시 번식 스킵
           newBabies.push({
             id: Math.random().toString(36).substring(2, 9),
             data: babyData,
@@ -709,9 +713,13 @@ export default function App() {
     if (newBabies.length > 0) checkAchievements(currentGuppies);
     bubblesRef.current = currentBubbles;
     
-    setFoodsState(currentFoods);
-    setGuppiesState(currentGuppies);
-    setBubblesState(currentBubbles);
+    // 저사양 폰 최적화: 렌더 동기는 2프레임당 1회(30fps). 물리 계산은 ref에서 매 프레임.
+    frameParityRef.current = !frameParityRef.current;
+    if (frameParityRef.current) {
+      setFoodsState(currentFoods);
+      setGuppiesState(currentGuppies);
+      setBubblesState(currentBubbles);
+    }
 
     requestRef.current = requestAnimationFrame(update);
   }, []);
@@ -791,6 +799,10 @@ export default function App() {
   }, []);
 
   const handleSpawn = (rarity: string = 'normal', isSpecial: boolean = false): SpawnData | null => {
+    if (guppiesRef.current.length >= MAX_GUPPIES) {
+      showToast('어항이 가득 찼어요', '방생으로 자리를 만들면 새 식구를 들일 수 있어요 (최대 ' + MAX_GUPPIES + '마리)', '🪸');
+      return null;
+    }
     if (guppiesRef.current.length >= 15) {
       alert("어항이 꽉 찼습니다! (최대 15마리)");
       return null;
@@ -995,7 +1007,7 @@ export default function App() {
             <div className="flex items-center gap-1.5 text-xs text-pink-500 font-bold">
               <span className="text-sm">🐠</span> 보유 생물
             </div>
-            <span className="font-bold text-lg">{guppies.length}마리</span>
+            <span className="font-bold text-lg">{guppies.length} <span className="text-xs opacity-70">/ {MAX_GUPPIES}마리</span></span>
           </div>
         </div>
       </header>
@@ -1003,19 +1015,19 @@ export default function App() {
       <div className="bg-white rounded-[16px] p-1 shadow-sm flex items-center md:justify-center gap-1 md:gap-2 border border-white/40 overflow-x-auto hide-scrollbar mx-1 sm:mx-0">
         <button onClick={() => setMainMenuTab("tank")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "tank" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
           <Anchor className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[10px] md:text-xs whitespace-nowrap">내 어항 뷰</span>
+          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">내 어항 뷰</span>
         </button>
         <button onClick={() => setMainMenuTab("manage")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "manage" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
           <Eye className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[10px] md:text-xs whitespace-nowrap">생물 관리</span>
+          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">생물 관리</span>
         </button>
         <button onClick={() => setMainMenuTab("guppy_shop")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "guppy_shop" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
           <Fish className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[10px] md:text-xs whitespace-nowrap">구피 상점</span>
+          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">구피 상점</span>
         </button>
         <button onClick={() => setMainMenuTab("shop")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "shop" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
           <Coins className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[10px] md:text-xs whitespace-nowrap">조개 상점</span>
+          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">꽃잎 상점</span>
         </button>
       </div>
 
@@ -1522,6 +1534,8 @@ export default function App() {
         <GuppyShopTab 
           spendPetal={spendPetal}
           petals={petals}
+          tankFull={guppies.length >= MAX_GUPPIES}
+          onTankFull={() => showToast('어항이 가득 찼어요', '방생으로 자리를 만들면 새 식구를 들일 수 있어요 (최대 ' + MAX_GUPPIES + '마리)', '🪸')}
 
           gold={gold}
           setGold={setGold}

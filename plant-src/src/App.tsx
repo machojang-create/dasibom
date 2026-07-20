@@ -479,14 +479,14 @@ export default function App() {
       {/* Fixed UI Layer (Z-50) */}
       <div className="absolute inset-0 pointer-events-none z-50">
         {/* Navigation Arrows */}
-        <div className="absolute top-[65%] md:top-[65%] -translate-y-1/2 left-2 md:left-6 z-40 pointer-events-auto">
+        <div className="absolute top-[76%] md:top-[70%] -translate-y-1/2 left-2 md:left-6 z-40 pointer-events-auto">
           {currentSlotIndex > 0 && (
             <button onClick={() => scrollToSlot(currentSlotIndex - 1)} className="p-2 md:p-3 bg-white/70 hover:bg-white/95 backdrop-blur-md rounded-full shadow-lg text-gray-600 transition-all active:scale-95 border-2 border-white/50">
               <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
             </button>
           )}
         </div>
-        <div className="absolute top-[65%] md:top-[65%] -translate-y-1/2 right-2 md:right-6 z-40 pointer-events-auto">
+        <div className="absolute top-[76%] md:top-[70%] -translate-y-1/2 right-2 md:right-6 z-40 pointer-events-auto">
           {currentSlotIndex < slots.length - 1 && (
             <button onClick={() => scrollToSlot(currentSlotIndex + 1)} className="p-2 md:p-3 bg-white/70 hover:bg-white/95 backdrop-blur-md rounded-full shadow-lg text-gray-600 transition-all active:scale-95 border-2 border-white/50">
               <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
@@ -502,7 +502,7 @@ export default function App() {
         </div>
 
         {/* Top Left (Time of Day & Bonus & Weather) */}
-        <div className="absolute top-6 left-6 pointer-events-auto flex flex-col gap-2">
+        <div className="absolute top-4 left-3 md:top-6 md:left-6 pointer-events-auto flex flex-col gap-1.5 max-w-[62vw]">
           <div className="flex gap-2">
             <div className="flex items-center justify-center h-8 bg-white/90 backdrop-blur-md rounded-full shadow border-2 border-white px-3 gap-1.5 text-gray-800 font-bold text-sm">
               {timeOfDay === 'morning' ? <span className="text-orange-500">🌅 아침</span> : timeOfDay === 'day' ? <span className="text-blue-500">☀️ 낮</span> : <span className="text-indigo-500">🌙 밤</span>}
@@ -519,7 +519,7 @@ export default function App() {
         </div>
 
         {/* Top Right (Money) */}
-        <div className="absolute top-6 right-6 pointer-events-auto">
+        <div className="absolute top-4 right-3 md:top-6 md:right-6 pointer-events-auto">
           <div className="flex items-center justify-center h-8 bg-white/90 rounded-full shadow border-2 border-pink-200 px-3 gap-1.5 text-[#a14d68] font-bold text-sm">
             <Petal className="w-4 h-4" />
             {money.toLocaleString()} <span className="text-[11px] font-extrabold">꽃잎</span>
@@ -553,19 +553,19 @@ export default function App() {
 
         {/* Bottom Actions */}
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 md:gap-4 px-2 pointer-events-auto">
-          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[100px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'day' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <Droplet className="w-8 h-8 md:w-9 md:h-9 mb-1 drop-shadow relative z-10" fill="currentColor" />
             <span className="font-bold text-[15px] md:text-base drop-shadow-md tracking-tight text-center relative z-10">물주기</span>
             <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10">무료</span>
           </button>
-          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[100px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">🌿</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">영양제<br/><span className="text-[11px] font-semibold opacity-90">잎이 쑥 자라요</span></span>
             <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
           </button>
-          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[100px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">✨</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">고급 영양제<br/><span className="text-[11px] font-semibold opacity-90">쑥쑥 두 배!</span></span>

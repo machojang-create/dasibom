@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SpawnData } from '../types';
 
 interface GuppyShopTabProps {
+  tankFull?: boolean;
+  onTankFull?: () => void;
   spendPetal?: any;
   petals?: number;
   gold: number;
@@ -15,6 +17,8 @@ interface GuppyShopTabProps {
 }
 
 export const GuppyShopTab = React.memo(function GuppyShopTab({
+  tankFull,
+  onTankFull,
   spendPetal,
   petals, gold, setGold, onSpawn }: GuppyShopTabProps) {
   const [specialGuppies, setSpecialGuppies] = useState(() => getSpecialShopGuppies());
@@ -69,6 +73,8 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
   const PETAL_ITEM: Record<string, string> = { normal: 'guppy_special_normal', rare: 'guppy_special_rare', legendary: 'guppy_special_legendary' };
   const RAND_ITEM: Record<string, string> = { normal: 'guppy_seed_rand_normal', rare: 'guppy_seed_rand_rare', legendary: 'guppy_seed_rand_legendary' };
   const handleBuy = (rarity: string, cost: number, isSpecial: boolean) => {
+    // 정원(최대 마리수) 초과 시 꽃잎을 쓰기 전에 막는다 — 차감 후 실패 방지
+    if ((tankFull as any)) { (onTankFull as any)?.(); return; }
     // 꽃잎 단일 화폐: 모든 입양은 서버 차감 성공 시에만
     const item = isSpecial ? PETAL_ITEM[rarity] : RAND_ITEM[rarity];
     (spendPetal as any)(item, (ok: boolean) => {
