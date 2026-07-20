@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  background-color: #082f49; /* sky-950 */
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.json-glow {
+  text-shadow: 0 0 5px rgba(74, 222, 128, 0.5);
+}
+
+@keyframes sway {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(5deg); }
+}
+
+@keyframes sway-reverse {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-5deg); }
+}
+
+@keyframes color-cycle {
+  0% { background-color: #06b6d4; }
+  25% { background-color: #8b5cf6; }
+  50% { background-color: #f59e0b; }
+  75% { background-color: #f43f5e; }
+  100% { background-color: #06b6d4; }
+}
+
+@keyframes fall {
+  0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+.animate-sway {
+  animation: sway 4s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+.animate-sway-reverse {
+  animation: sway-reverse 5s ease-in-out infinite alternate;
+  transform-origin: bottom center;
+}
+
+.animate-color-cycle {
+  animation: color-cycle 20s infinite;
+}
+
+.animate-fall {
+  animation: fall linear infinite;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.4);
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -1805,6 +1805,22 @@
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
 
+      <a class="card card-8" href="/guppy" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">AQUARIUM</span>
+            <span class="tag">봄이네 사랑방</span>
+          </div>
+          <h3 class="title">우리집<br>구피 어항</h3>
+          <p class="desc">거실에 놓인 작은 바다. 구피를 기르고 짝을 지어 새끼도 받아요. 반짝이는 한정 구피와 어항 꾸미기는 꽃잎으로.</p>
+        </div>
+        <div class="visual">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:72px;z-index:1">🐠</div>
+          <div class="ph">어항 구경하러 가기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+
       <!-- 오늘의 아재퀴즈 — 파일럿 앱 편입(2026-07-11, 자체 Firebase DB 유지) -->
       <a class="card card-7" href="/gag" data-reveal="">
         <div>
@@ -1944,6 +1960,7 @@
           <li><a href="/trendy">말동무 사전</a></li>
           <li><a href="/dream">봄이의 꿈 풀이</a></li>
           <li><a href="/plant">수다쟁이 화분</a></li>
+          <li><a href="/guppy">우리집 구피 어항</a></li>
           <li><a href="/maeum">마음결</a></li>
           <li><a href="/gag">오늘의 아재퀴즈</a></li>
           <li><a href="/debate">대환장 토론장</a></li>
@@ -3077,10 +3094,11 @@ body.dark .bom-guide-text{color:#c8bba4}
     arcade:    { face:'bom_cheer.png',  title:'🕹️ 추억의 오락실', text:'블라스트·3매치·버블슈터 — 제한 없이 마음 편히 즐기는 시간이에요!' },
     library:   { face:'bom_smile.png',  title:'📚 공개 서재',    text:'다른 분들이 공개한 자서전을 함께 읽어보는 공간이에요. 따뜻한 인생 이야기가 가득해요.' },
     letter:    { face:'bom_calm.png',   title:'💌 마음의 유언',  text:'사랑하는 사람에게 먼 훗날 전할 편지를 미리 적어둘 수 있어요. 천천히 마음을 담아보세요.' },
+    guppy:     { face:'bom_grin.png',   title:'🐠 우리집 구피 어항', text:'구피를 기르고 새끼도 받는 거실 속 작은 바다예요. 먹이 주고 방생하면 조개가 모이고, 한정 구피·장식은 꽃잎으로 들여요.' },
     plant:     { face:'bom_smile.png',  title:'🪴 수다쟁이 화분', text:'구수한 사투리로 말 거는 반려 식물 동무를 키워요. 물은 공짜, 영양제·씨앗·화분은 꽃잎으로 사요.' },
     trendy:    { face:'bom_grin.png',   title:'💬 말동무 사전', text:'1970년대부터 요즘 신조어까지 시대별 유행어를 모아뒀어요. 퀴즈도 풀고, 마음에 드는 말은 앨범에 담아보세요!' }
   };
-  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter', '/plant':'plant', '/trendy':'trendy' };
+  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter', '/plant':'plant', '/guppy':'guppy', '/trendy':'trendy' };
   var ov=document.getElementById('bomGuide');
   var faceEl=document.getElementById('bomGuideFace'), titleEl=document.getElementById('bomGuideTitle'),
       textEl=document.getElementById('bomGuideText'), okBtn=document.getElementById('bomGuideOk');

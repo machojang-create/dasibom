@@ -956,9 +956,13 @@ exports.awardPoints = functions
 /* ── 꽃잎 소비(하수구) — 수다쟁이 화분 상점(2026-07-20 이식) ──
    가격은 서버 권위(클라 표시는 장식). 트랜잭션으로 잔액 검사→차감. */
 const PLANT_PRICES = {
+  // 수다쟁이 화분
   normal_nut: 15, premium_nut: 40, seed: 20,
   pot2: 50, pot3: 100, pot4: 150, pot5: 200, pot6: 75, pot7: 125,
-  pot8: 300, pot9: 175, pot10: 90, pot11: 500, pot12: 25, pot13: 400
+  pot8: 300, pot9: 175, pot10: 90, pot11: 500, pot12: 25, pot13: 400,
+  // 구피 키우기 — 특별(3시간 한정) 품종·장식은 꽃잎, 먹이·일반품종은 게임 내 조개
+  guppy_special_normal: 30, guppy_special_rare: 50, guppy_special_legendary: 120,
+  guppy_decor_sand_castle: 50, guppy_decor_golden_statue: 200
 };
 exports.spendPoints = functions
   .region('asia-northeast3')
