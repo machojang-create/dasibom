@@ -27,6 +27,8 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:#FF
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"
   onerror="showErr('Firebase SDK 로드 실패. 네트워크를 확인하세요.')"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"
+  onerror="showErr('Firebase Auth SDK 로드 실패.')"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-functions-compat.js"
   onerror="showErr('Firebase Functions SDK 로드 실패.')"></script>
 
@@ -113,8 +115,17 @@ function lsSet(k, v){ try{ localStorage.setItem('memoir_' + k, JSON.stringify(v)
         lsSet('userName',  d.name  || '');
         if(d.email) lsSet('userEmail', d.email);
 
-        showOk('로그인 완료!', '다시봄으로 이동합니다.');
-        setTimeout(function(){ location.href = '/'; }, 1200);
+        // 센터 스태프(/admin 등) 로그인이면 실제 Firebase Auth 세션까지 발급
+        var target = sessionStorage.getItem('dasibom_login_target') || '';
+        sessionStorage.removeItem('dasibom_login_target');
+        var dest = (target === 'admin') ? '/admin' : (target === 'kiosk') ? '/kiosk' : '/';
+        var go = d.customToken ? firebase.auth().signInWithCustomToken(d.customToken) : Promise.resolve();
+        go.then(function(){
+          showOk('로그인 완료!', '이동합니다.');
+          setTimeout(function(){ location.href = dest; }, 1200);
+        }).catch(function(e){
+          showErr('인증 세션 발급 실패: ' + e.message);
+        });
       })
       .catch(function(err){
         if(timedOut) return;

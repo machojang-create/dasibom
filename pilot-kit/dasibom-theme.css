@@ -1,0 +1,21 @@
+/* ════════ 다시봄 파일럿 공용 테마 ════════
+   각 앱 src/에 복사 후 진입점(main/App)에서 import.
+   폰트(Pretendard)·브랜드 토큰을 통일한다.
+   Tailwind 앱이면 @theme 에 --font-sans: var(--dasibom-font) 로 매핑하면 됨.
+   ════════════════════════════════════════ */
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css");
+
+:root {
+  --dasibom-font: 'Pretendard', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* 다시봄 웜크림·브라운 톤 */
+  --dasibom-bg: #FFFCF7;
+  --dasibom-ink: #4A3E31;
+  --dasibom-primary: #7D5A50;
+  --dasibom-cream: #FFF9F0;
+  --dasibom-peach: #FFF0E0;
+  --dasibom-border: #F0E6D2;
+}
+
+html, body {
+  font-family: var(--dasibom-font);
+}
