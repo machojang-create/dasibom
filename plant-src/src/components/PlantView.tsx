@@ -5,6 +5,7 @@ import { Edit2, Star, Sparkles, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import AnimatedNumber from './AnimatedNumber';
 import PlantArt from './PlantArt';
+import PotPattern from './PotDecor';
 
 interface Props {
   plant: UserPlant;
@@ -185,6 +186,8 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
             <div className="absolute left-[16%] top-[8%] bottom-[14%] w-[10%] bg-gradient-to-b from-white/55 via-white/20 to-transparent rounded-full pointer-events-none" style={{ filter: 'blur(1px)' }} />
             {/* 우측 은은한 반사 */}
             <div className="absolute right-[18%] top-[14%] h-[30%] w-[6%] bg-white/25 rounded-full pointer-events-none" style={{ filter: 'blur(2px)' }} />
+            {/* 화분별 문양·패턴(2026-07-22) — 색만 다르던 스킨에 시각적 개성 부여 */}
+            <PotPattern potId={potId} />
             {/* 하단 안쪽 음영 — 입체감 */}
             <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/15 to-transparent pointer-events-none" />
             <div className={`mt-2 ${text} opacity-90 flex items-center justify-center pointer-events-none relative z-10`}>

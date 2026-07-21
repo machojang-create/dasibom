@@ -1,6 +1,7 @@
 import { POT_TYPES } from '../data';
 import { X } from 'lucide-react';
 import Petal from './Petal';
+import PotPattern from './PotDecor';
 
 /* 화분 상점 — 씨앗 상점과 동일한 화이트·크림 스킨(2026-07-21 통일), 2열 그리드 */
 interface Props {
@@ -58,9 +59,11 @@ export default function PotShopView({ isOpen, onClose, onBuyPot, money, isSlotEm
                 className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
               >
                 <div
-                  className="w-14 h-12 rounded-b-2xl rounded-t-md mb-2 shadow-inner border border-black/5 group-hover:scale-110 transition-transform"
+                  className="relative w-14 h-12 rounded-b-2xl rounded-t-md mb-2 shadow-inner border border-black/5 group-hover:scale-110 transition-transform overflow-hidden"
                   style={{ background: POT_SWATCH[pot.id] || POT_SWATCH.pot1, clipPath: 'polygon(0 0, 100% 0, 86% 100%, 14% 100%)' }}
-                />
+                >
+                  <PotPattern potId={pot.id} />
+                </div>
                 <span className="text-[#4a3a26] font-black text-[15px] text-center leading-tight mb-2">{pot.name}</span>
                 <span className={`text-[13px] font-black px-3 py-1 rounded-full flex items-center gap-1 ${petalPrice === 0 ? 'text-[#4e8040] bg-green-50' : cannotAfford ? 'text-red-400 bg-red-50' : 'text-[#a14d68] bg-pink-50'}`}>
                   {petalPrice === 0 ? '무료' : <><Petal className="w-3.5 h-3.5" /> {petalPrice} 꽃잎</>}
