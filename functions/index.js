@@ -1002,6 +1002,31 @@ exports.spendPoints = functions
     } catch (e) { return { ok: false, reason: 'error' }; }
   });
 
+// ── 마스터 전용 꽃잎 지급/차감(2026-07-21 Macho 요청 — 테스트·운영 보정) ──
+//   클라 발행 금지 원칙의 유일한 서버측 예외. MASTERS 이메일 토큰만 통과, points_admin에 전량 기록.
+exports.adminGrantPoints = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const MASTERS = ['machojang@gmail.com', 'machojang@naver.com'];
+    const email = (context.auth.token && context.auth.token.email) || '';
+    if (MASTERS.indexOf(email) < 0) throw new functions.https.HttpsError('permission-denied', '운영자만 사용할 수 있습니다.');
+    const amount = Math.max(-100000, Math.min(100000, parseInt((data && data.amount) || 0, 10) || 0));
+    if (!amount) return { ok: false, reason: 'bad_amount' };
+    const targetUid = String((data && data.uid) || context.auth.uid);
+    const uref = admin.firestore().collection('users').doc(targetUid);
+    await uref.set({ dsbPoints: admin.firestore.FieldValue.increment(amount) }, { merge: true });
+    const snap = await uref.get();
+    try {
+      await admin.firestore().collection('points_admin').add({
+        by: context.auth.uid, email, target: targetUid, amount,
+        at: admin.firestore.FieldValue.serverTimestamp()
+      });
+    } catch (e) {}
+    return { ok: true, balance: (snap.data() && snap.data().dsbPoints) || 0 };
+  });
+
 // 공유 링크 토큰 발급(재사용) — 공유자 식별용
 exports.createRefLink = functions
   .region('asia-northeast3')

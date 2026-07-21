@@ -321,10 +321,43 @@
   }
 
   window.DasibomPoints = DasibomPoints;
+
+  // ── 마스터 전용 꽃잎 에디터(2026-07-21 Macho) — 운영자 이메일 로그인 시에만 보이는 테스트 버튼 ──
+  //   지급은 전부 서버(adminGrantPoints, points_admin 기록). 일반 사용자에겐 렌더 자체가 안 됨.
+  function mountMasterPetalTool() {
+    whenReady(function () {
+      try {
+        var u = firebase.auth().currentUser;
+        var email = (u && u.email) || '';
+        if (['machojang@gmail.com', 'machojang@naver.com'].indexOf(email) < 0) return;
+        if (document.getElementById('dsbMasterPetal')) return;
+        var b = document.createElement('button');
+        b.id = 'dsbMasterPetal';
+        b.textContent = '🌸±';
+        b.style.cssText = 'position:fixed;left:12px;bottom:16px;z-index:99991;width:46px;height:46px;border-radius:50%;' +
+          'border:2px solid #f3c2d3;background:#fff;font-size:16px;font-weight:900;box-shadow:0 6px 16px -6px rgba(0,0,0,.35);cursor:pointer';
+        b.onclick = function () {
+          var v = window.prompt('꽃잎 지급/차감 (예: 1000, -500)', '1000');
+          if (v == null) return;
+          var amt = parseInt(v, 10);
+          if (!amt) { toast('숫자를 입력해 주세요'); return; }
+          var f = fn('adminGrantPoints'); if (!f) { toast('연결 대기 중'); return; }
+          f({ amount: amt }).then(function (r) {
+            var d = r && r.data;
+            if (d && d.ok) { toast('🌸 ' + (amt > 0 ? '+' : '') + amt + ' → 잔액 ' + d.balance.toLocaleString()); }
+            else toast('지급 실패');
+          }).catch(function (e) { toast('권한 없음 또는 오류'); });
+        };
+        document.body.appendChild(b);
+      } catch (e) {}
+    });
+  }
+
   function boot() {
     handleReferral();
     // 공유 토큰 선발급 — 모든 콘텐츠의 공유 버튼이 클릭 순간 동기로 ?ref=를 붙일 수 있게
     DasibomPoints.refLink(function () {});
+    mountMasterPetalTool();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
