@@ -255,7 +255,15 @@ export default function App() {
     if (spendBusyRef.current) return false;
     const P = dsb(); if (!P) return false;
     spendBusyRef.current = true;
-    P.spend(item, (err: any, d: any) => { spendBusyRef.current = false; cb(err, d); });
+    let settled = false;
+    const safety = setTimeout(() => {   // 서버 무응답 시 잠금이 영원히 안 풀리던 구멍(2026-07-22)
+      if (!settled) { settled = true; spendBusyRef.current = false; cb({ code: 'timeout' }, null); }
+    }, 12000);
+    P.spend(item, (err: any, d: any) => {
+      if (settled) return;
+      settled = true; clearTimeout(safety);
+      spendBusyRef.current = false; cb(err, d);
+    });
     return true;
   };
 
@@ -368,7 +376,7 @@ export default function App() {
       let levelIncrease = type === 'water' ? 0 : type === 'normal_nut' ? 0.2 : 0.6;
       // 물주기: 하루 첫 물은 정성으로 쳐서 레벨+1 (자동 성장 폐지 — 매일 들르는 이유)
       if (type === 'water') {
-        const today = new Date().toISOString().slice(0, 10);
+        const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/;
         if ((newPlant as any).lastWaterDay !== today) {
           levelIncrease = 1;
           (newPlant as any).lastWaterDay = today;
@@ -418,7 +426,23 @@ export default function App() {
         lastUserSpeakRef.current = Date.now();
         return;
       }
-      applyEffect('water'); return;   // 물은 무료 — 매일 만지는 핵심 손길
+      // 하루 첫 잔 무료(정성=레벨업), 추가 물은 1잎(2026-07-22 Macho — 물도 재화 루프에)
+      const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/;
+      if ((cur as any).lastWaterDay !== today) { applyEffect('water'); return; }
+      guardedSpend('plant_water', (err: any, d: any) => {
+        if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
+        setMoney(d.balance);
+        applyEffect('water');
+      });
+      return;
+    }
+    {
+      const cur2 = slots[currentSlotIndex];
+      if (cur2 && cur2.stage === 'old') {
+        plantSay(['인자 만개했다 아이가. 영양제는 어린 아들 주라!', '나는 꽉 찼데이. 마음만 고맙게 받을게!'][Math.floor(Math.random() * 2)]);
+        lastUserSpeakRef.current = Date.now();
+        return;
+      }
     }
     if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
     guardedSpend(type, (err: any, d: any) => {
@@ -810,7 +834,7 @@ export default function App() {
             {timeOfDay === 'day' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <Droplet className="w-8 h-8 md:w-9 md:h-9 mb-1 drop-shadow relative z-10" fill="currentColor" />
             <span className="font-bold text-[15px] md:text-base drop-shadow-md tracking-tight text-center relative z-10">물주기</span>
-            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10">무료</span>
+            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">{currentPlant && (currentPlant as any).lastWaterDay === new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/ ? <><Petal className="w-3 h-3" />1</> : '오늘 첫 잔 무료'}</span>
           </button>
           <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] ${money < 15 ? "opacity-60 saturate-[.6]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}

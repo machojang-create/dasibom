@@ -207,8 +207,8 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
   // 대사가 있을 때만 말풍선 표시(2026-07-22) — 기본대사 폴백이 말풍선을 영원히 띄우던 원인
   const phrase = plant.phrase;
   
-  // 만개 기준 레벨 12 (2026-07-21 밸런스 +20% — 여러 화분이면 보름 호흡)
-  const growthPercent = plant.stage === 'old' ? '100.0' : Math.min(99.9, ((plant.level / 12) * 100) + (plant.waterLevel / 10)).toFixed(1);
+  // 만개 기준 레벨 12. 영양제의 소수점 성장(growthBuf)도 게이지에 즉시 반영 — "줘도 그대로" 해소(2026-07-22)
+  const growthPercent = plant.stage === 'old' ? '100.0' : Math.min(99.9, (((plant.level + ((plant as any).growthBuf || 0)) / 12) * 100) + (plant.waterLevel / 10)).toFixed(1);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {

@@ -314,7 +314,11 @@ export default function App() {
     if (!P) { showToast('연결 대기', '잠시 후 다시 시도해 주세요', '🌸'); cb(false); return; }
     if (spendBusyRef.current) { cb(false); return; }
     spendBusyRef.current = true;
+    let settled = false;
+    const safety = setTimeout(() => { if (!settled) { settled = true; spendBusyRef.current = false; cb(false); } }, 12000);
     P.spend(item, (err: any, d: any) => {
+      if (settled) return;
+      settled = true; clearTimeout(safety);
       spendBusyRef.current = false;
       if (err || !d || !d.ok) {
         if (d && d.balance != null) setPetals(d.balance);
