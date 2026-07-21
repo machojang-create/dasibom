@@ -15,11 +15,12 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
   var CSS =
-    '.bg2-wrap{position:fixed;left:14px;bottom:16px;z-index:9400;display:none;align-items:flex-end;gap:10px;max-width:min(92vw,360px);' +
+    /* 우하단 스택(글씨 크기 툴 바로 위) — 홈 봄이(우하단)와 위치 통일 (2026-07-21 Macho) */
+    '.bg2-wrap{position:fixed;right:12px;left:auto;bottom:70px;z-index:9400;display:none;align-items:flex-end;gap:10px;max-width:min(92vw,360px);' +
     "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif}" +
     '.bg2-wrap.on{display:flex}' +
     '.bg2-face{width:54px;height:54px;flex:none;border-radius:50%;background:#fff;object-fit:cover;object-position:center top;box-shadow:0 6px 16px -6px rgba(0,0,0,.4);border:2px solid #fff;cursor:pointer}' +
-    '.bg2-bubble{position:relative;background:#fff;border:1px solid #DCEFE6;border-radius:18px 18px 18px 6px;box-shadow:0 16px 40px -18px rgba(0,0,0,.45);padding:15px 16px 14px;flex:1;min-width:0}' +
+    '.bg2-bubble{position:relative;background:#fff;border:1px solid #DCEFE6;border-radius:18px 18px 6px 18px;box-shadow:0 16px 40px -18px rgba(0,0,0,.45);padding:15px 16px 14px;flex:1;min-width:0}' +
     '.bg2-bubble::before{content:"봄이";position:absolute;top:-9px;left:14px;font-size:10.5px;font-weight:800;color:#fff;background:#0E9C7D;padding:2px 8px;border-radius:50px}' +
     '.bg2-x{position:absolute;top:8px;right:10px;width:24px;height:24px;border:none;background:transparent;color:#9aa8a0;font-size:18px;line-height:1;cursor:pointer}' +
     '.bg2-title{font-size:13px;font-weight:800;color:#0B7E64;margin:2px 26px 6px 0}' +
