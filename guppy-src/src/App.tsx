@@ -7,9 +7,23 @@ import { GuppyShopTab } from "./components/GuppyShopTab";
 import { ManageTab } from './components/ManageTab';
 import { Droplets, Fish, RefreshCw, LayoutGrid, Coins, Store, X, Sun, Moon, Maximize2, Eye, EyeOff, Anchor, Dna, Edit2, Heart, Share2 } from 'lucide-react';
 import Petal from './components/Petal';
+import { aquariumAudio } from './lib/audio';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
 const dsb = () => (window as any).DasibomPoints;
+/* 교감(터치) 말풍선 — 짧고 애교 있게. 반복 노출 대비 볼륨 확보(2026-07-21) */
+const GUPPY_SPEECH = [
+  '간지러워요~ 히히', '오늘도 와주셨네요!', '밥… 주실 거예요? 뻐끔', '헤엄 실력 좀 보실래요?',
+  '물이 참 좋아요~', '쓰다듬어 주셔서 좋아요', '뻐끔뻐끔… 반가워요!', '숨바꼭질 할까요?',
+  '지느러미 예쁘죠?', '오늘 물맛이 최고예요', '같이 놀아요~', '저 여기 있어요!',
+  '보고 싶었어요!', '꼬리 흔들기 성공~!', '어항 밖은 어떤가요?', '기포 타고 놀았어요',
+  '저 조금 컸죠?', '친구들이랑 경주했어요', '햇살이 따뜻해요', '배가 살짝 고파요…',
+  '주무시고 오셨어요?', '저는 늘 여기 있어요~', '손가락 따라갈래요', '물풀 사이가 아늑해요',
+  '오늘 기분 최고예요!', '노래 불러드릴까요? 뻐끔뻐끔♪', '반짝반짝 비늘 자랑!', '어제보다 빨라졌어요',
+  '심심했는데 잘 오셨어요', '몰래 낮잠 잤어요…', '거품이 간지러워요', '새 친구 데려와 주세요~',
+  '푸른 물이 좋아요', '오래오래 같이 살아요', '건강하게 자랄게요!', '쑥쑥 크는 중이에요',
+  '어항 청소 고마워요!', '먹이 냄새가 나요…!', '오늘도 평화롭네요~', '제 이름 불러주세요!',
+];
 /* 어항 정원 — 성능(저사양 폰)과 시각적 쾌적함을 위한 상한. 넘치면 방생으로 자리 마련 */
 const MAX_GUPPIES = 10;
 
@@ -177,7 +191,12 @@ export default function App() {
   const [waterQuality, setWaterQuality] = useState<number>(100);
   const [logs, setLogs] = useState<GuppyResponse[]>([]);
   const [viewMode, setViewMode] = useState<'tank' | 'sprites'>('tank');
-  const [selectedGuppyId, setSelectedGuppyId] = useState<{title: string, desc: string, icon: string} | null>(null);
+  const [selectedGuppyId, setSelectedGuppyId] = useState<string | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [soundOn, setSoundOn] = useState(false);
+  const [releaseArm, setReleaseArm] = useState(false);       // 방생 2단 확인 — 실수 방지
+  const [editingName, setEditingName] = useState(false);
+  const [editNameVal, setEditNameVal] = useState('');
   const [lightingMode, setLightingMode] = useState<'day' | 'sunset' | 'night' | 'blue' | 'yellow'>('day');
     
   const [gold, setGold] = useState<number>(100);
@@ -194,6 +213,8 @@ export default function App() {
   const [achievements, setAchievements] = useState<string[]>([]);
   const achievementsRef = useRef<string[]>([]);
   const [medicine, setMedicine] = useState<number>(0);
+  const medicineRef = useRef(0);
+  useEffect(() => { medicineRef.current = medicine; }, [medicine]);
   const [ripples, setRipples] = useState<RippleInstance[]>([]);
   const [toastMessage, setToastMessage] = useState<{title: string, desc: string, icon: string} | null>(null);
   const decorationsRef = useRef<string[]>([]);
@@ -205,6 +226,16 @@ export default function App() {
   const [tankTheme, setTankTheme] = useState<'Ocean' | 'CoralReef' | 'DeepOcean'>('Ocean');
   const [showNames, setShowNames] = useState(true);
   const [activeNames, setActiveNames] = useState<Record<string, boolean>>({});
+  const [guppySpeech, setGuppySpeech] = useState<Record<string, string>>({});
+  const speechTimersRef = useRef<Record<string, any>>({});
+  const sayGuppy = (id: string, text?: string) => {
+    const line = text || GUPPY_SPEECH[Math.floor(Math.random() * GUPPY_SPEECH.length)];
+    setGuppySpeech(prev => ({ ...prev, [id]: line }));
+    if (speechTimersRef.current[id]) clearTimeout(speechTimersRef.current[id]);
+    speechTimersRef.current[id] = setTimeout(() => {
+      setGuppySpeech(prev => { const n = { ...prev }; delete n[id]; return n; });
+    }, 3200);
+  };
 
   // ── 다시봄 꽃잎(서버 화폐): 특별 품종·장식 전용. 조개(내부 화폐)와 분리 ──
   const [petals, setPetals] = useState(0);
@@ -348,6 +379,15 @@ export default function App() {
     return 'winter';
   };
   const [season, setSeason] = useState<'none' | 'spring' | 'summer' | 'autumn' | 'winter'>(getInitialSeason);
+  const [isNight, setIsNight] = useState(() => { const h = new Date().getHours(); return h >= 20 || h < 6; });
+  useEffect(() => {
+    const t = setInterval(() => {
+      const h = new Date().getHours();
+      setIsNight(h >= 20 || h < 6);
+      setSeason(getInitialSeason());   // 계절도 달력 따라 자동
+    }, 600000);
+    return () => clearInterval(t);
+  }, []);
   const [mainMenuTab, setMainMenuTab] = useState<'tank' | 'manage' | 'guppy_shop' | 'shop'>('tank');
   
   const logEndRef = useRef<HTMLDivElement>(null);
@@ -356,29 +396,13 @@ export default function App() {
   const requestRef = useRef<number>();
   const lastTimeRef = useRef<number>();
   const lastFeedTimeRef = useRef<number>(0);
+  const lastNoFoodToastRef = useRef<number>(0);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setGold(prev => {
-        let earned = 0;
-        guppiesRef.current.forEach(g => {
-          earned += g.level * 2;
-        });
-        
-        if (decorationsRef.current.includes('spring_tree')) earned += (10 / 720);
-        if (decorationsRef.current.includes('summer_bar')) earned += (20 / 720);
-        if (decorationsRef.current.includes('winter_tree')) earned += (30 / 720);
-        
-        return prev + earned;
-      });
-    }, 5000); // Earn gold every 5 seconds based on guppy levels
-    
-    return () => clearInterval(interval);
-  }, []);
+  // (골드 자동 적립 제거 — 꽃잎 단일 화폐, 골드는 저장 호환용으로만 잔존)
 
   useEffect(() => {
     // Initial Guppy
@@ -458,7 +482,7 @@ export default function App() {
 
           const traits = ['body_color', 'tail_color', 'pattern_color'] as const;
           const babyData = { ...parentA.data };
-          babyData.guppy_name = `Baby of ${parentA.data.guppy_name.split(' ')[0]} & ${parentB.data.guppy_name.split(' ')[0]}`;
+          babyData.guppy_name = `${parentA.data.guppy_name.split(' ')[0]}네 아기`;
           
           traits.forEach(trait => {
              const pAInheritance = parentA.stats.inheritance;
@@ -526,6 +550,7 @@ export default function App() {
     
     if (newBabies.length > 0) {
       currentGuppies.push(...newBabies);
+      showToast('아기 구피 탄생! 👶', `${newBabies[0].data.guppy_name}가 태어났어요. 축하해 주세요!`, '💕');
       
       // Update logs for new babies
       setLogs(prev => {
@@ -764,6 +789,12 @@ export default function App() {
   }, [update]);
 
 
+  const renameGuppy = (id: string, name: string) => {
+    const nm = name.trim(); if (!nm) return;
+    const upd = guppiesRef.current.map(g => g.id === id ? { ...g, data: { ...g.data, guppy_name: nm.slice(0, 8) } } : g);
+    guppiesRef.current = upd; setGuppiesState(upd);
+  };
+
   const handleCommune = useCallback((id: string) => {
     // 꽃잎 단일화: 교감(쓰다듬기)은 무료 — 손길에 값을 매기지 않는다
     const updated = guppiesRef.current.map(g => g.id === id ? { ...g, xp: g.xp + 1, expression: "신남" } : g);
@@ -833,10 +864,6 @@ export default function App() {
   const handleSpawn = (rarity: string = 'normal', isSpecial: boolean = false): SpawnData | null => {
     if (guppiesRef.current.length >= MAX_GUPPIES) {
       showToast('어항이 가득 찼어요', '방생으로 자리를 만들면 새 식구를 들일 수 있어요 (최대 ' + MAX_GUPPIES + '마리)', '🪸');
-      return null;
-    }
-    if (guppiesRef.current.length >= 15) {
-      alert("어항이 꽉 찼습니다! (최대 15마리)");
       return null;
     }
     const isLegendary = rarity === 'legendary';
@@ -914,7 +941,11 @@ export default function App() {
     if (now - lastFeedTimeRef.current < 1000) return;
 
     if (foodInventory[selectedFoodType] <= 0) {
-      // Optional UI indication for no food
+      const nw = Date.now();
+      if (nw - lastNoFoodToastRef.current > 5000) {
+        lastNoFoodToastRef.current = nw;
+        showToast('먹이가 없어요', '아래 🌸 꽃잎 상점에서 먹이를 준비할 수 있어요', '🍽️');
+      }
       return;
     }
     
@@ -966,15 +997,9 @@ export default function App() {
   };
 
   const handleClean = () => {
-    const cost = Math.floor(100 - waterQuality);
-    if (cost <= 0) return;
-    if (gold < cost) {
-       alert(`수질 정화 비용이 부족합니다! (필요 골드: ${cost})`);
-       return;
-    }
-    setGold(prev => prev - cost);
+    if (waterQuality >= 99.5) { showToast('물이 맑아요', '지금은 청소하지 않아도 괜찮아요 ✨', '💧'); return; }
     setWaterQuality(100);
-    showToast('수질 개선', '수질이 완벽하게 깨끗해졌습니다!', '💧');
+    showToast('어항 청소 완료', '물이 반짝반짝 깨끗해졌어요!', '🧽');
   };
 
   useEffect(() => {
@@ -989,7 +1014,7 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#eaf2f8] text-slate-800 flex flex-col p-1 sm:p-2 md:p-3 gap-1 sm:gap-2 tracking-tight font-sans font-medium">
+    <div className="min-h-screen bg-[#eaf2f8] text-slate-800 flex flex-col p-1 sm:p-2 md:p-3 gap-1 sm:gap-2 tracking-tight font-sans font-medium pb-[78px]">
       
       {/* Toast Notification */}
       {toastMessage && (
@@ -1006,164 +1031,40 @@ export default function App() {
 
       {/* Top Header Card */}
 
-      <header className="bg-white rounded-[24px] sm:rounded-[28px] p-2 sm:p-3 md:px-4 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 border border-white/40 mx-1 sm:mx-0">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-white font-black text-lg shadow-inner border-4 border-orange-100">
-            Lv.12
+      <header className="bg-white rounded-2xl px-3 sm:px-4 py-2 shadow-sm flex justify-between items-center gap-2 border border-white/40 mx-1 sm:mx-0">
+        <h1 className="text-[17px] sm:text-xl font-black text-blue-600 tracking-tight whitespace-nowrap">🐠 우리집 구피 어항</h1>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 bg-rose-50 text-rose-700 rounded-full px-3 h-10 border border-rose-100 font-black text-[14px]">
+            <Petal className="w-4 h-4" /> {petals.toLocaleString()}
           </div>
-          <div>
-            <div className="flex items-baseline gap-2">
-              <h1 className="text-xl md:text-2xl font-bold text-blue-600 tracking-tight">구피 키우기</h1>
-              <span className="text-xs font-mono text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full font-bold">v1.2.0</span>
-            </div>
-            <div className="flex items-center gap-2 mt-1 text-sm font-semibold text-slate-500">
-              <span>경험치</span>
-              <div className="w-32 md:w-48 h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200/50">
-                <div className="h-full bg-orange-500 rounded-full w-[28%]"></div>
-              </div>
-              <span className="font-mono text-xs">XP 500 / 1800</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex flex-col items-center justify-center bg-rose-50 text-rose-800 rounded-2xl px-5 py-2 border border-rose-100 shadow-sm min-w-[90px]">
-            <div className="flex items-center gap-1.5 text-xs text-rose-500 font-bold">
-              <Petal className="w-4 h-4" /> 꽃잎
-            </div>
-            <span className="font-bold text-lg">{petals.toLocaleString()}</span>
-          </div>
-          
-          
-          <div className="flex flex-col items-center justify-center bg-pink-50 text-pink-800 rounded-2xl px-5 py-2 border border-pink-100 shadow-sm min-w-[110px]">
-            <div className="flex items-center gap-1.5 text-xs text-pink-500 font-bold">
-              <span className="text-sm">🐠</span> 보유 생물
-            </div>
-            <span className="font-bold text-lg">{guppies.length} <span className="text-xs opacity-70">/ {MAX_GUPPIES}마리</span></span>
+          <div className="flex items-center gap-1 bg-sky-50 text-sky-700 rounded-full px-3 h-10 border border-sky-100 font-black text-[14px]">
+            🐟 {guppies.length}<span className="opacity-60 text-[12px]">/{MAX_GUPPIES}</span>
           </div>
         </div>
       </header>
-      {/* Main Menu Tabs */}
-      <div className="bg-white rounded-[16px] p-1 shadow-sm flex items-center md:justify-center gap-1 md:gap-2 border border-white/40 overflow-x-auto hide-scrollbar mx-1 sm:mx-0">
-        <button onClick={() => setMainMenuTab("tank")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "tank" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
-          <Anchor className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">내 어항 뷰</span>
-        </button>
-        <button onClick={() => setMainMenuTab("manage")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "manage" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
-          <Eye className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">생물 관리</span>
-        </button>
-        <button onClick={() => setMainMenuTab("guppy_shop")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "guppy_shop" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
-          <Fish className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">구피 상점</span>
-        </button>
-        <button onClick={() => setMainMenuTab("shop")} className={`shrink-0 flex-none px-3 md:px-4 py-1.5 rounded-[12px] flex flex-col items-center gap-0.5 transition-colors ${mainMenuTab === "shop" ? "bg-[#c5f1e8] text-teal-800 shadow-sm" : "text-slate-500 hover:bg-slate-50"}`}>
-          <Coins className="w-4 h-4 md:w-5 md:h-5" />
-          <span className="font-bold text-[13px] md:text-sm whitespace-nowrap">꽃잎 상점</span>
-        </button>
-      </div>
-
       {mainMenuTab === 'tank' && (<>
-
-      {/* Control Panel Card */}
-      <div className="bg-white rounded-[20px] sm:rounded-[24px] p-2 sm:p-3 shadow-sm flex flex-col xl:flex-row justify-between items-center gap-2 border border-white/40 mx-1 sm:mx-0">
-        <div className="flex items-start gap-2 self-start xl:self-center">
-          <Droplets className="w-6 h-6 text-blue-400 mt-1 drop-shadow-sm" />
-          <div>
-            <h2 className="text-lg font-bold text-slate-800 tracking-tight">나의 따뜻한 바다 어항</h2>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-1.5 text-xs font-bold">
-          {/* Lighting */}
-          <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-100">
-            <span className="text-slate-400 text-[11px] px-2 flex items-center gap-1"><Sun size={12}/>조명</span>
-            <button onClick={() => setLightingMode('day')} className={`px-2 py-1 rounded-[10px] shadow-sm border flex items-center gap-1 transition-colors ${lightingMode === 'day' ? 'bg-white text-blue-600 border-slate-100' : 'text-slate-500 hover:text-slate-700 border-transparent'}`}>
-              <span>기본</span>
-            </button>
-            <button onClick={() => setLightingMode('blue')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${lightingMode === 'blue' ? 'bg-white shadow-sm border border-slate-100 text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-blue-400">🔹</span> 블루
-            </button>
-            <button onClick={() => setLightingMode('yellow')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${lightingMode === 'yellow' ? 'bg-white shadow-sm border border-slate-100 text-yellow-600' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-yellow-400">🔸</span> 노랑
-            </button>
-          </div>
-
-          {/* Brightness */}
-          <div className="flex items-center gap-1.5 bg-slate-50 rounded-xl px-2 py-1 border border-slate-100">
-            <span className="text-slate-500 flex items-center gap-1 text-[11px]"><Sun size={12} className="text-orange-400" /> 밝기</span>
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              value={brightness} 
-              onChange={(e) => setBrightness(Number(e.target.value))}
-              className="w-20 h-1.5 bg-slate-200 rounded-full appearance-none cursor-pointer accent-indigo-500"
-            />
-            <span className="text-slate-500 font-mono text-xs w-8 text-right">{brightness}%</span>
-          </div>
-
-          {/* Season */}
-          <div className="flex items-center bg-slate-50 rounded-xl p-1 border border-slate-100">
-            <span className="text-slate-400 text-[11px] px-2 flex items-center gap-1"><span>📌</span>계절</span>
-            <button onClick={() => setSeason('none')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${season === 'none' ? 'bg-white shadow-sm border border-slate-100 text-slate-700 font-bold' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-slate-400">🚫</span> 없음
-            </button>
-            <button onClick={() => setSeason('spring')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${season === 'spring' ? 'bg-white shadow-sm border border-slate-100 text-pink-600' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-pink-400">🌸</span> 봄
-            </button>
-            <button onClick={() => setSeason('summer')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${season === 'summer' ? 'bg-white shadow-sm border border-slate-100 text-yellow-600' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-yellow-500">🌻</span> 여름
-            </button>
-            <button onClick={() => setSeason('autumn')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${season === 'autumn' ? 'bg-white shadow-sm border border-slate-100 text-orange-600' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-orange-600">🍁</span> 가을
-            </button>
-            <button onClick={() => setSeason('winter')} className={`px-2 py-1 rounded-[10px] transition-colors flex items-center gap-1 ${season === 'winter' ? 'bg-white shadow-sm border border-slate-100 text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}>
-              <span className="text-blue-300">❄️</span> 겨울
-            </button>
-          </div>
-
-          {/* Decorate Button */}
-          <button 
-            onClick={() => setShowNames(!showNames)}
-            className={`px-2.5 py-1.5 rounded-xl shadow-sm border flex items-center gap-1 transition-colors ${showNames ? 'bg-white text-slate-700 border-slate-100' : 'bg-slate-200 text-slate-400 border-transparent'}`}
-            title="이름 표시"
-          >
-            {showNames ? <Eye size={16} /> : <EyeOff size={16} />}
-            <span className="hidden sm:inline">{showNames ? '이름' : '숨김'}</span>
-          </button>
-          
-          <button 
-            onClick={() => setMainMenuTab("shop")}
-            className="px-3 py-1.5 bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50 rounded-xl shadow-sm flex items-center gap-1.5 transition-colors ml-auto"
-          >
-            <span className="text-emerald-500">🪄</span>
-            <span className="hidden sm:inline">어항 꾸미기</span>
-          </button>
-        </div>
-      </div>
 
       <main className="flex-1 flex flex-col lg:flex-row gap-2 sm:gap-3 min-h-0">
         <section className="flex-1 flex flex-col relative min-w-0">
           {/* Floating Overlay Controls */}
             {viewMode === 'tank' && (
-              <div className="order-2 sm:order-none sm:absolute sm:top-4 sm:left-4 sm:right-4 z-50 flex flex-col sm:flex-row justify-between items-center sm:items-center gap-2 sm:pointer-events-none mt-2 sm:mt-0 w-full shrink-0">
+              <div className="absolute top-2 left-2 right-2 z-50 flex flex-row justify-between items-center gap-1.5 pointer-events-none">
                 
                 {/* Left: Water Quality & Filter */}
-                <div className="flex justify-center sm:justify-start gap-2 pointer-events-auto w-full sm:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden pb-1 sm:pb-0 shrink-0">
+                <div className="flex gap-2 pointer-events-auto shrink-0">
                   <button 
                     onClick={handleClean}
                     className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-black/20 hover:bg-black/30 backdrop-blur-md rounded-full text-white font-black text-xs sm:text-sm shadow-lg border border-white/30 whitespace-nowrap drop-shadow-md transition-colors"
-                    title={waterQuality < 100 ? `수질 개선 (비용: ${Math.floor(100 - waterQuality)} 골드)` : '수질이 이미 깨끗합니다'}
+                    title="어항 청소하기"
                   >
-                    <Droplets className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-300 shrink-0" />
-                    <span>수질: {waterQuality.toFixed(1)}%</span>
+                    <Droplets className="w-4 h-4 text-cyan-300 shrink-0" />
+                    <span>🧽 {Math.round(waterQuality)}%</span>
                   </button>
 
                 </div>
 
                 {/* Center: Inventory Pills */}
-                <div className="flex justify-center sm:justify-start items-center gap-0.5 sm:gap-1 bg-black/20 backdrop-blur-md rounded-full p-1 sm:p-1.5 pointer-events-auto border border-white/30 shadow-lg w-full sm:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden shrink-0">
+                <div className="flex items-center gap-0.5 bg-black/20 backdrop-blur-md rounded-full p-1 pointer-events-auto border border-white/30 shadow-lg overflow-x-auto [&::-webkit-scrollbar]:hidden min-w-0">
                    <div className={`flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-1 text-white font-bold text-xs sm:text-sm rounded-full cursor-pointer transition-colors ${selectedFoodType === 'normal' ? 'bg-blue-500/80 shadow-inner border border-blue-400/50' : 'hover:bg-white/10'}`} onClick={() => setSelectedFoodType('normal')}>
                       <span className="text-base sm:text-lg">🪵</span>
                       <span>{foodInventory.normal}</span>
@@ -1180,6 +1081,11 @@ export default function App() {
                       <span className="text-base sm:text-lg">👑</span>
                       <span>{foodInventory.krill}</span>
                    </div>
+                   {medicine > 0 && (
+                     <div className="flex items-center gap-1 px-2 py-1 text-white font-bold text-[13px] rounded-full shrink-0">
+                       <span className="text-base">💊</span><span>{medicine}</span>
+                     </div>
+                   )}
                    <div className="w-px h-5 sm:h-6 bg-white/30 mx-0.5 sm:mx-1 shrink-0"></div>
                    <button onClick={() => setMainMenuTab('shop')} className="flex items-center gap-1 px-2 sm:px-3 py-1 text-yellow-300 font-bold text-xs sm:text-sm rounded-full hover:bg-white/20 transition-colors shrink-0">
                       <span className="text-base sm:text-lg drop-shadow-md">🪙</span>
@@ -1187,32 +1093,69 @@ export default function App() {
                    </button>
                 </div>
 
-                {/* Right: Fullscreen & Time */}
-                <div className="hidden sm:flex gap-2 pointer-events-auto">
-                  <button 
-                    onClick={() => setViewMode(prev => prev === 'tank' ? 'sprites' : 'tank')}
-                    className="w-10 h-10 flex items-center justify-center bg-black/20 hover:bg-black/30 backdrop-blur-md rounded-full text-white shadow-lg border border-white/30 transition-colors"
-                  >
-                    <Maximize2 className="w-4 h-4" />
-                  </button>
-
+                {/* Right: 어항 설정 */}
+                <div className="flex gap-2 pointer-events-auto shrink-0">
+                  <button
+                    onClick={() => setShowSettings(v => !v)}
+                    className={`w-11 h-11 flex items-center justify-center backdrop-blur-md rounded-full text-white shadow-lg border border-white/30 transition-colors text-xl ${showSettings ? 'bg-teal-500/70' : 'bg-black/20 hover:bg-black/30'}`}
+                    aria-label="어항 설정"
+                  >⚙️</button>
                 </div>
+              </div>
+            )}
+            {/* ⚙️ 설정 시트 — 조명·밝기·이름표·꾸미기 (계절은 실제 달력 따라 자동) */}
+            {viewMode === 'tank' && showSettings && (
+              <div className="absolute top-16 right-2 z-[70] bg-white/95 backdrop-blur-md rounded-2xl p-3.5 shadow-2xl border border-slate-200 w-[252px] flex flex-col gap-3 text-[14px] font-bold text-slate-700">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">💡 조명</span>
+                  <div className="flex gap-1">
+                    {(['day','blue','yellow'] as const).map(m => (
+                      <button key={m} onClick={() => setLightingMode(m)}
+                        className={`px-2.5 py-2 rounded-lg text-[13px] ${lightingMode === m ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-500'}`}>
+                        {m === 'day' ? '기본' : m === 'blue' ? '🔹블루' : '🔸노랑'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-slate-500 shrink-0">🔆 밝기</span>
+                  <input type="range" min="40" max="100" value={brightness} onChange={(e) => setBrightness(Number(e.target.value))} className="flex-1 h-2 accent-teal-500" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">🔊 물소리</span>
+                  <button onClick={() => setSoundOn(aquariumAudio.toggle())}
+                    className={`px-3 py-2 rounded-lg text-[13px] ${soundOn ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-400'}`}>
+                    {soundOn ? '보글보글~' : '꺼져 있어요'}
+                  </button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500">🏷️ 이름표</span>
+                  <button onClick={() => setShowNames(v => !v)}
+                    className={`px-3 py-2 rounded-lg text-[13px] ${showNames ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-400'}`}>
+                    {showNames ? '보여요' : '숨겼어요'}
+                  </button>
+                </div>
+                <button onClick={() => { setShowSettings(false); setMainMenuTab('shop'); }}
+                  className="w-full bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl py-2.5 text-[14px] active:scale-95 transition-transform">🪄 어항 꾸미기</button>
               </div>
             )}
           <div 
             ref={tankRef}
             onClick={viewMode === 'tank' ? handleTankClick : undefined}
-            className={`order-1 sm:order-none flex-1 min-h-[70vh] sm:min-h-[600px] lg:min-h-[700px] rounded-[32px] sm:rounded-[40px] relative overflow-hidden transition-colors duration-500 cursor-crosshair border-8 sm:border-[16px] border-white/20 bg-clip-padding shadow-[inset_0_0_40px_rgba(255,255,255,0.4),inset_0_4px_10px_rgba(255,255,255,0.6),0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-md ${viewMode === 'tank' ? 'bg-gradient-to-b from-cyan-400/95 to-blue-600/95' : 'bg-slate-800/95'}`}
+            className={`flex-1 min-h-[calc(100dvh-208px)] sm:min-h-[600px] lg:min-h-[700px] rounded-[24px] sm:rounded-[40px] relative overflow-hidden transition-colors duration-500 cursor-crosshair border-8 sm:border-[16px] border-white/20 bg-clip-padding shadow-[inset_0_0_40px_rgba(255,255,255,0.4),inset_0_4px_10px_rgba(255,255,255,0.6),0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-md ${viewMode === 'tank' ? 'bg-gradient-to-b from-cyan-400/95 to-blue-600/95' : 'bg-slate-800/95'}`}
           >
             {/* Top rounded cover mask to simulate the top border if needed, but rounded-[40px] on the container should suffice */}
             <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-white/30 to-transparent pointer-events-none z-10"></div>
             
             
 
-            {/* Night Overlay */}
+            {/* 밤 오버레이 — 실제 시간 따라 어항도 잠든다 */}
             <div className={`absolute inset-0 pointer-events-none transition-colors duration-[3000ms] z-40 ${
-              'bg-transparent'
+              isNight ? 'bg-indigo-950/45' : 'bg-transparent'
             } ${viewMode === 'tank' ? '' : 'hidden'}`} />
+            {isNight && viewMode === 'tank' && (
+              <div className="absolute top-6 right-8 z-40 pointer-events-none text-3xl opacity-80 drop-shadow-[0_0_12px_rgba(199,210,254,0.8)]">🌙</div>
+            )}
             
             {/* Brightness Overlay */}
             <div className={`absolute inset-0 pointer-events-none transition-colors duration-[1000ms] z-40 ${viewMode === 'tank' ? '' : 'hidden'}`} style={{ backgroundColor: `rgba(0, 0, 0, ${1 - brightness / 100})` }} />
@@ -1318,10 +1261,23 @@ export default function App() {
                       e.stopPropagation();
                       const idx = guppiesRef.current.findIndex(g => g.id === guppy.id);
                       if (idx !== -1) {
-                         guppiesRef.current[idx].expression = '신남';
+                         const gg = guppiesRef.current[idx];
+                         if (gg.isSick) {
+                           if (medicineRef.current > 0) {
+                             setMedicine(m => m - 1);
+                             guppiesRef.current[idx] = { ...gg, isSick: false, expression: '신남' };
+                             showToast('약을 먹였어요 💊', `${gg.data.guppy_name}이(가) 금방 기운을 차릴 거예요!`, '🩺');
+                           } else {
+                             showToast('아파 보여요 🤒', '만병통치약이나 👑크릴 간식을 먹이면 나아요', '💊');
+                           }
+                         }
+                         if (guppiesRef.current[idx].isSick) sayGuppy(guppy.id, '으슬으슬… 몸이 안 좋아요');
+                         else sayGuppy(guppy.id);
+                         guppiesRef.current[idx].expression = guppiesRef.current[idx].isSick ? '슬픔' : '신남';
                          guppiesRef.current[idx].vx = guppiesRef.current[idx].vx > 0 ? -150 : 150;
                          guppiesRef.current[idx].vy = (Math.random() - 0.5) * 150;
                       }
+                      setReleaseArm(false); setEditingName(false);
                       setSelectedGuppyId(guppy.id);
                       setActiveNames(prev => ({ ...prev, [guppy.id]: true }));
                       setTimeout(() => {
@@ -1349,6 +1305,16 @@ export default function App() {
                         pose="main"
                       />
                     </div>
+                    {guppy.isSick && (
+                      <div className="absolute -top-2 left-1/2 z-30 pointer-events-none text-2xl animate-bounce drop-shadow-md"
+                        style={{ transform: `translateX(-50%) scale(${1 / (guppy.scale * 1.8)})` }}>🤒</div>
+                    )}
+                    {guppySpeech[guppy.id] && (
+                      <div className="absolute top-4 left-1/2 z-40 pointer-events-none px-3.5 py-2 bg-white/95 rounded-2xl rounded-bl-sm text-[13px] font-bold text-slate-700 shadow-xl whitespace-nowrap border border-sky-100"
+                        style={{ transform: `translateX(-50%) translateY(-100%) scale(${1 / (guppy.scale * 1.8)})` }}>
+                        {guppySpeech[guppy.id]}
+                      </div>
+                    )}
                     {(showNames || activeNames[guppy.id] || selectedGuppyId === guppy.id) && (
                       <div 
                         className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1.5 flex items-center justify-center bg-black/30 backdrop-blur-md rounded-full text-center whitespace-nowrap z-20 pointer-events-none transition-colors shadow-lg border border-white/20"
@@ -1403,152 +1369,93 @@ export default function App() {
                 ))}
 
                 {guppies.length === 0 && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center opacity-50 z-10 pointer-events-none text-center p-4">
-                    <div className="text-7xl mb-4 drop-shadow-lg">🫧</div>
-                    <h3 className="text-xl font-black text-white uppercase tracking-tight mb-1">Tank Empty</h3>
-                    <p className="text-xs font-bold text-sky-200 uppercase tracking-widest">Spawn Guppies to start</p>
-                  </div>
-                )}
-                
-                {selectedGuppyId && (
-                  <div 
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] pointer-events-auto bg-black/70 backdrop-blur-xl rounded-3xl p-5 border border-white/20 text-sm shadow-2xl min-w-[260px]"
-                    onClick={(e) => e.stopPropagation()}
-                    onPointerDown={(e) => e.stopPropagation()}
-                  >
-                    <div className="flex justify-between items-center mb-2">
-                      <h3 className="font-bold text-white text-base">
-                        {guppies.find(g => g.id === selectedGuppyId)?.data.guppy_name || 'Guppy'}
-                      </h3>
-                      <button 
-                        onClick={() => setSelectedGuppyId(null)} 
-                        onPointerDown={(e) => { e.stopPropagation(); setSelectedGuppyId(null); }}
-                        className="w-8 h-8 flex items-center justify-center text-white/50 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors text-lg"
-                      >
-                        &times;
-                      </button>
-                    </div>
-                    {guppies.find(g => g.id === selectedGuppyId) && (
-                      <div className="flex flex-col gap-2">
-                        <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg mb-1">
-                          <span className="text-white font-bold">LV. {guppies.find(g => g.id === selectedGuppyId)!.level}</span>
-                          <div className="flex-1 mx-3 bg-black/50 h-2 rounded-full overflow-hidden">
-                            <div 
-                              className="h-full bg-sky-400 rounded-full" 
-                              style={{ width: `${(guppies.find(g => g.id === selectedGuppyId)!.xp / (guppies.find(g => g.id === selectedGuppyId)!.level * 150)) * 100}%` }}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sky-300 text-xs font-bold">종류</span>
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                            guppies.find(g => g.id === selectedGuppyId)!.data.rarity === '전설' ? 'bg-pink-500/20 text-pink-300' :
-                            guppies.find(g => g.id === selectedGuppyId)!.data.rarity === '희귀' ? 'bg-yellow-500/20 text-yellow-300' :
-                            'bg-white/10 text-white'
-                          }`}>{guppies.find(g => g.id === selectedGuppyId)!.data.rarity}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sky-300 text-xs font-bold">체내 포만도</span>
-                          <span className="font-bold text-white text-xs">{Math.floor(guppies.find(g => g.id === selectedGuppyId)!.hunger)}%</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sky-300 text-xs font-bold">개별 인지 시야</span>
-                          <span className="font-bold text-white text-xs">{Math.round((guppies.find(g => g.id === selectedGuppyId)!.stats.vision / 800) * 100)}%</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sky-300 text-xs font-bold">개별 유영 속도</span>
-                          <span className="font-bold text-white text-xs">{Math.round((guppies.find(g => g.id === selectedGuppyId)!.stats.speed) * 100)}%</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-sky-300 text-xs font-bold">태생 골격 크기</span>
-                          <span className="font-bold text-white text-xs">{Math.round((guppies.find(g => g.id === selectedGuppyId)!.stats.size / 0.3) * 100)}%</span>
-                        </div>
-                        <div className="flex flex-col mt-1 bg-white/5 p-2 rounded-lg border border-white/5">
-                          <span className="text-sky-300 text-[10px] mb-1 font-bold">레벨 특수 능력</span>
-                          <span className="font-bold text-white text-xs mb-1">
-                            {guppies.find(g => g.id === selectedGuppyId)!.data.rarity === '전설' ? '✨ 바다의 파수꾼 민첩' : guppies.find(g => g.id === selectedGuppyId)!.data.rarity === '희귀' ? '✨ 은빛 비늘의 가호' : '✨ 활기찬 헤엄'}
-                          </span>
-                          <span className="text-[10px] text-white/70 leading-tight">
-                            {guppies.find(g => g.id === selectedGuppyId)!.data.rarity === '전설' 
-                              ? '수류 저항을 완전히 이겨내어 헤엄치는 속도가 영구 향상됩니다.' 
-                              : guppies.find(g => g.id === selectedGuppyId)!.data.rarity === '희귀' 
-                              ? '시야가 넓어지고 먹이를 찾는 반응 속도가 빨라집니다.' 
-                              : '기본적인 성장 속도와 활동성이 약간 증가합니다.'}
-                          </span>
-                        </div>
-                        <button 
-                          onClick={() => {
-                            const guppy = guppies.find(g => g.id === selectedGuppyId);
-                            if (guppy) {
-                              const baseBonus = guppy.level * 50;
-                              const rarityMultiplier = guppy.data.rarity === '전설' ? 5 : guppy.data.rarity === '희귀' ? 2 : 1;
-                              const statsBonus = Math.floor(guppy.stats.speed * 50);
-                              const totalGold = baseBonus * rarityMultiplier + statsBonus;
-                              
-                              setFoodInventory(prev => ({ ...prev, premium: prev.premium + Math.max(1, Math.round(totalGold / 50)) }));
-                              setGuppiesState(prev => prev.filter(g => g.id !== guppy.id));
-                              guppiesRef.current = guppiesRef.current.filter(g => g.id !== guppy.id);
-                              setSelectedGuppyId(null);
-                            }
-                          }}
-                          className="mt-2 w-full bg-red-500/20 hover:bg-red-500/40 border border-red-500/30 text-red-200 font-bold py-2 rounded-xl transition-colors text-xs"
-                        >
-                          자연으로 방생하기
-                        </button>
-                      </div>
-                    )}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none text-center p-4">
+                    <div className="text-7xl mb-4 drop-shadow-lg animate-bounce">🫧</div>
+                    <h3 className="text-xl font-black text-white drop-shadow-md mb-1">어항이 조용하네요</h3>
+                    <p className="text-[14px] font-bold text-sky-100 mb-5">첫 식구를 맞아볼까요?</p>
+                    <button onClick={(e) => { e.stopPropagation(); setMainMenuTab('guppy_shop'); }}
+                      className="pointer-events-auto bg-white/95 hover:bg-white text-sky-700 font-black px-6 py-3.5 rounded-full shadow-xl text-[15px] active:scale-95 transition-all">
+                      🐠 구피 입양하러 가기
+                    </button>
                   </div>
                 )}
 
+                {selectedGuppyId && (() => {
+                  const sel = guppies.find(g => g.id === selectedGuppyId);
+                  if (!sel) return null;
+                  const rawGold = sel.level * 50 * (sel.data.rarity === '전설' ? 5 : sel.data.rarity === '희귀' ? 2 : 1) + Math.floor(sel.stats.speed * 50);
+                  return (
+                  <div
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] pointer-events-auto bg-black/75 backdrop-blur-xl rounded-3xl p-5 border border-white/20 shadow-2xl w-[86vw] max-w-[300px]"
+                    onClick={(e) => e.stopPropagation()}
+                    onPointerDown={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex justify-between items-center mb-2.5 gap-2">
+                      {editingName ? (
+                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                          <input autoFocus value={editNameVal} onChange={(e) => setEditNameVal(e.target.value)} maxLength={8}
+                            className="flex-1 min-w-0 bg-white/15 text-white font-bold rounded-lg px-2 py-2 outline-none border border-white/30 text-[15px]" />
+                          <button onClick={() => { renameGuppy(sel.id, editNameVal); setEditingName(false); }}
+                            className="shrink-0 bg-emerald-500/85 text-white font-black px-3 py-2 rounded-lg text-[13px]">저장</button>
+                        </div>
+                      ) : (
+                        <h3 className="font-black text-white text-[17px] flex items-center gap-2 min-w-0">
+                          <span className="truncate">{sel.data.guppy_name}</span>
+                          <button onClick={() => { setEditNameVal(sel.data.guppy_name); setEditingName(true); }}
+                            className="shrink-0 w-9 h-9 grid place-items-center bg-white/10 hover:bg-white/20 rounded-full text-white/70" aria-label="이름 바꾸기">
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                        </h3>
+                      )}
+                      <button
+                        onClick={() => setSelectedGuppyId(null)}
+                        onPointerDown={(e) => { e.stopPropagation(); setSelectedGuppyId(null); }}
+                        className="shrink-0 w-10 h-10 flex items-center justify-center text-white/60 hover:text-white bg-white/5 hover:bg-white/10 rounded-full text-xl"
+                      >&times;</button>
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg mb-1">
+                        <span className="text-white font-bold">Lv.{sel.level}</span>
+                        <div className="flex-1 mx-3 bg-black/50 h-2 rounded-full overflow-hidden">
+                          <div className="h-full bg-sky-400 rounded-full" style={{ width: `${Math.min(100, (sel.xp / (sel.level * 150)) * 100)}%` }} />
+                        </div>
+                      </div>
+                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">품종</span>
+                        <span className={`text-[13px] font-bold px-2 py-0.5 rounded-full ${sel.data.rarity === '전설' ? 'bg-pink-500/20 text-pink-300' : sel.data.rarity === '희귀' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-white/10 text-white'}`}>{sel.data.rarity}</span></div>
+                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">배부름</span><span className="font-bold text-white text-[13px]">{Math.floor(sel.hunger)}%</span></div>
+                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">눈썰미</span><span className="font-bold text-white text-[13px]">{Math.round((sel.stats.vision / 800) * 100)}%</span></div>
+                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">헤엄 실력</span><span className="font-bold text-white text-[13px]">{Math.round(sel.stats.speed * 100)}%</span></div>
+                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">몸집</span><span className="font-bold text-white text-[13px]">{Math.round((sel.stats.size / 0.3) * 100)}%</span></div>
+                      {sel.isSick && (
+                        <div className="bg-red-500/20 border border-red-400/30 rounded-lg p-2 text-center text-red-200 text-[13px] font-bold">🤒 아파요 — 약이나 👑크릴을 먹여 주세요</div>
+                      )}
+                      <div className="flex flex-col mt-1 bg-white/5 p-2 rounded-lg border border-white/5">
+                        <span className="text-sky-300 text-[11px] mb-1 font-bold">타고난 재주</span>
+                        <span className="font-bold text-white text-[13px] mb-0.5">
+                          {sel.data.rarity === '전설' ? '✨ 물살을 가르는 명수' : sel.data.rarity === '희귀' ? '✨ 반짝이는 비늘' : '✨ 씩씩한 헤엄'}
+                        </span>
+                        <span className="text-[12px] text-white/70 leading-tight">
+                          {sel.data.rarity === '전설' ? '어떤 물살도 거뜬해요. 남들보다 빨리 자라요.' : sel.data.rarity === '희귀' ? '먹이를 잘 찾고 눈치가 빨라요.' : '건강하게 무럭무럭 자라요.'}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (!releaseArm) { setReleaseArm(true); setTimeout(() => setReleaseArm(false), 4000); return; }
+                          setReleaseArm(false); setSelectedGuppyId(null);
+                          handleRelease(sel.id, rawGold);
+                        }}
+                        className={`mt-2 w-full font-bold py-3 rounded-xl transition-colors text-[13px] border ${releaseArm ? 'bg-red-500/60 border-red-400 text-white' : 'bg-red-500/15 hover:bg-red-500/30 border-red-500/30 text-red-200'}`}
+                      >
+                        {releaseArm ? '정말 보내줄까요? 한 번 더 누르면 떠나요 🌊' : '자연으로 방생하기'}
+                      </button>
+                    </div>
+                  </div>
+                  );
+                })()}
+
                 {/* Removed Feed Button */}
               </>
-            ) : (
-              <div className="absolute inset-0 p-4 overflow-y-auto custom-scrollbar flex flex-col gap-6 z-10">
-                {guppies.length > 0 ? (
-                  <>
-                    <h2 className="text-xl font-bold text-white mb-2">Sprite Sheet: {guppies[guppies.length - 1].data.guppy_name}</h2>
-                    <div className="flex gap-4 items-center flex-wrap">
-                      <div className="bg-slate-900/50 rounded-3xl p-4 flex flex-col items-center border border-slate-700">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Main Pose</span>
-                        <div className="w-48 h-48 sm:w-64 sm:h-64">
-                          <GuppySVG {...guppies[guppies.length - 1].data} expression={null} pose="main" hideFloaters />
-                        </div>
-                      </div>
-                      <div className="flex flex-col gap-4">
-                        <div className="bg-slate-900/50 rounded-3xl p-4 flex flex-col items-center border border-slate-700 h-32 w-48">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Side View</span>
-                          <div className="flex-1 w-full flex items-center justify-center">
-                            <GuppySVG {...guppies[guppies.length - 1].data} expression={null} pose="side" hideFloaters />
-                          </div>
-                        </div>
-                        <div className="bg-slate-900/50 rounded-3xl p-4 flex flex-col items-center border border-slate-700 h-32 w-48">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Top/Action View</span>
-                          <div className="flex-1 w-full flex items-center justify-center">
-                            <GuppySVG {...guppies[guppies.length - 1].data} expression={null} pose="top" hideFloaters />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-4 flex-wrap">
-                      <div className="bg-slate-900/50 rounded-3xl p-4 flex flex-col items-center border border-slate-700 h-40 w-48 sm:w-64">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Swim Frame 1</span>
-                        <div className="flex-1 w-full flex items-center justify-center">
-                          <GuppySVG {...guppies[guppies.length - 1].data} expression={null} pose="swim1" hideFloaters />
-                        </div>
-                      </div>
-                      <div className="bg-slate-900/50 rounded-3xl p-4 flex flex-col items-center border border-slate-700 h-40 w-48 sm:w-64">
-                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Swim Frame 2</span>
-                        <div className="flex-1 w-full flex items-center justify-center">
-                          <GuppySVG {...guppies[guppies.length - 1].data} expression={null} pose="swim2" hideFloaters />
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center justify-center h-full opacity-50">Tank Empty</div>
-                )}
-              </div>
-            )}
+            ) : null}
           </div>
         </section>
       </main>
@@ -1592,6 +1499,23 @@ export default function App() {
           onSpawn={handleSpawn}
         />
       )}
+
+      {/* 하단 고정 탭 — 엄지가 닿는 곳(모바일 우선) */}
+      <nav className="fixed bottom-0 left-0 right-0 z-[85] bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-stretch shadow-[0_-6px_20px_rgba(0,0,0,0.06)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+        {([
+          { k: 'tank', icon: '🐠', label: '내 어항' },
+          { k: 'manage', icon: '💚', label: '생물 관리' },
+          { k: 'guppy_shop', icon: '🐟', label: '구피 상점' },
+          { k: 'shop', icon: '🌸', label: '꽃잎 상점' },
+        ] as const).map(t => (
+          <button key={t.k} onClick={() => setMainMenuTab(t.k)}
+            className={`flex-1 min-h-[60px] flex flex-col items-center justify-center gap-0.5 font-black text-[13px] transition-colors ${mainMenuTab === t.k ? 'text-teal-600' : 'text-slate-400'}`}>
+            <span className="text-[20px] leading-none">{t.icon}</span>
+            {t.label}
+            <div className={`w-8 h-1 rounded-full mt-0.5 ${mainMenuTab === t.k ? 'bg-teal-500' : 'bg-transparent'}`} />
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }
