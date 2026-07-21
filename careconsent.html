@@ -134,7 +134,8 @@ document.getElementById('submitBtn').onclick=function(){
 
   var btn=document.getElementById('submitBtn'); btn.disabled=true; btn.textContent='제출 중…';
 
-  var go = _auth.currentUser ? Promise.resolve(_auth.currentUser) : _auth.signInAnonymously().then(function(r){ return r.user; });
+  var go = new Promise(function(rs,rj){ var un=_auth.onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+    if(u){ rs(u); return; } _auth.signInAnonymously().then(function(r){ rs(r.user); }).catch(rj); }); });
   go.then(function(){
     return _db.collection('consents').add({
       centerId: CENTER_ID,

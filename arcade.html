@@ -1686,8 +1686,10 @@
         function ensureAuth(){
             return new Promise(function(res,rej){
                 if(!_auth){ rej(new Error('firebase 준비 안됨')); return; }
-                if(_auth.currentUser){ _uid=_auth.currentUser.uid; res(_uid); return; }
-                _auth.signInAnonymously().then(function(r){ _uid=r.user.uid; res(_uid); }).catch(rej);
+                var un=_auth.onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+                    if(u){ _uid=u.uid; res(_uid); return; }
+                    _auth.signInAnonymously().then(function(r){ _uid=r.user.uid; res(_uid); }).catch(rej);
+                });
             });
         }
 

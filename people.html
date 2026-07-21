@@ -194,7 +194,7 @@ render();
   try{
     firebase.initializeApp({ apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0", authDomain:"mylife-650f0.firebaseapp.com", projectId:"mylife-650f0", storageBucket:"mylife-650f0.firebasestorage.app", messagingSenderId:"512010655611", appId:"1:512010655611:web:32b153b836b23ae96a8fde", databaseURL:"https://mylife-650f0-default-rtdb.firebaseio.com" });
   }catch(e){}
-  try{ firebase.auth().signInAnonymously().catch(function(){}); }catch(e){}
+  try{ firebase.auth().onAuthStateChanged(function(u){ if(!u) firebase.auth().signInAnonymously().catch(function(){}); }); }catch(e){}   // 소셜 세션 보호
 
   function memoirText(){
     var parts=[];

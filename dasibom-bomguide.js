@@ -46,7 +46,11 @@
         if (window.firebase && (!firebase.apps || !firebase.apps.length)) {
           firebase.initializeApp({ apiKey: 'AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0', authDomain: 'mylife-650f0.firebaseapp.com', projectId: 'mylife-650f0', storageBucket: 'mylife-650f0.firebasestorage.app', messagingSenderId: '512010655611', appId: '1:512010655611:web:32b153b836b23ae96a8fde' });
         }
-        firebase.auth().signInAnonymously().catch(function () {});
+        // ★소셜 세션 보호(2026-07-21): 복원을 기다렸다가 '계정이 없을 때만' 익명 —
+        //   무조건 호출하면 카카오/네이버 로그인이 익명으로 갈아치워져 꽃잎·데이터가 남의 계정이 된다.
+        firebase.auth().onAuthStateChanged(function (u) {
+          if (!u) firebase.auth().signInAnonymously().catch(function () {});
+        });
       } catch (e) {}
       add('/bom_voice.js?v=12', null);
       // 어르신 콘텐츠 이용 측정(센터 리포트의 팩트 지표) — 키오스크 구경 모드일 때만 동작.

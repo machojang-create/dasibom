@@ -75,8 +75,9 @@
       function write(uid){ firebase.firestore().collection('comments').add({scope:scope,text:t,uid:uid,ts:firebase.firestore.FieldValue.serverTimestamp()})
         .then(function(){ input.value=''; refreshByte(); load(); })
         .catch(function(e){ alert('남기기 실패: '+(e.code||e.message)); sendBtn.disabled=false; }); }
-      var u=firebase.auth().currentUser;
-      if(u){ write(u.uid); } else { firebase.auth().signInAnonymously().then(function(r){ write(r.user.uid); }).catch(function(){ sendBtn.disabled=false; alert('잠시 후 다시 시도해 주세요'); }); }
+      var un=firebase.auth().onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+        if(u){ write(u.uid); } else { firebase.auth().signInAnonymously().then(function(r){ write(r.user.uid); }).catch(function(){ sendBtn.disabled=false; alert('잠시 후 다시 시도해 주세요'); }); }
+      });
     }
     sendBtn.addEventListener('click', submit);
     input.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!sendBtn.disabled) submit(); });

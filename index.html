@@ -2253,8 +2253,8 @@
   })();
 </script>
 
-<script src="/comments.js?v=1"></script>
-<script src="/reactions.js?v=1"></script>
+<script src="/comments.js?v=2"></script>
+<script src="/reactions.js?v=2"></script>
 <script>
 // 오늘의 지혜 감정 반응 바 — 날짜별 scope
 (function(){
@@ -3167,8 +3167,9 @@ body.dark .bom-guide-text{color:#c8bba4}
     function write(uid){ firebase.firestore().collection('wisdom_comments').add({day:todayKey(),text:t,uid:uid,ts:firebase.firestore.FieldValue.serverTimestamp()})
       .then(function(){ input.value=''; refreshByte(); load(); })
       .catch(function(e){ alert('남기기 실패: '+(e.code||e.message)); sendBtn.disabled=false; }); }
-    var u=firebase.auth().currentUser;
-    if(u){ write(u.uid); } else { firebase.auth().signInAnonymously().then(function(r){ write(r.user.uid); }).catch(function(){ sendBtn.disabled=false; alert('잠시 후 다시 시도해 주세요'); }); }
+    var un=firebase.auth().onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+      if(u){ write(u.uid); } else { firebase.auth().signInAnonymously().then(function(r){ write(r.user.uid); }).catch(function(){ sendBtn.disabled=false; alert('잠시 후 다시 시도해 주세요'); }); }
+    });
   }
   sendBtn.addEventListener('click', submit);
   input.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!sendBtn.disabled) submit(); });
@@ -3700,9 +3701,10 @@ body.dark .bom-guide-text{color:#c8bba4}
   function _bomIsRisky(s){ return BOM_RISKY_KEYWORDS.some(function(k){ return s.indexOf(k)>-1; }); }
   function _bomEnsureAuth(){
     return new Promise(function(resolve,reject){
-      var u=firebase.auth().currentUser;
-      if(u){ resolve(u.uid); return; }
-      firebase.auth().signInAnonymously().then(function(r){ resolve(r.user.uid); }).catch(reject);
+      var un=firebase.auth().onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+        if(u){ resolve(u.uid); return; }
+        firebase.auth().signInAnonymously().then(function(r){ resolve(r.user.uid); }).catch(reject);
+      });
     });
   }
   function bomAppendHTML(html){

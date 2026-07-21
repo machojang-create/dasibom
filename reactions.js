@@ -77,9 +77,10 @@
           .set(upd, { merge:true }).catch(function(){});
       }
       try{
-        var u = firebase.auth().currentUser;
-        if (u) write();
-        else firebase.auth().signInAnonymously().then(write).catch(function(){});
+        var un = firebase.auth().onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+          if (u) write();
+          else firebase.auth().signInAnonymously().then(write).catch(function(){});
+        });
       }catch(e){}
     });
 

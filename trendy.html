@@ -258,9 +258,10 @@ function _ensureAuth(){
     function go(){
       if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
       _db = firebase.firestore();
-      var u = firebase.auth().currentUser;
-      if(u){ resolve(u.uid); return; }
-      firebase.auth().signInAnonymously().then(function(r){ resolve(r.user.uid); }).catch(reject);
+      var un=firebase.auth().onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+        if(u){ resolve(u.uid); return; }
+        firebase.auth().signInAnonymously().then(function(r){ resolve(r.user.uid); }).catch(reject);
+      });
     }
     if(window.firebase && firebase.firestore) go();
     else { var n=0; (function poll(){ if(window.firebase&&firebase.firestore){ go(); return; } if(++n<40) setTimeout(poll,250); else reject(new Error('firebase load timeout')); })(); }
