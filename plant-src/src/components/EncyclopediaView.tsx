@@ -3,11 +3,14 @@ import { PLANT_TYPES, PHRASES } from '../data';
 import { EncyclopediaEntry, PlantData, DialectType } from '../types';
 import { X, Lock, MapPin, Quote, Leaf } from 'lucide-react';
 
+interface Memorial { name: string; customName?: string; emoji?: string; level: number; days: number; at: number }
+
 interface Props {
   isOpen: boolean;
   onClose: () => void;
   entries: EncyclopediaEntry[];
   badges: string[];
+  memorials?: Memorial[];
 }
 
 const REGION_MAP: Record<DialectType, string> = {
@@ -19,7 +22,7 @@ const REGION_MAP: Record<DialectType, string> = {
   pyongan: '평안도',
 };
 
-export default function EncyclopediaView({ isOpen, onClose, entries, badges }: Props) {
+export default function EncyclopediaView({ isOpen, onClose, entries, badges, memorials }: Props) {
   const [selectedPlant, setSelectedPlant] = useState<PlantData | null>(null);
 
   if (!isOpen) return null;
@@ -95,6 +98,26 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges }: P
             </div>
           </div>
         </div>
+
+        {/* 추억 정원 — 만개하여 떠난 동무들 */}
+        {memorials && memorials.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-lg font-bold text-[#a8c7b5] mb-3 flex items-center gap-2">
+              <span>🌸</span> 추억 정원 <span className="text-[11px] text-[#89a896] font-normal">만개하여 떠난 동무들</span>
+            </h3>
+            <div className="grid grid-cols-2 gap-3">
+              {memorials.slice().reverse().map((m, i) => (
+                <div key={i} className="bg-[#0a120e]/40 p-3.5 rounded-xl border border-[#d4af37]/30 flex flex-col items-center text-center shadow-[0_0_12px_rgba(212,175,55,0.08)]">
+                  <span className="text-3xl mb-1 drop-shadow-md">{m.emoji || '🌸'}</span>
+                  <span className="text-[#d4af37] font-bold text-sm break-keep">{m.customName || m.name}</span>
+                  {m.customName && <span className="text-[#89a896] text-[10px]">{m.name}</span>}
+                  <span className="text-[#a8c7b5] text-[11px] mt-1">{m.days}일 함께 · Lv.{m.level}</span>
+                  <span className="text-[#4a7c59] text-[10px] mt-0.5">{new Date(m.at).toLocaleDateString('ko-KR')} 만개</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Badges Section */}
         <div className="mb-8">

@@ -968,7 +968,9 @@ const PLANT_PRICES = {
   guppy_food_premium10: 3, guppy_food_premium50: 12,
   guppy_food_shrimp10: 7, guppy_food_shrimp50: 30,
   guppy_food_krill10: 15, guppy_food_krill50: 60,
-  guppy_tech2: 50, guppy_tech3: 100, guppy_tech4: 150, guppy_tech5: 200
+  guppy_tech2: 50, guppy_tech3: 100, guppy_tech4: 150, guppy_tech5: 200,
+  // 화분 슬롯 확장(2026-07-21): 기본 3칸, 4~6칸은 꽃잎으로 — 정원 넓히기
+  plant_slot4: 300, plant_slot5: 500, plant_slot6: 800
 };
 exports.spendPoints = functions
   .region('asia-northeast3')

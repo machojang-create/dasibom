@@ -33,6 +33,9 @@ const WEATHER_INFO: Record<WeatherType, { emoji: string; name: string; color: st
   typhoon: { emoji: '🌀', name: '태풍', color: 'text-gray-600' },
 };
 
+// 슬롯 확장 가격(idx→꽃잎): 기본 3칸, 4·5·6번째 자리는 꽃잎으로 연다 — 정원 넓히기
+const SLOT_UNLOCK_PRICE: Record<number, number> = { 3: 300, 4: 500, 5: 800 };
+
 export default function App() {
   const [slots, setSlots] = useState<(UserPlant | null)[]>(() => {
     const saved = localStorage.getItem('plant_slots');
@@ -59,6 +62,17 @@ export default function App() {
     const saved = localStorage.getItem('plant_currentSlotIndex');
     return saved ? parseInt(saved, 10) : 0;
   });
+  const [unlockedSlots, setUnlockedSlots] = useState(() => {
+    const sv = parseInt(localStorage.getItem('plant_unlocked_slots') || '0', 10);
+    let occ = 0;   // 유료화 이전에 이미 심어둔 자리는 소급해서 잠그지 않는다
+    try { (JSON.parse(localStorage.getItem('plant_slots') || '[]') as any[]).forEach((pl, i) => { if (pl) occ = Math.max(occ, i + 1); }); } catch (e) {}
+    return Math.max(3, sv || 0, occ);
+  });
+  useEffect(() => { localStorage.setItem('plant_unlocked_slots', String(unlockedSlots)); }, [unlockedSlots]);
+  const [memorials, setMemorials] = useState<{ name: string; customName?: string; emoji?: string; level: number; days: number; at: number }[]>(() => {
+    try { return JSON.parse(localStorage.getItem('plant_memorials') || '[]'); } catch (e) { return []; }
+  });
+  useEffect(() => { localStorage.setItem('plant_memorials', JSON.stringify(memorials)); }, [memorials]);
   const [money, setMoney] = useState(0);   // 🌸 꽃잎 잔액(서버 미러 — 로컬 지갑 폐지)
   useEffect(() => {
     let tries = 0;
@@ -152,6 +166,8 @@ export default function App() {
             setEncyclopedia(PLANT_TYPES.map(pt => blob.data.encyclopedia.find((e: any) => e.plantId === pt.id) || ({ plantId: pt.id, discovered: false })));
           }
           if (Array.isArray(blob.data.badges)) setBadges(blob.data.badges);
+          if (typeof blob.data.unlockedSlots === 'number') setUnlockedSlots(u => Math.max(u, 3, blob.data.unlockedSlots));
+          if (Array.isArray(blob.data.memorials)) setMemorials(blob.data.memorials);
         }
       });
     }, 250);
@@ -164,7 +180,9 @@ export default function App() {
         const data = {
           slots: JSON.parse(localStorage.getItem('plant_slots') || 'null'),
           encyclopedia: JSON.parse(localStorage.getItem('plant_encyclopedia') || 'null'),
-          badges: JSON.parse(localStorage.getItem('plant_badges') || 'null')
+          badges: JSON.parse(localStorage.getItem('plant_badges') || 'null'),
+          unlockedSlots: parseInt(localStorage.getItem('plant_unlocked_slots') || '3', 10),
+          memorials: JSON.parse(localStorage.getItem('plant_memorials') || 'null')
         };
         if (!Array.isArray(data.slots)) return;
         P.saveBlob('plant', data, () => { try { localStorage.setItem('plant_cloud_at', String(Date.now())); } catch (e) {} });
@@ -230,6 +248,17 @@ export default function App() {
     });
   };
   const NO_PETAL_MSG = '꽃잎이 모자라네... 친구들한테 다시봄 자랑 좀 하고, 꽃잎 받아 온나! 🌷';
+
+  const buySlot = () => {
+    const idx = unlockedSlots;                  // 첫 번째 잠긴 자리
+    if (idx >= slots.length || !SLOT_UNLOCK_PRICE[idx]) return;
+    const P = dsb(); if (!P) return;
+    P.spend('plant_slot' + (idx + 1), (err: any, d: any) => {
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); return; }
+      setMoney(d.balance);
+      setUnlockedSlots(idx + 1);
+    });
+  };
 
   const buySeed = (plant: PlantData) => {
     if (currentPlant) return;
@@ -494,6 +523,12 @@ export default function App() {
       return [...prev, { plantId: plant.type.id, discovered: true, graduated: true }];
     });
 
+    // 추억 정원 기록: 만개하여 떠난 동무를 도감 갤러리에 남긴다
+    setMemorials(prev => [...prev, {
+      name: plant.type.name, customName: plant.customName, emoji: plant.type.emoji,
+      level: plant.level, days: Math.max(1, Math.ceil((Date.now() - parseInt(plant.id)) / 86400000)), at: Date.now()
+    }]);
+
     // Clear slot
     setSlots(prev => {
       const newSlots = [...prev];
@@ -620,7 +655,7 @@ export default function App() {
           )}
         </div>
         <div className="absolute top-[76%] md:top-[70%] -translate-y-1/2 right-2 md:right-6 z-40 pointer-events-auto">
-          {currentSlotIndex < slots.length - 1 && (
+          {currentSlotIndex < Math.min(slots.length, unlockedSlots + 1) - 1 && (
             <button onClick={() => scrollToSlot(currentSlotIndex + 1)} className="w-12 h-12 md:w-14 md:h-14 grid place-items-center bg-white/95 hover:bg-white rounded-full shadow-xl text-[#5b3a1a] transition-all active:scale-90 border-2 border-[#e8d9be]">
               <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
             </button>
@@ -629,7 +664,7 @@ export default function App() {
 
         {/* Slot Indicators — 말풍선과 겹치지 않게 하단 버튼 바로 위로 */}
         <div className="absolute bottom-[136px] md:bottom-[142px] left-0 right-0 flex justify-center gap-2.5 z-40">
-          {slots.map((_, idx) => (
+          {slots.slice(0, Math.min(slots.length, unlockedSlots + 1)).map((_, idx) => (
              <div key={idx} className={`rounded-full transition-all shadow ${idx === currentSlotIndex ? 'w-3.5 h-3.5 bg-[#c8784a] ring-2 ring-white' : 'w-3 h-3 bg-white/85 border border-[#c8a86a]/50'}`} />
           ))}
         </div>
@@ -717,10 +752,27 @@ export default function App() {
         onScroll={handleScroll}
         className="absolute inset-0 z-10 flex overflow-x-auto snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing"
       >
-        {slots.map((slot, idx) => (
+        {slots.slice(0, Math.min(slots.length, unlockedSlots + 1)).map((slot, idx) => (
           <div key={idx} className="w-screen h-full shrink-0 snap-center relative flex flex-col justify-center pt-44 pb-32 md:pt-48 md:pb-36">
             <div className="w-full max-w-md mx-auto relative flex items-center justify-center">
-              {slot ? (
+              {idx >= unlockedSlots ? (
+                <div className="relative flex flex-col items-center justify-end h-64 mt-4 mb-2 z-30 -translate-y-[120px] md:-translate-y-[120px] pointer-events-auto">
+                  <div className="text-5xl relative z-20 mb-2 opacity-80 drop-shadow-lg">🔒</div>
+                  <div className="w-40 md:w-48 rounded-2xl border-4 border-dashed border-[#b9a683]/80 bg-white/45 backdrop-blur-sm flex flex-col items-center justify-center gap-2 shadow-inner px-4 py-5">
+                    <span className="text-[#7a5f3e] font-black text-[15px] drop-shadow-sm">잠긴 자리</span>
+                    {money >= (SLOT_UNLOCK_PRICE[idx] || 0) ? (
+                      <button onClick={buySlot} className="bg-[#a14d68] hover:bg-[#8d3f58] text-white text-[14px] font-black px-4 py-2.5 rounded-full shadow-md flex items-center gap-1.5 active:scale-95 transition-all">
+                        <Petal className="w-4 h-4" /> {SLOT_UNLOCK_PRICE[idx]}으로 열기
+                      </button>
+                    ) : (
+                      <div className="flex flex-col items-center gap-1.5">
+                        <span className="bg-white/80 text-[#9a8264] text-[13px] font-black px-4 py-2 rounded-full flex items-center gap-1.5 border border-[#d9c8a8]"><Petal className="w-4 h-4" /> {SLOT_UNLOCK_PRICE[idx]} 필요</span>
+                        <span className="text-[12px] text-[#8a6d48] font-bold bg-white/60 px-2.5 py-0.5 rounded-full">꽃잎이 모자라요</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : slot ? (
                 <>
                   {/* Water Gauge */}
                   <div className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-20 pointer-events-none">
@@ -750,7 +802,7 @@ export default function App() {
       </div>
 
       <Shop isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} onBuySeed={buySeed} money={money} isSlotFull={currentPlant !== null} />
-      <EncyclopediaView isOpen={isEncyclopediaOpen} onClose={() => setIsEncyclopediaOpen(false)} entries={encyclopedia} badges={badges} />
+      <EncyclopediaView isOpen={isEncyclopediaOpen} onClose={() => setIsEncyclopediaOpen(false)} entries={encyclopedia} badges={badges} memorials={memorials} />
       <PotShopView isOpen={isPotShopOpen} onClose={() => setIsPotShopOpen(false)} onBuyPot={buyPot} money={money} isSlotEmpty={currentPlant === null} />
     </div>
   );

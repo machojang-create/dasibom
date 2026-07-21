@@ -3549,7 +3549,27 @@ body.dark .bom-guide-text{color:#c8bba4}
     '어릴 적 집은 어떻게 생겼었어요? 마당이 있었어요?'
   ];
   var _talkLast='';
+  // 화분 지킴이: 베란다 화분이 목마르면(수분 35% 미만) 봄이가 먼저 알려준다
+  function bomPlantMsg(){
+    try{
+      var ps=JSON.parse(localStorage.getItem('plant_slots')||'[]');
+      var thirsty=null;
+      for(var i=0;i<ps.length;i++){ var pl=ps[i]; if(pl && typeof pl.waterLevel==='number' && pl.waterLevel<35){ thirsty=pl; break; } }
+      if(!thirsty) return null;
+      var nm=thirsty.customName||((thirsty.type&&thirsty.type.name)||'화분');
+      return _rndOne([
+        '참, 베란다의 <b>'+esc(nm)+'</b>이(가) 목이 마른가 봐요 💧 <a class="bcp-tag-inline" href="/plant"><b>물 주러 가기</b></a>',
+        '<b>'+esc(nm)+'</b>이(가) 시들시들해요… 물 한 모금이면 금방 기운 낼 거예요! <a class="bcp-tag-inline" href="/plant"><b>화분 보러 가기</b></a> 🌱',
+        '저 방금 베란다 다녀왔는데요, <b>'+esc(nm)+'</b>이(가) '+esc(honTxt)+'를 기다리고 있어요 💧 <a class="bcp-tag-inline" href="/plant"><b>물 주러 가기</b></a>'
+      ]);
+    }catch(e){ return null; }
+  }
   function _nextTalk(){
+    // 목마른 화분이 실제로 있으면 다른 어떤 말보다 먼저 — 진짜 알림이니까 (연달아 두 번은 안 함)
+    if(_talkLast!=='plant'){
+      var pm=bomPlantMsg();
+      if(pm && Math.random()<0.5){ _talkLast='plant'; return bomMsgRow(pm,'bom_think'); }
+    }
     // 비중(Macho 2026-07-20): 취재 36% / 감성케어 27% / 잡담 18% / 콘텐츠 9% / 자서전화면 9%
     var kinds=['interview','interview','interview','interview','care','care','care','chat','chat','content','memoir'];
     if(window._KIOSK_BROWSE) kinds=['care','care','chat','content']; // 키오스크: 취재는 대화방에서만
