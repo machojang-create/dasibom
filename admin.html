@@ -345,6 +345,7 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
     <button class="admin-tab role-master" data-tab="banners" onclick="switchTab('banners')" style="display:none">🎉 이벤트배너</button>
     <button class="admin-tab role-master" data-tab="slides" onclick="switchTab('slides')" style="display:none">🖼️ 히어로슬라이드</button>
     <button class="admin-tab role-master" data-tab="traffic" onclick="switchTab('traffic')" style="display:none">📈 광고지표</button>
+    <button class="admin-tab role-master" data-tab="petals" onclick="switchTab('petals')" style="display:none">🌸 꽃잎지급</button>
     <button class="admin-tab role-master" data-tab="coupons" onclick="switchTab('coupons')" style="display:none">🎟️ 쿠폰</button>
     <button class="admin-tab role-master" data-tab="reports" onclick="switchTab('reports')" style="display:none">🚨 신고</button>
     <button class="admin-tab role-master" data-tab="survey" onclick="switchTab('survey')" style="display:none">📋 설문</button>
@@ -718,6 +719,38 @@ textarea.wem-input{resize:vertical;min-height:68px;line-height:1.6}
 </div>
 
 <!-- 쿠폰 관리 -->
+<!-- 🌸 꽃잎 지급/쪽지 (master 전용, 2026-07-21) -->
+<div id="tabPetals" class="admin-body" style="display:none">
+  <div style="max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+    <div style="background:#fff;border:1px solid #e5e0d5;border-radius:16px;padding:20px">
+      <h3 style="margin:0 0 6px;font-size:17px">🌸 꽃잎 즉시 지급 / 차감</h3>
+      <p style="margin:0 0 12px;font-size:13px;color:#8a8478">대상 uid는 전체 또는 <b>앞 12자리 이상</b>(진단 토스트에 나온 uid 그대로). 비우면 <b>내 계정</b>. 음수 입력 시 차감. 전량 points_admin에 기록.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input id="ptUid" placeholder="대상 uid (비우면 내 계정)" style="flex:2;min-width:220px;padding:11px 12px;border:1px solid #ddd6c8;border-radius:10px;font-size:14px">
+        <input id="ptAmt" type="number" placeholder="수량 (예: 50000)" style="flex:1;min-width:130px;padding:11px 12px;border:1px solid #ddd6c8;border-radius:10px;font-size:14px">
+        <button onclick="grantPetals()" style="padding:11px 20px;border:none;border-radius:10px;background:#d96a90;color:#fff;font-weight:800;font-size:14px;cursor:pointer">지급</button>
+      </div>
+      <div id="ptMsg" style="margin-top:10px;font-size:13px;font-weight:700;color:#4e8040"></div>
+    </div>
+    <div style="background:#fff;border:1px solid #e5e0d5;border-radius:16px;padding:20px">
+      <h3 style="margin:0 0 6px;font-size:17px">💌 꽃잎 쪽지 보내기 <span style="font-size:12px;color:#8a8478">(이벤트 지급 — 어르신이 홈 쪽지함에서 '받기' 버튼으로 수령)</span></h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <label style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px">
+          <input type="checkbox" id="mailAll" style="width:18px;height:18px"> 전체 회원에게 발송(이벤트)
+        </label>
+        <input id="mailUid" placeholder="대상 uid (전체 발송 시 무시)" style="padding:11px 12px;border:1px solid #ddd6c8;border-radius:10px;font-size:14px">
+        <input id="mailTitle" placeholder="제목 (예: 🌸 봄맞이 꽃잎 선물)" maxlength="60" style="padding:11px 12px;border:1px solid #ddd6c8;border-radius:10px;font-size:14px">
+        <textarea id="mailBody" placeholder="내용 (선택)" maxlength="500" rows="2" style="padding:11px 12px;border:1px solid #ddd6c8;border-radius:10px;font-size:14px;resize:vertical"></textarea>
+        <div style="display:flex;gap:8px">
+          <input id="mailAmt" type="number" placeholder="꽃잎 수량 (0=쪽지만)" style="flex:1;padding:11px 12px;border:1px solid #ddd6c8;border-radius:10px;font-size:14px">
+          <button onclick="sendPetalMail()" style="padding:11px 20px;border:none;border-radius:10px;background:#7a5f3e;color:#fff;font-weight:800;font-size:14px;cursor:pointer">보내기</button>
+        </div>
+        <div id="mailMsg" style="font-size:13px;font-weight:700;color:#4e8040"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="tabCoupons" class="admin-body" style="display:none">
   <div class="stats-section-title">🎟️ 쿠폰 관리</div>
   <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
@@ -1501,7 +1534,7 @@ function hide(id){ document.getElementById(id).style.display='none'; }
 
 /* ── 탭 전환 ── */
 function switchTab(tab) {
-  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals', stats:'tabStats', bots:'tabBots', notices:'tabNotices', banners:'tabBanners', slides:'tabSlides', traffic:'tabTraffic', coupons:'tabCoupons', reports:'tabReports', survey:'tabSurvey' };
+  var map = { members:'tabMembers', wisdom:'tabWisdom', care:'tabCare', approvals:'tabApprovals', stats:'tabStats', bots:'tabBots', notices:'tabNotices', banners:'tabBanners', slides:'tabSlides', traffic:'tabTraffic', petals:'tabPetals', coupons:'tabCoupons', reports:'tabReports', survey:'tabSurvey' };
   document.querySelectorAll('.admin-tab').forEach(function(el) {
     el.classList.toggle('active', el.getAttribute('data-tab') === tab);
   });
@@ -1518,6 +1551,41 @@ function switchTab(tab) {
   if (tab === 'reports') loadReports();
   if (tab === 'survey') loadSurvey();
   if (tab === 'bots') loadBotStatus();
+}
+
+/* ── 🌸 꽃잎 지급/쪽지 (master 전용, 2026-07-21) — 지급은 전부 서버 함수(adminGrantPoints/adminSendMail) ── */
+function grantPetals(){
+  var uid = document.getElementById('ptUid').value.trim();
+  var amt = parseInt(document.getElementById('ptAmt').value, 10) || 0;
+  var out = document.getElementById('ptMsg');
+  if (!amt) { out.style.color='#c0392b'; out.textContent = '수량을 입력해 주세요'; return; }
+  out.style.color='#8a8478'; out.textContent = '지급 중…';
+  _fn.httpsCallable('adminGrantPoints')(uid ? { uid: uid, amount: amt } : { amount: amt })
+    .then(function(r){
+      var d = r.data || {};
+      if (d.ok) { out.style.color='#4e8040'; out.textContent = '✅ ' + (amt>0?'+':'') + amt.toLocaleString() + '잎 지급 완료 → ' + d.uid + ' (잔액 ' + Number(d.balance).toLocaleString() + ')'; }
+      else { out.style.color='#c0392b'; out.textContent = '실패: ' + (d.reason === 'uid_not_found' ? '해당 uid를 찾지 못했어요(12자 이상 입력)' : d.reason); }
+    })
+    .catch(function(e){ out.style.color='#c0392b'; out.textContent = '오류: ' + (e.message || e.code); });
+}
+function sendPetalMail(){
+  var all = document.getElementById('mailAll').checked;
+  var uid = document.getElementById('mailUid').value.trim();
+  var title = document.getElementById('mailTitle').value.trim();
+  var body = document.getElementById('mailBody').value.trim();
+  var amt = parseInt(document.getElementById('mailAmt').value, 10) || 0;
+  var out = document.getElementById('mailMsg');
+  if (!title) { out.style.color='#c0392b'; out.textContent = '제목을 입력해 주세요'; return; }
+  if (!all && !uid) { out.style.color='#c0392b'; out.textContent = '대상 uid를 입력하거나 전체 발송을 체크해 주세요'; return; }
+  if (all && !confirm('전체 회원에게 "' + title + '" (' + amt.toLocaleString() + '잎) 쪽지를 보냅니다. 계속할까요?')) return;
+  out.style.color='#8a8478'; out.textContent = '발송 중…';
+  _fn.httpsCallable('adminSendMail')({ all: all, uid: uid, title: title, body: body, amount: amt })
+    .then(function(r){
+      var d = r.data || {};
+      if (d.ok) { out.style.color='#4e8040'; out.textContent = all ? ('✅ ' + d.sent + '명에게 발송 완료') : ('✅ 발송 완료 → ' + d.uid); }
+      else { out.style.color='#c0392b'; out.textContent = '실패: ' + (d.reason === 'uid_not_found' ? '해당 uid를 찾지 못했어요' : d.reason); }
+    })
+    .catch(function(e){ out.style.color='#c0392b'; out.textContent = '오류: ' + (e.message || e.code); });
 }
 
 /* ── 관리자 권한(역할) — 신청·승인 (MVP, Firestore admin_roles 문서 기반) ──

@@ -263,8 +263,58 @@
       host.querySelector('.dsbpt-btn').addEventListener('click', function () { DasibomPoints.invite(); });
       this.balance(function (b) { if (b != null) fillBadges(b); });
       this.refLink(function () {});   // ★링크 미리 발급(클릭 시 즉시 공유되도록)
+      loadMailbox(host);              // ✉️ 꽃잎 쪽지함(이벤트 지급) — 안 읽은 쪽지가 있을 때만 나타남
     }
   };
+
+  /* ── 꽃잎 쪽지함(2026-07-21 Macho): 운영자가 보낸 이벤트 쪽지를 홈 카드 밑에 표시.
+     수령은 반드시 버튼 액션(서버 claimMail) — 자동 지급 아님, 수령 기록=활동 신호. ── */
+  function loadMailbox(host) {
+    whenReady(function () {
+      function go() {
+        try {
+          var uid = firebase.auth().currentUser.uid;
+          firebase.firestore().collection('mailbox').doc(uid).collection('msgs')
+            .orderBy('at', 'desc').limit(20).get().then(function (qs) {
+              var msgs = [];
+              qs.forEach(function (d) { var v = d.data(); if (!v.claimed) msgs.push({ id: d.id, t: v.title, b: v.body, a: v.amount || 0 }); });
+              if (!msgs.length) return;
+              var box = document.createElement('div');
+              box.className = 'dsbpt-card';
+              box.style.marginTop = '12px';
+              var rows = msgs.map(function (m) {
+                return '<div class="dsbpt-mail" data-mid="' + m.id + '" style="display:flex;align-items:center;gap:10px;background:#fff;border:2px solid #F0E6D2;border-radius:16px;padding:12px 14px;margin-top:8px">' +
+                  '<span style="font-size:22px">💌</span>' +
+                  '<div style="flex:1;min-width:0;text-align:left"><div style="font-weight:800;font-size:15px;color:#4a3a26">' + escHtml(m.t) + '</div>' +
+                  (m.b ? '<div style="font-size:13px;color:#8a6a48;margin-top:2px">' + escHtml(m.b) + '</div>' : '') + '</div>' +
+                  '<button type="button" data-claim="' + m.id + '" style="flex:none;border:none;border-radius:50px;padding:10px 14px;font-weight:900;font-size:14px;color:#fff;background:linear-gradient(145deg,#ef8fae,#d96a90);cursor:pointer">' +
+                  (m.a > 0 ? withPetal(m.a + POINT_NAME + ' 받기') : '확인') + '</button></div>';
+              }).join('');
+              box.innerHTML = '<div style="font-weight:900;font-size:17px;color:#5b3a1a">💌 나에게 온 쪽지 <span style="color:#d96a90">' + msgs.length + '</span>통</div>' + rows;
+              host.appendChild(box);
+              box.addEventListener('click', function (ev) {
+                var btn = ev.target.closest('[data-claim]');
+                if (!btn || btn.disabled) return;
+                btn.disabled = true;
+                var f = fn('claimMail'); if (!f) { btn.disabled = false; return; }
+                f({ id: btn.getAttribute('data-claim') }).then(function (r) {
+                  var d = r && r.data;
+                  if (d && d.ok) {
+                    if (d.amount > 0) toast('+' + d.amount + POINT_NAME + ' 받았어요! ' + POINT_ICON);
+                    var row = btn.closest('.dsbpt-mail'); if (row) row.remove();
+                    refreshBadges();
+                  } else { btn.disabled = false; }
+                }).catch(function () { btn.disabled = false; });
+              });
+            }).catch(function () {});
+        } catch (e) {}
+      }
+      if (typeof firebase.firestore === 'function') { go(); return; }
+      var s = document.createElement('script');
+      s.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+      s.onload = go; document.head.appendChild(s);
+    });
+  }
 
   // 화면의 모든 잔액 배지 갱신
   function fillBadges(n) {
@@ -367,7 +417,7 @@
             var d = r && r.data;
             if (d && d.ok) { toast('🌸 ' + (amt > 0 ? '+' : '') + amt + ' → 잔액 ' + d.balance.toLocaleString()); }
             else toast('지급 실패');
-          }).catch(function (e) { toast('권한 없음 또는 오류'); });
+          }).catch(function (e) { toast((e && e.message) || (e && e.code) || '권한 없음 또는 오류'); });
         };
         document.body.appendChild(b);
       }

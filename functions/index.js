@@ -1002,38 +1002,118 @@ exports.spendPoints = functions
     } catch (e) { return { ok: false, reason: 'error' }; }
   });
 
-// ── 마스터 전용 꽃잎 지급/차감(2026-07-21 Macho 요청 — 테스트·운영 보정) ──
-//   클라 발행 금지 원칙의 유일한 서버측 예외. MASTERS 이메일 토큰만 통과, points_admin에 전량 기록.
+// ── 운영자 판정·uid 해석 공용 헬퍼(2026-07-21) ──
+const MASTER_EMAILS = ['machojang@gmail.com', 'machojang@naver.com'];
+async function isMasterCall(context) {
+  const email = (context.auth.token && context.auth.token.email) || '';
+  if (MASTER_EMAILS.indexOf(email) >= 0) return true;
+  try {
+    const r = await admin.firestore().collection('admin_roles').doc(context.auth.uid).get();
+    const rd = r.exists ? r.data() : null;
+    return !!(rd && rd.status === 'approved' && (rd.role === 'master' || rd.role === 'owner'));
+  } catch (e) { return false; }
+}
+// uid 전체 또는 앞부분(12자+)로 실제 uid 해석 — 진단 토스트에 잘려 나온 uid로도 지급 가능하게
+async function resolveUidByPrefix(idOrPrefix) {
+  const q = String(idOrPrefix || '').trim();
+  if (!q || q.length < 12) return null;
+  if (q.length >= 28) return q;
+  let token = undefined;
+  do {
+    const page = await admin.auth().listUsers(1000, token);
+    const hit = page.users.find((u) => u.uid.indexOf(q) === 0);
+    if (hit) return hit.uid;
+    token = page.pageToken;
+  } while (token);
+  return null;
+}
+
+// ── 마스터 전용 꽃잎 지급/차감(2026-07-21) — points_admin 전량 기록 ──
 exports.adminGrantPoints = functions
   .region('asia-northeast3')
-  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .runWith({ timeoutSeconds: 60, memory: '256MB' })
   .https.onCall(async (data, context) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
-    const MASTERS = ['machojang@gmail.com', 'machojang@naver.com'];
-    const email = (context.auth.token && context.auth.token.email) || '';
-    let allowed = MASTERS.indexOf(email) >= 0;
-    if (!allowed) {
-      // 카카오 등 커스텀 토큰에 이메일이 없는 경우 — admin_roles 승인된 master/owner로도 통과
-      try {
-        const r = await admin.firestore().collection('admin_roles').doc(context.auth.uid).get();
-        const rd = r.exists ? r.data() : null;
-        allowed = !!(rd && rd.status === 'approved' && (rd.role === 'master' || rd.role === 'owner'));
-      } catch (e) {}
+    if (!(await isMasterCall(context))) {
+      const email = (context.auth.token && context.auth.token.email) || '(없음)';
+      throw new functions.https.HttpsError('permission-denied',
+        '운영자 확인 실패 — 토큰이메일:' + email + ' · uid:' + context.auth.uid.slice(0, 18));
     }
-    if (!allowed) throw new functions.https.HttpsError('permission-denied', '운영자만 사용할 수 있습니다.');
     const amount = Math.max(-100000, Math.min(100000, parseInt((data && data.amount) || 0, 10) || 0));
     if (!amount) return { ok: false, reason: 'bad_amount' };
-    const targetUid = String((data && data.uid) || context.auth.uid);
+    let targetUid = context.auth.uid;
+    if (data && data.uid) {
+      targetUid = await resolveUidByPrefix(data.uid);
+      if (!targetUid) return { ok: false, reason: 'uid_not_found' };
+    }
     const uref = admin.firestore().collection('users').doc(targetUid);
     await uref.set({ dsbPoints: admin.firestore.FieldValue.increment(amount) }, { merge: true });
     const snap = await uref.get();
     try {
       await admin.firestore().collection('points_admin').add({
-        by: context.auth.uid, email, target: targetUid, amount,
+        by: context.auth.uid, target: targetUid, amount,
         at: admin.firestore.FieldValue.serverTimestamp()
       });
     } catch (e) {}
-    return { ok: true, balance: (snap.data() && snap.data().dsbPoints) || 0 };
+    return { ok: true, uid: targetUid, balance: (snap.data() && snap.data().dsbPoints) || 0 };
+  });
+
+// ── 꽃잎 쪽지 보내기(운영자) — 개인 또는 전체(이벤트). 수령은 어르신이 쪽지함에서 버튼으로 ──
+exports.adminSendMail = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 300, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    if (!(await isMasterCall(context))) throw new functions.https.HttpsError('permission-denied', '운영자만 사용할 수 있습니다.');
+    const title = String((data && data.title) || '').trim().slice(0, 60);
+    const body = String((data && data.body) || '').trim().slice(0, 500);
+    const amount = Math.max(0, Math.min(100000, parseInt((data && data.amount) || 0, 10) || 0));
+    if (!title) return { ok: false, reason: 'no_title' };
+    const msg = { title, body, amount, from: '다시봄', claimed: false, at: admin.firestore.FieldValue.serverTimestamp() };
+    if (data && data.all === true) {
+      // 전체 이벤트 발송 — 현재 규모 전제(수천 명 넘어가면 큐 방식으로 전환할 것)
+      const snap = await admin.firestore().collection('users').get();
+      let batch = admin.firestore().batch(); let n = 0, sent = 0;
+      for (const doc of snap.docs) {
+        batch.set(admin.firestore().collection('mailbox').doc(doc.id).collection('msgs').doc(), msg);
+        sent += 1;
+        if (++n >= 400) { await batch.commit(); batch = admin.firestore().batch(); n = 0; }
+      }
+      if (n) await batch.commit();
+      return { ok: true, sent };
+    }
+    const uid = await resolveUidByPrefix(data && data.uid);
+    if (!uid) return { ok: false, reason: 'uid_not_found' };
+    await admin.firestore().collection('mailbox').doc(uid).collection('msgs').add(msg);
+    return { ok: true, uid };
+  });
+
+// ── 쪽지 수령(어르신) — 서버 권위 지급 + 수령 기록(활동 신호) ──
+exports.claimMail = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const id = String((data && data.id) || '');
+    if (!id) return { ok: false, reason: 'no_id' };
+    const mref = admin.firestore().collection('mailbox').doc(uid).collection('msgs').doc(id);
+    const uref = admin.firestore().collection('users').doc(uid);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const m = await tx.get(mref);
+        if (!m.exists) return { ok: false, reason: 'no_msg' };
+        if (m.data().claimed) return { ok: false, reason: 'already' };
+        const amt = m.data().amount || 0;
+        tx.update(mref, { claimed: true, claimedAt: admin.firestore.FieldValue.serverTimestamp() });
+        if (amt > 0) {
+          tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(amt) }, { merge: true });
+          tx.set(admin.firestore().collection('points_daily').doc(uid + '_mail_' + id),
+            { uid, kind: 'mail', amount: amt, at: admin.firestore.FieldValue.serverTimestamp() });
+        }
+        return { ok: true, amount: amt };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
   });
 
 // ── 구독 일일 꽃잎 "출석 도장"(2026-07-21 Macho 확정 설계, 결제 연동 전 선구축) ──
