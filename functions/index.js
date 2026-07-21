@@ -1011,7 +1011,16 @@ exports.adminGrantPoints = functions
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
     const MASTERS = ['machojang@gmail.com', 'machojang@naver.com'];
     const email = (context.auth.token && context.auth.token.email) || '';
-    if (MASTERS.indexOf(email) < 0) throw new functions.https.HttpsError('permission-denied', '운영자만 사용할 수 있습니다.');
+    let allowed = MASTERS.indexOf(email) >= 0;
+    if (!allowed) {
+      // 카카오 등 커스텀 토큰에 이메일이 없는 경우 — admin_roles 승인된 master/owner로도 통과
+      try {
+        const r = await admin.firestore().collection('admin_roles').doc(context.auth.uid).get();
+        const rd = r.exists ? r.data() : null;
+        allowed = !!(rd && rd.status === 'approved' && (rd.role === 'master' || rd.role === 'owner'));
+      } catch (e) {}
+    }
+    if (!allowed) throw new functions.https.HttpsError('permission-denied', '운영자만 사용할 수 있습니다.');
     const amount = Math.max(-100000, Math.min(100000, parseInt((data && data.amount) || 0, 10) || 0));
     if (!amount) return { ok: false, reason: 'bad_amount' };
     const targetUid = String((data && data.uid) || context.auth.uid);

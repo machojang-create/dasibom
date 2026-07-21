@@ -329,7 +329,28 @@
       try {
         var u = firebase.auth().currentUser;
         var email = (u && u.email) || '';
-        if (['machojang@gmail.com', 'machojang@naver.com'].indexOf(email) < 0) return;
+        var isMasterEmail = ['machojang@gmail.com', 'machojang@naver.com'].indexOf(email) >= 0;
+        if (!isMasterEmail) {
+          // 카카오 등 이메일 없는 커스텀 토큰 — admin_roles 승인 master/owner면 표시 (서버도 같은 기준으로 재검증)
+          var check = function () {
+            try {
+              firebase.firestore().collection('admin_roles').doc(u.uid).get().then(function (r) {
+                var d = r.exists ? r.data() : null;
+                if (d && d.status === 'approved' && (d.role === 'master' || d.role === 'owner')) mountBtn();
+              }).catch(function () {});
+            } catch (e) {}
+          };
+          if (typeof firebase.firestore === 'function') { check(); }
+          else {
+            var s = document.createElement('script');
+            s.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+            s.onload = check; document.head.appendChild(s);
+          }
+          return;
+        }
+        mountBtn();
+      } catch (e) {}
+      function mountBtn() {
         if (document.getElementById('dsbMasterPetal')) return;
         var b = document.createElement('button');
         b.id = 'dsbMasterPetal';
@@ -349,7 +370,7 @@
           }).catch(function (e) { toast('권한 없음 또는 오류'); });
         };
         document.body.appendChild(b);
-      } catch (e) {}
+      }
     });
   }
 

@@ -249,11 +249,20 @@ export default function App() {
   };
   const NO_PETAL_MSG = '꽃잎이 모자라네... 친구들한테 다시봄 자랑 좀 하고, 꽃잎 받아 온나! 🌷';
 
+  // ★결제 잠금: 서버 응답(1~3초) 전의 연타를 전부 무시 — 중복 결제 방지(2026-07-21 버그 수정)
+  const spendBusyRef = useRef(false);
+  const guardedSpend = (item: string, cb: (err: any, d: any) => void) => {
+    if (spendBusyRef.current) return false;
+    const P = dsb(); if (!P) return false;
+    spendBusyRef.current = true;
+    P.spend(item, (err: any, d: any) => { spendBusyRef.current = false; cb(err, d); });
+    return true;
+  };
+
   const buySlot = () => {
     const idx = unlockedSlots;                  // 첫 번째 잠긴 자리
     if (idx >= slots.length || !SLOT_UNLOCK_PRICE[idx]) return;
-    const P = dsb(); if (!P) return;
-    P.spend('plant_slot' + (idx + 1), (err: any, d: any) => {
+    guardedSpend('plant_slot' + (idx + 1), (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); return; }
       setMoney(d.balance);
       setUnlockedSlots(idx + 1);
@@ -262,9 +271,8 @@ export default function App() {
 
   const buySeed = (plant: PlantData) => {
     if (currentPlant) return;
-    const P = dsb(); if (!P) return;
     const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
-    P.spend('seed', (err: any, d: any) => {
+    guardedSpend('seed', (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       const newPlant: UserPlant = { 
@@ -288,9 +296,8 @@ export default function App() {
       setSlots(prev => { const ns = [...prev]; ns[currentSlotIndex] = { ...prev[currentSlotIndex]!, potId }; return ns; });
       setIsPotShopOpen(false); return;
     }
-    const P = dsb(); if (!P) return;
     const slotIdx = currentSlotIndex;   // ★레이스 방지
-    P.spend(potId, (err: any, d: any) => {
+    guardedSpend(potId, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       setSlots(prev => { const ns = [...prev]; ns[slotIdx] = { ...prev[slotIdx]!, potId }; return ns; });
@@ -413,8 +420,8 @@ export default function App() {
       }
       applyEffect('water'); return;   // 물은 무료 — 매일 만지는 핵심 손길
     }
-    const P = dsb(); if (!P) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
-    P.spend(type, (err: any, d: any) => {
+    if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
+    guardedSpend(type, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       applyEffect(type);

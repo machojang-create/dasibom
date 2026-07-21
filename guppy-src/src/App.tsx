@@ -308,10 +308,14 @@ export default function App() {
     }, 200);
     return () => clearInterval(t);
   }, []);
+  const spendBusyRef = useRef(false);   // ★결제 연타 잠금 — 중복 결제 방지(2026-07-21)
   const spendPetal = useCallback((item: string, cb: (ok: boolean) => void) => {
     const P = dsb();
     if (!P) { showToast('연결 대기', '잠시 후 다시 시도해 주세요', '🌸'); cb(false); return; }
+    if (spendBusyRef.current) { cb(false); return; }
+    spendBusyRef.current = true;
     P.spend(item, (err: any, d: any) => {
+      spendBusyRef.current = false;
       if (err || !d || !d.ok) {
         if (d && d.balance != null) setPetals(d.balance);
         showToast('꽃잎이 모자라요', '다른 콘텐츠를 즐기고 친구에게 공유하면 꽃잎이 모여요 🌸', '🌸');
