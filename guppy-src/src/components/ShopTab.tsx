@@ -78,7 +78,7 @@ export const ShopTab = React.memo(function ShopTab({
         </div>
       </div>
 
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4 pb-[110px] overflow-y-auto">
         {shopTab === 'food' && (
           <div className="flex flex-col gap-6">
             <div className="bg-blue-50/50 rounded-2xl p-4 sm:p-6 border border-blue-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">

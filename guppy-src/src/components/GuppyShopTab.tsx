@@ -365,7 +365,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
         </div>
       </div>
 
-      <div className="flex-1 p-4 overflow-y-auto">
+      <div className="flex-1 p-4 pb-[110px] overflow-y-auto">
         
         <div className="flex flex-col gap-8">
           
