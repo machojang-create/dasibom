@@ -356,6 +356,11 @@ export default function App() {
       if (!targetPlant) return prev;
       const newPlant = { ...targetPlant };
 
+      if (type !== 'water') {
+        const today = new Date().toISOString().slice(0, 10);
+        (newPlant as any).nutsToday = ((newPlant as any).nutsDate === today ? ((newPlant as any).nutsToday || 0) : 0) + 1;
+        (newPlant as any).nutsDate = today;
+      }
       let waterIncrease = type === 'water' ? 15 : type === 'normal_nut' ? 10 : 30;
       let levelIncrease = type === 'water' ? 0 : type === 'normal_nut' ? 1 : 2;
       // 물주기: 하루 첫 물은 정성으로 쳐서 레벨+1 (자동 성장 폐지 — 매일 들르는 이유)
@@ -409,6 +414,19 @@ export default function App() {
         return;
       }
       applyEffect('water'); return;   // 물은 무료 — 매일 만지는 핵심 손길
+    }
+    // 영양제 하루 2회 상한(2026-07-21 밸런스 감사): 꽃잎으로 보름 호흡을 건너뛰지 못하게
+    {
+      const cur = slots[currentSlotIndex];
+      if (cur) {
+        const today = new Date().toISOString().slice(0, 10);
+        const nDay = (cur as any).nutsDate === today ? ((cur as any).nutsToday || 0) : 0;
+        if (nDay >= 2) {
+          plantSay(['영양제도 과하면 독이데이. 내일 또 챙겨 주라!', '오늘 몫은 든든히 묵었다. 인자 소화 좀 시키자!', '과유불급이라 안 카나. 내일 다시 온나!'][Math.floor(Math.random() * 3)]);
+          lastUserSpeakRef.current = Date.now();
+          return;
+        }
+      }
     }
     const P = dsb(); if (!P) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
     P.spend(type, (err: any, d: any) => {

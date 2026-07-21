@@ -124,7 +124,7 @@ export const ShopTab = React.memo(function ShopTab({
                     <span className="block text-xs font-bold text-slate-500 mb-1 truncate">Normal Food</span>
                     <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
                       <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(10 * (1 + (foodTechLevel - 1) * 0.15))}</span>
-                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +{Math.floor(5 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +2</span>
                     </div>
                   </div>
                 </div>
@@ -159,8 +159,8 @@ export const ShopTab = React.memo(function ShopTab({
                     </h4>
                     <span className="block text-xs font-bold text-slate-500 mb-1 truncate">Premium Flakes</span>
                     <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(25 * (1 + (foodTechLevel - 1) * 0.15))}</span>
-                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +{Math.floor(20 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(20 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +15</span>
                     </div>
                   </div>
                 </div>
@@ -195,8 +195,8 @@ export const ShopTab = React.memo(function ShopTab({
                     </h4>
                     <span className="block text-xs font-bold text-slate-500 mb-1 truncate">Magic Shrimp</span>
                     <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(40 * (1 + (foodTechLevel - 1) * 0.15))}</span>
-                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +{Math.floor(35 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(35 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +35</span>
                     </div>
                   </div>
                 </div>
@@ -231,8 +231,8 @@ export const ShopTab = React.memo(function ShopTab({
                     </h4>
                     <span className="block text-xs font-bold text-slate-500 mb-1 truncate">Golden Krill</span>
                     <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(80 * (1 + (foodTechLevel - 1) * 0.15))}</span>
-                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +{Math.floor(80 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-emerald-100 whitespace-nowrap">⚡ 허기 +{Math.floor(60 * (1 + (foodTechLevel - 1) * 0.15))}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold text-blue-600 bg-blue-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-blue-100 whitespace-nowrap">✨ XP +120</span>
                     </div>
                   </div>
                 </div>
@@ -266,8 +266,8 @@ export const ShopTab = React.memo(function ShopTab({
             { id: 'led_mood_light', emoji: '\ud83c\udf08', name: '무지개 무드등', tag: '은은한 빛 갈아입기', desc: '어항 물빛이 무지개색으로 천천히 물들어요.', price: 120 },
             { id: 'neon_crystal', emoji: '\ud83d\udc8e', name: '네온 수정', tag: '보랏빛 광채', desc: '심해의 수정이 신비로운 보랏빛을 내뿜어요.', price: 150 },
             { id: 'lighthouse', emoji: '\ud83d\uddfc', name: '꼬마 등대', tag: '밤을 지키는 불빛', desc: '밤이 되면 등대가 어항을 은은하게 밝혀요.', price: 180 },
-            { id: 'golden_statue', emoji: '\ud83d\uddff', name: '빛나는 황금 석상', tag: '희귀·전설 확률 2배', desc: '특별한 물고기가 태어날 확률을 크게 높여줘요.', price: 200 },
-            { id: 'submarine', emoji: '\ud83d\udea4', name: '노란 꼬마 잠수함', tag: '어항의 명물', desc: '뽀글뽀글 기포를 내는 귀여운 잠수함이에요.', price: 300 },
+            { id: 'golden_statue', emoji: '\ud83d\uddff', name: '빛나는 황금 석상', tag: '희귀·전설 확률 2배', desc: '특별한 물고기가 태어날 확률을 크게 높여줘요.', price: 300 },
+            { id: 'submarine', emoji: '\ud83d\udea4', name: '노란 꼬마 잠수함', tag: '어항의 명물', desc: '뽀글뽀글 기포를 내는 귀여운 잠수함이에요.', price: 250 },
           ];
           return (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -701,12 +701,12 @@ export default function App() {
               
               // Base XP is flat 30 per food eaten as requested
               
-              let earnedXp = foodType === 'krill' ? 100 : foodType === 'shrimp' ? 30 : foodType === 'premium' ? 15 : 5;
+              let earnedXp = foodType === 'krill' ? 120 : foodType === 'shrimp' ? 35 : foodType === 'premium' ? 15 : 2;   // 잎당 XP: 밥40<프50=새우50<크릴80 — 고급식=성장 가성비
               if (decorationsRef.current.includes('neon_crystal')) earnedXp += 5;
               if (decorationsRef.current.includes('autumn_leaves')) earnedXp += 10;
               
               xp += earnedXp;
-              baseHunger = foodType === 'krill' ? 50 : foodType === 'shrimp' ? 25 : foodType === 'premium' ? 15 : 10;
+              baseHunger = foodType === 'krill' ? 60 : foodType === 'shrimp' ? 35 : foodType === 'premium' ? 20 : 10;   // 잎당 허기: 밥200>프67>새우50>크릴40 — 밥=배 채우기 가성비
               hunger = Math.min(100, hunger + (baseHunger * techMultiplier));
               
               if (foodType === 'krill') isSick = false;
