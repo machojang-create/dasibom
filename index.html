@@ -22,6 +22,8 @@
 <meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0e9d7d">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
 <link rel="apple-touch-icon" href="/img/icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -1922,7 +1924,36 @@
 <!-- 다시봄 꽃잎 — 잔액 + 친구 초대. 콘텐츠들 다 본 뒤 마지막에 만나도록 하단 배치
      (초대 안내의 주 통로는 각 콘텐츠의 공유 버튼 — 2026-07-20 Macho 지시) -->
 <section style="background:var(--cream);padding:8px 0 44px">
-  <div class="wrap"><div id="dsbPointsCard"></div></div>
+  <div class="wrap"><div id="dsbPointsCard"></div>
+    <!-- 📱 홈 화면 앱 추가(2026-07-22 Macho) — 설치형처럼 바탕화면 아이콘 만들기 -->
+    <div id="dsbInstallCard" style="display:none;margin-top:14px;background:#fff;border:2px solid #E2E9E0;border-radius:20px;padding:18px 20px;text-align:center;box-shadow:0 10px 26px -18px rgba(0,0,0,.25)">
+      <div style="font-size:17px;font-weight:800;color:#1F2A1A;margin-bottom:4px">📱 다시봄을 폰 화면에 놓아드릴까요?</div>
+      <div style="font-size:13.5px;color:#7a8a72;font-weight:600;margin-bottom:12px">바탕화면 아이콘을 누르면 앱처럼 바로 열려요</div>
+      <button id="dsbInstallBtn" style="border:none;border-radius:50px;padding:13px 26px;font-size:15px;font-weight:900;color:#fff;background:linear-gradient(145deg,#13d3a6,#0e9d7d);cursor:pointer;box-shadow:0 10px 22px -10px rgba(14,157,125,.55)">홈 화면에 추가하기</button>
+      <div id="dsbInstallHow" style="display:none;margin-top:12px;font-size:14px;color:#4a5a44;font-weight:700;line-height:1.7;background:#F1F7F0;border-radius:14px;padding:12px"></div>
+    </div>
+  </div>
+  <script>
+  (function(){
+    var card=document.getElementById('dsbInstallCard'), btn=document.getElementById('dsbInstallBtn'), how=document.getElementById('dsbInstallHow');
+    // 이미 앱으로 설치돼 열렸으면 안 보여줌
+    if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return;
+    if (navigator.standalone) return;
+    card.style.display='block';
+    var deferred=null;
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; });
+    btn.addEventListener('click', function(){
+      if (deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; }); return; }
+      var ua=navigator.userAgent;
+      how.style.display='block';
+      if (/iPhone|iPad/.test(ua)) {
+        how.innerHTML='아이폰은 이렇게 해요:<br>① 아래 <b>공유 버튼(네모+화살표)</b>을 누르고<br>② <b>"홈 화면에 추가"</b>를 누르면 끝!';
+      } else {
+        how.innerHTML='브라우저 오른쪽 위 <b>⋮ 메뉴</b>를 누르고<br><b>"홈 화면에 추가"</b> 또는 <b>"앱 설치"</b>를 눌러 주세요.';
+      }
+    });
+  })();
+  </script>
 </section>
 
 <footer>
