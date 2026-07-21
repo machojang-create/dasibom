@@ -192,6 +192,46 @@
         }).catch(function (e) { cb && cb(e); });
       });
     },
+    // ── 앱 상태 서버 백업(육성 콘텐츠용) — users/{uid}/apps/{app} 문서 (규칙: 본인 하위컬렉션 허용) ──
+    //   기기 localStorage가 날아가도(폰 교체·저장공간 정리) 계정에 화분·어항이 남는다.
+    saveBlob: function (app, data, cb) {
+      whenReady(function () {
+        function go() {
+          try {
+            var uid = firebase.auth().currentUser.uid;
+            firebase.firestore().collection('users').doc(uid).collection('apps').doc(String(app)).set({
+              data: JSON.stringify(data), savedAt: Date.now()
+            }).then(function () { cb && cb(null); }).catch(function (e) { cb && cb(e); });
+          } catch (e) { cb && cb(e); }
+        }
+        if (typeof firebase.firestore === 'function') { go(); return; }
+        var s = document.createElement('script');
+        s.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+        s.onload = go; s.onerror = function () { cb && cb(new Error('no firestore')); };
+        document.head.appendChild(s);
+      });
+    },
+    loadBlob: function (app, cb) {
+      whenReady(function () {
+        function go() {
+          try {
+            var uid = firebase.auth().currentUser.uid;
+            firebase.firestore().collection('users').doc(uid).collection('apps').doc(String(app)).get()
+              .then(function (d) {
+                if (!d.exists) { cb && cb(null, null); return; }
+                var v = d.data();
+                var parsed = null; try { parsed = JSON.parse(v.data); } catch (e) {}
+                cb && cb(null, { data: parsed, savedAt: v.savedAt || 0 });
+              }).catch(function (e) { cb && cb(e); });
+          } catch (e) { cb && cb(e); }
+        }
+        if (typeof firebase.firestore === 'function') { go(); return; }
+        var s = document.createElement('script');
+        s.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+        s.onload = go; s.onerror = function () { cb && cb(new Error('no firestore')); };
+        document.head.appendChild(s);
+      });
+    },
     // 동기 토큰 접근(공유 URL에 ?ref= 붙이기용) — refLink()가 미리 발급해두면 값이 있다
     refToken: function () { return _refToken; },
     name: POINT_NAME, icon: POINT_ICON, iconSvg: PETAL_SVG,

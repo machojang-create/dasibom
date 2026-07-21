@@ -271,6 +271,7 @@ export default function App() {
       try {
         const m = miscRef.current;
         localStorage.setItem(SAVE_KEY, JSON.stringify({
+          savedAt: Date.now(),
           gold: m.gold, foodInventory: m.foodInventory, medicine: m.medicine,
           tankTheme: m.tankTheme, waterQuality: m.waterQuality,
           foodTechLevel: foodTechLevelRef.current,
@@ -283,9 +284,40 @@ export default function App() {
         }));
       } catch (e) {}
     };
-    const iv = setInterval(save, 8000);
-    window.addEventListener('pagehide', save);
-    return () => { clearInterval(iv); window.removeEventListener('pagehide', save); };
+    const cloudPush = () => {
+      try {
+        const P = dsb() as any; if (!P || !P.saveBlob) return;
+        const raw = localStorage.getItem(SAVE_KEY); if (!raw) return;
+        P.saveBlob('guppy', JSON.parse(raw), () => { try { localStorage.setItem('guppy_cloud_at', String(Date.now())); } catch (e) {} });
+      } catch (e) {}
+    };
+    let tick = 0;
+    const iv = setInterval(() => { save(); if (++tick % 8 === 0) cloudPush(); }, 8000);
+    const onHide = () => { save(); cloudPush(); };
+    window.addEventListener('pagehide', onHide);
+    return () => { clearInterval(iv); window.removeEventListener('pagehide', onHide); };
+  }, []);
+
+  // 서버 복원: 서버 저장본이 로컬보다 최신이면(다른 기기) 채택 후 리로드
+  useEffect(() => {
+    let tries = 0;
+    const t = setInterval(() => {
+      const P = dsb() as any;
+      if (!P || !P.loadBlob) { if (++tries > 100) clearInterval(t); return; }
+      clearInterval(t);
+      P.loadBlob('guppy', (err: any, blob: any) => {
+        if (err || !blob || !blob.data) return;
+        let localAt = 0;
+        try { localAt = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}').savedAt || 0; } catch (e) {}
+        if (blob.savedAt > localAt + 3000 && Array.isArray(blob.data.guppies)) {
+          try {
+            localStorage.setItem(SAVE_KEY, JSON.stringify({ ...blob.data, savedAt: blob.savedAt }));
+            window.location.reload();   // 로드 경로 재사용(가장 안전한 복원)
+          } catch (e) {}
+        }
+      });
+    }, 250);
+    return () => clearInterval(t);
   }, []);
   const [brightness, setBrightness] = useState<number>(100);
   

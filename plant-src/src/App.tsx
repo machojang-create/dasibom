@@ -105,6 +105,7 @@ export default function App() {
 
   useEffect(() => {
     localStorage.setItem('plant_slots', JSON.stringify(slots));
+    localStorage.setItem('plant_saved_at', String(Date.now()));
   }, [slots]);
 
   useEffect(() => {
@@ -132,6 +133,46 @@ export default function App() {
       const dry = Math.min(90, Math.round(hours * 1.25));
       setSlots(prev => prev.map(pl => pl ? { ...pl, waterLevel: Math.max(0, pl.waterLevel - dry) } : null));
     } catch (e) {}
+  }, []);
+
+  // ── 서버 백업/복원(2026-07-21): 폰이 바뀌어도 내 계정에 화분이 남는다 ──
+  useEffect(() => {
+    let tries = 0;
+    const t = setInterval(() => {
+      const P = dsb() as any;
+      if (!P || !P.loadBlob) { if (++tries > 100) clearInterval(t); return; }
+      clearInterval(t);
+      P.loadBlob('plant', (err: any, blob: any) => {
+        if (err || !blob || !blob.data) return;
+        const localAt = parseInt(localStorage.getItem('plant_saved_at') || '0', 10);
+        if (blob.savedAt > localAt + 3000 && Array.isArray(blob.data.slots)) {
+          // 서버가 더 최신(다른 기기에서 키움) → 서버 상태 채택
+          setSlots(blob.data.slots);
+          if (Array.isArray(blob.data.encyclopedia)) {
+            setEncyclopedia(PLANT_TYPES.map(pt => blob.data.encyclopedia.find((e: any) => e.plantId === pt.id) || ({ plantId: pt.id, discovered: false })));
+          }
+          if (Array.isArray(blob.data.badges)) setBadges(blob.data.badges);
+        }
+      });
+    }, 250);
+    return () => clearInterval(t);
+  }, []);
+  useEffect(() => {
+    const push = () => {
+      try {
+        const P = dsb() as any; if (!P || !P.saveBlob) return;
+        const data = {
+          slots: JSON.parse(localStorage.getItem('plant_slots') || 'null'),
+          encyclopedia: JSON.parse(localStorage.getItem('plant_encyclopedia') || 'null'),
+          badges: JSON.parse(localStorage.getItem('plant_badges') || 'null')
+        };
+        if (!Array.isArray(data.slots)) return;
+        P.saveBlob('plant', data, () => { try { localStorage.setItem('plant_cloud_at', String(Date.now())); } catch (e) {} });
+      } catch (e) {}
+    };
+    const iv = setInterval(push, 60000);
+    window.addEventListener('pagehide', push);
+    return () => { clearInterval(iv); window.removeEventListener('pagehide', push); };
   }, []);
 
   const [levelUpState, setLevelUpState] = useState({ active: false, index: -1 });
