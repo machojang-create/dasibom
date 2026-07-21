@@ -76,7 +76,9 @@ export default function App() {
     const saved = localStorage.getItem('plant_encyclopedia');
     if (saved) {
       try {
-        return JSON.parse(saved);
+        const old = JSON.parse(saved) as EncyclopediaEntry[];
+        // ★신규 종 병합: 식물이 추가돼도 기존 사용자 도감에 나타나도록 (2026-07-21 버그픽스)
+        return PLANT_TYPES.map(pt => old.find(e => e.plantId === pt.id) || ({ plantId: pt.id, discovered: false }));
       } catch (e) {
         console.error("Failed to parse saved encyclopedia", e);
       }
@@ -191,6 +193,7 @@ export default function App() {
   const buySeed = (plant: PlantData) => {
     if (currentPlant) return;
     const P = dsb(); if (!P) return;
+    const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
     P.spend('seed', (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
@@ -203,7 +206,7 @@ export default function App() {
           lastWatered: Date.now(),
         potId: 'pot1'
       };
-      setSlots(prev => { const ns = [...prev]; ns[currentSlotIndex] = newPlant; return ns; });
+      setSlots(prev => { const ns = [...prev]; ns[slotIdx] = newPlant; return ns; });
       setIsShopOpen(false);
       setEncyclopedia(prev => prev.map(e => e.plantId === plant.id ? { ...e, discovered: true } : e));
     });
@@ -216,10 +219,11 @@ export default function App() {
       setIsPotShopOpen(false); return;
     }
     const P = dsb(); if (!P) return;
+    const slotIdx = currentSlotIndex;   // ★레이스 방지
     P.spend(potId, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
-      setSlots(prev => { const ns = [...prev]; ns[currentSlotIndex] = { ...prev[currentSlotIndex]!, potId }; return ns; });
+      setSlots(prev => { const ns = [...prev]; ns[slotIdx] = { ...prev[slotIdx]!, potId }; return ns; });
       setIsPotShopOpen(false);
     });
   };
@@ -244,6 +248,9 @@ export default function App() {
     actionLogRef.current[key] = log;
     return log.length >= 3;
   };
+  // 사용자 행동 대사 보호(8초): 날씨/계절 자동 대사가 방금 한 말을 덮지 않게
+  const lastUserSpeakRef = useRef(0);
+  const autoPhraseGuard = () => Date.now() - lastUserSpeakRef.current < 8000;
 
   const speakWithPlant = (action: string, plantIndex: number, userInput?: string) => {
     let actionKey: 'water' | 'normal_nut' | 'premium_nut' | 'touch' | 'greet' = 'greet';
@@ -260,7 +267,7 @@ export default function App() {
       const stage = targetPlant.stage;
       
       let phrases = DIALOGUES[actionKey]?.[stage] || ["우야꼬, 할 말이 없네."];
-      if ((actionKey === 'water' || actionKey === 'touch') && isSpamming(actionKey)) {
+      if (actionKey === 'touch' && isSpamming(actionKey)) {
         const pool = SPAM_DIALOGUES[actionKey][targetPlant.type.dialect];
         if (pool && pool.length) phrases = pool;
       }
@@ -268,6 +275,7 @@ export default function App() {
 
       const newSlots = [...prev];
       newSlots[plantIndex] = { ...targetPlant, phrase: finalPhrase };
+      lastUserSpeakRef.current = Date.now();
       return newSlots;
     });
   };
@@ -312,7 +320,26 @@ export default function App() {
   };
 
   const applyItem = (type: 'water' | 'normal_nut' | 'premium_nut') => {
-    if (type === 'water') { applyEffect('water'); return; }     // 물은 무료 — 매일 만지는 핵심 손길
+    if (type === 'water') {
+      const cur = slots[currentSlotIndex];
+      if (!cur) return;
+      const dialect = cur.type.dialect;
+      // 과습 거부: 물이 95% 이상이면 대사만(효과 없음) — '말과 규칙의 일치'
+      if (cur.waterLevel >= 95) {
+        const pool = SPAM_DIALOGUES.water[dialect] || [];
+        plantSay(pool[Math.floor(Math.random() * pool.length)] || '물은 인자 됐데이!');
+        lastUserSpeakRef.current = Date.now();
+        return;
+      }
+      // 연타 거부: 대사만 나오고 물은 안 들어간다(투정의 진정성)
+      if (isSpamming('water')) {
+        const pool = SPAM_DIALOGUES.water[dialect] || [];
+        plantSay(pool[Math.floor(Math.random() * pool.length)] || '고마해라!');
+        lastUserSpeakRef.current = Date.now();
+        return;
+      }
+      applyEffect('water'); return;   // 물은 무료 — 매일 만지는 핵심 손길
+    }
     const P = dsb(); if (!P) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
     P.spend(type, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
@@ -391,7 +418,9 @@ export default function App() {
         const newlyGenerated = weathers[Math.floor(Math.random() * weathers.length)];
         
         setSlots(prev => prev.map(p => {
-          if (!p) return null;          let phrase = p.phrase;
+          if (!p) return null;
+          if (autoPhraseGuard()) return p;   // 방금 어르신과 나눈 말을 덮지 않는다
+          let phrase = p.phrase;
           if (p.stage === 'old') {
              const emotionalPhrases = GRADUATION_EMOTIONAL_PHRASES[p.type.dialect] || [];
              phrase = emotionalPhrases[Math.floor(Math.random() * emotionalPhrases.length)] || p.phrase;
