@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { UserPlant } from '../types';
 import { DIALOGUES } from '../data/dialogues';
 import PetalsEffect from './PetalsEffect';
+import PlantArt from './PlantArt';
 
 interface Props {
   plant: UserPlant | null;
@@ -132,7 +133,7 @@ export default function GraduationModal({ plant, isOpen, onClose }: Props) {
             transition={{ duration: 1, ease: "easeOut" }}
             className="flex flex-col items-center justify-center min-h-full p-6 py-12 md:p-8 relative z-10 w-full max-w-lg mx-auto"
           >
-            <div className="text-7xl md:text-8xl mb-8 animate-bounce filter drop-shadow-lg">{plant.type.emoji || '🌸'}</div>
+            <div className="mb-8 animate-bounce filter drop-shadow-lg"><PlantArt type={plant.type.type} bloom className="w-32 h-40 md:w-36 md:h-44" /></div>
 
             <h2 className="text-3xl md:text-4xl font-serif text-gray-800 mb-4 font-bold break-keep text-center tracking-tight">
               만개, 그리고 이별

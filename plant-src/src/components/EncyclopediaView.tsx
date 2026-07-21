@@ -4,7 +4,7 @@ import { EncyclopediaEntry, PlantData, DialectType } from '../types';
 import { X, Lock, MapPin, Quote, Leaf } from 'lucide-react';
 import PlantArt from './PlantArt';
 
-interface Memorial { name: string; customName?: string; emoji?: string; level: number; days: number; at: number }
+interface Memorial { name: string; customName?: string; emoji?: string; type?: string; level: number; days: number; at: number }
 
 interface Props {
   isOpen: boolean;
@@ -109,7 +109,9 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
             <div className="grid grid-cols-2 gap-3">
               {memorials.slice().reverse().map((m, i) => (
                 <div key={i} className="bg-[#0a120e]/40 p-3.5 rounded-xl border border-[#d4af37]/30 flex flex-col items-center text-center shadow-[0_0_12px_rgba(212,175,55,0.08)]">
-                  <span className="text-3xl mb-1 drop-shadow-md">{m.emoji || '🌸'}</span>
+                  {m.type
+                    ? <div className="w-11 h-13 flex items-end justify-center mb-1"><PlantArt type={m.type} bloom className="w-10 h-12" /></div>
+                    : <span className="text-3xl mb-1 drop-shadow-md">{m.emoji || '🌸'}</span>}
                   <span className="text-[#d4af37] font-bold text-sm break-keep">{m.customName || m.name}</span>
                   {m.customName && <span className="text-[#89a896] text-[10px]">{m.name}</span>}
                   <span className="text-[#a8c7b5] text-[11px] mt-1">{m.days}일 함께 · Lv.{m.level}</span>
@@ -157,7 +159,7 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
                   <>
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">{plant.emoji}</span>
+                        <div className="w-9 h-11 flex items-end justify-center shrink-0"><PlantArt type={plant.type} bloom className="w-8 h-10" /></div>
                         <h3 className="font-bold text-xl text-[#d4af37]">{plant.name}</h3>
                         {entry?.graduated && (
                           <span className="text-[10px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded-sm font-bold border border-yellow-500/30">만개 완료</span>

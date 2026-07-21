@@ -2,6 +2,7 @@ import { PLANT_TYPES } from '../data';
 import { PlantData } from '../types';
 import { X } from 'lucide-react';
 import Petal from './Petal';
+import PlantArt from './PlantArt';
 
 /* 씨앗 상점 — 다시봄 톤(따뜻한 크림)·스프링 팝업·시니어 글씨(2026-07-21 리디자인) */
 interface Props {
@@ -46,8 +47,8 @@ export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: 
                 disabled={isDisabled}
                 className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
               >
-                <div className="w-14 h-14 bg-[#F6FBF2] rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-inner text-3xl">
-                  {plant.emoji}
+                <div className="w-20 h-[72px] bg-gradient-to-b from-[#F6FBF2] to-[#eaf4e2] rounded-xl flex items-end justify-center mb-2 group-hover:scale-110 transition-transform shadow-inner overflow-hidden pt-1">
+                  <PlantArt type={plant.type} bloom className="w-14 h-16" />
                 </div>
                 <span className="text-[#4a3a26] font-black text-[15px] text-center">{plant.name}</span>
                 <span className="text-[11px] text-[#9a7a52] font-bold mb-2 text-center leading-tight">{plant.accent.replace(' 사투리','')}</span>

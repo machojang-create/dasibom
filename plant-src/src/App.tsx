@@ -565,7 +565,7 @@ export default function App() {
 
     // 추억 정원 기록: 만개하여 떠난 친구를 도감 갤러리에 남긴다
     setMemorials(prev => [...prev, {
-      name: plant.type.name, customName: plant.customName, emoji: plant.type.emoji,
+      name: plant.type.name, customName: plant.customName, emoji: plant.type.emoji, type: plant.type.type,
       level: plant.level, days: Math.max(1, Math.ceil((Date.now() - parseInt(plant.id)) / 86400000)), at: Date.now()
     }]);
 
