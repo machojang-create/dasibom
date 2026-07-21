@@ -1066,14 +1066,16 @@ exports.memoirCompleteBonus = functions
     if (!m.exists) return { ok: false, reason: 'no_memoir' };
     const answers = m.data().answers || {};
     const vals = Object.values(answers).map((v) => String(v || '').replace(/\s+/g, ' ').trim());
-    const meaningful = vals.filter((v) => v.length >= 10);
+    const meaningful = vals.filter((v) => v.length >= 5);
     const distinct = new Set(meaningful).size;
     // 3단계(2026-07-21 Macho 확정): 무료 3,000 / 유료1 5,000 / 유료2 10,000 — 꽃잎=핵심 재화,
-    // 무료 자서전을 반드시 쓰게 만드는 트릭이 이 보상. 기준=실답변(10자+) 수, 중복 제거로 복붙 방어.
+    // 무료 자서전을 반드시 쓰게 만드는 트릭이 이 보상.
+    // 실제 패키지 = 무료 15문항·유료1 45문항·유료2(전집) 75문항 → 기준은 짧은 답 여유를 둔 14/42/70.
+    // 실답변=공백 제외 5자+(어르신 답변은 짧을 수 있음), 중복 제거(복붙 도배 방어) 12/35/60.
     const STAGES = [
-      { id: 'memoir_free', min: 15, dedup: 12, amount: 3000 },
-      { id: 'memoir_paid1', min: 45, dedup: 38, amount: 5000 },
-      { id: 'memoir_paid2', min: 90, dedup: 75, amount: 10000 },
+      { id: 'memoir_free', min: 14, dedup: 12, amount: 3000 },
+      { id: 'memoir_paid1', min: 42, dedup: 35, amount: 5000 },
+      { id: 'memoir_paid2', min: 70, dedup: 60, amount: 10000 },
     ];
     const eligible = STAGES.filter((st) => meaningful.length >= st.min && distinct >= st.dedup);
     if (!eligible.length) return { ok: false, reason: 'not_complete', answered: meaningful.length };
