@@ -429,11 +429,12 @@ export default function App() {
       // 하루 첫 잔 무료(정성=레벨업), 추가 물은 1잎(2026-07-22 Macho — 물도 재화 루프에)
       const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/;
       if ((cur as any).lastWaterDay !== today) { applyEffect('water'); return; }
-      guardedSpend('plant_water', (err: any, d: any) => {
+      const fired = guardedSpend('plant_water', (err: any, d: any) => {
         if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
         setMoney(d.balance);
         applyEffect('water');
       });
+      if (!fired) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }   // 침묵 경로 제거
       return;
     }
     {
