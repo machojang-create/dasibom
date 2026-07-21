@@ -1032,7 +1032,12 @@ export default function App() {
       {/* Top Header Card */}
 
       <header className="bg-white rounded-2xl px-3 sm:px-4 py-2 shadow-sm flex justify-between items-center gap-2 border border-white/40 mx-1 sm:mx-0">
-        <h1 className="text-[17px] sm:text-xl font-black text-blue-600 tracking-tight whitespace-nowrap">🐠 우리집 구피 어항</h1>
+        <div className="flex items-center gap-2 min-w-0">
+          <a href="/" className="shrink-0 flex items-center h-10 px-3 rounded-full bg-slate-100 hover:bg-slate-200 active:scale-95 text-slate-600 font-black text-[14px] transition-all">← 홈으로</a>
+          <h1 className="font-black text-blue-600 tracking-tight whitespace-nowrap truncate text-[15px] sm:text-xl">
+            <span className="sm:hidden">🐠 구피 어항</span><span className="hidden sm:inline">🐠 우리집 구피 어항</span>
+          </h1>
+        </div>
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div className="flex items-center gap-1.5 bg-rose-50 text-rose-700 rounded-full px-3 h-10 border border-rose-100 font-black text-[14px]">
             <Petal className="w-4 h-4" /> {petals.toLocaleString()}

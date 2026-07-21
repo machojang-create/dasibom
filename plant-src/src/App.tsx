@@ -712,6 +712,9 @@ export default function App() {
         {/* Top Left (Time of Day & Bonus & Weather) */}
         <div className="absolute top-4 left-3 md:top-6 md:left-6 pointer-events-auto flex flex-col gap-1.5 max-w-[62vw]">
           <div className="flex gap-2">
+            <a href="/" className="flex items-center justify-center h-8 bg-white/95 hover:bg-white active:scale-95 rounded-full shadow border-2 border-white px-3 text-[#5b3a1a] font-black text-sm transition-all">← 홈으로</a>
+          </div>
+          <div className="flex gap-2">
             <div className="flex items-center justify-center h-8 bg-white/90 backdrop-blur-md rounded-full shadow border-2 border-white px-3 gap-1.5 text-gray-800 font-bold text-sm">
               {timeOfDay === 'morning' ? <span className="text-orange-500">🌅 아침</span> : timeOfDay === 'day' ? <span className="text-blue-500">☀️ 낮</span> : <span className="text-indigo-500">🌙 밤</span>}
             </div>
