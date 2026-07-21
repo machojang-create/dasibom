@@ -1067,19 +1067,33 @@ exports.memoirCompleteBonus = functions
     const answers = m.data().answers || {};
     const vals = Object.values(answers).map((v) => String(v || '').replace(/\s+/g, ' ').trim());
     const meaningful = vals.filter((v) => v.length >= 10);
-    const distinct = new Set(meaningful);
-    if (meaningful.length < 60 || distinct.size < 50) {
-      return { ok: false, reason: 'not_complete', answered: meaningful.length };
-    }
-    const bonusRef = admin.firestore().collection('points_daily').doc(`${uid}_memoir_complete`);
+    const distinct = new Set(meaningful).size;
+    // 3단계(2026-07-21 Macho 확정): 무료 3,000 / 유료1 5,000 / 유료2 10,000 — 꽃잎=핵심 재화,
+    // 무료 자서전을 반드시 쓰게 만드는 트릭이 이 보상. 기준=실답변(10자+) 수, 중복 제거로 복붙 방어.
+    const STAGES = [
+      { id: 'memoir_free', min: 15, dedup: 12, amount: 3000 },
+      { id: 'memoir_paid1', min: 45, dedup: 38, amount: 5000 },
+      { id: 'memoir_paid2', min: 90, dedup: 75, amount: 10000 },
+    ];
+    const eligible = STAGES.filter((st) => meaningful.length >= st.min && distinct >= st.dedup);
+    if (!eligible.length) return { ok: false, reason: 'not_complete', answered: meaningful.length };
     const uref = admin.firestore().collection('users').doc(uid);
     try {
       return await admin.firestore().runTransaction(async (tx) => {
-        const b = await tx.get(bonusRef);
-        if (b.exists) return { ok: false, reason: 'already' };
-        tx.set(bonusRef, { uid, kind: 'memoir_complete', amount: 5000, at: admin.firestore.FieldValue.serverTimestamp() });
-        tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(5000) }, { merge: true });
-        return { ok: true, amount: 5000 };
+        const refs = eligible.map((st) => admin.firestore().collection('points_daily').doc(`${uid}_${st.id}`));
+        const snaps = [];
+        for (const r of refs) snaps.push(await tx.get(r));
+        let total = 0;
+        const grantedStages = [];
+        eligible.forEach((st, i) => {
+          if (snaps[i].exists) return;
+          tx.set(refs[i], { uid, kind: st.id, amount: st.amount, at: admin.firestore.FieldValue.serverTimestamp() });
+          total += st.amount;
+          grantedStages.push(st.id);
+        });
+        if (!total) return { ok: false, reason: 'already', done: eligible.map((st) => st.id) };
+        tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(total) }, { merge: true });
+        return { ok: true, amount: total, stages: grantedStages };
       });
     } catch (e) { return { ok: false, reason: 'error' }; }
   });
