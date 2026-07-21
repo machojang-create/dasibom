@@ -523,7 +523,7 @@ export default function App() {
       return [...prev, { plantId: plant.type.id, discovered: true, graduated: true }];
     });
 
-    // 추억 정원 기록: 만개하여 떠난 동무를 도감 갤러리에 남긴다
+    // 추억 정원 기록: 만개하여 떠난 친구를 도감 갤러리에 남긴다
     setMemorials(prev => [...prev, {
       name: plant.type.name, customName: plant.customName, emoji: plant.type.emoji,
       level: plant.level, days: Math.max(1, Math.ceil((Date.now() - parseInt(plant.id)) / 86400000)), at: Date.now()

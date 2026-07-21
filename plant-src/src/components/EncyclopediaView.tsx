@@ -99,11 +99,11 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
           </div>
         </div>
 
-        {/* 추억 정원 — 만개하여 떠난 동무들 */}
+        {/* 추억 정원 — 만개하여 떠난 친구들 */}
         {memorials && memorials.length > 0 && (
           <div className="mb-8">
             <h3 className="text-lg font-bold text-[#a8c7b5] mb-3 flex items-center gap-2">
-              <span>🌸</span> 추억 정원 <span className="text-[11px] text-[#89a896] font-normal">만개하여 떠난 동무들</span>
+              <span>🌸</span> 추억 정원 <span className="text-[11px] text-[#89a896] font-normal">만개하여 떠난 친구들</span>
             </h3>
             <div className="grid grid-cols-2 gap-3">
               {memorials.slice().reverse().map((m, i) => (

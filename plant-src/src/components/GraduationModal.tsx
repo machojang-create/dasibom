@@ -158,7 +158,7 @@ export default function GraduationModal({ plant, isOpen, onClose }: Props) {
             </p>
 
             <p className="text-base text-gray-500 mt-10 mb-8 font-serif text-center w-full">
-              - 당신의 동무, {plant.customName || plant.type.name} -
+              - 당신의 친구, {plant.customName || plant.type.name} -
             </p>
 
             {/* 졸업장 간직하기 — 사진으로 남기고, 카톡으로 자랑하고 */}
