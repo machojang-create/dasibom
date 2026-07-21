@@ -980,11 +980,12 @@ const PLANT_PRICES = {
 };
 exports.spendPoints = functions
   .region('asia-northeast3')
-  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .runWith({ timeoutSeconds: 10, memory: '256MB' })   // 256MB=더 빠른 CPU — 결제 체감속도(2026-07-21)
   .https.onCall(async (data, context) => {
     if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
     const uid = context.auth.uid;
     const item = String((data && data.item) || '');
+    if (item === '__warm') return { ok: false, reason: 'warm' };   // 예열 핑 — 화분·구피 입장 시 인스턴스 깨우기
     const cost = PLANT_PRICES[item];
     if (!cost) return { ok: false, reason: 'bad_item' };
     const uref = admin.firestore().collection('users').doc(uid);

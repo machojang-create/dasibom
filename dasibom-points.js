@@ -429,6 +429,14 @@
     // 공유 토큰 선발급 — 모든 콘텐츠의 공유 버튼이 클릭 순간 동기로 ?ref=를 붙일 수 있게
     DasibomPoints.refLink(function () {});
     mountMasterPetalTool();
+    // 결제 서버 예열(2026-07-21): 꽃잎 소비가 있는 페이지는 입장 즉시 spendPoints를 깨워둔다 —
+    // 콜드 2.3초 → 실제 구매 시점엔 웜 0.1초. 실측 근거로 도입.
+    if (/^\/(plant|guppy)/.test(location.pathname)) {
+      whenReady(function () {
+        var f = fn('spendPoints');
+        if (f) f({ item: '__warm' }).catch(function () {});
+      });
+    }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
