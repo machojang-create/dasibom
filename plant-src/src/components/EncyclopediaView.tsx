@@ -4,6 +4,7 @@ import { EncyclopediaEntry, PlantData, DialectType } from '../types';
 import { X, Lock, MapPin, Quote, Leaf } from 'lucide-react';
 import PlantArt from './PlantArt';
 
+/* 식물 도감 — 씨앗 상점과 동일한 화이트·크림 스킨(2026-07-21 통일), 2열 그리드 */
 interface Memorial { name: string; customName?: string; emoji?: string; type?: string; level: number; days: number; at: number }
 
 interface Props {
@@ -28,222 +29,187 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
 
   if (!isOpen) return null;
 
+  const discoveredCount = entries.filter(e => e.discovered).length;
+
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
-      <div className="bg-gradient-to-b from-[#1c3326] to-[#121f18] p-8 rounded-[2rem] w-full max-w-lg shadow-2xl border border-[#2a4d3a] max-h-[85vh] overflow-y-auto relative">
-        <div className="sticky top-0 bg-gradient-to-b from-[#1c3326] to-[#1c3326]/0 pt-2 pb-6 z-20 flex justify-between items-center mb-2">
-           <h2 className="text-2xl font-bold text-[#e8f3ec]">식물 도감</h2>
-           <button onClick={onClose} className="p-2 bg-[#0a120e]/50 rounded-full hover:bg-[#2a4d3a] text-[#89a896] hover:text-white transition-colors">
-             <X className="w-5 h-5" />
-           </button>
-        </div>
-        
-        {/* System Guides */}
-        <div className="mb-8 space-y-6">
+    <div className="fixed inset-0 bg-black/45 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="dsb-modal-pop bg-gradient-to-b from-[#FFFDF7] to-[#FBF3E4] p-6 md:p-7 rounded-[28px] w-full max-w-md max-h-[85vh] shadow-2xl border-2 border-white relative overflow-hidden flex flex-col">
+        <div className="absolute -top-16 -left-16 w-44 h-44 bg-[#8fce7a] rounded-full blur-[70px] opacity-20 pointer-events-none" />
+        <div className="flex justify-between items-center mb-4 relative z-10 shrink-0">
           <div>
-            <h3 className="text-lg font-bold text-[#a8c7b5] mb-3 flex items-center gap-2">
-              <span>⏰</span> 시간대별 행동 보너스
-            </h3>
-            <div className="grid grid-cols-3 gap-2">
-              <div className="bg-[#0a120e]/40 p-3 rounded-xl border border-[#2a4d3a] flex flex-col items-center text-center">
-                <span className="text-orange-400 text-lg mb-1">🌅 아침</span>
-                <span className="text-[#a8c7b5] text-xs font-bold mb-1">쓰다듬기</span>
-                <span className="text-[#89a896] text-[10px]">기분 좋아짐</span>
-              </div>
-              <div className="bg-[#0a120e]/40 p-3 rounded-xl border border-[#2a4d3a] flex flex-col items-center text-center">
-                <span className="text-blue-400 text-lg mb-1">☀️ 낮</span>
-                <span className="text-[#a8c7b5] text-xs font-bold mb-1">물주기</span>
-                <span className="text-[#89a896] text-[10px]">수분 회복량 3배</span>
-              </div>
-              <div className="bg-[#0a120e]/40 p-3 rounded-xl border border-[#2a4d3a] flex flex-col items-center text-center">
-                <span className="text-indigo-400 text-lg mb-1">🌙 밤</span>
-                <span className="text-[#a8c7b5] text-xs font-bold mb-1">영양제</span>
-                <span className="text-[#89a896] text-[10px]">수분 1.5배 증가</span>
-              </div>
-            </div>
+            <h2 className="text-2xl font-black text-[#5b3a1a]">📖 식물 도감</h2>
+            <p className="text-[14px] text-[#9a7a52] font-bold mt-0.5">스물여덟 친구 중 <span className="text-[#4e8040]">{discoveredCount}</span>명을 만났어요</p>
           </div>
-          
-          <div>
-            <h3 className="text-lg font-bold text-[#a8c7b5] mb-3 flex items-center gap-2">
-              <span>🌦️</span> 날씨별 식물 상태 (1분당 변화)
-            </h3>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2">
-                <span className="text-yellow-400 text-xl">☀️</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">맑음</span><span className="text-[#89a896] text-[10px]">수분 -2, 코인 +1</span></div>
-              </div>
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2">
-                <span className="text-blue-400 text-xl">🌧️</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">비</span><span className="text-[#89a896] text-[10px]">수분 +5, 코인 없음</span></div>
-              </div>
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2">
-                <span className="text-gray-400 text-xl">☁️</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">흐림</span><span className="text-[#89a896] text-[10px]">수분 -1</span></div>
-              </div>
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2">
-                <span className="text-cyan-200 text-xl">❄️</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">눈</span><span className="text-[#89a896] text-[10px]">성장 정지, 코인 없음</span></div>
-              </div>
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2">
-                <span className="text-red-400 text-xl">🔥</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">고온</span><span className="text-[#89a896] text-[10px]">수분 -4, 코인 +3</span></div>
-              </div>
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2">
-                <span className="text-blue-200 text-xl">✨</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">쾌청</span><span className="text-[#89a896] text-[10px]">성장 2배, 코인 +2</span></div>
-              </div>
-              <div className="bg-[#0a120e]/40 p-2 rounded-xl border border-[#2a4d3a] flex items-center text-xs gap-2 col-span-2">
-                <span className="text-gray-500 text-xl">🌀</span>
-                <div className="flex flex-col"><span className="text-[#a8c7b5] font-bold">태풍</span><span className="text-[#89a896] text-[10px]">수분 -3, 성장 정지, 코인 없음</span></div>
-              </div>
-            </div>
-          </div>
+          <button onClick={onClose} aria-label="닫기" className="w-11 h-11 grid place-items-center bg-[#5b3a1a]/8 rounded-full hover:bg-[#5b3a1a]/15 text-[#8a6a48] transition-colors">
+            <X className="w-6 h-6" />
+          </button>
         </div>
 
-        {/* 추억 정원 — 만개하여 떠난 친구들 */}
-        {memorials && memorials.length > 0 && (
-          <div className="mb-8">
-            <h3 className="text-lg font-bold text-[#a8c7b5] mb-3 flex items-center gap-2">
-              <span>🌸</span> 추억 정원 <span className="text-[11px] text-[#89a896] font-normal">만개하여 떠난 친구들</span>
-            </h3>
-            <div className="grid grid-cols-2 gap-3">
-              {memorials.slice().reverse().map((m, i) => (
-                <div key={i} className="bg-[#0a120e]/40 p-3.5 rounded-xl border border-[#d4af37]/30 flex flex-col items-center text-center shadow-[0_0_12px_rgba(212,175,55,0.08)]">
-                  {m.type
-                    ? <div className="w-11 h-13 flex items-end justify-center mb-1"><PlantArt type={m.type} bloom className="w-10 h-12" /></div>
-                    : <span className="text-3xl mb-1 drop-shadow-md">{m.emoji || '🌸'}</span>}
-                  <span className="text-[#d4af37] font-bold text-sm break-keep">{m.customName || m.name}</span>
-                  {m.customName && <span className="text-[#89a896] text-[10px]">{m.name}</span>}
-                  <span className="text-[#a8c7b5] text-[11px] mt-1">{m.days}일 함께 · Lv.{m.level}</span>
-                  <span className="text-[#4a7c59] text-[10px] mt-0.5">{new Date(m.at).toLocaleDateString('ko-KR')} 만개</span>
+        <div className="relative z-10 overflow-y-auto no-scrollbar pb-2 flex-1 flex flex-col gap-5">
+
+          {/* 키우기 도움말 — 시간대·날씨 */}
+          <div>
+            <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">⏰ 시간대별 보너스</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { e: '🌅', t: '아침', d: '쓰다듬기', s: '기분 좋아져요' },
+                { e: '☀️', t: '낮', d: '물주기', s: '수분 회복 3배' },
+                { e: '🌙', t: '밤', d: '영양제', s: '수분 1.5배' },
+              ].map(x => (
+                <div key={x.t} className="bg-white border-2 border-[#EFE4D2] p-2.5 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                  <span className="text-lg">{x.e} <b className="text-[13px] text-[#4a3a26]">{x.t}</b></span>
+                  <span className="text-[12px] font-black text-[#c8784a]">{x.d}</span>
+                  <span className="text-[11px] text-[#9a7a52] font-bold">{x.s}</span>
                 </div>
               ))}
             </div>
           </div>
-        )}
 
-        {/* Badges Section */}
-        <div className="mb-8">
-          <h3 className="text-lg font-bold text-[#a8c7b5] mb-3 flex items-center gap-2">
-            <span>🏆</span> 획득한 업적 배지
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {[
-              { id: 'first_grad', name: '초보 정원사', emoji: '🌱', desc: '첫 만개' },
-              { id: 'grad_3', name: '능숙한 정원사', emoji: '🌿', desc: '만개 3회' },
-              { id: 'grad_6', name: '마스터 정원사', emoji: '🌳', desc: '만개 6회' }
-            ].map(badge => {
-              const isUnlocked = badges.includes(badge.id);
-              return (
-                <div key={badge.id} className={`flex flex-col items-center p-3 rounded-xl border ${isUnlocked ? 'bg-[#0a120e]/40 border-[#d4af37]/50 shadow-[0_0_15px_rgba(212,175,55,0.15)]' : 'bg-[#0a120e]/20 border-[#1c3326] opacity-40'} transition-all`}>
-                  <div className={`text-3xl mb-1 ${isUnlocked ? 'filter drop-shadow-md animate-pulse' : 'grayscale opacity-50'}`}>{badge.emoji}</div>
-                  <span className={`text-xs font-bold text-center ${isUnlocked ? 'text-[#d4af37]' : 'text-[#4a7c59]'}`}>{badge.name}</span>
-                  <span className={`text-[10px] text-center mt-1 ${isUnlocked ? 'text-[#89a896]' : 'text-[#4a7c59]/50'}`}>{badge.desc}</span>
+          <div>
+            <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">🌦️ 날씨별 변화 <span className="text-[11px] font-bold text-[#9a7a52]">(1분당)</span></h3>
+            <div className="grid grid-cols-2 gap-2">
+              {[
+                { e: '☀️', t: '맑음', d: '수분 -2' }, { e: '🌧️', t: '비', d: '수분 +5' },
+                { e: '☁️', t: '흐림', d: '수분 -1' }, { e: '❄️', t: '눈', d: '성장 쉬어요' },
+                { e: '🔥', t: '고온', d: '수분 -4' }, { e: '✨', t: '쾌청', d: '성장 2배' },
+              ].map(x => (
+                <div key={x.t} className="bg-white border-2 border-[#EFE4D2] px-3 py-2 rounded-2xl flex items-center gap-2 shadow-sm">
+                  <span className="text-lg">{x.e}</span>
+                  <span className="text-[13px] font-black text-[#4a3a26]">{x.t}</span>
+                  <span className="text-[12px] font-bold text-[#9a7a52] ml-auto">{x.d}</span>
                 </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="grid gap-4 relative z-10">
-          {PLANT_TYPES.map(plant => {
-            const entry = entries.find(e => e.plantId === plant.id);
-            const discovered = entry?.discovered;
-            return (
-              <div 
-                key={plant.id} 
-                onClick={() => discovered && setSelectedPlant(plant)}
-                className={`p-5 rounded-2xl border transition-all ${discovered ? 'bg-[#0a120e]/40 border-[#2a4d3a] hover:border-[#4a7c59] cursor-pointer' : 'bg-[#0a120e]/20 border-[#1c3326] opacity-70'}`}
-              >
-                {discovered ? (
-                  <>
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-9 h-11 flex items-end justify-center shrink-0"><PlantArt type={plant.type} bloom className="w-8 h-10" /></div>
-                        <h3 className="font-bold text-xl text-[#d4af37]">{plant.name}</h3>
-                        {entry?.graduated && (
-                          <span className="text-[10px] bg-yellow-500/20 text-yellow-400 px-1.5 py-0.5 rounded-sm font-bold border border-yellow-500/30">만개 완료</span>
-                        )}
-                      </div>
-                      <span className="text-xs bg-[#4a7c59]/20 text-[#4a7c59] px-2 py-1 rounded-md font-mono">{REGION_MAP[plant.dialect]}</span>
-                    </div>
-                    <p className="text-sm text-[#89a896] leading-relaxed mb-3">{plant.description}</p>
-                    <div className="space-y-1 bg-[#121f18] p-3 rounded-lg border border-[#1c3326]">
-                      <div className="flex text-xs">
-                        <span className="w-16 font-bold text-[#4a7c59]">말투</span>
-                        <span className="text-[#a8c7b5] flex-1">{plant.accent}</span>
-                      </div>
-                      <div className="flex text-xs">
-                        <span className="w-16 font-bold text-[#4a7c59]">선호 환경</span>
-                        <span className="text-[#a8c7b5] flex-1">{plant.environment}</span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex items-center gap-3 py-2 text-[#4a7c59]">
-                    <Lock className="w-5 h-5" />
-                    <h3 className="font-bold text-lg">알 수 없는 식물</h3>
-                  </div>
-                )}
+              ))}
+              <div className="bg-white border-2 border-[#EFE4D2] px-3 py-2 rounded-2xl flex items-center gap-2 shadow-sm col-span-2">
+                <span className="text-lg">🌀</span>
+                <span className="text-[13px] font-black text-[#4a3a26]">태풍</span>
+                <span className="text-[12px] font-bold text-[#9a7a52] ml-auto">수분 -3 · 성장 쉬어요</span>
               </div>
-            );
-          })}
+            </div>
+          </div>
+
+          {/* 추억 정원 — 만개하여 떠난 친구들 */}
+          {memorials && memorials.length > 0 && (
+            <div>
+              <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">🌸 추억 정원 <span className="text-[11px] font-bold text-[#9a7a52]">만개하여 떠난 친구들</span></h3>
+              <div className="grid grid-cols-2 gap-2.5">
+                {memorials.slice().reverse().map((m, i) => (
+                  <div key={i} className="bg-white p-3 rounded-2xl border-2 border-[#f3d9a8] flex flex-col items-center text-center shadow-sm">
+                    {m.type
+                      ? <div className="w-11 h-13 flex items-end justify-center mb-1"><PlantArt type={m.type} bloom className="w-10 h-12" /></div>
+                      : <span className="text-3xl mb-1 drop-shadow-sm">{m.emoji || '🌸'}</span>}
+                    <span className="text-[#b8860b] font-black text-[14px] break-keep">{m.customName || m.name}</span>
+                    {m.customName && <span className="text-[#9a7a52] text-[11px] font-bold">{m.name}</span>}
+                    <span className="text-[#7a5f3e] text-[12px] font-bold mt-0.5">{m.days}일 함께 · Lv.{m.level}</span>
+                    <span className="text-[#9a7a52] text-[11px] font-bold">{new Date(m.at).toLocaleDateString('ko-KR')} 만개</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* 업적 배지 */}
+          <div>
+            <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">🏆 업적 배지</h3>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'first_grad', name: '초보 정원사', emoji: '🌱', desc: '첫 만개' },
+                { id: 'grad_3', name: '능숙한 정원사', emoji: '🌿', desc: '만개 3회' },
+                { id: 'grad_6', name: '마스터 정원사', emoji: '🌳', desc: '만개 6회' }
+              ].map(badge => {
+                const isUnlocked = badges.includes(badge.id);
+                return (
+                  <div key={badge.id} className={`flex flex-col items-center p-2.5 rounded-2xl border-2 shadow-sm ${isUnlocked ? 'bg-white border-[#f3d9a8]' : 'bg-white/50 border-[#EFE4D2] opacity-50'}`}>
+                    <div className={`text-2xl mb-0.5 ${isUnlocked ? 'drop-shadow-sm' : 'grayscale'}`}>{badge.emoji}</div>
+                    <span className={`text-[12px] font-black text-center leading-tight ${isUnlocked ? 'text-[#b8860b]' : 'text-[#9a7a52]'}`}>{badge.name}</span>
+                    <span className="text-[11px] font-bold text-[#9a7a52] mt-0.5">{badge.desc}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 식물 친구들 — 2열 카드 */}
+          <div>
+            <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">🌼 식물 친구들</h3>
+            <div className="grid grid-cols-2 gap-2.5">
+              {PLANT_TYPES.map(plant => {
+                const entry = entries.find(e => e.plantId === plant.id);
+                const discovered = entry?.discovered;
+                return (
+                  <div
+                    key={plant.id}
+                    onClick={() => discovered && setSelectedPlant(plant)}
+                    className={`p-3 rounded-2xl border-2 transition-all shadow-sm ${discovered ? 'bg-white border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md cursor-pointer active:scale-[0.97]' : 'bg-white/50 border-[#EFE4D2] opacity-60'}`}
+                  >
+                    {discovered ? (
+                      <div className="flex flex-col items-center text-center">
+                        <div className="w-16 h-[70px] bg-gradient-to-b from-[#F6FBF2] to-[#eaf4e2] rounded-xl flex items-end justify-center overflow-hidden pt-1 mb-1.5">
+                          <PlantArt type={plant.type} bloom className="w-12 h-14" />
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <h4 className="font-black text-[15px] text-[#4a3a26]">{plant.name}</h4>
+                          {entry?.graduated && <span className="text-[10px] bg-yellow-50 text-[#b8860b] px-1.5 py-0.5 rounded-full font-black border border-[#f3d9a8]">만개</span>}
+                        </div>
+                        <span className="text-[11px] font-bold text-[#4e8040] bg-green-50 px-2 py-0.5 rounded-full mt-1">{REGION_MAP[plant.dialect]}</span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center text-center py-4 text-[#9a7a52]">
+                        <Lock className="w-6 h-6 mb-1.5 opacity-60" />
+                        <span className="font-black text-[13px]">아직 못 만난 친구</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Detail Modal */}
+      {/* 상세 카드 */}
       {selectedPlant && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-[60]">
-          <div className="bg-gradient-to-b from-[#1c3326] to-[#121f18] p-6 md:p-8 rounded-[2rem] w-full max-w-sm shadow-2xl border border-[#2a4d3a] relative overflow-hidden">
-            <button 
-              onClick={() => setSelectedPlant(null)} 
-              className="absolute top-4 right-4 p-2 bg-[#0a120e]/50 rounded-full hover:bg-[#2a4d3a] text-[#89a896] hover:text-white transition-colors z-10"
+        <div className="fixed inset-0 bg-black/55 backdrop-blur-sm flex items-center justify-center p-4 z-[60]" onClick={() => setSelectedPlant(null)}>
+          <div className="dsb-modal-pop bg-gradient-to-b from-[#FFFDF7] to-[#FBF3E4] p-6 rounded-[28px] w-full max-w-sm shadow-2xl border-2 border-white relative overflow-hidden max-h-[85vh] overflow-y-auto no-scrollbar" onClick={(e) => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedPlant(null)}
+              aria-label="닫기"
+              className="absolute top-4 right-4 w-11 h-11 grid place-items-center bg-[#5b3a1a]/8 rounded-full hover:bg-[#5b3a1a]/15 text-[#8a6a48] transition-colors z-10"
             >
-              <X className="w-5 h-5" />
+              <X className="w-6 h-6" />
             </button>
-            
-            <div className="text-center mb-6">
-              <div className="mb-4 flex justify-center"><PlantArt type={selectedPlant.type} bloom className="w-28 h-32" /></div>
-              <h3 className="text-2xl font-bold text-[#d4af37] mb-1">{selectedPlant.name}</h3>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#2a4d3a]/50 text-[#a8c7b5] text-xs rounded-full">
+
+            <div className="text-center mb-5">
+              <div className="mb-2 flex justify-center"><PlantArt type={selectedPlant.type} bloom className="w-28 h-32" /></div>
+              <h3 className="text-2xl font-black text-[#5b3a1a] mb-1">{selectedPlant.name}</h3>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-[#4e8040] text-[12px] font-black rounded-full border border-green-100">
                 <MapPin className="w-3.5 h-3.5" />
                 {REGION_MAP[selectedPlant.dialect]} 출신
               </div>
             </div>
 
-            <div className="space-y-4">
-              <div className="bg-[#0a120e]/60 p-4 rounded-xl border border-[#2a4d3a]">
-                <h4 className="flex items-center gap-2 text-[#4a7c59] font-bold text-sm mb-2">
-                  <Leaf className="w-4 h-4" /> 특징 및 환경
+            <div className="space-y-3">
+              <div className="bg-white p-4 rounded-2xl border-2 border-[#EFE4D2] shadow-sm">
+                <h4 className="flex items-center gap-1.5 text-[#4e8040] font-black text-[13px] mb-1.5">
+                  <Leaf className="w-4 h-4" /> 특징과 환경
                 </h4>
-                <p className="text-[#a8c7b5] text-sm leading-relaxed mb-3">
-                  {selectedPlant.description}
-                </p>
-                <div className="bg-[#1c3326]/50 p-2.5 rounded-lg border border-[#2a4d3a]/50">
-                  <span className="text-[#4a7c59] text-xs font-bold block mb-1">선호 환경</span>
-                  <span className="text-[#89a896] text-xs">{selectedPlant.environment}</span>
+                <p className="text-[#4a3a26] text-[14px] font-medium leading-relaxed mb-2">{selectedPlant.description}</p>
+                <div className="bg-[#F6FBF2] p-2.5 rounded-xl border border-[#e2eeda]">
+                  <span className="text-[#4e8040] text-[12px] font-black block mb-0.5">좋아하는 자리</span>
+                  <span className="text-[#7a5f3e] text-[13px] font-bold">{selectedPlant.environment}</span>
                 </div>
               </div>
 
-              <div className="bg-[#0a120e]/60 p-4 rounded-xl border border-[#2a4d3a]">
-                <h4 className="flex items-center gap-2 text-[#4a7c59] font-bold text-sm mb-2">
-                  <Quote className="w-4 h-4" /> 사투리 예시 ({REGION_MAP[selectedPlant.dialect]})
+              <div className="bg-white p-4 rounded-2xl border-2 border-[#EFE4D2] shadow-sm">
+                <h4 className="flex items-center gap-1.5 text-[#c8784a] font-black text-[13px] mb-1.5">
+                  <Quote className="w-4 h-4" /> 이런 말투로 말해요
                 </h4>
-                <p className="text-[#89a896] text-xs mb-3 italic">
-                  "{selectedPlant.accent}"
-                </p>
+                <p className="text-[#9a7a52] text-[12px] font-bold mb-2 italic">{selectedPlant.accent}</p>
                 <div className="space-y-2">
-                  <div className="bg-[#1c3326]/50 p-3 rounded-lg border border-[#2a4d3a]/50 relative">
-                    <div className="absolute -left-1.5 top-3 w-3 h-3 bg-[#1c3326] rotate-45 border-l border-b border-[#2a4d3a]/50"></div>
-                    <span className="text-[#e8f3ec] text-sm leading-relaxed block break-keep">
-                      "{PHRASES[selectedPlant.dialect].mature[0]}"
-                    </span>
+                  <div className="bg-[#FBF3E4] p-3 rounded-xl rounded-bl-sm border border-[#EFE4D2]">
+                    <span className="text-[#4a3a26] text-[14px] font-bold leading-relaxed block break-keep">"{PHRASES[selectedPlant.dialect].mature[0]}"</span>
                   </div>
-                  <div className="bg-[#1c3326]/50 p-3 rounded-lg border border-[#2a4d3a]/50 relative">
-                    <div className="absolute -left-1.5 top-3 w-3 h-3 bg-[#1c3326] rotate-45 border-l border-b border-[#2a4d3a]/50"></div>
-                    <span className="text-[#e8f3ec] text-sm leading-relaxed block break-keep">
-                      "{PHRASES[selectedPlant.dialect].old[0]}"
-                    </span>
+                  <div className="bg-[#FBF3E4] p-3 rounded-xl rounded-bl-sm border border-[#EFE4D2]">
+                    <span className="text-[#4a3a26] text-[14px] font-bold leading-relaxed block break-keep">"{PHRASES[selectedPlant.dialect].old[0]}"</span>
                   </div>
                 </div>
               </div>
