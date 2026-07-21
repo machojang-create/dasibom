@@ -81,7 +81,7 @@ export const ManageTab = React.memo(function ManageTab({
       <div className="p-4 pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 bg-white border-b border-slate-100 rounded-t-[24px]">
         <div>
           <h2 className="text-xl font-black text-slate-800 tracking-tight">내 어항 생물 관리 대장</h2>
-          <p className="text-sm text-slate-500 font-medium mt-1">물고기들의 영양 상태와 성장률을 파악하고 관리하세요</p>
+          <p className="text-sm text-slate-500 font-medium mt-1">우리 집 물고기들의 배부름과 성장을 한눈에 봐요</p>
         </div>
         <div className="bg-blue-50 text-blue-800 px-3 py-1.5 rounded-full font-bold text-xs border border-blue-100 shadow-sm">
           총 {guppies.length}마리
@@ -161,15 +161,15 @@ export const ManageTab = React.memo(function ManageTab({
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2">
                 <div className="bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold">개별 인지 시야</span>
+                  <span className="text-[11px] text-slate-400 font-bold">눈썰미</span>
                   <span className="text-sm font-black text-slate-700">{Math.round((guppy.stats.vision / 800) * 100)}%</span>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold">개별 유영 속도</span>
+                  <span className="text-[11px] text-slate-400 font-bold">헤엄 실력</span>
                   <span className="text-sm font-black text-slate-700">{Math.round(guppy.stats.speed * 100)}%</span>
                 </div>
                 <div className="bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 border border-slate-100">
-                  <span className="text-[10px] text-slate-400 font-bold">태생 골격 크기</span>
+                  <span className="text-[11px] text-slate-400 font-bold">몸집</span>
                   <span className="text-sm font-black text-slate-700">{Math.round((guppy.stats.size / 0.3) * 100)}%</span>
                 </div>
               </div>
@@ -177,14 +177,14 @@ export const ManageTab = React.memo(function ManageTab({
               {/* Special Ability */}
               <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100">
                 <div className="flex items-center gap-1.5 text-blue-600 font-bold text-sm mb-1">
-                  <span className="text-yellow-500">✨</span> 레벨 특수 능력: {guppy.data.rarity === '전설' ? '바다의 파수꾼 민첩' : guppy.data.rarity === '희귀' ? '은빛 비늘의 가호' : '활기찬 헤엄'}
+                  <span className="text-yellow-500">✨</span> 타고난 재주: {guppy.data.rarity === '전설' ? '물살을 가르는 명수' : guppy.data.rarity === '희귀' ? '반짝이는 비늘' : '씩씩한 헤엄'}
                 </div>
                 <p className="text-xs text-slate-600">
                   {guppy.data.rarity === '전설' 
-                    ? '수류 저항을 완전히 이겨내어 헤엄치는 속도가 영구 향상됩니다.' 
+                    ? '어떤 물살도 거뜬해요. 남들보다 빨리 자라요.' 
                     : guppy.data.rarity === '희귀' 
-                    ? '시야가 넓어지고 먹이를 찾는 반응 속도가 빨라집니다.' 
-                    : '기본적인 성장 속도와 활동성이 약간 증가합니다.'}
+                    ? '먹이를 잘 찾고 눈치가 빨라요.' 
+                    : '건강하게 무럭무럭 자라요.'}
                 </p>
               </div>
 
@@ -192,19 +192,17 @@ export const ManageTab = React.memo(function ManageTab({
               <div className="flex gap-2 mt-auto pt-2">
                 <button 
                   onClick={() => handleCommune(guppy.id)}
-                  disabled={gold < 10}
-                  className={`flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-colors ${gold >= 10 ? 'bg-pink-50 text-pink-600 hover:bg-pink-100' : 'bg-slate-50 text-slate-400 cursor-not-allowed'}`}
+                  className="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1 text-[13px] font-bold transition-colors bg-pink-50 text-pink-600 hover:bg-pink-100 active:scale-95"
                 >
                   <Heart className="w-4 h-4" />
-                  교감하기 (XP +1)
-                  <span className="text-xs flex items-center ml-1 text-slate-400"><span className="text-sm mr-0.5">🍿</span>10</span>
+                  쓰다듬기 (무료)
                 </button>
                 <button 
                   onClick={() => setReleasingGuppy(guppy)}
                   className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-colors"
                 >
                   <span className="text-xs flex items-center mr-1"><span className="text-sm mr-0.5">🍿</span>{getExpectedGold(guppy)}</span>
-                  자연 방출하기
+                  자연으로 보내주기
                 </button>
               </div>
             </div>
@@ -214,7 +212,7 @@ export const ManageTab = React.memo(function ManageTab({
       
       {guppies.length === 0 && (
         <div className="text-center py-20 text-slate-400 font-medium">
-          현재 어항에 생물이 없습니다.
+          어항이 조용하네요. 구피 상점에서 첫 식구를 맞아보세요 🐠
         </div>
       )}
       
@@ -242,22 +240,22 @@ export const ManageTab = React.memo(function ManageTab({
               
               <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 w-full mb-6">
                 <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2">
-                  <span>예상 보상 (골드)</span>
+                  <span>떠나며 남기는 선물</span>
                   <span className="flex items-center text-blue-600 text-lg">
-                    <span className="mr-1">🍿</span>{getExpectedGold(releasingGuppy)}
+                    <span className="mr-1">🍿</span>먹이 {getExpectedGold(releasingGuppy)}개
                   </span>
                 </div>
                 <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-slate-200">
                   <div className="flex justify-between text-xs text-slate-500">
-                    <span>레벨 ({releasingGuppy.level}) 보상</span>
+                    <span>함께한 레벨 {releasingGuppy.level}의 정</span>
                     <span>{releasingGuppy.level * 50}</span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-500">
-                    <span>등급 ({releasingGuppy.data.rarity}) 배수</span>
+                    <span>{releasingGuppy.data.rarity} 등급 보답</span>
                     <span>x{releasingGuppy.data.rarity === '전설' ? 5 : releasingGuppy.data.rarity === '희귀' ? 2 : 1}</span>
                   </div>
                   <div className="flex justify-between text-xs text-slate-500">
-                    <span>스탯 보너스</span>
+                    <span>씩씩함 보너스</span>
                     <span>+{Math.floor(releasingGuppy.stats.speed * 50)}</span>
                   </div>
                 </div>
@@ -271,7 +269,7 @@ export const ManageTab = React.memo(function ManageTab({
                   취소
                 </button>
                 <button
-                  onClick={() => handleRelease(releasingGuppy.id, getExpectedGold(releasingGuppy))}
+                  onClick={() => handleRelease(releasingGuppy.id, _rawExpectedGold(releasingGuppy))}
                   className="flex-1 py-3 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 shadow-sm shadow-red-500/20 transition-colors"
                 >
                   방생하기

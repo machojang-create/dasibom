@@ -254,7 +254,7 @@ export default function App() {
     P.spend(item, (err: any, d: any) => {
       if (err || !d || !d.ok) {
         if (d && d.balance != null) setPetals(d.balance);
-        showToast('꽃잎이 모자라요', '다른 콘텐츠를 즐기고 친구에게 공유하면 꽃잎이 모여요 🌸', '🐚');
+        showToast('꽃잎이 모자라요', '다른 콘텐츠를 즐기고 친구에게 공유하면 꽃잎이 모여요 🌸', '🌸');
         cb(false); return;
       }
       setPetals(d.balance); cb(true);
@@ -1506,7 +1506,7 @@ export default function App() {
       )}
 
       {/* 하단 고정 탭 — 엄지가 닿는 곳(모바일 우선) */}
-      <nav className="fixed bottom-0 left-0 right-0 z-[85] bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around items-stretch shadow-[0_-6px_20px_rgba(0,0,0,0.06)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+      <nav className="fixed bottom-0 left-0 right-0 z-[85] bg-white border-t-2 border-slate-200 flex justify-around items-stretch shadow-[0_-8px_24px_rgba(0,0,0,0.10)]" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
         {([
           { k: 'tank', icon: '🐠', label: '내 어항' },
           { k: 'manage', icon: '💚', label: '생물 관리' },

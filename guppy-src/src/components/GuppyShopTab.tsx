@@ -358,9 +358,9 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
               <p className="text-sm text-slate-500 font-medium mt-1">새로운 구피를 입양하세요</p>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-800 rounded-2xl border border-blue-100 shadow-sm">
-            <span className="text-xl">🐚</span>
-            <span className="font-black text-xl">{Math.floor(gold).toLocaleString()}</span>
+          <div className="flex items-center gap-1.5 px-4 py-2 bg-rose-50 text-rose-700 rounded-2xl border border-rose-100 shadow-sm">
+            <Petal className="w-5 h-5" />
+            <span className="font-black text-xl">{(petals ?? 0).toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -403,7 +403,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                 <button 
                   onClick={() => handleBuy('normal', 200, true)}
                   disabled={(petals ?? 0) < 200}
-                  className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${gold >= 300 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+                  className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${(petals ?? 0) >= 200 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}
                 >
                   <span>입양하기</span>
                   <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 200</span>
@@ -428,7 +428,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                 <button 
                   onClick={() => handleBuy('rare', 1000, true)}
                   disabled={(petals ?? 0) < 1000}
-                  className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${gold >= 500 ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+                  className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${(petals ?? 0) >= 1000 ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'}`}
                 >
                   <span>입양하기</span>
                   <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 1,000</span>
@@ -453,7 +453,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                 <button 
                   onClick={() => handleBuy('legendary', 2000, true)}
                   disabled={(petals ?? 0) < 2000}
-                  className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${gold >= 1200 ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-slate-100 text-slate-400'}`}
+                  className={`w-full py-3 rounded-xl font-black transition-colors relative z-10 shadow-sm flex items-center justify-center gap-2 ${(petals ?? 0) >= 2000 ? 'bg-amber-500 hover:bg-amber-600 text-white' : 'bg-slate-100 text-slate-400'}`}
                 >
                   <span>입양하기</span>
                   <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 2,000</span>
@@ -476,40 +476,40 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
               {/* Random Normal */}
               <button 
                 onClick={() => handleBuy('normal', 100, false)} 
-                disabled={gold < 100}
-                className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 100 ? 'hover:border-blue-300' : 'opacity-70'}`}
+                disabled={(petals ?? 0) < 100}
+                className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${(petals ?? 0) >= 100 ? 'hover:border-blue-300' : 'opacity-70'}`}
               >
                 <span className="flex items-center gap-2">
                   <span className="text-xl">📦</span>
                   일반 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 100 ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 100</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${(petals ?? 0) >= 100 ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 100</span>
               </button>
               
               {/* Random Rare */}
               <button 
                 onClick={() => handleBuy('rare', 500, false)} 
-                disabled={gold < 200}
-                className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 200 ? 'hover:border-purple-300' : 'opacity-70'}`}
+                disabled={(petals ?? 0) < 500}
+                className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${(petals ?? 0) >= 500 ? 'hover:border-purple-300' : 'opacity-70'}`}
               >
                 <span className="flex items-center gap-2">
                   <span className="text-xl">📦✨</span>
                   희귀 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 200 ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 500</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${(petals ?? 0) >= 500 ? 'bg-purple-50 text-purple-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 500</span>
               </button>
               
               {/* Random Legendary */}
               <button 
                 onClick={() => handleBuy('legendary', 1000, false)} 
-                disabled={gold < 500}
-                className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${gold >= 500 ? 'hover:border-amber-300' : 'opacity-70'}`}
+                disabled={(petals ?? 0) < 1000}
+                className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${(petals ?? 0) >= 1000 ? 'hover:border-amber-300' : 'opacity-70'}`}
               >
                 <span className="flex items-center gap-2">
                   <span className="text-xl">📦🌟</span>
                   전설 랜덤
                 </span>
-                <span className={`px-3 py-1 rounded-lg text-sm ${gold >= 500 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 1,000</span>
+                <span className={`px-3 py-1 rounded-lg text-sm ${(petals ?? 0) >= 1000 ? 'bg-amber-50 text-amber-700' : 'bg-slate-100 text-slate-400'}`}><Petal className="w-3.5 h-3.5 inline" /> 1,000</span>
               </button>
             </div>
           </div>

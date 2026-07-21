@@ -275,8 +275,8 @@ export const ShopTab = React.memo(function ShopTab({
               </p>
               <button 
                 onClick={() => toggleDecoration('sand_castle', 50)}
-                disabled={!decorations.includes('sand_castle') && gold < 500}
-                className={`w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm ${decorations.includes('sand_castle') ? 'bg-slate-800 text-white font-bold' : gold >= 500 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 font-bold'}`}
+                disabled={!decorations.includes('sand_castle') && (petals ?? 0) < 50}
+                className={`w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm ${decorations.includes('sand_castle') ? 'bg-slate-800 text-white font-bold' : (petals ?? 0) >= 50 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 font-bold'}`}
               >
                 {decorations.includes('sand_castle') ? (
                   '장식 제거하기 (환불 불가)'
@@ -307,8 +307,8 @@ export const ShopTab = React.memo(function ShopTab({
               </p>
               <button 
                 onClick={() => toggleDecoration('golden_statue', 200)}
-                disabled={!decorations.includes('golden_statue') && gold < 2000}
-                className={`w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm ${decorations.includes('golden_statue') ? 'bg-slate-800 text-white font-bold' : gold >= 2000 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 font-bold'}`}
+                disabled={!decorations.includes('golden_statue') && (petals ?? 0) < 200}
+                className={`w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm ${decorations.includes('golden_statue') ? 'bg-slate-800 text-white font-bold' : (petals ?? 0) >= 200 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 font-bold'}`}
               >
                 {decorations.includes('golden_statue') ? (
                   '장식 제거하기 (환불 불가)'
