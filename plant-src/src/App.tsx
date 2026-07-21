@@ -16,6 +16,7 @@ import LevelUpEffect from './components/LevelUpEffect';
 import GraduationModal from './components/GraduationModal';
 import AnimatedNumber from './components/AnimatedNumber';
 import { DIALOGUES } from './data/dialogues';
+import { SPAM_DIALOGUES } from './data/dialogues_spam';
 import { ambientAudio } from './lib/audio';
 import Petal from './components/Petal';
 
@@ -233,6 +234,17 @@ export default function App() {
     });
   };
 
+  /* 연타(도배) 감지: 같은 행동이 10초 안에 3회 이상이면 거부반응 모드.
+     일반 대사 풀 소진 방지 + 의인화(귀찮음·과습 불평). 15초 조용하면 해제. */
+  const actionLogRef = useRef<Record<string, number[]>>({ water: [], touch: [] });
+  const isSpamming = (key: 'water' | 'touch') => {
+    const now = Date.now();
+    const log = actionLogRef.current[key].filter(t => now - t < 10000);
+    log.push(now);
+    actionLogRef.current[key] = log;
+    return log.length >= 3;
+  };
+
   const speakWithPlant = (action: string, plantIndex: number, userInput?: string) => {
     let actionKey: 'water' | 'normal_nut' | 'premium_nut' | 'touch' | 'greet' = 'greet';
     if (action === '물주기') actionKey = 'water';
@@ -247,7 +259,11 @@ export default function App() {
       
       const stage = targetPlant.stage;
       
-      const phrases = DIALOGUES[actionKey]?.[stage] || ["우야꼬, 할 말이 없네."];
+      let phrases = DIALOGUES[actionKey]?.[stage] || ["우야꼬, 할 말이 없네."];
+      if ((actionKey === 'water' || actionKey === 'touch') && isSpamming(actionKey)) {
+        const pool = SPAM_DIALOGUES[actionKey][targetPlant.type.dialect];
+        if (pool && pool.length) phrases = pool;
+      }
       const finalPhrase = phrases[Math.floor(Math.random() * phrases.length)];
 
       const newSlots = [...prev];

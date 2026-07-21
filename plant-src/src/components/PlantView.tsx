@@ -30,7 +30,7 @@ const classifyMood = (water: number, phrase?: string): Mood => {
   const t = phrase || '';
   if (/고맙|고마워|사랑|좋은 사람|이뻐|이쁘|호강|감동|눈물|따숩|따뜻|보고 싶|반갑|평생/.test(t)) return 'moved';
   if (/으아악|태풍|깜짝|번쩍|엄마야|워메|살려|대피|찢어|벼락|천둥/.test(t)) return 'surprised';
-  if (/단디|챙기|굶|퍼뜩|왜 인자|죽는 줄|잔소리|끼니|밥은|무릎|관절|옷은|늦었|어딜 갔다/.test(t)) return 'nag';
+  if (/단디|챙기|굶|퍼뜩|왜 인자|죽는 줄|잔소리|끼니|밥은|무릎|관절|옷은|늦었|어딜 갔다|고마해|고만|그만|귀찮|과습|썩|물배|넘친|어푸|간지럽|등쌀|과유불급|정량/.test(t)) return 'nag';
   if (/운동회|신난|신났|튼튼|최고|덩실|씰룩|얼씨구|지화자|콧노래|살맛|끝내주|맹쿠로/.test(t)) return 'excited';
   if (/\?|왔나$|뭐꼬|뭐당가|궁금|아이가\?|봤나|그란디/.test(t)) return 'curious';
   if (water <= 50) return 'meh';
