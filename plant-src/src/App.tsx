@@ -376,8 +376,8 @@ export default function App() {
       newPlant.lastWatered = Date.now();
 
       if (newPlant.level >= 2 && newPlant.stage === 'seed') newPlant.stage = 'sprout';
-      if (newPlant.level >= 5 && newPlant.stage === 'sprout') newPlant.stage = 'mature';
-      if (newPlant.level >= 10 && newPlant.stage === 'mature') newPlant.stage = 'old';
+      if (newPlant.level >= 6 && newPlant.stage === 'sprout') newPlant.stage = 'mature';
+      if (newPlant.level >= 12 && newPlant.stage === 'mature') newPlant.stage = 'old';   // 만개 12렙 — 매일 물주면 열이틀+, 밸런스 +20%
 
       const newSlots = [...prev];
       newSlots[currentSlotIndex] = newPlant;
@@ -481,27 +481,67 @@ export default function App() {
     return () => clearInterval(timeTimer);
   }, []);
 
+  // ── 실제 날씨를 창밖에 (2026-07-21 Macho 지시) ──
+  // Open-Meteo(키·비용 없음, CORS 허용). 위치 허용 시 실위치, 거부·미지원 시 서울 기준.
+  // API가 계속 실패하면 기존 10분 랜덤 연출이 그대로 살아있어 화면이 죽지 않는다.
+  const realWeatherRef = useRef(false);
+  const speakWeather = (newW: WeatherType) => {
+    setSlots(prev => prev.map(p => {
+      if (!p) return null;
+      if (autoPhraseGuard()) return p;   // 방금 어르신과 나눈 말을 덮지 않는다
+      let phrase = p.phrase;
+      if (p.stage === 'old') {
+         const emotionalPhrases = GRADUATION_EMOTIONAL_PHRASES[p.type.dialect] || [];
+         phrase = emotionalPhrases[Math.floor(Math.random() * emotionalPhrases.length)] || p.phrase;
+      } else {
+         const phrases = DIALOGUES[`weather_${newW}` as keyof typeof DIALOGUES]?.[p.stage] ||
+                         DIALOGUES['weather_sunny']?.[p.stage] || [];
+         phrase = phrases[Math.floor(Math.random() * phrases.length)] || p.phrase;
+      }
+      return { ...p, phrase };
+    }));
+  };
+  useEffect(() => {
+    let stop = false;
+    const mapWmo = (code: number, temp: number, wind: number): WeatherType => {
+      if (code >= 95 || wind >= 60) return 'typhoon';
+      if ((code >= 71 && code <= 77) || code === 85 || code === 86) return 'snowy';
+      if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) return 'rainy';
+      if (code === 45 || code === 48 || code === 3) return 'cloudy';
+      if (code === 1 || code === 2) return temp >= 32 ? 'hot' : 'sunny';
+      return temp >= 32 ? 'hot' : 'clear';   // 0 = 구름 한 점 없는 하늘 → 쾌청
+    };
+    const fetchWeather = (lat: number, lon: number) => {
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=' + lat.toFixed(3) + '&longitude=' + lon.toFixed(3) + '&current=weather_code,temperature_2m,wind_speed_10m&timezone=auto')
+        .then(r => r.json())
+        .then(j => {
+          if (stop || !j || !j.current) return;
+          const w = mapWmo(j.current.weather_code, j.current.temperature_2m, j.current.wind_speed_10m);
+          realWeatherRef.current = true;
+          setWeather(prev => { if (prev !== w) speakWeather(w); return w; });
+        })
+        .catch(() => {});
+    };
+    const locate = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          p => fetchWeather(p.coords.latitude, p.coords.longitude),
+          () => fetchWeather(37.566, 126.978),
+          { timeout: 6000, maximumAge: 1800000 }
+        );
+      } else fetchWeather(37.566, 126.978);
+    };
+    locate();
+    const iv = setInterval(locate, 1800000);   // 30분마다 하늘 확인
+    return () => { stop = true; clearInterval(iv); };
+  }, []);
   useEffect(() => {
     const weatherTimer = setInterval(() => {
-      setWeather(w => {
+      if (realWeatherRef.current) return;   // 실날씨가 잡혔으면 랜덤 연출은 쉰다
+      setWeather(() => {
         const weathers: WeatherType[] = ['sunny', 'rainy', 'cloudy', 'snowy', 'hot', 'clear', 'typhoon'];
         const newlyGenerated = weathers[Math.floor(Math.random() * weathers.length)];
-        
-        setSlots(prev => prev.map(p => {
-          if (!p) return null;
-          if (autoPhraseGuard()) return p;   // 방금 어르신과 나눈 말을 덮지 않는다
-          let phrase = p.phrase;
-          if (p.stage === 'old') {
-             const emotionalPhrases = GRADUATION_EMOTIONAL_PHRASES[p.type.dialect] || [];
-             phrase = emotionalPhrases[Math.floor(Math.random() * emotionalPhrases.length)] || p.phrase;
-          } else {
-             const phrases = DIALOGUES[`weather_${newlyGenerated}` as keyof typeof DIALOGUES]?.[p.stage] || 
-                             DIALOGUES['weather_sunny']?.[p.stage] || [];
-             phrase = phrases[Math.floor(Math.random() * phrases.length)] || p.phrase;
-          }
-          return { ...p, phrase };
-        }));
-
+        speakWeather(newlyGenerated);
         return newlyGenerated;
       });
     }, 600000);   // 날씨는 10분마다 — 정신없지 않게

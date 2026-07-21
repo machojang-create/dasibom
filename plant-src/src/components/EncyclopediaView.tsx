@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PLANT_TYPES, PHRASES } from '../data';
 import { EncyclopediaEntry, PlantData, DialectType } from '../types';
 import { X, Lock, MapPin, Quote, Leaf } from 'lucide-react';
+import PlantArt from './PlantArt';
 
 interface Memorial { name: string; customName?: string; emoji?: string; level: number; days: number; at: number }
 
@@ -200,7 +201,7 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
             </button>
             
             <div className="text-center mb-6">
-              <div className="text-6xl mb-4 filter drop-shadow-lg animate-bounce">{selectedPlant.emoji}</div>
+              <div className="mb-4 flex justify-center"><PlantArt type={selectedPlant.type} bloom className="w-28 h-32" /></div>
               <h3 className="text-2xl font-bold text-[#d4af37] mb-1">{selectedPlant.name}</h3>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#2a4d3a]/50 text-[#a8c7b5] text-xs rounded-full">
                 <MapPin className="w-3.5 h-3.5" />

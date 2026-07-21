@@ -4,6 +4,7 @@ import { PHRASES, POT_TYPES } from '../data';
 import { Edit2, Star, Sparkles, Check, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import AnimatedNumber from './AnimatedNumber';
+import PlantArt from './PlantArt';
 
 interface Props {
   plant: UserPlant;
@@ -203,7 +204,8 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
   const defaultPhrase = PHRASES[plant.type.dialect][plant.stage][0];
   const phrase = plant.phrase || defaultPhrase;
   
-  const growthPercent = plant.stage === 'old' ? '100.0' : Math.min(99.9, ((plant.level * 10) + (plant.waterLevel / 10))).toFixed(1);
+  // 만개 기준 레벨 12 (2026-07-21 밸런스 +20% — 여러 화분이면 보름 호흡)
+  const growthPercent = plant.stage === 'old' ? '100.0' : Math.min(99.9, ((plant.level / 12) * 100) + (plant.waterLevel / 10)).toFixed(1);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
@@ -260,7 +262,10 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
               : 'text-[8rem] md:text-[10rem]'
             }`}
           >
-            {getEmoji(plant.type.type, plant.stage, plant.type.emoji)}
+            {(plant.stage === 'mature' || plant.stage === 'old')
+              ? <PlantArt type={plant.type.type} bloom={plant.stage === 'old'}
+                  className={plant.stage === 'old' ? 'w-[128px] md:w-[160px]' : 'w-[104px] md:w-[130px]'} />
+              : getEmoji(plant.type.type, plant.stage, plant.type.emoji)}
           </motion.div>
           
           <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel, phrase)} />
