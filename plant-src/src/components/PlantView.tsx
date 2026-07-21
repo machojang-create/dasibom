@@ -204,8 +204,8 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
   const [editName, setEditName] = useState(plant.customName || plant.type.name);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const defaultPhrase = PHRASES[plant.type.dialect][plant.stage][0];
-  const phrase = plant.phrase || defaultPhrase;
+  // 대사가 있을 때만 말풍선 표시(2026-07-22) — 기본대사 폴백이 말풍선을 영원히 띄우던 원인
+  const phrase = plant.phrase;
   
   // 만개 기준 레벨 12 (2026-07-21 밸런스 +20% — 여러 화분이면 보름 호흡)
   const growthPercent = plant.stage === 'old' ? '100.0' : Math.min(99.9, ((plant.level / 12) * 100) + (plant.waterLevel / 10)).toFixed(1);
@@ -275,7 +275,7 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
         </motion.div>
         
         <AnimatePresence mode="wait">
-          <motion.div
+          {phrase && <motion.div
             key={phrase}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -284,7 +284,7 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
           >
             {phrase}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 rotate-45 border-r-2 border-b-2 border-transparent"></div>
-          </motion.div>
+          </motion.div>}
         </AnimatePresence>
       </div>
 

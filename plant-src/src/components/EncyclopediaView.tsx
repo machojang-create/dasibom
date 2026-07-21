@@ -66,12 +66,12 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
           </div>
 
           <div>
-            <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">🌦️ 날씨별 변화 <span className="text-[11px] font-bold text-[#9a7a52]">(1분당)</span></h3>
+            <h3 className="text-[15px] font-black text-[#7a5f3e] mb-2 flex items-center gap-1.5">🌦️ 날씨별 변화 <span className="text-[11px] font-bold text-[#9a7a52]">(10분당)</span></h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { e: '☀️', t: '맑음', d: '수분 -2' }, { e: '🌧️', t: '비', d: '수분 +5' },
-                { e: '☁️', t: '흐림', d: '수분 -1' }, { e: '❄️', t: '눈', d: '성장 쉬어요' },
-                { e: '🔥', t: '고온', d: '수분 -4' }, { e: '✨', t: '쾌청', d: '성장 2배' },
+                { e: '☀️', t: '맑음', d: '수분 -5' }, { e: '🌧️', t: '비', d: '수분 +10' },
+                { e: '☁️', t: '흐림', d: '수분 -3' }, { e: '❄️', t: '눈', d: '수분 그대로' },
+                { e: '🔥', t: '고온', d: '수분 -10' }, { e: '✨', t: '쾌청', d: '-5 · 성장 2배' },
               ].map(x => (
                 <div key={x.t} className="bg-white border-2 border-[#EFE4D2] px-3 py-2 rounded-2xl flex items-center gap-2 shadow-sm">
                   <span className="text-lg">{x.e}</span>
@@ -82,7 +82,7 @@ export default function EncyclopediaView({ isOpen, onClose, entries, badges, mem
               <div className="bg-white border-2 border-[#EFE4D2] px-3 py-2 rounded-2xl flex items-center gap-2 shadow-sm col-span-2">
                 <span className="text-lg">🌀</span>
                 <span className="text-[13px] font-black text-[#4a3a26]">태풍</span>
-                <span className="text-[12px] font-bold text-[#9a7a52] ml-auto">수분 -3 · 성장 쉬어요</span>
+                <span className="text-[12px] font-bold text-[#9a7a52] ml-auto">수분 -7 · 성장 쉬어요</span>
               </div>
             </div>
           </div>

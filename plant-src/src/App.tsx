@@ -442,31 +442,63 @@ export default function App() {
     setPrevSlots(slots);
   }, [slots, currentSlotIndex, prevSlots]);
 
+  // 말풍선 자동 소멸(2026-07-22 Macho): 읽을 시간(길이 비례)이 지나면 스르르 사라진다
+  const phraseTimersRef = useRef<Record<number, { phrase: string; t: any }>>({});
+  useEffect(() => {
+    slots.forEach((slot, idx) => {
+      const cur = phraseTimersRef.current[idx];
+      if (!slot || !slot.phrase) { if (cur) { clearTimeout(cur.t); delete phraseTimersRef.current[idx]; } return; }
+      if (cur && cur.phrase === slot.phrase) return;   // 같은 대사 — 타이머 유지
+      if (cur) clearTimeout(cur.t);
+      const ph = slot.phrase;
+      const dur = Math.min(11000, 4000 + ph.length * 80);
+      phraseTimersRef.current[idx] = {
+        phrase: ph,
+        t: setTimeout(() => {
+          delete phraseTimersRef.current[idx];
+          setSlots(prev => {
+            const p2 = prev[idx];
+            if (!p2 || p2.phrase !== ph) return prev;
+            const ns = [...prev]; ns[idx] = { ...p2, phrase: undefined }; return ns;
+          });
+        }, dur),
+      };
+    });
+  }, [slots]);
+
+  // ④ 인사 반복 방지: 말풍선이 사라진 뒤 슬롯을 오가도, 같은 화분 인사는 5분에 한 번만
+  const greetedRef = useRef<Record<string, number>>({});
   useEffect(() => {
     if (currentPlant && !currentPlant.phrase) {
-      speakWithPlant('오랜만에 접속', currentSlotIndex);
+      const last = greetedRef.current[currentPlant.id] || 0;
+      if (Date.now() - last > 300000) {
+        greetedRef.current[currentPlant.id] = Date.now();
+        speakWithPlant('오랜만에 접속', currentSlotIndex);
+      }
     }
   }, [currentSlotIndex]);
 
+  // 수분 마름(2026-07-22 재설계): 분당 틱 — 도감 표기("10분당")와 실제가 일치하게.
+  //   맑음 -0.5/분, 비 +1, 흐림 -0.3, 눈 0, 고온 -1, 쾌청 -0.5, 태풍 -0.7 → 한 시간이면 눈에 띄게 마른다.
+  const ratePerMin = (w: string) =>
+    w === 'sunny' ? -0.5 : w === 'rainy' ? 1 : w === 'snowy' ? 0 : w === 'hot' ? -1 : w === 'typhoon' ? -0.7 : w === 'clear' ? -0.5 : -0.3;
+  const applyDry = (minutes: number) => {
+    if (minutes <= 0) return;
+    const d = Math.max(-40, Math.min(20, ratePerMin(weatherRef.current) * minutes));   // 복귀 정산 상한
+    setSlots(prev => prev.map(p => p ? { ...p, waterLevel: Math.round(Math.max(0, Math.min(100, p.waterLevel + d)) * 10) / 10 } : null));
+  };
+  const lastTickRef = useRef(Date.now());
   useEffect(() => {
-    // 10분마다 날씨 따라 물만 마른다(자동 레벨업 폐지 — 성장은 손길과 영양제로만)
-    const timer = setInterval(() => {
-      setSlots(prev => prev.map(p => {
-        if (!p) return null;
-        const currentW = weatherRef.current;
-        let waterDelta = -1;
-        switch (currentW) {
-          case 'sunny': waterDelta = -2; break;
-          case 'rainy': waterDelta = 5; break;
-          case 'snowy': waterDelta = 0; break;
-          case 'hot': waterDelta = -4; break;
-          case 'typhoon': waterDelta = -3; break;
-          default: waterDelta = -1;
-        }
-        return { ...p, waterLevel: Math.max(0, Math.min(100, p.waterLevel + waterDelta)) };
-      }));
-    }, 600000);
-    return () => clearInterval(timer);
+    const timer = setInterval(() => { lastTickRef.current = Date.now(); applyDry(1); }, 60000);
+    // 폰을 켜둔 채 다른 일 하다 돌아와도(타이머 동결) 경과분을 한 번에 정산
+    const onBack = () => {
+      if (document.visibilityState !== 'visible') return;
+      const mins = Math.floor((Date.now() - lastTickRef.current) / 60000);
+      if (mins >= 2) { lastTickRef.current = Date.now(); applyDry(mins); }
+    };
+    document.addEventListener('visibilitychange', onBack);
+    window.addEventListener('pageshow', onBack);
+    return () => { clearInterval(timer); document.removeEventListener('visibilitychange', onBack); window.removeEventListener('pageshow', onBack); };
   }, []);
 
   useEffect(() => {
