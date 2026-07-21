@@ -8,6 +8,7 @@ import { ManageTab } from './components/ManageTab';
 import { Droplets, Fish, RefreshCw, LayoutGrid, Coins, Store, X, Sun, Moon, Maximize2, Eye, EyeOff, Anchor, Dna, Edit2, Heart, Share2 } from 'lucide-react';
 import Petal from './components/Petal';
 import { aquariumAudio } from './lib/audio';
+import { mountButtonSfx } from './lib/sfx';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
 const dsb = () => (window as any).DasibomPoints;
@@ -254,6 +255,7 @@ export default function App() {
   const [selectedGuppyId, setSelectedGuppyId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
+  useEffect(() => { mountButtonSfx(); }, []);   // 🔘 말랑 버튼음 — 모든 버튼 공통
   const [releaseArm, setReleaseArm] = useState(false);       // 방생 2단 확인 — 실수 방지
   const [editingName, setEditingName] = useState(false);
   const [editNameVal, setEditNameVal] = useState('');

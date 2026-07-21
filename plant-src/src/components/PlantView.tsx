@@ -12,6 +12,7 @@ interface Props {
   onInteract?: () => void;
   onRename?: (newName: string) => void;
   timeOfDay?: 'morning' | 'day' | 'night';
+  waterFx?: number;   // 물주기 연출 트리거(타임스탬프)
 }
 
 const getEmoji = (type: string, stage: string, plantEmoji?: string) => {
@@ -199,7 +200,7 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
 }
 
 
-export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Props) {
+export default function PlantView({ plant, onInteract, onRename, timeOfDay, waterFx }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(plant.customName || plant.type.name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -272,6 +273,18 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay }: Pr
           </motion.div>
           
           <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel, phrase)} />
+          {!!waterFx && (
+            <div key={waterFx} className="absolute -top-4 left-1/2 -translate-x-1/2 w-44 h-60 pointer-events-none z-30">
+              {[0, 1, 2, 3, 4, 5, 6].map(i => (
+                <div key={i} className="absolute rounded-full bg-gradient-to-b from-sky-200 to-sky-400/90 shadow-sm"
+                  style={{ left: (10 + i * 12 + (i % 2) * 4) + '%', top: 0, width: (7 - (i % 3)) + 'px', height: (11 - (i % 3)) + 'px',
+                    animation: 'waterFall 0.85s ease-in ' + (i * 0.09) + 's forwards', opacity: 0 }} />
+              ))}
+              <div className="absolute bottom-8 w-24 h-4" style={{ left: '50%', animation: 'waterSplash 0.5s ease-out 0.8s forwards', opacity: 0 }}>
+                <div className="w-full h-full rounded-full border-2 border-sky-300/80" />
+              </div>
+            </div>
+          )}
         </motion.div>
         
         <AnimatePresence mode="wait">

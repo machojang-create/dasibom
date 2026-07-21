@@ -17,6 +17,7 @@ import GraduationModal from './components/GraduationModal';
 import AnimatedNumber from './components/AnimatedNumber';
 import { DIALOGUES } from './data/dialogues';
 import { SPAM_DIALOGUES } from './data/dialogues_spam';
+import { mountButtonSfx, plipSfx } from './lib/sfx';
 import { ambientAudio } from './lib/audio';
 import Petal from './components/Petal';
 
@@ -112,6 +113,8 @@ export default function App() {
     return 'night';
   });
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  useEffect(() => { mountButtonSfx(); }, []);   // 🔘 말랑 버튼음 — 모든 버튼 공통
+  const [waterFx, setWaterFx] = useState({ slot: -1, key: 0 });   // 💧 물방울 낙하 연출 트리거
 
   useEffect(() => {
     ambientAudio.playWeather(weather);
@@ -387,6 +390,10 @@ export default function App() {
       if (type === 'water' && timeOfDay === 'day') waterIncrease = 25;
       if (type !== 'water' && timeOfDay === 'night') waterIncrease = Math.floor(waterIncrease * 1.5);
       
+      if (type === 'water') {
+        setWaterFx({ slot: currentSlotIndex, key: Date.now() });
+        [0, 180, 380].forEach((ms) => setTimeout(plipSfx, ms));   // 또르륵 플립 3방울
+      }
       newPlant.waterLevel = Math.min(100, newPlant.waterLevel + waterIncrease);
       let buf = ((newPlant as any).growthBuf || 0) + levelIncrease;
       while (buf >= 1 && newPlant.level < 12) { newPlant.level += 1; buf -= 1; }
@@ -707,6 +714,19 @@ export default function App() {
         {timeOfDay !== 'night' && (
           <div className="absolute top-[14%] left-0 text-[13px] text-slate-600/70 animate-birdfly pointer-events-none">〜🕊</div>
         )}
+        {/* 화창한 날의 생기(2026-07-22): 흘러가는 구름·새 한 마리 더·나비 */}
+        {(weather === 'sunny' || weather === 'clear') && timeOfDay !== 'night' && (
+          <>
+            <div className="absolute top-[7%] w-[26%] h-[9%] pointer-events-none opacity-80" style={{ animation: 'cloudDrift 95s linear infinite' }}>
+              <div className="w-full h-full bg-white rounded-full blur-md" />
+            </div>
+            <div className="absolute top-[16%] w-[17%] h-[7%] pointer-events-none opacity-55" style={{ animation: 'cloudDrift 140s linear infinite', animationDelay: '-70s' }}>
+              <div className="w-full h-full bg-white rounded-full blur-md" />
+            </div>
+            <div className="absolute top-[22%] left-0 text-[11px] text-slate-600/60 pointer-events-none" style={{ animation: 'birdFly 55s linear infinite', animationDelay: '-22s' }}>〜🕊</div>
+            <div className="absolute bottom-[38%] text-[15px] pointer-events-none" style={{ animation: 'butterflyFly 26s ease-in-out infinite' }}>🦋</div>
+          </>
+        )}
         
         {/* Weather Overlay */}
         <WeatherOverlay weather={weather} timeOfDay={timeOfDay} />
@@ -895,7 +915,7 @@ export default function App() {
                     </div>
                   </div>
                   
-                  <PlantView plant={slot} onInteract={() => speakWithPlant('쓰다듬기', idx)} onRename={(newName) => handleRenamePlant(idx, newName)} timeOfDay={timeOfDay} />
+                  <PlantView plant={slot} onInteract={() => speakWithPlant('쓰다듬기', idx)} onRename={(newName) => handleRenamePlant(idx, newName)} timeOfDay={timeOfDay} waterFx={waterFx.slot === idx ? waterFx.key : 0} />
                 </>
               ) : (
                 <button onClick={() => setIsShopOpen(true)} className="relative flex flex-col items-center justify-end h-64 mt-4 mb-2 z-30 -translate-y-[120px] md:-translate-y-[120px] pointer-events-auto group cursor-pointer">
