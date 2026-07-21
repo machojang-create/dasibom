@@ -24,8 +24,8 @@ const GUPPY_SPEECH = [
   '푸른 물이 좋아요', '오래오래 같이 살아요', '건강하게 자랄게요!', '쑥쑥 크는 중이에요',
   '어항 청소 고마워요!', '먹이 냄새가 나요…!', '오늘도 평화롭네요~', '제 이름 불러주세요!',
 ];
-/* 어항 정원 — 성능(저사양 폰)과 시각적 쾌적함을 위한 상한. 넘치면 방생으로 자리 마련 */
-const MAX_GUPPIES = 10;
+/* 어항 정원 상한 — 15마리(2026-07-21 Macho 상향). 30fps 최적화로 저사양 폰 감당 확인 */
+const MAX_GUPPIES = 15;
 
 interface GuppyInstance {
   id: string;
@@ -126,6 +126,65 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
             <ellipse cx="100" cy="50" rx="90" ry="30" fill="#78350f" />
             <ellipse cx="100" cy="50" rx="85" ry="25" fill="#92400e" />
             <circle cx="50" cy="50" r="15" fill="#53250a" />
+          </svg>
+        </div>
+      )}
+      {decorations.includes('seaweed') && (
+        <div className="absolute bottom-0 right-[38%] w-24 md:w-32 h-44 md:h-60 pointer-events-none opacity-85 z-0 animate-sway">
+          <svg viewBox="0 0 100 200" width="100%" height="100%" preserveAspectRatio="none">
+            <path d="M 30 200 Q 20 150 35 110 T 25 30" fill="none" stroke="#16a34a" strokeWidth="9" strokeLinecap="round" />
+            <path d="M 55 200 Q 70 140 50 90 T 65 10" fill="none" stroke="#22c55e" strokeWidth="7" strokeLinecap="round" />
+            <path d="M 75 200 Q 60 160 80 120 T 70 50" fill="none" stroke="#15803d" strokeWidth="6" strokeLinecap="round" />
+          </svg>
+        </div>
+      )}
+      {decorations.includes('shell_bed') && (
+        <div className="absolute bottom-2 left-[58%] w-24 md:w-32 h-16 md:h-24 pointer-events-none opacity-90 z-0 drop-shadow-md">
+          <svg viewBox="0 0 100 60" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
+            <path d="M 50 55 C 15 55 10 25 25 12 C 35 4 65 4 75 12 C 90 25 85 55 50 55 Z" fill="#fce7f3" />
+            <g stroke="#f9a8d4" strokeWidth="2.5" fill="none">
+              <path d="M 50 52 L 50 10" /><path d="M 50 52 L 30 16" /><path d="M 50 52 L 70 16" />
+            </g>
+            <ellipse cx="50" cy="50" rx="26" ry="7" fill="#fbcfe8" />
+            <circle cx="50" cy="42" r="5" fill="#fdf2f8" stroke="#f9a8d4" strokeWidth="1.5" />
+          </svg>
+        </div>
+      )}
+      {decorations.includes('stone_tower') && (
+        <div className="absolute bottom-2 right-[8%] w-16 md:w-20 h-28 md:h-36 pointer-events-none opacity-90 z-0 drop-shadow-md">
+          <svg viewBox="0 0 60 120" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
+            <ellipse cx="30" cy="112" rx="26" ry="8" fill="#475569" />
+            <ellipse cx="30" cy="98" rx="20" ry="10" fill="#64748b" />
+            <ellipse cx="30" cy="80" rx="16" ry="9" fill="#526075" />
+            <ellipse cx="30" cy="64" rx="12" ry="8" fill="#64748b" />
+            <ellipse cx="30" cy="50" rx="9" ry="6" fill="#7b8794" />
+            <ellipse cx="30" cy="38" rx="6" ry="5" fill="#8e99a8" />
+          </svg>
+        </div>
+      )}
+      {decorations.includes('lighthouse') && (
+        <div className="absolute bottom-0 left-[4%] w-14 md:w-20 h-36 md:h-48 pointer-events-none opacity-90 z-0 drop-shadow-md">
+          <svg viewBox="0 0 60 140" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
+            <path d="M 20 140 L 24 50 L 36 50 L 40 140 Z" fill="#ef4444" />
+            <path d="M 22 118 L 38 118 L 38 104 L 22 104 Z" fill="#fef2f2" />
+            <path d="M 23 90 L 37 90 L 37 76 L 23 76 Z" fill="#fef2f2" />
+            <rect x="22" y="36" width="16" height="14" rx="2" fill="#fbbf24" />
+            <path d="M 18 36 L 42 36 L 30 22 Z" fill="#b91c1c" />
+            <circle cx="30" cy="43" r="10" fill="#fde68a" opacity="0.55" />
+          </svg>
+        </div>
+      )}
+      {decorations.includes('submarine') && (
+        <div className="absolute top-[30%] right-[12%] w-24 md:w-32 h-16 md:h-20 pointer-events-none opacity-90 z-0 animate-sway drop-shadow-lg">
+          <svg viewBox="0 0 120 60" width="100%" height="100%">
+            <ellipse cx="55" cy="35" rx="45" ry="18" fill="#facc15" />
+            <rect x="42" y="8" width="22" height="16" rx="6" fill="#eab308" />
+            <circle cx="35" cy="35" r="5.5" fill="#7dd3fc" stroke="#a16207" strokeWidth="2" />
+            <circle cx="55" cy="35" r="5.5" fill="#7dd3fc" stroke="#a16207" strokeWidth="2" />
+            <circle cx="75" cy="35" r="5.5" fill="#7dd3fc" stroke="#a16207" strokeWidth="2" />
+            <path d="M 100 30 L 114 22 L 114 48 L 100 40 Z" fill="#eab308" />
+            <line x1="53" y1="8" x2="53" y2="2" stroke="#a16207" strokeWidth="2.5" />
+            <circle cx="53" cy="1" r="2.5" fill="#ef4444" />
           </svg>
         </div>
       )}
@@ -572,7 +631,7 @@ export default function App() {
         
         breedCooldown = breedCooldown > 0 ? breedCooldown - dt : 0;
         
-        const hungerDecayRate = decorationsRef.current.includes('spring_mat') ? 0.85 : 1;
+        const hungerDecayRate = decorationsRef.current.includes('log') ? 0.9 : 1;   // 🪵 통나무 쉼터: 배고픔 10% 천천히
         hunger = Math.max(0, Math.min(100, hunger - ((dt / 60) * (1 / 10) * hungerDecayRate))); // Decrease by 1 per 10 minutes
 
         if (hunger < 20 && Math.random() < 0.0005) isSick = true;
@@ -753,6 +812,7 @@ export default function App() {
           };
           scale = Math.min(scale + 0.02, stats.size); // grow slowly
           expression = '신남';
+          if (level === 5) setTimeout(() => showToast('어른이 됐어요 💕', `${g.data.guppy_name}이(가) 이제 짝을 만나면 아기를 가질 수 있어요!`, '🐠'), 0);
           
           setTimeout(() => {
              const idx = guppiesRef.current.findIndex(guppy => guppy.id === g.id);
@@ -944,7 +1004,7 @@ export default function App() {
       const nw = Date.now();
       if (nw - lastNoFoodToastRef.current > 5000) {
         lastNoFoodToastRef.current = nw;
-        showToast('먹이가 없어요', '아래 🌸 꽃잎 상점에서 먹이를 준비할 수 있어요', '🍽️');
+        showToast('먹이가 없어요', '아래 🍚 먹이 상점에서 먹이를 준비할 수 있어요', '🍽️');
       }
       return;
     }
@@ -1511,7 +1571,7 @@ export default function App() {
           { k: 'tank', icon: '🐠', label: '내 어항' },
           { k: 'manage', icon: '💚', label: '생물 관리' },
           { k: 'guppy_shop', icon: '🐟', label: '구피 상점' },
-          { k: 'shop', icon: '🌸', label: '꽃잎 상점' },
+          { k: 'shop', icon: '🍚', label: '먹이 상점' },
         ] as const).map(t => (
           <button key={t.k} onClick={() => setMainMenuTab(t.k)}
             className={`flex-1 min-h-[60px] flex flex-col items-center justify-center gap-0.5 font-black text-[13px] transition-colors ${mainMenuTab === t.k ? 'text-teal-600' : 'text-slate-400'}`}>

@@ -963,8 +963,14 @@ const PLANT_PRICES = {
   // 구피 키우기 — 특별(3시간 한정) 품종·장식은 꽃잎, 먹이·일반품종은 게임 내 조개
   guppy_special_normal: 200, guppy_special_rare: 1000, guppy_special_legendary: 2000,
   guppy_decor_sand_castle: 50, guppy_decor_golden_statue: 200,
+  // 장식 대확장(2026-07-21): 어항 꾸미기 하수구 심화
+  guppy_decor_log: 30, guppy_decor_seaweed: 40, guppy_decor_shell_bed: 60,
+  guppy_decor_treasure_chest: 80, guppy_decor_stone_tower: 100, guppy_decor_led_mood_light: 120,
+  guppy_decor_neon_crystal: 150, guppy_decor_lighthouse: 180, guppy_decor_submarine: 300,
   // 꽃잎 단일화(2026-07-20): 기본 밥=무료, 나머지 전부 꽃잎
   guppy_seed_rand_normal: 100, guppy_seed_rand_rare: 500, guppy_seed_rand_legendary: 1000,
+  // 기본 먹이 유료화(2026-07-21 Macho): 20개=1잎·120개=5잎 — 싸지만 공짜는 아니게(돌봄의 값)
+  guppy_food_normal20: 1, guppy_food_normal120: 5,
   guppy_food_premium10: 3, guppy_food_premium50: 12,
   guppy_food_shrimp10: 7, guppy_food_shrimp50: 30,
   guppy_food_krill10: 15, guppy_food_krill50: 60,

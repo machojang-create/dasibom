@@ -51,8 +51,8 @@ export const ShopTab = React.memo(function ShopTab({
               <Coins className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-slate-800 tracking-tight">꽃잎 상점</h2>
-              <p className="text-sm text-slate-500 font-medium mt-1">기본 밥은 무료! 좋은 먹이와 장식은 꽃잎으로</p>
+              <h2 className="text-xl font-black text-slate-800 tracking-tight">먹이 상점</h2>
+              <p className="text-sm text-slate-500 font-medium mt-1">먹이도 장식도 🌸 꽃잎으로 — 밥은 아주 저렴해요</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 px-4 py-2 bg-blue-50 text-blue-800 rounded-2xl border border-blue-100 shadow-sm">
@@ -132,14 +132,14 @@ export const ShopTab = React.memo(function ShopTab({
                   가장 기본적인 물고기 사료입니다. 영양가는 평범하지만 배를 채우는 데에는 충분합니다.
                 </p>
                 <div className="flex gap-2 mt-auto">
-                  <button onClick={() => { setFoodInventory(prev=>({...prev, normal: prev.normal+10})); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
-                    <span className="text-[11px] sm:text-xs font-bold mb-0.5">10개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1">무료</span>
+                  <button onClick={() => { (spendPetal as any)('guppy_food_normal20',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, normal: prev.normal+20})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm">
+                    <span className="text-[11px] sm:text-xs font-bold mb-0.5">20개 구매</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1"><Petal className="w-3.5 h-3.5" /> 1</span>
                   </button>
-                  <button onClick={() => { setFoodInventory(prev=>({...prev, normal: prev.normal+50})); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
-                    <div className="absolute top-0 right-0 bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-bl-lg z-10 scale-[0.85] origin-top-right sm:scale-100">10% 할인</div>
-                    <span className="text-[11px] sm:text-xs font-bold mb-0.5 mt-1 sm:mt-0 relative z-0">50개 구매</span>
-                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0">무료</span>
+                  <button onClick={() => { (spendPetal as any)('guppy_food_normal120',(ok:boolean)=>{ if(ok) setFoodInventory(prev=>({...prev, normal: prev.normal+120})); }); }} className="flex-1 bg-[#a855f7] hover:bg-[#9333ea] text-white rounded-xl py-2 sm:py-3 flex flex-col items-center justify-center transition-colors shadow-sm relative overflow-hidden">
+                    <div className="absolute top-0 right-0 bg-pink-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-bl-lg z-10 scale-[0.85] origin-top-right sm:scale-100">알뜰 묶음</div>
+                    <span className="text-[11px] sm:text-xs font-bold mb-0.5 mt-1 sm:mt-0 relative z-0">120개 구매</span>
+                    <span className="text-xs sm:text-sm font-black flex items-center gap-1 relative z-0"><Petal className="w-3.5 h-3.5" /> 5</span>
                   </button>
                 </div>
               </div>
@@ -255,73 +255,50 @@ export const ShopTab = React.memo(function ShopTab({
           </div>
         )}
 
-        {shopTab === 'decor' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-4 rounded-[20px] border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-              <div className="flex items-start gap-3 sm:gap-4 mb-4">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl shadow-inner border border-slate-100 shrink-0">
-                  🏰
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-black text-slate-800 text-base sm:text-lg truncate">해저 모래성</h4>
-                  <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                     <span className="text-[10px] sm:text-[11px] font-bold text-amber-600 bg-amber-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-100 whitespace-nowrap">효과</span>
-                     <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 whitespace-nowrap">배고픔 감소율 -20%</span>
+        {shopTab === 'decor' && (() => {
+          const DECOR_ITEMS = [
+            { id: 'log', emoji: '\ud83e\udeb5', name: '옹이 진 통나무', tag: '쉼터 — 배고픔 10% 천천히', desc: '구피들이 그늘에서 쉬어 가는 아늑한 통나무예요.', price: 30 },
+            { id: 'seaweed', emoji: '\ud83c\udf3f', name: '초록 해초 숲', tag: '싱그러운 물결', desc: '살랑살랑 흔들리는 해초 사이로 숨바꼭질을 해요.', price: 40 },
+            { id: 'sand_castle', emoji: '\ud83c\udff0', name: '해저 모래성', tag: '포근한 안식처', desc: '구피들이 안식처로 삼기 좋은 모래성이에요.', price: 50 },
+            { id: 'shell_bed', emoji: '\ud83d\udc1a', name: '조개껍데기 침대', tag: '아늑한 잠자리', desc: '진주빛 조개 안에서 낮잠 자기 딱 좋아요.', price: 60 },
+            { id: 'treasure_chest', emoji: '\ud83d\udcb0', name: '가라앉은 보물상자', tag: '반짝이는 볼거리', desc: '금화가 삐져나온 신비한 보물상자예요.', price: 80 },
+            { id: 'stone_tower', emoji: '\ud83e\udea8', name: '소원 돌탑', tag: '어항의 운치', desc: '하나하나 쌓아 올린 돌탑에 소원을 빌어 보세요.', price: 100 },
+            { id: 'led_mood_light', emoji: '\ud83c\udf08', name: '무지개 무드등', tag: '은은한 빛 갈아입기', desc: '어항 물빛이 무지개색으로 천천히 물들어요.', price: 120 },
+            { id: 'neon_crystal', emoji: '\ud83d\udc8e', name: '네온 수정', tag: '보랏빛 광채', desc: '심해의 수정이 신비로운 보랏빛을 내뿜어요.', price: 150 },
+            { id: 'lighthouse', emoji: '\ud83d\uddfc', name: '꼬마 등대', tag: '밤을 지키는 불빛', desc: '밤이 되면 등대가 어항을 은은하게 밝혀요.', price: 180 },
+            { id: 'golden_statue', emoji: '\ud83d\uddff', name: '빛나는 황금 석상', tag: '희귀·전설 확률 2배', desc: '특별한 물고기가 태어날 확률을 크게 높여줘요.', price: 200 },
+            { id: 'submarine', emoji: '\ud83d\udea4', name: '노란 꼬마 잠수함', tag: '어항의 명물', desc: '뽀글뽀글 기포를 내는 귀여운 잠수함이에요.', price: 300 },
+          ];
+          return (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {DECOR_ITEMS.map(d => {
+              const owned = decorations.includes(d.id);
+              const afford = (petals ?? 0) >= d.price;
+              return (
+                <div key={d.id} className="bg-white p-4 rounded-[20px] border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-slate-100 shrink-0">{d.emoji}</div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-black text-slate-800 text-base sm:text-lg truncate">{d.name}</h4>
+                      <span className="inline-block text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 mt-1">{d.tag}</span>
+                    </div>
                   </div>
+                  <p className="text-[13px] text-slate-500 font-medium mb-4 leading-relaxed">{d.desc}</p>
+                  <button
+                    onClick={() => toggleDecoration(d.id, d.price)}
+                    disabled={!owned && !afford}
+                    className={`mt-auto w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm font-black ${owned ? 'bg-slate-800 text-white' : afford ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}
+                  >
+                    {owned ? '치우기 (다시 놓으려면 꽃잎 필요)' : (
+                      <span className="flex items-center gap-1.5 text-sm">배치하기 <Petal className="w-4 h-4" /> {d.price}</span>
+                    )}
+                  </button>
                 </div>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium mb-5 sm:mb-6 leading-relaxed">
-                구피들이 안식처로 삼기 좋은 모래성입니다. 쉴 공간이 생겨 체력 소모가 줄어듭니다.
-              </p>
-              <button 
-                onClick={() => toggleDecoration('sand_castle', 50)}
-                disabled={!decorations.includes('sand_castle') && (petals ?? 0) < 50}
-                className={`w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm ${decorations.includes('sand_castle') ? 'bg-slate-800 text-white font-bold' : (petals ?? 0) >= 50 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 font-bold'}`}
-              >
-                {decorations.includes('sand_castle') ? (
-                  '장식 제거하기 (환불 불가)'
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs font-bold mb-0.5">배치하기</span>
-                    <span className="text-sm font-black flex items-center gap-1"><Petal className="w-4 h-4" /> 50 꽃잎</span>
-                  </div>
-                )}
-              </button>
-            </div>
-            
-            <div className="bg-white p-4 rounded-[20px] border border-slate-200 shadow-sm flex flex-col relative overflow-hidden">
-              <div className="flex items-start gap-3 sm:gap-4 mb-4">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-slate-50 rounded-2xl flex items-center justify-center text-3xl sm:text-4xl shadow-inner border border-slate-100 shrink-0">
-                  🗿
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className="font-black text-slate-800 text-base sm:text-lg truncate">빛나는 황금 석상</h4>
-                  <div className="flex flex-wrap gap-1 sm:gap-2 mt-1">
-                     <span className="text-[10px] sm:text-[11px] font-bold text-amber-600 bg-amber-50 px-1.5 sm:px-2 py-0.5 rounded-full border border-amber-100 whitespace-nowrap">효과</span>
-                     <span className="text-[10px] sm:text-[11px] font-bold text-slate-500 whitespace-nowrap">희귀/전설 확률 2배</span>
-                  </div>
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm text-slate-500 font-medium mb-5 sm:mb-6 leading-relaxed">
-                알을 깔 때 신비한 기운을 내뿜어 특별한 물고기가 태어날 확률을 크게 높여줍니다.
-              </p>
-              <button 
-                onClick={() => toggleDecoration('golden_statue', 200)}
-                disabled={!decorations.includes('golden_statue') && (petals ?? 0) < 200}
-                className={`w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm ${decorations.includes('golden_statue') ? 'bg-slate-800 text-white font-bold' : (petals ?? 0) >= 200 ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 font-bold'}`}
-              >
-                {decorations.includes('golden_statue') ? (
-                  '장식 제거하기 (환불 불가)'
-                ) : (
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs font-bold mb-0.5">배치하기</span>
-                    <span className="text-sm font-black flex items-center gap-1"><Petal className="w-4 h-4" /> 200 꽃잎</span>
-                  </div>
-                )}
-              </button>
-            </div>
+              );
+            })}
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );
