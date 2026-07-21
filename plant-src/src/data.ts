@@ -17,6 +17,18 @@ export const PLANT_TYPES: PlantData[] = [
   { id: 'p14', name: '매화', dialect: 'jeolla', type: 'plum', description: '겨울을 이겨내는 매화입니다.', emoji: '🌸', accent: '호탕한 전라도 사투리', environment: '추위를 견디는 뜰' },
   { id: 'p15', name: '대나무', dialect: 'gyeongsang', type: 'bamboo', description: '곧고 바른 대나무입니다.', emoji: '🎋', accent: '강직한 경상도 사투리', environment: '물빠짐이 좋은 곳' },
   { id: 'p16', name: '코스모스', dialect: 'jeju', type: 'cosmos', description: '바람에 하늘거리는 코스모스입니다.', emoji: '🌸', accent: '부드러운 제주도 사투리', environment: '햇살이 가득한 들판' },
+  { id: 'p17', name: '진달래', dialect: 'pyongan', type: 'azalea', description: '봄산을 물들이는 진달래입니다.', emoji: '🌸', accent: '담백한 평안도 사투리', environment: '볕 좋은 산비탈' },
+  { id: 'p18', name: '개나리', dialect: 'chungcheong', type: 'forsythia', description: '봄소식을 전하는 개나리입니다.', emoji: '🌼', accent: '유들유들한 충청도 사투리', environment: '담장 아래 양지' },
+  { id: 'p19', name: '동백꽃', dialect: 'jeju', type: 'camellia', description: '한겨울에 피는 붉은 동백입니다.', emoji: '🏵️', accent: '바닷바람 같은 제주도 사투리', environment: '겨울 바닷가 마을' },
+  { id: 'p20', name: '나팔꽃', dialect: 'jeolla', type: 'morningglory', description: '아침마다 나팔 부는 부지런쟁이입니다.', emoji: '🌺', accent: '흥 많은 전라도 사투리', environment: '아침 해 드는 울타리' },
+  { id: 'p21', name: '봉숭아', dialect: 'chungcheong', type: 'balsam', description: '손톱에 물들이던 추억의 봉숭아입니다.', emoji: '🌷', accent: '구수한 충청도 사투리', environment: '장독대 옆 화단' },
+  { id: 'p22', name: '라일락', dialect: 'gangwon', type: 'lilac', description: '향기로 말을 거는 라일락입니다.', emoji: '🪻', accent: '수줍은 강원도 사투리', environment: '봄바람 부는 마당' },
+  { id: 'p23', name: '은행나무', dialect: 'gyeongsang', type: 'ginkgo', description: '천년을 사는 의젓한 은행나무입니다.', emoji: '🌳', accent: '점잖은 경상도 사투리', environment: '학교 운동장 한켠' },
+  { id: 'p24', name: '단풍나무', dialect: 'gangwon', type: 'maple', description: '가을이면 제일 고운 단풍나무입니다.', emoji: '🍁', accent: '정겨운 강원도 사투리', environment: '단풍 드는 산자락' },
+  { id: 'p25', name: '벼', dialect: 'jeolla', type: 'rice', description: '고개 숙일 줄 아는 벼입니다.', emoji: '🌾', accent: '들녘 같은 전라도 사투리', environment: '물 댄 논배미' },
+  { id: 'p26', name: '고추', dialect: 'gyeongsang', type: 'pepper', description: '맵짠 성격의 청양 고추입니다.', emoji: '🌶️', accent: '화끈한 경상도 사투리', environment: '뙤약볕 텃밭' },
+  { id: 'p27', name: '토마토', dialect: 'jeju', type: 'tomato', description: '햇살 먹고 빨개진 토마토입니다.', emoji: '🍅', accent: '싱그러운 제주도 사투리', environment: '비닐하우스 명당' },
+  { id: 'p28', name: '딸기', dialect: 'jeolla', type: 'strawberry', description: '달콤한 첫사랑 맛 딸기입니다.', emoji: '🍓', accent: '애교 많은 전라도 사투리', environment: '아침 이슬 내린 밭' },
 ];
 
 export const POT_TYPES: Pot[] = [

@@ -1,3 +1,5 @@
+import { EXTRA_DIALOGUES } from './dialogues_extra';
+
 export const DIALOGUES = {
   "water": {
     "seed": [
@@ -615,3 +617,12 @@ export const DIALOGUES = {
     "아이고... 우리 어르신 굽은 등 보니 또 맴이 아려오네요.\n주름진 손으로 제 잎사귀 하나하나 닦아주실 때마다 참 많이 고마웠습니다.\n\n부족한 저를 이리 귀하게 키워주셔서 원 없이 꽃 피우고 갑니다.\n다음 생에도 어르신네 화분에 심어져서 이쁜 꽃 피워 드릴게요.\n\n사랑합니다."
   ]
 };
+
+// ── 증량분 병합(2026-07-21): 각 버킷/단계 풀에 합류 ──
+for (const key of Object.keys(EXTRA_DIALOGUES)) {
+  const bucket = (DIALOGUES as any)[key];
+  if (!bucket) continue;
+  for (const stage of Object.keys(EXTRA_DIALOGUES[key])) {
+    if (Array.isArray(bucket[stage])) bucket[stage].push(...EXTRA_DIALOGUES[key][stage]);
+  }
+}

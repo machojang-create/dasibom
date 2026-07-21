@@ -3,6 +3,7 @@ import { PlantData } from '../types';
 import { X } from 'lucide-react';
 import Petal from './Petal';
 
+/* 씨앗 상점 — 다시봄 톤(따뜻한 크림)·스프링 팝업·시니어 글씨(2026-07-21 리디자인) */
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -15,39 +16,44 @@ export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-50">
-      <div className="bg-gradient-to-b from-[#1c3326] to-[#121f18] p-8 rounded-[2rem] w-full max-w-sm max-h-[85vh] shadow-2xl border border-[#2a4d3a] relative overflow-hidden flex flex-col">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-[#d4af37] rounded-full blur-[80px] opacity-10"></div>
-        
-        <div className="flex justify-between items-center mb-6 relative z-10 shrink-0">
-           <h2 className="text-2xl font-bold text-[#e8f3ec]">씨앗 상점</h2>
-           <button onClick={onClose} className="p-2 bg-[#0a120e]/50 rounded-full hover:bg-[#2a4d3a] text-[#89a896] hover:text-white transition-colors">
-             <X className="w-5 h-5" />
-           </button>
+    <div className="fixed inset-0 bg-black/45 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="dsb-modal-pop bg-gradient-to-b from-[#FFFDF7] to-[#FBF3E4] p-6 md:p-7 rounded-[28px] w-full max-w-md max-h-[85vh] shadow-2xl border-2 border-white relative overflow-hidden flex flex-col">
+        <div className="absolute -top-16 -right-16 w-44 h-44 bg-[#F7C948] rounded-full blur-[70px] opacity-20 pointer-events-none" />
+        <div className="flex justify-between items-center mb-4 relative z-10 shrink-0">
+          <div>
+            <h2 className="text-2xl font-black text-[#5b3a1a]">🌱 씨앗 상점</h2>
+            <p className="text-[14px] text-[#9a7a52] font-bold mt-0.5">새 생명을 들이는 곳이에요</p>
+          </div>
+          <button onClick={onClose} aria-label="닫기" className="w-11 h-11 grid place-items-center bg-[#5b3a1a]/8 rounded-full hover:bg-[#5b3a1a]/15 text-[#8a6a48] transition-colors">
+            <X className="w-6 h-6" />
+          </button>
         </div>
-        
+
         {isSlotFull && (
-          <div className="relative z-10 mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-center shrink-0">
-            <p className="text-red-200 text-sm font-bold">현재 선택된 화분에는 이미 식물이 있습니다.</p>
+          <div className="relative z-10 mb-3 p-3 bg-orange-50 border border-orange-200 rounded-2xl text-center shrink-0">
+            <p className="text-orange-700 text-[14px] font-bold">이 화분엔 이미 식물이 살고 있어요. 빈 화분으로 넘겨 주세요.</p>
           </div>
         )}
-        
-        <div className="grid grid-cols-2 gap-4 relative z-10 overflow-y-auto no-scrollbar pb-4 flex-1">
+
+        <div className="grid grid-cols-2 gap-3 relative z-10 overflow-y-auto no-scrollbar pb-2 flex-1">
           {PLANT_TYPES.map(plant => {
             const cannotAfford = money < 100;
             const isDisabled = isSlotFull || cannotAfford;
             return (
-              <button 
+              <button
                 key={plant.id}
                 onClick={() => onBuySeed(plant)}
                 disabled={isDisabled}
-                className={`p-5 bg-[#0a120e]/40 border border-[#2a4d3a] rounded-2xl flex flex-col items-center transition-all group ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[#2a4d3a]/60 hover:border-[#4a7c59]'}`}
+                className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
               >
-                <div className="w-12 h-12 bg-[#1c3326] rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform shadow-inner text-xl">
+                <div className="w-14 h-14 bg-[#F6FBF2] rounded-full flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-inner text-3xl">
                   {plant.emoji}
                 </div>
-                <span className="text-[#e8f3ec] font-bold text-sm text-center">{plant.name}</span>
-                <span className={`text-xs mt-2 font-bold px-2 py-0.5 rounded-full ${cannotAfford ? 'text-red-400 bg-red-400/10' : 'text-[#d4af37] bg-[#d4af37]/10'}`}><Petal className="w-3 h-3 inline" /> 100 꽃잎</span>
+                <span className="text-[#4a3a26] font-black text-[15px] text-center">{plant.name}</span>
+                <span className="text-[11px] text-[#9a7a52] font-bold mb-2 text-center leading-tight">{plant.accent.replace(' 사투리','')}</span>
+                <span className={`text-[13px] font-black px-3 py-1 rounded-full flex items-center gap-1 ${cannotAfford ? 'text-red-400 bg-red-50' : 'text-[#a14d68] bg-pink-50'}`}>
+                  <Petal className="w-3.5 h-3.5" /> 100 꽃잎
+                </span>
               </button>
             );
           })}

@@ -455,6 +455,30 @@ export default function App() {
         <div className={`absolute bottom-0 w-full h-[60%] bg-gradient-to-t transition-colors duration-1000 ${
           timeOfDay === 'night' ? 'from-green-900/40' : 'from-green-100/50'
         } to-transparent`}></div>
+
+        {/* ── 창밖 원경: 해/달·별·산등성이·마을 — 여기가 '바깥세상' ── */}
+        {timeOfDay === 'night' ? (
+          <>
+            <div className="absolute top-[8%] right-[16%] text-5xl md:text-6xl opacity-90 drop-shadow-[0_0_18px_rgba(255,244,200,.7)]">🌙</div>
+            {[14,26,38,55,68,80].map((lx,i)=>(
+              <div key={i} className="absolute text-[10px] text-yellow-100 animate-twinkle" style={{ left: lx+'%', top: (6+(i%3)*7)+'%', animationDelay: (i*0.7)+'s' }}>✦</div>
+            ))}
+          </>
+        ) : (weather==='sunny'||weather==='clear'||weather==='hot') ? (
+          <div className="absolute top-[7%] right-[14%] w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-yellow-100 to-amber-300 shadow-[0_0_50px_18px_rgba(253,224,71,.45)] opacity-95" />
+        ) : null}
+        {/* 산등성이 2겹 + 마을 실루엣 */}
+        <svg className={`absolute bottom-[30%] left-0 w-full h-[26%] transition-opacity duration-1000 ${timeOfDay==='night'?'opacity-30':'opacity-45'}`} viewBox="0 0 400 100" preserveAspectRatio="none">
+          <path d="M0,100 L0,55 Q60,20 130,48 Q200,75 270,38 Q330,10 400,45 L400,100 Z" fill="#7fa88a" />
+          <path d="M0,100 L0,72 Q80,45 160,68 Q250,90 320,60 Q370,42 400,58 L400,100 Z" fill="#5c8a6b" opacity="0.8" />
+          <g fill="#4a6b58" opacity="0.9">
+            <rect x="286" y="62" width="10" height="18" /><rect x="300" y="55" width="12" height="25" /><rect x="318" y="64" width="9" height="16" />
+          </g>
+        </svg>
+        {/* 가끔 지나가는 새 */}
+        {timeOfDay !== 'night' && (
+          <div className="absolute top-[14%] left-0 text-[13px] text-slate-600/70 animate-birdfly pointer-events-none">〜🕊</div>
+        )}
         
         {/* Weather Overlay */}
         <WeatherOverlay weather={weather} timeOfDay={timeOfDay} />
@@ -467,13 +491,36 @@ export default function App() {
         }`}></div>
       </div>
 
-      {/* Panoramic Window Frame (통창) */}
+      {/* Panoramic Window Frame (통창) + 창살 + 커튼 — '베란다에서 내다보는 창' */}
       <div className="absolute inset-0 pointer-events-none z-0 border-[16px] md:border-[24px] border-white shadow-[inset_0_0_60px_rgba(0,0,0,0.2)]"></div>
+      <div className="absolute inset-0 pointer-events-none z-0">
+        {/* 세로 창살 2개 + 가로 창살 1개 */}
+        <div className="absolute top-0 bottom-[32vh] left-1/3 w-[10px] md:w-[14px] bg-gradient-to-r from-white via-[#f3efe6] to-white shadow-[2px_0_6px_rgba(0,0,0,.12)]" />
+        <div className="absolute top-0 bottom-[32vh] left-2/3 w-[10px] md:w-[14px] bg-gradient-to-r from-white via-[#f3efe6] to-white shadow-[2px_0_6px_rgba(0,0,0,.12)]" />
+        <div className="absolute left-0 right-0 top-[26%] h-[10px] md:h-[14px] bg-gradient-to-b from-white via-[#f3efe6] to-white shadow-[0_2px_6px_rgba(0,0,0,.12)]" />
+        {/* 커튼 자락(좌·우) */}
+        <div className="absolute top-0 left-0 h-[46%] w-[13%] md:w-[11%] animate-curtain origin-top bg-gradient-to-r from-[#fdf6e9]/95 via-[#f7ead2]/80 to-transparent rounded-br-[60%]" style={{ boxShadow: 'inset -12px 0 18px -10px rgba(150,120,80,.25)' }} />
+        <div className="absolute top-0 right-0 h-[46%] w-[13%] md:w-[11%] animate-curtain-r origin-top bg-gradient-to-l from-[#fdf6e9]/95 via-[#f7ead2]/80 to-transparent rounded-bl-[60%]" style={{ boxShadow: 'inset 12px 0 18px -10px rgba(150,120,80,.25)' }} />
+      </div>
       
       {/* Table Background (Windowsill) */}
       <div className={`absolute bottom-0 left-0 right-0 h-[32vh] border-t-[16px] md:border-t-[24px] shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-0 pointer-events-none transition-colors duration-1000 ${
         timeOfDay === 'night' ? 'bg-[#5c4a30] border-[#4a3920]' : 'bg-[#f4e4c3] border-[#e0c396]'
       }`}>
+        {/* 나무 결 */}
+        <div className="absolute inset-0 opacity-25" style={{ backgroundImage: 'repeating-linear-gradient(90deg, rgba(120,85,40,.12) 0 2px, transparent 2px 46px)' }} />
+        {/* 베란다 소품: 물뿌리개·라디오·다육이·목장갑 */}
+        <div className="absolute -top-[54px] left-[5%] md:left-[7%] flex items-end gap-1 select-none">
+          <svg width="58" height="46" viewBox="0 0 60 48" className="drop-shadow-md opacity-95">
+            <path d="M14 18 h26 a4 4 0 0 1 4 4 v16 a4 4 0 0 1 -4 4 h-22 a4 4 0 0 1 -4 -4 Z" fill="#7fa3b8" />
+            <path d="M40 24 L54 12 l3 4 -13 12 Z" fill="#6b93a8" />
+            <circle cx="55" cy="13" r="4.5" fill="#8fb3c8" />
+            <path d="M16 18 q10 -12 22 0" fill="none" stroke="#6b93a8" strokeWidth="3.5" strokeLinecap="round" />
+          </svg>
+        </div>
+        <div className="absolute -top-[40px] right-[6%] md:right-[8%] text-[34px] md:text-[38px] drop-shadow-md select-none">📻</div>
+        <div className="absolute -top-[34px] right-[20%] md:right-[19%] text-[26px] drop-shadow-sm select-none">🧤</div>
+        <div className="absolute -top-[38px] left-[22%] md:left-[20%] text-[30px] drop-shadow-md select-none">🪴</div>
       </div>
 
       {/* Fixed UI Layer (Z-50) */}
@@ -481,23 +528,23 @@ export default function App() {
         {/* Navigation Arrows */}
         <div className="absolute top-[76%] md:top-[70%] -translate-y-1/2 left-2 md:left-6 z-40 pointer-events-auto">
           {currentSlotIndex > 0 && (
-            <button onClick={() => scrollToSlot(currentSlotIndex - 1)} className="p-2 md:p-3 bg-white/70 hover:bg-white/95 backdrop-blur-md rounded-full shadow-lg text-gray-600 transition-all active:scale-95 border-2 border-white/50">
+            <button onClick={() => scrollToSlot(currentSlotIndex - 1)} className="w-12 h-12 md:w-14 md:h-14 grid place-items-center bg-white/95 hover:bg-white rounded-full shadow-xl text-[#5b3a1a] transition-all active:scale-90 border-2 border-[#e8d9be]">
               <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
             </button>
           )}
         </div>
         <div className="absolute top-[76%] md:top-[70%] -translate-y-1/2 right-2 md:right-6 z-40 pointer-events-auto">
           {currentSlotIndex < slots.length - 1 && (
-            <button onClick={() => scrollToSlot(currentSlotIndex + 1)} className="p-2 md:p-3 bg-white/70 hover:bg-white/95 backdrop-blur-md rounded-full shadow-lg text-gray-600 transition-all active:scale-95 border-2 border-white/50">
+            <button onClick={() => scrollToSlot(currentSlotIndex + 1)} className="w-12 h-12 md:w-14 md:h-14 grid place-items-center bg-white/95 hover:bg-white rounded-full shadow-xl text-[#5b3a1a] transition-all active:scale-90 border-2 border-[#e8d9be]">
               <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
             </button>
           )}
         </div>
 
-        {/* Top Indicators */}
-        <div className="absolute top-20 md:top-24 left-0 right-0 flex justify-center gap-2">
+        {/* Slot Indicators — 말풍선과 겹치지 않게 하단 버튼 바로 위로 */}
+        <div className="absolute bottom-[136px] md:bottom-[142px] left-0 right-0 flex justify-center gap-2.5 z-40">
           {slots.map((_, idx) => (
-             <div key={idx} className={`w-2.5 h-2.5 rounded-full transition-all ${idx === currentSlotIndex ? 'bg-white scale-125 shadow-md' : 'bg-white/50'}`} />
+             <div key={idx} className={`rounded-full transition-all shadow ${idx === currentSlotIndex ? 'w-3.5 h-3.5 bg-[#c8784a] ring-2 ring-white' : 'w-3 h-3 bg-white/85 border border-[#c8a86a]/50'}`} />
           ))}
         </div>
 
@@ -559,13 +606,13 @@ export default function App() {
             <span className="font-bold text-[15px] md:text-base drop-shadow-md tracking-tight text-center relative z-10">물주기</span>
             <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10">무료</span>
           </button>
-          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] ${money < 15 ? "opacity-60 saturate-[.6]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">🌿</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">영양제<br/><span className="text-[11px] font-semibold opacity-90">잎이 쑥 자라요</span></span>
             <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
           </button>
-          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] ${money < 40 ? "opacity-60 saturate-[.6]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">✨</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">고급 영양제<br/><span className="text-[11px] font-semibold opacity-90">쑥쑥 두 배!</span></span>
@@ -603,12 +650,13 @@ export default function App() {
                   <PlantView plant={slot} onInteract={() => speakWithPlant('쓰다듬기', idx)} onRename={(newName) => handleRenamePlant(idx, newName)} timeOfDay={timeOfDay} />
                 </>
               ) : (
-                <div className="relative flex flex-col items-center justify-end h-64 mt-4 mb-2 z-20 -translate-y-[120px] md:-translate-y-[120px]">
-                  <div className="text-4xl relative z-20 filter drop-shadow-lg -mb-6 opacity-40">🌱</div>
-                  <div className="w-36 md:w-44 h-28 md:h-32 bg-gradient-to-b from-[#fceabb]/40 to-[#f8b500]/40 rounded-b-[40px] border-t-[12px] border-[#fbce5e]/40 shadow-inner flex items-center justify-center backdrop-blur-sm">
-                    <span className="text-[#c59b3a] font-bold text-sm">빈 화분</span>
+                <button onClick={() => setIsShopOpen(true)} className="relative flex flex-col items-center justify-end h-64 mt-4 mb-2 z-30 -translate-y-[120px] md:-translate-y-[120px] pointer-events-auto group cursor-pointer">
+                  <div className="text-5xl relative z-20 filter drop-shadow-lg mb-2 opacity-75 group-hover:scale-110 group-active:scale-95 transition-transform">🌱</div>
+                  <div className="w-36 md:w-44 h-28 md:h-32 rounded-b-[40px] border-4 border-dashed border-[#c8a86a]/80 bg-white/35 backdrop-blur-sm flex flex-col items-center justify-center gap-1.5 shadow-inner">
+                    <span className="text-[#7a5f3e] font-black text-[15px] drop-shadow-sm">빈 화분</span>
+                    <span className="bg-[#c8784a] group-hover:bg-[#b96a3e] text-white text-[13px] font-black px-3.5 py-1.5 rounded-full shadow-md transition-colors">+ 씨앗 심기</span>
                   </div>
-                </div>
+                </button>
               )}
             </div>
           </div>

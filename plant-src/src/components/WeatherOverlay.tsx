@@ -52,14 +52,25 @@ export default function WeatherOverlay({ weather, timeOfDay }: { weather: Weathe
         </div>
       </div>
 
-      {/* Cloudy Effect */}
+      {/* Cloudy Effect — 떠가는 구름 */}
       <div className={`absolute inset-0 transition-opacity duration-1000 ${weather === 'cloudy' ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="absolute inset-0 bg-[#0a120e]/40 backdrop-blur-[1px] mix-blend-multiply"></div>
+        <div className="absolute inset-0 bg-slate-500/15"></div>
+        <div className="absolute top-[6%] w-[42%] h-[14%] bg-white/70 rounded-full blur-xl animate-clouddrift" />
+        <div className="absolute top-[16%] w-[34%] h-[11%] bg-white/55 rounded-full blur-xl animate-clouddrift" style={{ animationDelay: '-22s' }} />
+        <div className="absolute top-[3%] w-[26%] h-[9%] bg-slate-200/60 rounded-full blur-lg animate-clouddrift" style={{ animationDelay: '-40s' }} />
       </div>
 
       {/* Rainy & Typhoon Effect */}
       <div className={`absolute inset-0 transition-opacity duration-1000 ${weather === 'rainy' || weather === 'typhoon' ? 'opacity-100' : 'opacity-0'}`}>
-        <div className={`absolute inset-0 backdrop-blur-[2px] transition-all duration-1000 ${weather === 'typhoon' ? 'bg-[#0a120e]/80' : 'bg-[#0a120e]/60'}`}></div>
+        <div className={`absolute inset-0 transition-all duration-1000 ${weather === 'typhoon' ? 'bg-slate-800/45' : 'bg-slate-700/25'}`}></div>
+        {weather === 'typhoon' && <div className="absolute inset-0 bg-white animate-lightning pointer-events-none" />}
+        {weather === 'typhoon' && [0,1,2,3].map(i => (
+          <div key={i} className="absolute text-xl animate-leafblow" style={{ top: (12+i*18)+'%', animationDelay: (i*1.3)+'s' }}>🍃</div>
+        ))}
+        {/* 유리에 맺힌 물방울 */}
+        {[8,22,41,63,78,90].map((lx,i) => (
+          <div key={'gd'+i} className="absolute w-1.5 h-3 bg-sky-100/50 rounded-full animate-glassdrop" style={{ left: lx+'%', animationDelay: (i*1.7)+'s' }} />
+        ))}
         <div className={`absolute inset-0 ${weather === 'typhoon' ? '-rotate-12 scale-125' : ''}`}>
            {particles.map(drop => (
              <div
@@ -78,7 +89,7 @@ export default function WeatherOverlay({ weather, timeOfDay }: { weather: Weathe
 
       {/* Snowy Effect */}
       <div className={`absolute inset-0 transition-opacity duration-1000 ${weather === 'snowy' ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="absolute inset-0 bg-blue-900/20 backdrop-blur-[1px] transition-all duration-1000"></div>
+        <div className="absolute inset-0 bg-sky-200/20 transition-all duration-1000"></div>
         <div className="absolute inset-0">
            {particles.map(drop => (
              <motion.div

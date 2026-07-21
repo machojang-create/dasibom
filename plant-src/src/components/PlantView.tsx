@@ -117,23 +117,23 @@ const getFacialExpression = (water: number, phrase?: string) => {
 };
 
 const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode }) => {
-   let bg = "bg-gradient-to-b from-[#d4a373] to-[#c8986a]";
+   let bg = "bg-gradient-to-br from-[#e8bd8b] via-[#d4a373] to-[#b98957]";
    let rim = "bg-[#c8986a]";
    let text = "text-[#5c4033]";
    
    if (potId === 'pot2') { // 황금
-       bg = "bg-gradient-to-b from-[#fceabb] to-[#f8b500]";
+       bg = "bg-gradient-to-br from-[#fff3c9] via-[#f9c941] to-[#e09b00]";
        rim = "bg-[#f8b500]";
        text = "text-[#c59b3a]";
    } else if (potId === 'pot3') { // 무늬
        bg = "bg-gradient-to-b from-[#e8cf9f] via-[#d9b87f] to-[#e0c396]";
        rim = "bg-[#c8986a]";
    } else if (potId === 'pot4') { // 백자
-       bg = "bg-gradient-to-b from-[#ffffff] to-[#e6e6e6]";
+       bg = "bg-gradient-to-b from-white via-[#f7f7f5] to-[#dfdfdb]";
        rim = "bg-[#f0f0f0]";
        text = "text-[#666666]";
    } else if (potId === 'pot5') { // 청자
-       bg = "bg-gradient-to-b from-[#9fc0aa] to-[#7a9e88]";
+       bg = "bg-gradient-to-br from-[#c2dcc9] via-[#8fb89d] to-[#6a917b]";
        rim = "bg-[#8bb399]";
        text = "text-[#3d5a48]";
    } else if (potId === 'pot6') { // 나무
@@ -153,31 +153,40 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
        rim = "bg-[#737373]";
        text = "text-[#262626]";
    } else if (potId === 'pot10') { // 테라코타
-       bg = "bg-gradient-to-b from-[#e2725b] to-[#c15c4c]";
+       bg = "bg-gradient-to-br from-[#f2977e] via-[#dd6c52] to-[#b34f40]";
        rim = "bg-[#c15c4c]";
        text = "text-[#7a3b31]";
    } else if (potId === 'pot11') { // 크리스탈
-       bg = "bg-gradient-to-b from-purple-300/60 to-blue-300/60 backdrop-blur-lg border border-white/40";
+       bg = "bg-gradient-to-br from-fuchsia-200/70 via-sky-200/60 to-violet-300/70 backdrop-blur-lg border border-white/60";
        rim = "bg-white/60 backdrop-blur-md";
        text = "text-indigo-900";
    } else if (potId === 'pot12') { // 깡통
-       bg = "bg-gradient-to-b from-[#a9a9a9] to-[#808080] border border-gray-400";
+       bg = "bg-gradient-to-b from-[#d8d8d8] via-[#a8a8a8] to-[#7d7d7d] border border-gray-400";
        rim = "bg-[#c0c0c0]";
        text = "text-[#4d4d4d]";
    } else if (potId === 'pot13') { // 은빛
-       bg = "bg-gradient-to-b from-[#e6e9f0] to-[#eef1f5] border border-gray-200";
+       bg = "bg-gradient-to-br from-white via-[#dfe5ee] to-[#c3cbd8] border border-gray-200";
        rim = "bg-[#dcdcdc]";
        text = "text-[#808080]";
    }
 
    return (
        <div className="flex flex-col items-center relative z-20">
-          <div className={`w-32 md:w-40 h-6 md:h-8 ${rim} rounded-lg shadow-md z-10 -mb-2`} />
+          <div className={`w-32 md:w-40 h-6 md:h-8 ${rim} rounded-lg shadow-md z-10 -mb-2 relative overflow-hidden`}>
+            {/* 림 광택 */}
+            <div className="pot-shine absolute inset-x-1 top-0.5 h-1/2 bg-gradient-to-b from-white/60 to-transparent rounded-full pointer-events-none" />
+          </div>
           <div 
-             className={`w-24 md:w-32 h-28 md:h-32 ${bg} shadow-inner flex flex-col items-center justify-center relative`}
+             className={`w-24 md:w-32 h-28 md:h-32 ${bg} shadow-inner flex flex-col items-center justify-center relative overflow-hidden`}
              style={{ clipPath: 'polygon(0 0, 100% 0, 85% 100%, 15% 100%)', borderBottomLeftRadius: '16px', borderBottomRightRadius: '16px' }}
           >
-            <div className={`mt-2 ${text} opacity-80 flex items-center justify-center pointer-events-none`}>
+            {/* 좌측 세로 광택 줄기 — 도자기 윤기 */}
+            <div className="absolute left-[16%] top-[8%] bottom-[14%] w-[10%] bg-gradient-to-b from-white/55 via-white/20 to-transparent rounded-full pointer-events-none" style={{ filter: 'blur(1px)' }} />
+            {/* 우측 은은한 반사 */}
+            <div className="absolute right-[18%] top-[14%] h-[30%] w-[6%] bg-white/25 rounded-full pointer-events-none" style={{ filter: 'blur(2px)' }} />
+            {/* 하단 안쪽 음영 — 입체감 */}
+            <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/15 to-transparent pointer-events-none" />
+            <div className={`mt-2 ${text} opacity-90 flex items-center justify-center pointer-events-none relative z-10`}>
                {expression}
             </div>
           </div>
