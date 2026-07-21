@@ -81,7 +81,7 @@ export const ManageTab = React.memo(function ManageTab({
       <div className="p-4 pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 shrink-0 bg-white border-b border-slate-100 rounded-t-[24px]">
         <div>
           <h2 className="text-xl font-black text-slate-800 tracking-tight">내 어항 생물 관리 대장</h2>
-          <p className="text-sm text-slate-500 font-medium mt-1">레벨 5부터 서로 가까이 헤엄치면 아기가 태어나요 💕</p>
+          <p className="text-sm text-slate-500 font-medium mt-1">만렙(Lv.10) 짝꿍이 배부르게 만나면 평생 단 한 번, 아기가 태어나요 💕</p>
         </div>
         <div className="bg-blue-50 text-blue-800 px-3 py-1.5 rounded-full font-bold text-xs border border-blue-100 shadow-sm">
           총 {guppies.length}마리
@@ -158,8 +158,10 @@ export const ManageTab = React.memo(function ManageTab({
                 </div>
               </div>
 
-              <div className={`text-[12px] font-bold rounded-xl px-3 py-2 ${guppy.level >= 5 ? 'bg-pink-50 text-pink-600 border border-pink-100' : 'bg-slate-50 text-slate-500 border border-slate-100'}`}>
-                {guppy.level >= 5 ? '💕 다 컸어요 — 짝을 만나 가까이 헤엄치면 아기가 생겨요' : `🌱 레벨 5가 되면 아기를 가질 수 있어요 (지금 Lv.${guppy.level})`}
+              <div className={`text-[12px] font-bold rounded-xl px-3 py-2 ${!(guppy as any).hasBred && guppy.level >= 10 ? 'bg-pink-50 text-pink-600 border border-pink-100' : 'bg-slate-50 text-slate-500 border border-slate-100'}`}>
+                {(guppy as any).hasBred ? '👨‍👩‍👧 이미 아기를 본 어엿한 부모예요'
+                  : guppy.level >= 10 ? '💕 만렙! 배부른 만렙 짝을 만나면 평생 한 번, 아기가 생겨요'
+                  : `🌱 만렙(Lv.10)이 되면 아기를 가질 수 있어요 (지금 Lv.${guppy.level})`}
               </div>
 
               {/* Stats Grid */}

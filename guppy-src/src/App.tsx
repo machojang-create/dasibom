@@ -48,6 +48,7 @@ interface GuppyInstance {
   level: number;
   xp: number;
   breedCooldown?: number;
+  hasBred?: boolean;
   hunger: number;
   stats: {
     speed: number;
@@ -350,7 +351,7 @@ export default function App() {
           x: 60 + Math.random() * (W - 160), y: 120 + Math.random() * 260,
           vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 0.6,
           scale: g.scale || 1, swimPhase: Math.random() * Math.PI * 2,
-          isSick: !!g.isSick, breedCooldown: g.breedCooldown || 0
+          isSick: !!g.isSick, breedCooldown: g.breedCooldown || 0, hasBred: !!g.hasBred
         }));
         guppiesRef.current = rev; setGuppiesState(rev);
       }
@@ -369,7 +370,7 @@ export default function App() {
           achievements: achievementsRef.current,
           guppies: guppiesRef.current.map(g => ({
             id: g.id, data: g.data, level: g.level, xp: g.xp, hunger: g.hunger,
-            stats: g.stats, scale: g.scale, isSick: g.isSick, breedCooldown: g.breedCooldown
+            stats: g.stats, scale: g.scale, isSick: g.isSick, breedCooldown: g.breedCooldown, hasBred: !!(g as any).hasBred
           }))
         }));
       } catch (e) {}
@@ -517,15 +518,15 @@ export default function App() {
     // Breeding check
     const newBabies: GuppyInstance[] = [];
     for (let i = 0; i < currentGuppies.length; i++) {
-      if (currentGuppies[i].level < 5 || (currentGuppies[i].breedCooldown || 0) > 0) continue;
+      if (currentGuppies[i].level < 10 || (currentGuppies[i] as any).hasBred || currentGuppies[i].hunger < 60) continue;   // 만렙+배부름+평생1회
       
       for (let j = i + 1; j < currentGuppies.length; j++) {
-        if (currentGuppies[j].level < 5 || (currentGuppies[j].breedCooldown || 0) > 0) continue;
+        if (currentGuppies[j].level < 10 || (currentGuppies[j] as any).hasBred || currentGuppies[j].hunger < 60) continue;
         
         const dist = Math.hypot(currentGuppies[i].x - currentGuppies[j].x, currentGuppies[i].y - currentGuppies[j].y);
         if (dist < 80 * ((currentGuppies[i].scale + currentGuppies[j].scale) / 2)) { 
-          currentGuppies[i].breedCooldown = 60; // 60 seconds cooldown
-          currentGuppies[j].breedCooldown = 60;
+          (currentGuppies[i] as any).hasBred = true;   // 평생 한 번 — 부모가 된다 (2026-07-21 Macho 밸런스)
+          (currentGuppies[j] as any).hasBred = true;
           currentGuppies[i].expression = '하트';
           currentGuppies[j].expression = '하트';
 
@@ -719,12 +720,13 @@ export default function App() {
                  }
               }, 2000);
             } else {
-              const targetVx = (dx / dist) * (100 * stats.speed * stats.reaction);
-              const targetVy = (dy / dist) * (100 * stats.speed * stats.reaction);
+              const targetVx = (dx / dist) * (85 * stats.speed);
+              const targetVy = (dy / dist) * (85 * stats.speed);
               
               // Smoothly steer towards the food
-              vx = targetVx;
-              vy = targetVy;
+              const steer = Math.min(1, dt * 3.5);   // 부드러운 조향 — 순간 방향 반전 금지
+              vx += (targetVx - vx) * steer;
+              vy += (targetVy - vy) * steer;
             }
           } else {
             targetFoodId = null;
@@ -743,14 +745,14 @@ export default function App() {
             } else if (actionType < 0.8) {
               // Normal organic swim
               const swimAngle = Math.random() * Math.PI * 2;
-              const speed = (50 + Math.random() * 100) * stats.speed;
+              const speed = (45 + Math.random() * 65) * stats.speed;
               vx = Math.cos(swimAngle) * speed;
               vy = Math.sin(swimAngle) * speed * 0.5; // Flatter movement
               timeUntilNextTurn = (2 + Math.random() * 3) / stats.turnRate;
             } else {
               // Darting
               const dartAngle = Math.random() * Math.PI * 2;
-              const speed = (150 + Math.random() * 150) * stats.speed;
+              const speed = (90 + Math.random() * 70) * stats.speed;
               vx = Math.cos(dartAngle) * speed;
               vy = Math.sin(dartAngle) * speed * 0.5;
               timeUntilNextTurn = 0.5 + Math.random();
@@ -758,6 +760,10 @@ export default function App() {
           }
         }
 
+        // 전역 속도 상한 — 어떤 계산 경로로도 갑자기 튀지 않게
+        const spCap = 150 * stats.speed;
+        const spd = Math.hypot(vx, vy);
+        if (spd > spCap) { vx = (vx / spd) * spCap; vy = (vy / spd) * spCap; }
         const moveSpeedMulti = decorationsRef.current.includes('summer_parasol') ? 1.1 : 1;
         x += vx * moveSpeedMulti * dt;
         y += vy * moveSpeedMulti * dt;
@@ -765,26 +771,26 @@ export default function App() {
         const padding = 100 * scale;
         if (x < padding) { 
           x = padding; 
-          vx = Math.abs(vx) * (0.5 + Math.random()); 
-          vy += (Math.random() - 0.5) * 100;
+          vx = Math.abs(vx) * 0.6; 
+          vy += (Math.random() - 0.5) * 40;
           timeUntilNextTurn = Math.random(); 
         }
         if (x > tankWidth - padding) { 
           x = tankWidth - padding; 
-          vx = -Math.abs(vx) * (0.5 + Math.random()); 
-          vy += (Math.random() - 0.5) * 100;
+          vx = -Math.abs(vx) * 0.6; 
+          vy += (Math.random() - 0.5) * 40;
           timeUntilNextTurn = Math.random(); 
         }
         if (y < padding) { 
           y = padding; 
-          vy = Math.abs(vy) * (0.5 + Math.random()); 
-          vx += (Math.random() - 0.5) * 100;
+          vy = Math.abs(vy) * 0.6; 
+          vx += (Math.random() - 0.5) * 40;
           timeUntilNextTurn = Math.random(); 
         }
         if (y > tankHeight - padding) { 
           y = tankHeight - padding; 
-          vy = -Math.abs(vy) * (0.5 + Math.random()); 
-          vx += (Math.random() - 0.5) * 100;
+          vy = -Math.abs(vy) * 0.6; 
+          vx += (Math.random() - 0.5) * 40;
           timeUntilNextTurn = Math.random(); 
         }
 
@@ -801,7 +807,7 @@ export default function App() {
         xp += distanceMoved * 0.05; // Passive XP from movement
 
         const nextLevelXp = level * 150;
-        if (xp >= nextLevelXp) {
+        if (level < 10 && xp >= nextLevelXp) {
           xp -= nextLevelXp;
           level += 1;
           stats = {
@@ -812,7 +818,7 @@ export default function App() {
           };
           scale = Math.min(scale + 0.02, stats.size); // grow slowly
           expression = '신남';
-          if (level === 5) setTimeout(() => showToast('어른이 됐어요 💕', `${g.data.guppy_name}이(가) 이제 짝을 만나면 아기를 가질 수 있어요!`, '🐠'), 0);
+          if (level === 10) setTimeout(() => showToast('만렙이 됐어요 ✨', `${g.data.guppy_name}이(가) 다 컸어요! 만렙 짝을 만나면 평생 한 번, 아기를 가질 수 있어요 💕`, '🐠'), 0);
           
           setTimeout(() => {
              const idx = guppiesRef.current.findIndex(guppy => guppy.id === g.id);
@@ -1339,8 +1345,8 @@ export default function App() {
                          if (guppiesRef.current[idx].isSick) sayGuppy(guppy.id, '으슬으슬… 몸이 안 좋아요');
                          else sayGuppy(guppy.id);
                          guppiesRef.current[idx].expression = guppiesRef.current[idx].isSick ? '슬픔' : '신남';
-                         guppiesRef.current[idx].vx = guppiesRef.current[idx].vx > 0 ? -150 : 150;
-                         guppiesRef.current[idx].vy = (Math.random() - 0.5) * 150;
+                         guppiesRef.current[idx].vx = guppiesRef.current[idx].vx > 0 ? -90 : 90;
+                         guppiesRef.current[idx].vy = (Math.random() - 0.5) * 70;
                       }
                       setReleaseArm(false); setEditingName(false);
                       setSelectedGuppyId(guppy.id);
