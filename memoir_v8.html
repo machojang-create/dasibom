@@ -2813,5 +2813,40 @@ document.addEventListener('DOMContentLoaded',function(){
   BomPop.bind({ overlay:'#loginModalBg', box:'.lm-box', face:'bom_smile' }); // 로그인
 </script>
 <script src="/dasibom-points.js?v=1"></script>
+<script>
+/* 자서전 완성 보너스 5,000잎(2026-07-21 Macho 확정) — 서버가 완성을 검증(답변 60개+·중복 제거 50개+), 평생 1회.
+   하루 1번만 조용히 확인 — 미완성이면 아무 일도 없고, 완성 순간의 방문에서 축하가 터진다. */
+(function () {
+  try {
+    var day = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+    if (localStorage.getItem('dsb_memoir_bonus_checked') === day) return;
+    if (localStorage.getItem('dsb_memoir_bonus_got')) return;
+  } catch (e) {}
+  var tries = 0;
+  var t = setInterval(function () {
+    if (++tries > 60) { clearInterval(t); return; }
+    try {
+      if (!(window.firebase && firebase.apps && firebase.apps.length && firebase.auth && firebase.auth().currentUser && typeof firebase.functions === 'function')) return;
+      clearInterval(t);
+      firebase.app().functions('asia-northeast3').httpsCallable('memoirCompleteBonus')({})
+        .then(function (r) {
+          var d = r && r.data;
+          try { localStorage.setItem('dsb_memoir_bonus_checked', new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10)); } catch (e) {}
+          if (d && d.ok) {
+            try { localStorage.setItem('dsb_memoir_bonus_got', '1'); } catch (e) {}
+            if (window.DasibomPoints && DasibomPoints.toast) {}
+            var el = document.createElement('div');
+            el.style.cssText = 'position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:99999;background:#fff;border:3px solid #f3c2d3;border-radius:24px;padding:26px 30px;text-align:center;box-shadow:0 20px 50px -20px rgba(0,0,0,.4);font-weight:800;color:#5b3a1a;max-width:86vw';
+            el.innerHTML = '<div style="font-size:40px">🎉🌸</div><div style="font-size:19px;margin-top:8px">자서전 완성을 축하드려요!</div><div style="font-size:15px;margin-top:6px;color:#a14d68">인생을 한 권에 담으신 기념으로<br><b style="font-size:22px">꽃잎 5,000장</b>을 선물로 드려요</div>';
+            document.body.appendChild(el);
+            setTimeout(function () { el.remove(); }, 7000);
+          } else if (d && d.reason === 'already') {
+            try { localStorage.setItem('dsb_memoir_bonus_got', '1'); } catch (e) {}
+          }
+        }).catch(function () {});
+    } catch (e) {}
+  }, 500);
+})();
+</script>
 </body>
 </html>

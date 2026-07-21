@@ -356,13 +356,9 @@ export default function App() {
       if (!targetPlant) return prev;
       const newPlant = { ...targetPlant };
 
-      if (type !== 'water') {
-        const today = new Date().toISOString().slice(0, 10);
-        (newPlant as any).nutsToday = ((newPlant as any).nutsDate === today ? ((newPlant as any).nutsToday || 0) : 0) + 1;
-        (newPlant as any).nutsDate = today;
-      }
       let waterIncrease = type === 'water' ? 15 : type === 'normal_nut' ? 10 : 30;
-      let levelIncrease = type === 'water' ? 0 : type === 'normal_nut' ? 1 : 2;
+      // 영양제 효과 축소(2026-07-21 Macho): 일반 +0.2 / 고급 +0.6 레벨 — 비용 유지, 몰입 유저의 꽃잎 하수구
+      let levelIncrease = type === 'water' ? 0 : type === 'normal_nut' ? 0.2 : 0.6;
       // 물주기: 하루 첫 물은 정성으로 쳐서 레벨+1 (자동 성장 폐지 — 매일 들르는 이유)
       if (type === 'water') {
         const today = new Date().toISOString().slice(0, 10);
@@ -377,7 +373,9 @@ export default function App() {
       if (type !== 'water' && timeOfDay === 'night') waterIncrease = Math.floor(waterIncrease * 1.5);
       
       newPlant.waterLevel = Math.min(100, newPlant.waterLevel + waterIncrease);
-      newPlant.level = Math.min(10, newPlant.level + levelIncrease);
+      let buf = ((newPlant as any).growthBuf || 0) + levelIncrease;
+      while (buf >= 1 && newPlant.level < 12) { newPlant.level += 1; buf -= 1; }
+      (newPlant as any).growthBuf = newPlant.level >= 12 ? 0 : Math.round(buf * 100) / 100;
       newPlant.lastWatered = Date.now();
 
       if (newPlant.level >= 2 && newPlant.stage === 'seed') newPlant.stage = 'sprout';
@@ -414,19 +412,6 @@ export default function App() {
         return;
       }
       applyEffect('water'); return;   // 물은 무료 — 매일 만지는 핵심 손길
-    }
-    // 영양제 하루 2회 상한(2026-07-21 밸런스 감사): 꽃잎으로 보름 호흡을 건너뛰지 못하게
-    {
-      const cur = slots[currentSlotIndex];
-      if (cur) {
-        const today = new Date().toISOString().slice(0, 10);
-        const nDay = (cur as any).nutsDate === today ? ((cur as any).nutsToday || 0) : 0;
-        if (nDay >= 2) {
-          plantSay(['영양제도 과하면 독이데이. 내일 또 챙겨 주라!', '오늘 몫은 든든히 묵었다. 인자 소화 좀 시키자!', '과유불급이라 안 카나. 내일 다시 온나!'][Math.floor(Math.random() * 3)]);
-          lastUserSpeakRef.current = Date.now();
-          return;
-        }
-      }
     }
     const P = dsb(); if (!P) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
     P.spend(type, (err: any, d: any) => {

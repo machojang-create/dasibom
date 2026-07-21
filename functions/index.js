@@ -1027,6 +1027,63 @@ exports.adminGrantPoints = functions
     return { ok: true, balance: (snap.data() && snap.data().dsbPoints) || 0 };
   });
 
+// ── 구독 일일 꽃잎 "출석 도장"(2026-07-21 Macho 확정 설계, 결제 연동 전 선구축) ──
+//   구독자만: basic(4,900)=매일 100잎 / premium(9,900)=매일 300잎. 수령은 버튼 액션(자동 아님) —
+//   이 수령 기록(points_daily/{uid}_{day}_subdaily)이 곧 어르신 활동 신호 = 돌봄 리포트의 안부 체크 근거.
+exports.claimSubDaily = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const uref = admin.firestore().collection('users').doc(uid);
+    const u = await uref.get();
+    const tier = (u.exists && u.data().subscribed) || null;   // 'basic' | 'premium'
+    const amount = tier === 'premium' ? 300 : tier === 'basic' ? 100 : 0;
+    if (!amount) return { ok: false, reason: 'not_subscribed' };
+    const day = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);   // KST
+    const stampRef = admin.firestore().collection('points_daily').doc(`${uid}_${day}_subdaily`);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const st = await tx.get(stampRef);
+        if (st.exists) return { ok: false, reason: 'already', balance: (u.data().dsbPoints || 0) };
+        tx.set(stampRef, { uid, kind: 'subdaily', tier, amount, day, at: admin.firestore.FieldValue.serverTimestamp() });
+        tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(amount) }, { merge: true });
+        return { ok: true, amount, balance: (u.data().dsbPoints || 0) + amount };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
+// ── 자서전 완성 보너스 5,000잎(평생 1회) — 서버가 완성을 검증(어뷰징 방지) ──
+//   기준: 공백 제외 10자 이상의 '의미 있는 답변' 60개+ 그리고 중복 제거 후 50개+(복붙 도배 차단).
+exports.memoirCompleteBonus = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const m = await admin.firestore().collection('memoirs').doc(uid).get();
+    if (!m.exists) return { ok: false, reason: 'no_memoir' };
+    const answers = m.data().answers || {};
+    const vals = Object.values(answers).map((v) => String(v || '').replace(/\s+/g, ' ').trim());
+    const meaningful = vals.filter((v) => v.length >= 10);
+    const distinct = new Set(meaningful);
+    if (meaningful.length < 60 || distinct.size < 50) {
+      return { ok: false, reason: 'not_complete', answered: meaningful.length };
+    }
+    const bonusRef = admin.firestore().collection('points_daily').doc(`${uid}_memoir_complete`);
+    const uref = admin.firestore().collection('users').doc(uid);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const b = await tx.get(bonusRef);
+        if (b.exists) return { ok: false, reason: 'already' };
+        tx.set(bonusRef, { uid, kind: 'memoir_complete', amount: 5000, at: admin.firestore.FieldValue.serverTimestamp() });
+        tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(5000) }, { merge: true });
+        return { ok: true, amount: 5000 };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
 // 공유 링크 토큰 발급(재사용) — 공유자 식별용
 exports.createRefLink = functions
   .region('asia-northeast3')
