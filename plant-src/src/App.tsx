@@ -18,7 +18,7 @@ import AnimatedNumber from './components/AnimatedNumber';
 import { DIALOGUES } from './data/dialogues';
 import { SPAM_DIALOGUES } from './data/dialogues_spam';
 import { mountButtonSfx, plipSfx } from './lib/sfx';
-import { ambientAudio } from './lib/audio';
+import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import Petal from './components/Petal';
 
 /* 다시봄 브리지: 페이지(플랫폼)가 얹어주는 꽃잎 API — 잔액·소비는 전부 서버 권위 */
@@ -116,9 +116,8 @@ export default function App() {
   useEffect(() => { mountButtonSfx(); }, []);   // 🔘 말랑 버튼음 — 모든 버튼 공통
   const [waterFx, setWaterFx] = useState({ slot: -1, key: 0 });   // 💧 물방울 낙하 연출 트리거
 
-  useEffect(() => {
-    ambientAudio.playWeather(weather);
-  }, [weather]);
+  // 배경음: '작은 농장 오후'(2026-07-22 Macho 음원) — 켜둔 채 재방문 시 첫 터치에 이어 재생
+  useEffect(() => { autoResumeBgm('/audio/plant_bgm.mp3', 'plant_bgm', () => setIsAudioPlaying(true)); }, []);
 
   useEffect(() => {
     localStorage.setItem('plant_slots', JSON.stringify(slots));
@@ -827,7 +826,7 @@ export default function App() {
         {/* Right Menu */}
         <div className="absolute top-20 md:top-24 right-4 md:right-6 flex flex-col gap-3 pointer-events-auto items-end z-40">
           <button 
-            onClick={() => setIsAudioPlaying(ambientAudio.toggle())} 
+            onClick={() => setIsAudioPlaying(toggleBgm('/audio/plant_bgm.mp3', 'plant_bgm'))} 
             className={`flex flex-col items-center justify-center w-14 h-14 ${isAudioPlaying ? 'bg-indigo-500 text-white' : 'bg-white/80 text-gray-400'} backdrop-blur-md rounded-2xl shadow-lg border-2 border-white hover:bg-opacity-100 transition-colors`}
           >
             {isAudioPlaying ? <Volume2 className="w-6 h-6 mb-0.5" /> : <VolumeX className="w-6 h-6 mb-0.5" />}

@@ -7,7 +7,7 @@ import { GuppyShopTab } from "./components/GuppyShopTab";
 import { ManageTab } from './components/ManageTab';
 import { Droplets, Fish, RefreshCw, LayoutGrid, Coins, Store, X, Sun, Moon, Maximize2, Eye, EyeOff, Anchor, Dna, Edit2, Heart, Share2 } from 'lucide-react';
 import Petal from './components/Petal';
-import { aquariumAudio } from './lib/audio';
+import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import { mountButtonSfx } from './lib/sfx';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
@@ -255,7 +255,10 @@ export default function App() {
   const [selectedGuppyId, setSelectedGuppyId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
-  useEffect(() => { mountButtonSfx(); }, []);   // 🔘 말랑 버튼음 — 모든 버튼 공통
+  useEffect(() => {
+    mountButtonSfx();   // 🔘 말랑 버튼음 — 모든 버튼 공통
+    autoResumeBgm('/audio/guppy_bgm.mp3', 'guppy_bgm', () => setSoundOn(true));   // '작은 수조 산책' 이어 재생
+  }, []);
   const [releaseArm, setReleaseArm] = useState(false);       // 방생 2단 확인 — 실수 방지
   const [editingName, setEditingName] = useState(false);
   const [editNameVal, setEditNameVal] = useState('');
@@ -1204,7 +1207,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">🔊 물소리</span>
-                  <button onClick={() => setSoundOn(aquariumAudio.toggle())}
+                  <button onClick={() => setSoundOn(toggleBgm('/audio/guppy_bgm.mp3', 'guppy_bgm'))}
                     className={`px-3 py-2 rounded-lg text-[13px] ${soundOn ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-400'}`}>
                     {soundOn ? '보글보글~' : '꺼져 있어요'}
                   </button>
