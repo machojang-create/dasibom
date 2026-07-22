@@ -373,9 +373,14 @@ export default function App() {
       if (Array.isArray(sv.ownedSkins)) setOwnedSkins(Array.from(new Set(['basic', ...sv.ownedSkins])));
       if (Array.isArray(sv.guppies)) {
         const W = typeof window !== 'undefined' ? Math.max(320, window.innerWidth) : 800;
+        // 지난 방문 이후 배고파진 만큼 정산(2026-07-22) — 화분의 '마른 만큼 감소'와 같은 원리.
+        // 실제 시간당 2씩(통나무 쉼터 보유 시 10% 천천히), 복귀 바닥은 10 — 오래 비워도 즉사는 없다.
+        const offRate = (Array.isArray(sv.decorations) && sv.decorations.includes('log')) ? 0.9 : 1;
+        const offHours = sv.savedAt ? Math.max(0, (Date.now() - sv.savedAt) / 3600000) : 0;
+        const offDecay = Math.min(90, offHours * 2 * offRate);
         const rev: GuppyInstance[] = sv.guppies.map((g: any) => ({
           id: g.id, data: g.data, level: g.level || 1, xp: g.xp || 0,
-          hunger: typeof g.hunger === 'number' ? g.hunger : 50,
+          hunger: Math.max(10, (typeof g.hunger === 'number' ? g.hunger : 50) - offDecay),
           stats: g.stats || { speed: 1, turnRate: 1, vision: 1, reaction: 1, inheritance: 1, size: 1 },
           expression: null, targetFoodId: null,
           x: 60 + Math.random() * (W - 160), y: 120 + Math.random() * 260,
@@ -644,7 +649,8 @@ export default function App() {
         breedCooldown = breedCooldown > 0 ? breedCooldown - dt : 0;
         
         const hungerDecayRate = decorationsRef.current.includes('log') ? 0.9 : 1;   // 🪵 통나무 쉼터: 배고픔 10% 천천히
-        hunger = Math.max(0, Math.min(100, hunger - ((dt / 60) * (1 / 10) * hungerDecayRate))); // Decrease by 1 per 10 minutes
+        // 허기 밸런스(2026-07-22 Macho 지적): 실제 시간당 2씩 — 켜져 있든 꺼져 있든 같은 속도(오프라인 정산은 로드 시).
+        hunger = Math.max(0, Math.min(100, hunger - ((dt / 3600) * 2 * hungerDecayRate)));
 
         if (hunger < 20 && Math.random() < 0.0005) isSick = true;
         if (isSick) {
