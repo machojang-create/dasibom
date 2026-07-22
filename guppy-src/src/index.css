@@ -76,3 +76,12 @@ body {
   background: rgba(255,255,255,0.4);
 }
 .hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* 기포 무한 상승(2026-07-22 최적화) — transform만 사용, GPU 합성 */
+@keyframes bubbleRise {
+  0% { transform: translateY(0) translateX(0); }
+  25% { transform: translateY(-210px) translateX(9px); }
+  50% { transform: translateY(-420px) translateX(-9px); }
+  75% { transform: translateY(-630px) translateX(9px); }
+  100% { transform: translateY(-860px) translateX(0); }
+}

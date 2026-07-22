@@ -241,13 +241,18 @@ const SeasonParticles = ({ season }: { season: string }) => {
 export default function App() {
   const [guppies, setGuppiesState] = useState<GuppyInstance[]>([]);
   const [foods, setFoodsState] = useState<FoodInstance[]>([]);
-  const [bubbles, setBubblesState] = useState<BubbleInstance[]>([]);
   
   const guppiesRef = useRef<GuppyInstance[]>([]);
   const foodsRef = useRef<FoodInstance[]>([]);
-  const bubblesRef = useRef<BubbleInstance[]>([]);
   
-  const frameParityRef = useRef(false);
+  // ★최적화(2026-07-22): 위치는 직접 DOM, 리액트는 모습 변화 때만 — 복귀 후 프리징(15마리×30fps 재조정) 해결
+  const guppyElsRef = useRef<Record<string, { root: HTMLDivElement | null; flip: HTMLDivElement | null }>>({});
+  const foodElsRef = useRef<Record<string, HTMLDivElement | null>>({});
+  const renderSigRef = useRef({ sig: '', at: 0 });
+  const bubbleSeeds = useRef(Array.from({ length: 14 }, (_, i) => ({
+    left: (i * 7.3 + Math.random() * 5) % 100, dur: 6 + Math.random() * 7,
+    delay: Math.random() * 9, r: 3 + Math.random() * 6, op: 0.25 + Math.random() * 0.35,
+  }))).current;
   const [testExpression, setTestExpression] = useState<{title: string, desc: string, icon: string} | null>(null);
   const [waterQuality, setWaterQuality] = useState<number>(100);
   const [logs, setLogs] = useState<GuppyResponse[]>([]);
@@ -498,29 +503,7 @@ export default function App() {
 
     let currentFoods = [...foodsRef.current];
     let currentGuppies = [...guppiesRef.current];
-    let currentBubbles = [...bubblesRef.current];
-
-    // Spawn bubbles
-    if (Math.random() < 0.03 && currentBubbles.length < 22) {
-      currentBubbles.push({
-        id: Math.random().toString(36).substr(2, 9),
-        x: Math.random() * tankWidth,
-        y: tankHeight + 10,
-        vy: 50 + Math.random() * 50,
-        radius: 2 + Math.random() * 6,
-        wobble: 10 + Math.random() * 20,
-        wobbleSpeed: 2 + Math.random() * 3,
-        wobbleOffset: Math.random() * Math.PI * 2,
-        opacity: 0.3 + Math.random() * 0.4
-      });
-    }
-
-    // Update bubbles
-    currentBubbles = currentBubbles.map(b => ({
-      ...b,
-      y: b.y - b.vy * dt,
-      x: b.x + Math.sin(time / 1000 * b.wobbleSpeed + b.wobbleOffset) * b.wobble * dt
-    })).filter(b => b.y > -20);
+    // (기포는 CSS 반복 애니로 이전 — 프레임 연산 0)
 
     // Update foods
     currentFoods = currentFoods.map(f => ({
@@ -847,14 +830,25 @@ export default function App() {
     foodsRef.current = currentFoods;
     guppiesRef.current = currentGuppies;
     if (newBabies.length > 0) checkAchievements(currentGuppies);
-    bubblesRef.current = currentBubbles;
-    
-    // 저사양 폰 최적화: 렌더 동기는 2프레임당 1회(30fps). 물리 계산은 ref에서 매 프레임.
-    frameParityRef.current = !frameParityRef.current;
-    if (frameParityRef.current) {
-      setFoodsState(currentFoods);
-      setGuppiesState(currentGuppies);
-      setBubblesState(currentBubbles);
+
+    // 위치는 리액트를 거치지 않고 DOM에 바로 쓴다(트랜스폼만 — GPU 합성 레이어)
+    for (const g of currentGuppies) {
+      const els = guppyElsRef.current[g.id];
+      if (!els || !els.root) continue;
+      els.root.style.transform = `translate3d(${g.x}px, ${g.y}px, 0) translate(-50%, -50%) scale(${g.scale * 1.8})`;
+      if (els.flip) els.flip.style.transform = `scaleX(${g.vx < 0 ? 1 : -1}) rotateZ(${-Math.max(-35, Math.min(35, Math.atan2(g.vy, Math.abs(g.vx)) * (180 / Math.PI)))}deg)`;
+    }
+    for (const f of currentFoods) {
+      const el = foodElsRef.current[f.id];
+      if (el) el.style.transform = `translate3d(${f.x}px, ${f.y}px, 0) translate(-50%, -50%)`;
+    }
+    // 리액트 재조정은 '모습이 바뀔 때'(마릿수·먹이 수·표정·질병)와 0.5초 주기로만
+    const sig = currentGuppies.length + ':' + currentFoods.length + ':' +
+      currentGuppies.map(g => (g.expression || '') + (g.isSick ? '!' : '')).join(',');
+    if (sig !== renderSigRef.current.sig || time - renderSigRef.current.at > 500) {
+      renderSigRef.current = { sig, at: time };
+      setGuppiesState([...currentGuppies]);
+      setFoodsState([...currentFoods]);
     }
 
     requestRef.current = requestAnimationFrame(update);
@@ -862,7 +856,17 @@ export default function App() {
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(update);
+    const onVis = () => {
+      if (document.visibilityState === 'hidden') {
+        if (requestRef.current) { cancelAnimationFrame(requestRef.current); requestRef.current = undefined; }
+      } else {
+        lastTimeRef.current = undefined;   // 복귀 시 dt 폭주 방지
+        if (!requestRef.current) requestRef.current = requestAnimationFrame(update);
+      }
+    };
+    document.addEventListener('visibilitychange', onVis);
     return () => {
+      document.removeEventListener('visibilitychange', onVis);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
   }, [update]);
@@ -1004,7 +1008,7 @@ export default function App() {
     guppiesRef.current = [...guppiesRef.current, newGuppy];
     checkAchievements(guppiesRef.current);
     setGuppiesState(guppiesRef.current);
-    setLogs(prev => [...prev, res]);
+    setLogs(prev => [...prev.slice(-9), res]);
     if (waterQuality < 50) setWaterQuality(100);
 
     return res.data as SpawnData;
@@ -1072,7 +1076,7 @@ export default function App() {
     }, 3000);
     
     // Feeding no longer penalizes water quality to keep the water quality decay cycle strictly 1 hour.
-    setLogs(prev => [...prev, res]);
+    setLogs(prev => [...prev.slice(-9), res]);
   };
 
   const handleClean = () => {
@@ -1341,6 +1345,7 @@ export default function App() {
                   <div 
                     key={guppy.id}
                     className="absolute top-0 left-0 cursor-pointer hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] z-10"
+                    ref={(el) => { const m = guppyElsRef.current; (m[guppy.id] = m[guppy.id] || { root: null, flip: null }).root = el; }}
                     onPointerDown={(e) => {
                       e.stopPropagation();
                       const idx = guppiesRef.current.findIndex(g => g.id === guppy.id);
@@ -1371,11 +1376,13 @@ export default function App() {
                     style={{
                       transform: `translate3d(${guppy.x}px, ${guppy.y}px, 0) translate(-50%, -50%) scale(${guppy.scale * 1.8})`,
                       width: '240px',
-                      height: '240px'
+                      height: '240px',
+                      willChange: 'transform'
                     }}
                   >
                     <div 
                       className="w-full h-full transition-transform duration-700 ease-in-out"
+                      ref={(el) => { const m = guppyElsRef.current; (m[guppy.id] = m[guppy.id] || { root: null, flip: null }).flip = el; }}
                       style={{
                         transform: `scaleX(${guppy.vx < 0 ? 1 : -1}) rotateZ(${-Math.max(-35, Math.min(35, Math.atan2(guppy.vy, Math.abs(guppy.vx)) * (180 / Math.PI)))}deg)`,
                         transformStyle: 'preserve-3d'
@@ -1435,21 +1442,17 @@ export default function App() {
                         ? 'bg-pink-500 border-pink-300 drop-shadow-[0_0_8px_rgba(236,72,153,0.8)] animate-pulse' 
                         : 'bg-yellow-600 border-yellow-800'
                     }`}
-                    style={{ transform: `translate3d(${food.x}px, ${food.y}px, 0) translate(-50%, -50%)` }}
+                    ref={(el) => { foodElsRef.current[food.id] = el; }}
+                    style={{ transform: `translate3d(${food.x}px, ${food.y}px, 0) translate(-50%, -50%)`, willChange: 'transform' }}
                   />
                 ))}
 
-                {bubbles.map(bubble => (
-                  <div
-                    key={bubble.id}
-                    className="absolute top-0 left-0 rounded-full border border-white/40 bg-white/10 pointer-events-none transition-transform duration-75 shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)]"
-                    style={{
-                      transform: `translate3d(${bubble.x}px, ${bubble.y}px, 0) translate(-50%, -50%)`,
-                      width: `${bubble.radius * 2}px`,
-                      height: `${bubble.radius * 2}px`,
-                      opacity: bubble.opacity
-                    }}
-                  />
+                {/* 기포: CSS 반복 애니(프레임 연산 0) — 시드 고정 14개 무한 상승(2026-07-22 최적화) */}
+                {bubbleSeeds.map((b, i) => (
+                  <div key={i}
+                    className="absolute rounded-full border border-white/40 bg-white/10 pointer-events-none shadow-[inset_2px_2px_4px_rgba(255,255,255,0.4)]"
+                    style={{ left: b.left + '%', bottom: '-24px', width: (b.r * 2) + 'px', height: (b.r * 2) + 'px', opacity: b.op,
+                      animation: `bubbleRise ${b.dur.toFixed(1)}s linear ${b.delay.toFixed(1)}s infinite`, willChange: 'transform' }} />
                 ))}
 
                 {guppies.length === 0 && (
