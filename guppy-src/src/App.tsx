@@ -8,6 +8,7 @@ import { ManageTab } from './components/ManageTab';
 import { Droplets, Fish, RefreshCw, LayoutGrid, Coins, Store, X, Sun, Moon, Maximize2, Eye, EyeOff, Anchor, Dna, Edit2, Heart, Share2 } from 'lucide-react';
 import Petal from './components/Petal';
 import { toggleBgm, autoResumeBgm } from './lib/bgm';
+import { TANK_SKINS, LIGHT_PRESETS } from './tankSkins';
 import { mountButtonSfx } from './lib/sfx';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
@@ -267,7 +268,10 @@ export default function App() {
   const [releaseArm, setReleaseArm] = useState(false);       // 방생 2단 확인 — 실수 방지
   const [editingName, setEditingName] = useState(false);
   const [editNameVal, setEditNameVal] = useState('');
-  const [lightingMode, setLightingMode] = useState<'day' | 'sunset' | 'night' | 'blue' | 'yellow'>('day');
+  const [lightingMode, setLightingMode] = useState<string>('day');   // LIGHT_PRESETS 키(2026-07-22 6종 개편)
+  const [lightStrength, setLightStrength] = useState<number>(40);    // 조명 강도 10~70%
+  const [tankSkin, setTankSkin] = useState<string>('basic');         // TANK_SKINS 키
+  const [ownedSkins, setOwnedSkins] = useState<string[]>(['basic']);
     
   const [gold, setGold] = useState<number>(100);
   const [shopTab, setShopTab] = useState<'fish' | 'food' | 'decor'>('food');
@@ -296,7 +300,6 @@ export default function App() {
   useEffect(() => {
     decorationsRef.current = decorations;
   }, [decorations]);
-  const lightingFilter = lightingMode === 'blue' ? 'blue' : lightingMode === 'yellow' ? 'yellow' : 'none';
   const [tankTheme, setTankTheme] = useState<'Ocean' | 'CoralReef' | 'DeepOcean'>('Ocean');
   const [showNames, setShowNames] = useState(true);
   const [activeNames, setActiveNames] = useState<Record<string, boolean>>({});
@@ -346,8 +349,8 @@ export default function App() {
   // ── 저장/불러오기(v1: 이 기기) — 원본엔 저장이 아예 없어 새로고침=전멸이었음 ──
   const SAVE_KEY = 'guppy_save_v1';
   const miscRef = useRef<any>({});
-  useEffect(() => { miscRef.current = { gold, foodInventory, medicine, tankTheme, waterQuality, lightingMode, showNames }; },
-    [gold, foodInventory, medicine, tankTheme, waterQuality, lightingMode, showNames]);
+  useEffect(() => { miscRef.current = { gold, foodInventory, medicine, tankTheme, waterQuality, lightingMode, showNames, lightStrength, tankSkin, ownedSkins } as any; },
+    [gold, foodInventory, medicine, tankTheme, waterQuality, lightingMode, showNames, lightStrength, tankSkin, ownedSkins]);
   const didLoadRef = useRef(false);
   useEffect(() => {
     if (didLoadRef.current) return; didLoadRef.current = true;
@@ -364,6 +367,10 @@ export default function App() {
       if (typeof sv.medicine === 'number') setMedicine(sv.medicine);
       if (sv.tankTheme) setTankTheme(sv.tankTheme);
       if (typeof sv.waterQuality === 'number') setWaterQuality(sv.waterQuality);
+      if (sv.lightingMode && LIGHT_PRESETS[sv.lightingMode]) setLightingMode(sv.lightingMode);
+      if (typeof sv.lightStrength === 'number') setLightStrength(Math.max(10, Math.min(70, sv.lightStrength)));
+      if (sv.tankSkin && TANK_SKINS[sv.tankSkin]) setTankSkin(sv.tankSkin);
+      if (Array.isArray(sv.ownedSkins)) setOwnedSkins(Array.from(new Set(['basic', ...sv.ownedSkins])));
       if (Array.isArray(sv.guppies)) {
         const W = typeof window !== 'undefined' ? Math.max(320, window.innerWidth) : 800;
         const rev: GuppyInstance[] = sv.guppies.map((g: any) => ({
@@ -388,6 +395,8 @@ export default function App() {
           savedAt: Date.now(),
           gold: m.gold, foodInventory: m.foodInventory, medicine: m.medicine,
           tankTheme: m.tankTheme, waterQuality: m.waterQuality,
+          lightingMode: m.lightingMode, lightStrength: m.lightStrength,
+          tankSkin: m.tankSkin, ownedSkins: m.ownedSkins,
           foodTechLevel: foodTechLevelRef.current,
           decorations: decorationsRef.current,
           achievements: achievementsRef.current,
@@ -804,11 +813,9 @@ export default function App() {
 
         swimPhase += dt * (Math.abs(vx) > 10 ? 10 : 3);
 
-        // XP and Level Up Logic
-        const distanceMoved = Math.hypot(vx * dt, vy * dt);
-        xp += distanceMoved * 0.05; // Passive XP from movement
-
-        const nextLevelXp = level * 150;
+        // 성장 밸런스(2026-07-22 Macho): 이동 XP 삭제 — 방치 성장 차단, 먹이(재화)가 성장의 중심.
+        // 목표: 하루 꽃잎 5개어치 먹이 기준 만렙까지 12~15일(화분과 동일 호흡).
+        const nextLevelXp = level * 100;
         if (level < 10 && xp >= nextLevelXp) {
           xp -= nextLevelXp;
           level += 1;
@@ -1198,16 +1205,23 @@ export default function App() {
             {/* ⚙️ 설정 시트 — 조명·밝기·이름표·꾸미기 (계절은 실제 달력 따라 자동) */}
             {viewMode === 'tank' && showSettings && (
               <div className="absolute top-16 right-2 z-[70] bg-white/95 backdrop-blur-md rounded-2xl p-3.5 shadow-2xl border border-slate-200 w-[252px] flex flex-col gap-3 text-[14px] font-bold text-slate-700">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-1.5">
                   <span className="text-slate-500">💡 조명</span>
-                  <div className="flex gap-1">
-                    {(['day','blue','yellow'] as const).map(m => (
-                      <button key={m} onClick={() => setLightingMode(m)}
-                        className={`px-2.5 py-2 rounded-lg text-[13px] ${lightingMode === m ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {m === 'day' ? '기본' : m === 'blue' ? '🔹블루' : '🔸노랑'}
+                  <div className="grid grid-cols-3 gap-1">
+                    {Object.entries(LIGHT_PRESETS).map(([k, p]) => (
+                      <button key={k} onClick={() => setLightingMode(k)}
+                        className={`px-1 py-2 rounded-lg text-[13px] ${lightingMode === k ? 'bg-teal-100 text-teal-700 ring-1 ring-teal-300' : 'bg-slate-100 text-slate-500'}`}>
+                        {p.name}
                       </button>
                     ))}
                   </div>
+                  {lightingMode !== 'day' && (
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-slate-400 text-[12px] shrink-0">은은하게</span>
+                      <input type="range" min="10" max="70" value={lightStrength} onChange={(e) => setLightStrength(Number(e.target.value))} className="flex-1 h-2 accent-teal-500" />
+                      <span className="text-slate-400 text-[12px] shrink-0">진하게</span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-slate-500 shrink-0">🔆 밝기</span>
@@ -1234,7 +1248,8 @@ export default function App() {
           <div 
             ref={tankRef}
             onClick={viewMode === 'tank' ? handleTankClick : undefined}
-            className={`flex-1 min-h-[calc(100dvh-208px)] sm:min-h-[600px] lg:min-h-[700px] rounded-[24px] sm:rounded-[40px] relative overflow-hidden transition-colors duration-500 cursor-crosshair border-8 sm:border-[16px] border-white/20 bg-clip-padding shadow-[inset_0_0_40px_rgba(255,255,255,0.4),inset_0_4px_10px_rgba(255,255,255,0.6),0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-md ${viewMode === 'tank' ? 'bg-gradient-to-b from-cyan-400/95 to-blue-600/95' : 'bg-slate-800/95'}`}
+            className={`flex-1 min-h-[calc(100dvh-208px)] sm:min-h-[600px] lg:min-h-[700px] rounded-[24px] sm:rounded-[40px] relative overflow-hidden transition-colors duration-500 cursor-crosshair border-8 sm:border-[16px] border-white/20 bg-clip-padding shadow-[inset_0_0_40px_rgba(255,255,255,0.4),inset_0_4px_10px_rgba(255,255,255,0.6),0_20px_40px_rgba(0,0,0,0.15)] backdrop-blur-md ${viewMode === 'tank' ? '' : 'bg-slate-800/95'}`}
+            style={viewMode === 'tank' ? { background: (TANK_SKINS[tankSkin] || TANK_SKINS.basic).grad } : undefined}
           >
             {/* Top rounded cover mask to simulate the top border if needed, but rounded-[40px] on the container should suffice */}
             <div className="absolute top-0 left-0 w-full h-8 bg-gradient-to-b from-white/30 to-transparent pointer-events-none z-10"></div>
@@ -1252,11 +1267,9 @@ export default function App() {
             {/* Brightness Overlay */}
             <div className={`absolute inset-0 pointer-events-none transition-colors duration-[1000ms] z-40 ${viewMode === 'tank' ? '' : 'hidden'}`} style={{ backgroundColor: `rgba(0, 0, 0, ${1 - brightness / 100})` }} />
 
-            {/* Lighting Filter Overlay */}
-            <div className={`absolute inset-0 pointer-events-none transition-colors duration-[1000ms] z-30 ${
-              lightingFilter === 'blue' ? 'bg-blue-500/30' : 
-              lightingFilter === 'yellow' ? 'bg-yellow-500/30' : 'bg-transparent'
-            } ${viewMode === 'tank' ? '' : 'hidden'}`} />
+            {/* 조명 오버레이 — 그라데이션 프리셋 × 강도 슬라이더(2026-07-22 개편) */}
+            <div className={`absolute inset-0 pointer-events-none transition-opacity duration-[1000ms] z-30 ${viewMode === 'tank' ? '' : 'hidden'}`}
+              style={{ backgroundImage: (LIGHT_PRESETS[lightingMode] && LIGHT_PRESETS[lightingMode].grad) || 'none', opacity: lightingMode === 'day' ? 0 : lightStrength / 100 * 1.6 }} />
 
             {/* Special Lighting Decorations */}
             {decorations.includes('led_mood_light') && (
@@ -1508,7 +1521,7 @@ export default function App() {
                       <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg mb-1">
                         <span className="text-white font-bold">Lv.{sel.level}</span>
                         <div className="flex-1 mx-3 bg-black/50 h-2 rounded-full overflow-hidden">
-                          <div className="h-full bg-sky-400 rounded-full" style={{ width: `${Math.min(100, (sel.xp / (sel.level * 150)) * 100)}%` }} />
+                          <div className="h-full bg-sky-400 rounded-full" style={{ width: `${Math.min(100, (sel.xp / (sel.level * 100)) * 100)}%` }} />
                         </div>
                       </div>
                       <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">품종</span>
@@ -1577,6 +1590,10 @@ export default function App() {
         <ShopTab
           spendPetal={spendPetal}
           showToast={showToast}
+          tankSkin={tankSkin}
+          setTankSkin={setTankSkin}
+          ownedSkins={ownedSkins}
+          setOwnedSkins={setOwnedSkins}
           petals={petals}
 
           gold={gold}

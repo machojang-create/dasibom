@@ -975,6 +975,8 @@ const PLANT_PRICES = {
   guppy_food_shrimp10: 7, guppy_food_shrimp50: 30,
   guppy_food_krill10: 15, guppy_food_krill50: 60,
   guppy_tech2: 50, guppy_tech3: 100, guppy_tech4: 150, guppy_tech5: 200,
+  // 어항 스킨(2026-07-22): 물빛 자체를 갈아입히는 프리미엄 꾸미기 — 클라 tankSkins.ts와 가격 일치
+  guppy_skin_lagoon: 60, guppy_skin_deepsea: 100, guppy_skin_sunset_sea: 120, guppy_skin_sumuk: 150,
   // 화분 슬롯 확장(2026-07-21): 기본 3칸, 4~6칸은 꽃잎으로 — 정원 넓히기
   plant_slot4: 300, plant_slot5: 500, plant_slot6: 800,
   // 물주기(2026-07-22 Macho): 하루 첫 잔 무료(레벨업), 추가 물은 1잎 — 물도 재화 루프에

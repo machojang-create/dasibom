@@ -98,7 +98,7 @@ export const ManageTab = React.memo(function ManageTab({
 
       <div className="flex-1 p-4 pb-[110px] overflow-y-auto"><div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         {guppies.map(guppy => {
-          const nextLevelXp = guppy.level * 150;
+          const nextLevelXp = guppy.level * 100;
           const xpPercent = Math.min(100, Math.max(0, (guppy.xp / nextLevelXp) * 100));
           const hungerPercent = Math.min(100, Math.max(0, guppy.hunger));
           

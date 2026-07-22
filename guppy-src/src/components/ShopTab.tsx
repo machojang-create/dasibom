@@ -1,10 +1,15 @@
 import Petal from './Petal';
 import React from 'react';
 import { Coins } from 'lucide-react';
+import { TANK_SKINS } from '../tankSkins';
 
 interface ShopTabProps {
   spendPetal?: any;
   showToast?: (title: string, desc: string, icon?: string) => void;
+  tankSkin?: string;
+  setTankSkin?: (id: string) => void;
+  ownedSkins?: string[];
+  setOwnedSkins?: React.Dispatch<React.SetStateAction<string[]>>;
   petals?: number;
   gold: number;
   setGold: React.Dispatch<React.SetStateAction<number>>;
@@ -21,6 +26,10 @@ interface ShopTabProps {
 export const ShopTab = React.memo(function ShopTab({
   spendPetal,
   showToast,
+  tankSkin,
+  setTankSkin,
+  ownedSkins,
+  setOwnedSkins,
   petals,
   gold,
   setGold,
@@ -271,6 +280,50 @@ export const ShopTab = React.memo(function ShopTab({
             { id: 'submarine', emoji: '\ud83d\udea4', name: '노란 꼬마 잠수함', tag: '어항의 명물', desc: '뽀글뽀글 기포를 내는 귀여운 잠수함이에요.', price: 250 },
           ];
           return (
+          <div className="flex flex-col gap-6">
+          {/* 어항 스킨 — 물빛 자체를 갈아입히는 프리미엄 꾸미기(2026-07-22 신설) */}
+          <div>
+            <h3 className="text-lg font-black text-slate-800 mb-1 flex items-center gap-2"><span>🖼️</span> 어항 스킨</h3>
+            <p className="text-sm text-slate-500 mb-3 font-medium">어항의 물빛 자체가 바뀌어요. 한 번 들이면 언제든 갈아입힐 수 있어요.</p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {Object.entries(TANK_SKINS).map(([id, sk]) => {
+                const owned = id === 'basic' || (ownedSkins || []).includes(id);
+                const active = (tankSkin || 'basic') === id;
+                const afford = (petals ?? 0) >= sk.price;
+                return (
+                  <div key={id} className="bg-white rounded-[18px] border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+                    <div className="h-16 sm:h-20 relative" style={{ background: sk.grad }}>
+                      <span className="absolute bottom-1.5 right-2 text-[16px] drop-shadow">🐠</span>
+                      {active && <span className="absolute top-1.5 left-2 text-[10px] font-black bg-white/85 text-teal-700 px-2 py-0.5 rounded-full">사용 중</span>}
+                    </div>
+                    <div className="p-2.5 flex flex-col gap-1.5">
+                      <div>
+                        <p className="font-black text-slate-800 text-[13px] leading-tight">{sk.name}</p>
+                        <p className="text-[11px] text-slate-400 font-medium leading-tight mt-0.5">{sk.desc}</p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          if (owned) { setTankSkin?.(id); return; }
+                          (spendPetal as any)('guppy_skin_' + id, (ok: boolean) => {
+                            if (!ok) return;
+                            setOwnedSkins?.(prev => Array.from(new Set([...prev, id])));
+                            setTankSkin?.(id);
+                            showToast?.('물빛을 갈아입혔어요', sk.name + ' — 어항이 새로워졌어요!', '🖼️');
+                          });
+                        }}
+                        className={`w-full py-2 rounded-lg text-[12px] font-black transition-colors ${active ? 'bg-slate-800 text-white' : owned ? 'bg-teal-500 hover:bg-teal-600 text-white' : afford ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 opacity-70'}`}
+                      >
+                        {active ? '지금 이 물빛' : owned ? '이 물빛으로' : (
+                          <span className="flex items-center justify-center gap-1">들이기 <Petal className="w-3.5 h-3.5" /> {sk.price}</span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          <div className="h-px bg-slate-200 w-full rounded-full" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {DECOR_ITEMS.map(d => {
               const owned = decorations.includes(d.id);
@@ -296,6 +349,7 @@ export const ShopTab = React.memo(function ShopTab({
                 </div>
               );
             })}
+          </div>
           </div>
           );
         })()}
