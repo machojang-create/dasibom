@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 앱 아이콘/파비콘용(2026-07-22) — 흰 배경 + 여백(마스커블 세이프존) -->
+  <defs>
+    <linearGradient id="petal2" x1="0" y1="0" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#FFD95E"/>
+      <stop offset="0.55" stop-color="#FFC531"/>
+      <stop offset="1" stop-color="#F5A800"/>
+    </linearGradient>
+    <linearGradient id="leaf2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#AACD3E"/>
+      <stop offset="1" stop-color="#7FAF22"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#FFFEFB"/>
+  <g transform="translate(256 266) scale(0.72) translate(-256 -256)">
+    <path d="M 268 296 C 258 372 226 420 172 446" stroke="#5C9E31" stroke-width="15" fill="none" stroke-linecap="round"/>
+    <path d="M 266 382 C 300 344 356 338 384 356 C 370 398 306 416 266 382 Z" fill="url(#leaf2)"/>
+    <g fill="url(#petal2)" fill-opacity="0.93">
+      <g transform="rotate(-9 256 232)">
+        <path transform="translate(256 232)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/>
+        <path transform="translate(256 232) rotate(72)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/>
+        <path transform="translate(256 232) rotate(144)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/>
+        <path transform="translate(256 232) rotate(216)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/>
+        <path transform="translate(256 232) rotate(288)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
