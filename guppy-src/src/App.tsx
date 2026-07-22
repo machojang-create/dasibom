@@ -281,6 +281,10 @@ export default function App() {
   }, [foodTechLevel]);
   const [decorations, setDecorations] = useState<string[]>([]);
   const [achievements, setAchievements] = useState<string[]>([]);
+  // 🌊 떠나보낸 바다(2026-07-22): 방생 기록 — 이름·등급·레벨·색(미니 초상용)·날짜, 최근 60마리
+  const [released, setReleased] = useState<{ name: string; rarity: string; level: number; at: number; body: string; tail: string; pattern: string }[]>([]);
+  const releasedRef = useRef<typeof released>([]);
+  useEffect(() => { releasedRef.current = released; }, [released]);
   const achievementsRef = useRef<string[]>([]);
   const [medicine, setMedicine] = useState<number>(0);
   const medicineRef = useRef(0);
@@ -356,6 +360,7 @@ export default function App() {
       if (typeof sv.foodTechLevel === 'number') { setFoodTechLevel(sv.foodTechLevel); foodTechLevelRef.current = sv.foodTechLevel; }
       if (Array.isArray(sv.decorations)) { setDecorations(sv.decorations); decorationsRef.current = sv.decorations; }
       if (Array.isArray(sv.achievements)) { setAchievements(sv.achievements); achievementsRef.current = sv.achievements; }
+      if (Array.isArray(sv.released)) { setReleased(sv.released); releasedRef.current = sv.released; }
       if (typeof sv.medicine === 'number') setMedicine(sv.medicine);
       if (sv.tankTheme) setTankTheme(sv.tankTheme);
       if (typeof sv.waterQuality === 'number') setWaterQuality(sv.waterQuality);
@@ -386,6 +391,7 @@ export default function App() {
           foodTechLevel: foodTechLevelRef.current,
           decorations: decorationsRef.current,
           achievements: achievementsRef.current,
+          released: releasedRef.current.slice(-60),
           guppies: guppiesRef.current.map(g => ({
             id: g.id, data: g.data, level: g.level, xp: g.xp, hunger: g.hunger,
             stats: g.stats, scale: g.scale, isSick: g.isSick, breedCooldown: g.breedCooldown, hasBred: !!(g as any).hasBred
@@ -885,63 +891,61 @@ export default function App() {
     setGuppiesState(updated);
   }, []);
 
-  const handleRelease = useCallback((id: string, reward: number) => {
-    const guppyToRelease = guppiesRef.current.find(g => g.id === id);
-    if (!guppyToRelease) return;
-    
-    // 꽃잎 단일화: 방생 보상은 화폐가 아니라 '떠나며 남긴 먹이'(아이템) — 클라 화폐 발행 금지 원칙
-    setFoodInventory(prev => ({ ...prev, premium: prev.premium + Math.max(1, Math.round(reward / 50)) }));
-    
-    // Calculate extra rewards based on rarity and level
-    let extraRewards = [];
-    const level = guppyToRelease.level;
-    const rarity = guppyToRelease.data.rarity;
-    
-    const randomChance = Math.random();
-    
-    // Base drop rate logic
-    let dropChance = 0.1; // 10% base
-    if (rarity === '희귀') dropChance += 0.15;
-    if (rarity === '전설') dropChance += 0.3;
-    dropChance += (level * 0.02); // 2% per level
-    
-    if (randomChance < dropChance) {
-      // Determine what item to give
-      const itemRoll = Math.random();
-      if (rarity === '전설' && itemRoll < 0.4) {
-        setFoodInventory(prev => ({...prev, krill: prev.krill + 1}));
-        extraRewards.push('특급 크릴새우 x1');
-      } else if ((rarity === '전설' || rarity === '희귀') && itemRoll < 0.7) {
-        setFoodInventory(prev => ({...prev, shrimp: prev.shrimp + 2}));
-        extraRewards.push('건조 생이새우 x2');
-      } else if (itemRoll < 0.9) {
-        setFoodInventory(prev => ({...prev, premium: prev.premium + 3}));
-        extraRewards.push('프리미엄 사료 x3');
-      } else {
-        setMedicine(prev => prev + 1);
-        extraRewards.push('만병통치약 x1');
-      }
+  const handleRelease = useCallback((id: string, _reward: number) => {
+    const g = guppiesRef.current.find(x => x.id === id);
+    if (!g) return;
+    const lv = g.level, rarity = g.data.rarity;
+
+    // ① 정성 비례 보상: 일반=사료 lv×2 / 희귀 +새우 lv / 전설 +크릴 lv (화폐 직지급 금지 원칙 유지)
+    const premium = Math.max(2, lv * 2);
+    const shrimp = (rarity === '희귀' || rarity === '전설') ? lv : 0;
+    const krill = rarity === '전설' ? lv : 0;
+    setFoodInventory(prev => ({ ...prev, premium: prev.premium + premium, shrimp: prev.shrimp + shrimp, krill: prev.krill + krill }));
+    const gifts: string[] = ['프리미엄 사료 ' + premium + '개'];
+    if (shrimp) gifts.push('새우 간식 ' + shrimp + '개');
+    if (krill) gifts.push('황금 크릴 ' + krill + '개');
+
+    // 보너스 드랍 35% + 레벨 보정, 만병통치약 비중 상향
+    if (Math.random() < 0.35 + lv * 0.02) {
+      const roll = Math.random();
+      if (roll < 0.4) { setMedicine(m => m + 1); gifts.push('만병통치약 1개'); }
+      else if (roll < 0.7) { setFoodInventory(p => ({ ...p, shrimp: p.shrimp + 3 })); gifts.push('보너스 새우 3개'); }
+      else { setFoodInventory(p => ({ ...p, krill: p.krill + 2 })); gifts.push('보너스 크릴 2개'); }
     }
-    
-    const updated = guppiesRef.current.filter(g => g.id !== id);
+
+    // ② 만렙 '무지개 배웅': 남은 전원이 가르침을 받는다(+150 XP)
+    const isMax = lv >= 10;
+    const updated = guppiesRef.current.filter(x => x.id !== id).map(x => isMax ? { ...x, xp: x.xp + 150 } : x);
     guppiesRef.current = updated;
     setGuppiesState(updated);
-    
-    if (extraRewards.length > 0) {
-      setToastMessage({
-        title: '보너스 아이템 획득!',
-        desc: `${guppyToRelease.data.guppy_name} 방생 보답으로 ${extraRewards.join(', ')}를 받았습니다.`,
-        icon: '🎁'
-      });
-      setTimeout(() => setToastMessage(null), 4000);
-    } else {
-      setToastMessage({
-        title: '방생 완료',
-        desc: `${guppyToRelease.data.guppy_name}를 자연으로 돌려보냈습니다.`,
-        icon: '🌊'
-      });
-      setTimeout(() => setToastMessage(null), 3000);
-    }
+
+    // ③ 떠나보낸 바다 기록 + 업적(5·15마리)
+    const rec = { name: g.data.guppy_name, rarity, level: lv, at: Date.now(),
+      body: g.data.body_color, tail: g.data.tail_color, pattern: g.data.pattern_color };
+    setReleased(prev => {
+      const next = [...prev, rec].slice(-60);
+      releasedRef.current = next;
+      if (next.length >= 5 && !achievementsRef.current.includes('release_5')) {
+        achievementsRef.current.push('release_5');
+        setAchievements(a2 => [...a2, 'release_5']);
+        setFoodInventory(p => ({ ...p, shrimp: p.shrimp + 10 }));
+        setTimeout(() => showToast('바다의 친구', '다섯 친구를 바다로 보내줬어요 (새우 간식 10개!)', '🌊'), 1200);
+      }
+      if (next.length >= 15 && !achievementsRef.current.includes('release_15')) {
+        achievementsRef.current.push('release_15');
+        setAchievements(a2 => [...a2, 'release_15']);
+        setFoodInventory(p => ({ ...p, krill: p.krill + 10 }));
+        setTimeout(() => showToast('바다의 은인', '열다섯 친구의 새 출발! (황금 크릴 10개!)', '🐋'), 1600);
+      }
+      return next;
+    });
+
+    setToastMessage({
+      title: isMax ? '무지개를 건너 바다로 🌈' : g.data.guppy_name + ', 잘 가! 🌊',
+      desc: (isMax ? '남은 친구들이 ' + g.data.guppy_name + '의 가르침을 받았어요(모두 성장↑) · ' : '고마움의 선물: ') + gifts.join(', '),
+      icon: isMax ? '🌈' : '🎁'
+    });
+    setTimeout(() => setToastMessage(null), 4500);
   }, []);
 
   const handleSpawn = (rarity: string = 'normal', isSpecial: boolean = false): SpawnData | null => {
@@ -1554,6 +1558,7 @@ export default function App() {
           gold={gold}
           onCommune={handleCommune}
           onRelease={handleRelease}
+          released={released}
         />
       )}
       {mainMenuTab === "guppy_shop" && (

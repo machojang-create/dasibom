@@ -37,12 +37,14 @@ export const ManageTab = React.memo(function ManageTab({
   guppies,
   gold,
   onCommune,
-  onRelease
+  onRelease,
+  released
 }: {
   guppies: GuppyInstance[];
   gold: number;
   onCommune: (id: string) => void;
   onRelease: (id: string, reward: number) => void;
+  released?: { name: string; rarity: string; level: number; at: number; body: string; tail: string; pattern: string }[];
 }) {
   const [releasingGuppy, setReleasingGuppy] = useState<GuppyInstance | null>(null);
 
@@ -70,6 +72,12 @@ export const ManageTab = React.memo(function ManageTab({
   };
 
   const getExpectedGold = (g: any) => Math.max(1, Math.round(_rawExpectedGold(g) / 50));
+  const expectedGifts = (g: GuppyInstance) => {
+    const parts = ['사료 ' + Math.max(2, g.level * 2)];
+    if (g.data.rarity === '희귀' || g.data.rarity === '전설') parts.push('새우 ' + g.level);
+    if (g.data.rarity === '전설') parts.push('크릴 ' + g.level);
+    return parts.join('·');
+  };
 
   const handleRelease = (id: string, reward: number) => {
     onRelease(id, reward);
@@ -207,8 +215,8 @@ export const ManageTab = React.memo(function ManageTab({
                   onClick={() => setReleasingGuppy(guppy)}
                   className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-colors"
                 >
-                  <span className="text-xs flex items-center mr-1"><span className="text-sm mr-0.5">🍿</span>{getExpectedGold(guppy)}</span>
-                  자연으로 보내주기
+                  <span className="text-[11px] flex items-center mr-1">🎁 {expectedGifts(guppy)}</span>
+                  보내주기
                 </button>
               </div>
             </div>
@@ -219,6 +227,27 @@ export const ManageTab = React.memo(function ManageTab({
       {guppies.length === 0 && (
         <div className="text-center py-20 text-slate-400 font-medium">
           어항이 조용하네요. 구피 상점에서 첫 식구를 맞아보세요 🐠
+        </div>
+      )}
+
+      {/* 🌊 떠나보낸 바다 — 방생 기록 갤러리(2026-07-22) */}
+      {released && released.length > 0 && (
+        <div className="px-4 pb-6">
+          <h3 className="text-[15px] font-black text-slate-700 mb-2 flex items-center gap-1.5">
+            🌊 떠나보낸 바다 <span className="text-[11px] font-bold text-slate-400">넓은 바다로 떠난 친구 {released.length}마리</span>
+          </h3>
+          <div className="grid grid-cols-2 xl:grid-cols-3 gap-2.5">
+            {released.slice().reverse().map((r, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-sky-100 p-3 flex flex-col items-center text-center shadow-sm">
+                <div className="w-14 h-10 mb-1">
+                  <GuppySVG bodyColor={r.body} tailColor={r.tail} patternColor={r.pattern} expression={null} pose="side" hideFloaters />
+                </div>
+                <span className="font-black text-[13px] text-slate-700 break-keep">{r.name}</span>
+                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full mt-0.5 ${r.rarity === '전설' ? 'bg-pink-50 text-pink-500' : r.rarity === '희귀' ? 'bg-yellow-50 text-yellow-600' : 'bg-slate-50 text-slate-500'}`}>{r.rarity} · Lv.{r.level}</span>
+                <span className="text-[10px] font-bold text-slate-400 mt-0.5">{new Date(r.at).toLocaleDateString('ko-KR')} 방생</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
       
@@ -248,23 +277,15 @@ export const ManageTab = React.memo(function ManageTab({
                 <div className="flex justify-between items-center text-sm font-bold text-slate-700 mb-2">
                   <span>떠나며 남기는 선물</span>
                   <span className="flex items-center text-blue-600 text-lg">
-                    <span className="mr-1">🍿</span>먹이 {getExpectedGold(releasingGuppy)}개
+                    🎁 {expectedGifts(releasingGuppy)}
                   </span>
                 </div>
-                <div className="flex flex-col gap-1 mt-3 pt-3 border-t border-slate-200">
-                  <div className="flex justify-between text-xs text-slate-500">
-                    <span>함께한 레벨 {releasingGuppy.level}의 정</span>
-                    <span>{releasingGuppy.level * 50}</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-slate-500">
-                    <span>{releasingGuppy.data.rarity} 등급 보답</span>
-                    <span>x{releasingGuppy.data.rarity === '전설' ? 5 : releasingGuppy.data.rarity === '희귀' ? 2 : 1}</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-slate-500">
-                    <span>씩씩함 보너스</span>
-                    <span>+{Math.floor(releasingGuppy.stats.speed * 50)}</span>
-                  </div>
-                </div>
+                <p className="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-200 leading-relaxed text-left">
+                  {releasingGuppy.level >= 10
+                    ? '🌈 만렙 배웅! 남아 있는 친구들이 ' + releasingGuppy.data.guppy_name + '의 가르침을 받아 모두 쑥 자라요.'
+                    : '함께한 정(' + releasingGuppy.level + '레벨 · ' + releasingGuppy.data.rarity + ')만큼 먹이로 돌아와요. 운이 좋으면 특별한 간식도 남기고 가요.'}
+                  <br/>떠난 친구는 🌊 떠나보낸 바다에 영원히 기억돼요.
+                </p>
               </div>
 
               <div className="flex w-full gap-3">
