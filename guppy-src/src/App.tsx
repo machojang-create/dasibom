@@ -373,22 +373,34 @@ export default function App() {
       if (Array.isArray(sv.ownedSkins)) setOwnedSkins(Array.from(new Set(['basic', ...sv.ownedSkins])));
       if (Array.isArray(sv.guppies)) {
         const W = typeof window !== 'undefined' ? Math.max(320, window.innerWidth) : 800;
-        // 지난 방문 이후 배고파진 만큼 정산(2026-07-22) — 화분의 '마른 만큼 감소'와 같은 원리.
-        // 실제 시간당 2씩(통나무 쉼터 보유 시 10% 천천히), 복귀 바닥은 10 — 오래 비워도 즉사는 없다.
+        // 지난 방문 이후 배고파진 만큼 정산(2026-07-22 Macho 확정) — 화분의 '마른 만큼 감소'와 같은 원리.
+        // 실제 시간당 6(10분당 1), 바닥 0. 허기 0으로 12시간 넘게 굶으면 병듦(죽음은 없다 — 크릴로 치료).
         const offRate = (Array.isArray(sv.decorations) && sv.decorations.includes('log')) ? 0.9 : 1;
         const offHours = sv.savedAt ? Math.max(0, (Date.now() - sv.savedAt) / 3600000) : 0;
-        const offDecay = Math.min(90, offHours * 2 * offRate);
-        const rev: GuppyInstance[] = sv.guppies.map((g: any) => ({
-          id: g.id, data: g.data, level: g.level || 1, xp: g.xp || 0,
-          hunger: Math.max(10, (typeof g.hunger === 'number' ? g.hunger : 50) - offDecay),
-          stats: g.stats || { speed: 1, turnRate: 1, vision: 1, reaction: 1, inheritance: 1, size: 1 },
-          expression: null, targetFoodId: null,
-          x: 60 + Math.random() * (W - 160), y: 120 + Math.random() * 260,
-          vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 0.6,
-          scale: g.scale || 1, swimPhase: Math.random() * Math.PI * 2,
-          isSick: !!g.isSick, breedCooldown: g.breedCooldown || 0, hasBred: !!g.hasBred
-        }));
+        let newlySick = 0;
+        const rev: GuppyInstance[] = sv.guppies.map((g: any) => {
+          const h0 = typeof g.hunger === 'number' ? g.hunger : 50;
+          const newHunger = Math.max(0, h0 - offHours * 6 * offRate);
+          let starveH = g.starveH || 0;
+          let sick = !!g.isSick;
+          if (newHunger <= 0.5 && offHours > 0) {
+            const hoursToZero = Math.max(0, h0 / (6 * offRate));
+            starveH += Math.max(0, offHours - hoursToZero);
+            if (starveH >= 12 && !sick) { sick = true; newlySick++; }
+          }
+          return {
+            id: g.id, data: g.data, level: g.level || 1, xp: g.xp || 0,
+            hunger: newHunger, starveH,
+            stats: g.stats || { speed: 1, turnRate: 1, vision: 1, reaction: 1, inheritance: 1, size: 1 },
+            expression: null, targetFoodId: null,
+            x: 60 + Math.random() * (W - 160), y: 120 + Math.random() * 260,
+            vx: (Math.random() - 0.5) * 1.4, vy: (Math.random() - 0.5) * 0.6,
+            scale: g.scale || 1, swimPhase: Math.random() * Math.PI * 2,
+            isSick: sick, breedCooldown: g.breedCooldown || 0, hasBred: !!g.hasBred
+          } as any;
+        });
         guppiesRef.current = rev; setGuppiesState(rev);
+        if (newlySick > 0) setTimeout(() => showToast('오래 굶어 병이 났어요', '크릴새우를 먹이면 기운을 차려요 🤒', '🦐'), 1200);
       }
     } catch (e) {}
   }, []);
@@ -408,7 +420,8 @@ export default function App() {
           released: releasedRef.current.slice(-60),
           guppies: guppiesRef.current.map(g => ({
             id: g.id, data: g.data, level: g.level, xp: g.xp, hunger: g.hunger,
-            stats: g.stats, scale: g.scale, isSick: g.isSick, breedCooldown: g.breedCooldown, hasBred: !!(g as any).hasBred
+            stats: g.stats, scale: g.scale, isSick: g.isSick, breedCooldown: g.breedCooldown, hasBred: !!(g as any).hasBred,
+            starveH: (g as any).starveH || 0
           }))
         }));
       } catch (e) {}
@@ -649,8 +662,15 @@ export default function App() {
         breedCooldown = breedCooldown > 0 ? breedCooldown - dt : 0;
         
         const hungerDecayRate = decorationsRef.current.includes('log') ? 0.9 : 1;   // 🪵 통나무 쉼터: 배고픔 10% 천천히
-        // 허기 밸런스(2026-07-22 Macho 지적): 실제 시간당 2씩 — 켜져 있든 꺼져 있든 같은 속도(오프라인 정산은 로드 시).
-        hunger = Math.max(0, Math.min(100, hunger - ((dt / 3600) * 2 * hungerDecayRate)));
+        // 허기 밸런스(2026-07-22 Macho 확정): 실제 시간당 6(10분당 1) — 8시간 숙면 -48, 16시간 외출 -96.
+        hunger = Math.max(0, Math.min(100, hunger - ((dt / 3600) * 6 * hungerDecayRate)));
+        // 굶주림 페널티: 허기 0으로 12시간 넘으면 병듦(죽음은 없다 — 크릴로 치료되는 쇠약)
+        let starveH = (g as any).starveH || 0;
+        if (hunger <= 0.5) {
+          starveH += dt / 3600;
+          if (starveH >= 12 && !isSick) isSick = true;
+        } else if (hunger > 30) { starveH = 0; }
+        (g as any).starveH = starveH;
 
         if (hunger < 20 && Math.random() < 0.0005) isSick = true;
         if (isSick) {
@@ -722,11 +742,11 @@ export default function App() {
               if (decorationsRef.current.includes('neon_crystal')) earnedXp += 5;
               if (decorationsRef.current.includes('autumn_leaves')) earnedXp += 10;
               
-              xp += earnedXp;
+              xp += isSick ? Math.round(earnedXp * 0.5) : earnedXp;   // 병든 동안 성장 절반 — 굶주림 페널티
               baseHunger = foodType === 'krill' ? 60 : foodType === 'shrimp' ? 35 : foodType === 'premium' ? 20 : 10;   // 잎당 허기: 밥200>프67>새우50>크릴40 — 밥=배 채우기 가성비
               hunger = Math.min(100, hunger + (baseHunger * techMultiplier));
               
-              if (foodType === 'krill') isSick = false;
+              if (foodType === 'krill') { isSick = false; (g as any).starveH = 0; }   // 크릴=치료(굶주림 누적도 초기화)
 
               expression = expToSet;
               

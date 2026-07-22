@@ -129,8 +129,8 @@ export const ManageTab = React.memo(function ManageTab({
                       <span className="truncate">{guppy.data.guppy_name}</span>
                       <span className="text-slate-300 hover:text-blue-500 cursor-pointer transition-colors shrink-0">✎</span>
                     </h3>
-                    <div className={`self-start px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0 ${getStatusColor(guppy.hunger)}`}>
-                      <span>{guppy.hunger > 70 ? '😋' : guppy.hunger > 30 ? '😐' : '🥺'}</span> {getStatusText(guppy.hunger)}
+                    <div className={`self-start px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0 ${guppy.isSick ? 'bg-rose-100 text-rose-700' : getStatusColor(guppy.hunger)}`}>
+                      <span>{guppy.isSick ? '🤒' : guppy.hunger > 70 ? '😋' : guppy.hunger > 30 ? '😐' : '🥺'}</span> {guppy.isSick ? '아파요 — 크릴새우가 약이에요' : getStatusText(guppy.hunger)}
                     </div>
                   </div>
                   <p className="text-xs font-bold text-slate-500 mt-0.5">종류: {guppy.data.rarity}</p>
