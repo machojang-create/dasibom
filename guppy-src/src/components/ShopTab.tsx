@@ -4,6 +4,7 @@ import { Coins } from 'lucide-react';
 
 interface ShopTabProps {
   spendPetal?: any;
+  showToast?: (title: string, desc: string, icon?: string) => void;
   petals?: number;
   gold: number;
   setGold: React.Dispatch<React.SetStateAction<number>>;
@@ -19,6 +20,7 @@ interface ShopTabProps {
 
 export const ShopTab = React.memo(function ShopTab({
   spendPetal,
+  showToast,
   petals,
   gold,
   setGold,
@@ -88,15 +90,14 @@ export const ShopTab = React.memo(function ShopTab({
                 </h3>
                 <p className="text-xs sm:text-sm text-blue-700/70 mt-1 font-medium leading-relaxed">먹이의 영양가를 높여 구피의 성장 속도와 포만감을 영구적으로 증가시킵니다.</p>
               </div>
-              <button 
+              <button
                 onClick={() => {
-                  if (foodTechLevel >= 5) return;
+                  if (foodTechLevel >= 5) { showToast?.('이미 최고 레벨이에요', '먹이 연구소는 Lv.5가 최대치예요', '🔬'); return; }
                   (spendPetal as any)('guppy_tech' + (foodTechLevel + 1), (ok: boolean) => {
                     if (ok) setFoodTechLevel(prev => prev + 1);
                   });
                 }}
-                disabled={foodTechLevel >= 5 || (petals ?? 0) < foodTechLevel * 50}
-                className={`px-4 sm:px-6 py-3 rounded-xl font-black text-sm flex flex-row sm:flex-col items-center justify-center gap-2 sm:gap-0 shadow-sm transition-colors w-full sm:w-auto shrink-0 ${foodTechLevel >= 5 ? 'bg-slate-200 text-slate-400' : (petals ?? 0) >= foodTechLevel * 50 ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-slate-200 text-slate-400'}`}
+                className={`px-4 sm:px-6 py-3 rounded-xl font-black text-sm flex flex-row sm:flex-col items-center justify-center gap-2 sm:gap-0 shadow-sm transition-colors w-full sm:w-auto shrink-0 ${foodTechLevel >= 5 ? 'bg-slate-200 text-slate-400' : (petals ?? 0) >= foodTechLevel * 50 ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-slate-200 text-slate-400 opacity-70'}`}
               >
                 {foodTechLevel >= 5 ? '최대 레벨 도달' : (
                   <>
@@ -286,8 +287,7 @@ export const ShopTab = React.memo(function ShopTab({
                   <p className="text-[13px] text-slate-500 font-medium mb-4 leading-relaxed">{d.desc}</p>
                   <button
                     onClick={() => toggleDecoration(d.id, d.price)}
-                    disabled={!owned && !afford}
-                    className={`mt-auto w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm font-black ${owned ? 'bg-slate-800 text-white' : afford ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400'}`}
+                    className={`mt-auto w-full py-3 rounded-xl flex items-center justify-center transition-colors shadow-sm font-black ${owned ? 'bg-slate-800 text-white' : afford ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 opacity-70'}`}
                   >
                     {owned ? '치우기 (다시 놓으려면 꽃잎 필요)' : (
                       <span className="flex items-center gap-1.5 text-sm">배치하기 <Petal className="w-4 h-4" /> {d.price}</span>

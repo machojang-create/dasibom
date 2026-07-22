@@ -281,7 +281,7 @@ export default function App() {
   };
 
   const buySeed = (plant: PlantData) => {
-    if (currentPlant) return;
+    if (currentPlant) { setIsShopOpen(false); plantSay('이 화분엔 이미 친구가 살고 있어요. 빈 화분에 심어주세요!'); lastUserSpeakRef.current = Date.now(); return; }
     const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
     const firedSeed = guardedSpend('seed', (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG); return; }
@@ -303,7 +303,7 @@ export default function App() {
   };
 
   const buyPot = (potId: string, _price: number) => {
-    if (!currentPlant) return;
+    if (!currentPlant) { setIsPotShopOpen(false); plantSay('식물이 있는 화분만 갈아입힐 수 있어요!'); lastUserSpeakRef.current = Date.now(); return; }
     if (potId === 'pot1') {   // 기본 옹기 무료
       setSlots(prev => { const ns = [...prev]; ns[currentSlotIndex] = { ...prev[currentSlotIndex]!, potId }; return ns; });
       setIsPotShopOpen(false); return;

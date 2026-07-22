@@ -475,8 +475,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Random Normal */}
               <button 
-                onClick={() => handleBuy('normal', 100, false)} 
-                disabled={(petals ?? 0) < 100}
+                onClick={() => handleBuy('normal', 100, false)}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${(petals ?? 0) >= 100 ? 'hover:border-blue-300' : 'opacity-70'}`}
               >
                 <span className="flex items-center gap-2">
@@ -488,8 +487,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
               
               {/* Random Rare */}
               <button 
-                onClick={() => handleBuy('rare', 500, false)} 
-                disabled={(petals ?? 0) < 500}
+                onClick={() => handleBuy('rare', 500, false)}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${(petals ?? 0) >= 500 ? 'hover:border-purple-300' : 'opacity-70'}`}
               >
                 <span className="flex items-center gap-2">
@@ -501,8 +499,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
               
               {/* Random Legendary */}
               <button 
-                onClick={() => handleBuy('legendary', 1000, false)} 
-                disabled={(petals ?? 0) < 1000}
+                onClick={() => handleBuy('legendary', 1000, false)}
                 className={`bg-white p-5 rounded-2xl border border-slate-200 shadow-sm font-bold text-slate-700 flex justify-between items-center transition-transform hover:-translate-y-0.5 ${(petals ?? 0) >= 1000 ? 'hover:border-amber-300' : 'opacity-70'}`}
               >
                 <span className="flex items-center gap-2">

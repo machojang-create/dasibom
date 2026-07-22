@@ -44,7 +44,6 @@ export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: 
               <button
                 key={plant.id}
                 onClick={() => onBuySeed(plant)}
-                disabled={isDisabled}
                 className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
               >
                 <div className="w-20 h-[72px] bg-gradient-to-b from-[#F6FBF2] to-[#eaf4e2] rounded-xl flex items-end justify-center mb-2 group-hover:scale-110 transition-transform shadow-inner overflow-hidden pt-1">

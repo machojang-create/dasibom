@@ -55,7 +55,6 @@ export default function PotShopView({ isOpen, onClose, onBuyPot, money, isSlotEm
               <button
                 key={pot.id}
                 onClick={() => onBuyPot(pot.id, pot.price)}
-                disabled={isDisabled}
                 className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
               >
                 <div

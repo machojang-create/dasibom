@@ -1574,8 +1574,9 @@ export default function App() {
         />
       )}
       {mainMenuTab === "shop" && (
-        <ShopTab 
+        <ShopTab
           spendPetal={spendPetal}
+          showToast={showToast}
           petals={petals}
 
           gold={gold}
