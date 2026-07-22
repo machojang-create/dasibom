@@ -272,17 +272,18 @@ export default function App() {
   const buySlot = () => {
     const idx = unlockedSlots;                  // 첫 번째 잠긴 자리
     if (idx >= slots.length || !SLOT_UNLOCK_PRICE[idx]) return;
-    guardedSpend('plant_slot' + (idx + 1), (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); return; }
+    const firedSlot = guardedSpend('plant_slot' + (idx + 1), (err: any, d: any) => {
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       setUnlockedSlots(idx + 1);
     });
+    if (!firedSlot) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
   const buySeed = (plant: PlantData) => {
     if (currentPlant) return;
     const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
-    guardedSpend('seed', (err: any, d: any) => {
+    const firedSeed = guardedSpend('seed', (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       const newPlant: UserPlant = { 
@@ -298,6 +299,7 @@ export default function App() {
       setIsShopOpen(false);
       setEncyclopedia(prev => prev.map(e => e.plantId === plant.id ? { ...e, discovered: true } : e));
     });
+    if (!firedSeed) { setIsShopOpen(false); plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
   const buyPot = (potId: string, _price: number) => {
@@ -307,12 +309,13 @@ export default function App() {
       setIsPotShopOpen(false); return;
     }
     const slotIdx = currentSlotIndex;   // ★레이스 방지
-    guardedSpend(potId, (err: any, d: any) => {
+    const firedPot = guardedSpend(potId, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       setSlots(prev => { const ns = [...prev]; ns[slotIdx] = { ...prev[slotIdx]!, potId }; return ns; });
       setIsPotShopOpen(false);
     });
+    if (!firedPot) { setIsPotShopOpen(false); plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
   const handleRenamePlant = (plantIndex: number, newName: string) => {
@@ -452,11 +455,12 @@ export default function App() {
       }
     }
     if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
-    guardedSpend(type, (err: any, d: any) => {
+    const firedNut = guardedSpend(type, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
       setMoney(d.balance);
       applyEffect(type);
     });
+    if (!firedNut) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
   useEffect(() => {
@@ -848,27 +852,53 @@ export default function App() {
 
 
 
-        {/* Bottom Actions */}
+        {/* Bottom Actions — 재화 부족·만개 상태를 버튼에서 바로 보이게(2026-07-22 Macho: "불친절한 상황 전수 체크") */}
+        {(() => {
+          const isOld = currentPlant?.stage === 'old';
+          const todayKST = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+          const waterIsPaid = !!currentPlant && (currentPlant as any).lastWaterDay === todayKST;
+          const waterShort = waterIsPaid && money < 1;
+          const normalShort = money < 15;
+          const premiumShort = money < 40;
+          return (
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 md:gap-4 px-2 pointer-events-auto">
-          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
-            {timeOfDay === 'day' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
+          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${waterShort ? 'grayscale opacity-60 saturate-[.5]' : timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+            {timeOfDay === 'day' && !waterShort && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <Droplet className="w-8 h-8 md:w-9 md:h-9 mb-1 drop-shadow relative z-10" fill="currentColor" />
             <span className="font-bold text-[15px] md:text-base drop-shadow-md tracking-tight text-center relative z-10">물주기</span>
-            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">{currentPlant && (currentPlant as any).lastWaterDay === new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/ ? <><Petal className="w-3 h-3" />1</> : '오늘 첫 잔 무료'}</span>
+            {waterShort ? (
+              <span className="font-bold text-[11px] md:text-[12px] bg-red-500/85 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">🌸 부족해요</span>
+            ) : (
+              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">{waterIsPaid ? <><Petal className="w-3 h-3" />1</> : '오늘 첫 잔 무료'}</span>
+            )}
           </button>
-          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] ${money < 15 ? "opacity-60 saturate-[.6]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
-            {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
+          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] ${(normalShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !normalShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+            {timeOfDay === 'night' && !normalShort && !isOld && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">🌿</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">영양제<br/><span className="text-[11px] font-semibold opacity-90">잎이 쑥 자라요</span></span>
-            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
+            {isOld ? (
+              <span className="font-bold text-[11px] md:text-[12px] bg-black/30 px-2.5 py-0.5 rounded-full mt-1 relative z-10">🌼 만개 완료</span>
+            ) : normalShort ? (
+              <span className="font-bold text-[11px] md:text-[12px] bg-red-500/85 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">🌸 부족해요</span>
+            ) : (
+              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
+            )}
           </button>
-          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] ${money < 40 ? "opacity-60 saturate-[.6]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
-            {timeOfDay === 'night' && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
+          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] ${(premiumShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !premiumShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+            {timeOfDay === 'night' && !premiumShort && !isOld && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">✨</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">고급 영양제<br/><span className="text-[11px] font-semibold opacity-90">쑥쑥 두 배!</span></span>
-            <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />40</span>
+            {isOld ? (
+              <span className="font-bold text-[11px] md:text-[12px] bg-black/30 px-2.5 py-0.5 rounded-full mt-1 relative z-10">🌼 만개 완료</span>
+            ) : premiumShort ? (
+              <span className="font-bold text-[11px] md:text-[12px] bg-red-500/85 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">🌸 부족해요</span>
+            ) : (
+              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />40</span>
+            )}
           </button>
         </div>
+          );
+        })()}
       </div>
 
       {/* Carousel Layer (Z-10) */}

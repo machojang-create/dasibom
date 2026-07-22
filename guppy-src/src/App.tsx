@@ -326,10 +326,10 @@ export default function App() {
   const spendPetal = useCallback((item: string, cb: (ok: boolean) => void) => {
     const P = dsb();
     if (!P) { showToast('연결 대기', '잠시 후 다시 시도해 주세요', '🌸'); cb(false); return; }
-    if (spendBusyRef.current) { cb(false); return; }
+    if (spendBusyRef.current) { showToast('한 박자만요', '방금 요청을 처리하고 있어요', '⏳'); cb(false); return; }
     spendBusyRef.current = true;
     let settled = false;
-    const safety = setTimeout(() => { if (!settled) { settled = true; spendBusyRef.current = false; cb(false); } }, 12000);
+    const safety = setTimeout(() => { if (!settled) { settled = true; spendBusyRef.current = false; showToast('연결이 늦어요', '조금 뒤 다시 시도해 주세요', '🌸'); cb(false); } }, 12000);
     P.spend(item, (err: any, d: any) => {
       if (settled) return;
       settled = true; clearTimeout(safety);
