@@ -496,9 +496,9 @@ document.getElementById('subList').addEventListener('click', function(e){
 function renderDailyBanner(){
   var box=document.getElementById('dailyBanner'); if(!box) return;
   var data=window.TRENDY_WORDS||[]; if(!data.length) return;
-  var today=new Date().toISOString().slice(0,10);
-  var seed=0; for(var i=0;i<today.length;i++) seed+=today.charCodeAt(i);
-  var w=data[seed % data.length];
+  /* 순차 로테이션(2026-07-22 전수점검): 문자코드합 방식은 어제 단어가 재등장 + UTC라 오전 9시 갱신 → 그때그시절과 동일한 로컬 자정 기준 일수 인덱스로 통일 */
+  var idx=Math.floor((new Date()-new Date(2025,0,1))/86400000);
+  var w=data[((idx%data.length)+data.length)%data.length];
   box.innerHTML='<div class="db-lbl">⭐ 오늘의 추천 유행어</div>'
     +'<div class="db-word">'+esc(w.word)+' <span style="font-size:12px;font-weight:700;color:#7a5a10">('+esc(w.era)+')</span></div>'
     +'<div class="db-meaning">'+esc(w.meaning)+'</div>';
