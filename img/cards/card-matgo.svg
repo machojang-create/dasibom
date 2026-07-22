@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFB8C2"/><stop offset="1" stop-color="#E8788A"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.72" cy="0.28" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    
+    <linearGradient id="cardface" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFDF6"/><stop offset="1" stop-color="#FDEFD9"/></linearGradient>
+
+  </defs>
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+  
+  <ellipse cx="400" cy="392" rx="260" ry="28" fill="#7A2E3E" opacity="0.16"/>
+  <g transform="translate(400 250)">
+    <g transform="rotate(-24)"><rect x="-52" y="-130" width="104" height="150" rx="14" fill="url(#cardface)" stroke="#E8788A" stroke-width="3"/><circle cx="0" cy="-95" r="26" fill="#E8788A"/><path d="M 0 -95 m -18 30 q 18 20 36 0" stroke="#5C9E31" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+    <g transform="rotate(-2)"><rect x="-52" y="-135" width="104" height="150" rx="14" fill="url(#cardface)" stroke="#F2C265" stroke-width="3"/><circle cx="0" cy="-100" r="26" fill="#F2C265"/><path d="M 0 -100 m -18 30 q 18 20 36 0" stroke="#5C9E31" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+    <g transform="rotate(20)"><rect x="-52" y="-130" width="104" height="150" rx="14" fill="url(#cardface)" stroke="#7FB9E8" stroke-width="3"/><circle cx="0" cy="-95" r="26" fill="#7FB9E8"/><path d="M 0 -95 m -18 30 q 18 20 36 0" stroke="#5C9E31" stroke-width="6" fill="none" stroke-linecap="round"/></g>
+  </g>
+  <path d="M 600 106 L 603.92 116.08 L 614 120 L 603.92 123.92 L 600 134 L 596.08 123.92 L 586 120 L 596.08 116.08 Z" fill="#ffffff" opacity="0.85"/><path d="M 210 90 L 212.8 97.2 L 220 100 L 212.8 102.8 L 210 110 L 207.2 102.8 L 200 100 L 207.2 97.2 Z" fill="#ffffff" opacity="0.7"/>
+</svg>
