@@ -1024,8 +1024,9 @@ export default function App() {
     // Ignore clicks on guppies
     if ((e.target as HTMLElement).closest('.guppy-container')) return;
 
-    const now = Date.now();
-    if (now - lastFeedTimeRef.current < 1000) return;
+    // 급식 딜레이 폐지(2026-07-22 Macho): 먹이는 내 꽃잎으로 산 재화 — 마음껏 후두둑 뿌리는 게 재미.
+    // 화면 위 동시 먹이만 30개 상한(저사양 폰 보호 — 초과 탭은 소비 없이 조용히 무시)
+    if (foodsRef.current.length >= 30) return;
 
     if (foodInventory[selectedFoodType] <= 0) {
       const nw = Date.now();
@@ -1036,7 +1037,6 @@ export default function App() {
       return;
     }
     
-    lastFeedTimeRef.current = now;
 
     setFoodInventory(prev => ({
       ...prev,
