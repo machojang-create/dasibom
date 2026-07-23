@@ -335,6 +335,7 @@
   body:not(.dark) .card-8{background:#E4F3EE}
   body:not(.dark) .card-9{background:#FFE3E3}
   body:not(.dark) .card-10{background:#ECE6F6}
+  body:not(.dark) .card-11{background:#DFF0E2} /* 시니어 직업 상담소(대기) — 카드 주석 풀면 사용됨 */
   body:not(.dark) .card:hover{box-shadow:0 20px 34px -18px rgba(120,100,75,.32),0 46px 76px -34px rgba(110,100,80,.46)}
   .card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
   .card .idx{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:0.16em;color:var(--muted);text-transform:uppercase}
@@ -1881,6 +1882,32 @@
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
 
+      <!-- ═══════════════════════════════════════════════════════
+           ★ 시니어 직업 상담소(/jobs.html) 진입 카드 — 비활성(주석) 대기 중 (2026-07-23)
+           · 다른 세션/작업자 참고: jobs.html은 이미 라이브 배포됨(홈 미노출로 대기).
+             백엔드도 배포 완료 = jobSearch 함수(워크넷 공고 연동, 인증키만 대기·킵목록 12번)
+             + job_consults 규칙(전화 상담 신청 저장) + 봄이 튜토리얼.
+           · 노출 방법: Macho가 승인하면 아래 주석만 풀면 끝.
+             CSS(.card-11)와 카드 이미지(/img/cards/card-jobs.svg)는 이미 살아있음.
+           · 이 블록 지우지 말 것 — 노출 승인 대기 중.
+
+      <a class="card card-11" href="/jobs.html" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">JOBS</span>
+            <span class="tag">인생 2막</span>
+          </div>
+          <h3 class="title">시니어<br>직업 상담소</h3>
+          <p class="desc">수십 년 쌓아온 경험이 다시 빛날 자리, 봄이가 함께 찾아드려요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-jobs.svg" alt="가방과 새싹" loading="lazy">
+          <div class="ph">내 일자리 찾기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+      ═══════════════════════════════════════════════════════ -->
+
       <!-- (다시봄 서재는 '나의 추억, 너의 기억'(자서전) 안으로 이동) -->
     </div>
 
@@ -1990,6 +2017,7 @@
           <li><a href="/gag">오늘의 아재퀴즈</a></li>
           <li><a href="/debate">대환장 토론장</a></li>
           <li><a href="/maeumlab">마음 실험실</a></li>
+          <!-- 시니어 직업 상담소 — 노출 대기(2026-07-23). 위 카드 주석과 함께 풀 것: <li><a href="/jobs.html">시니어 직업 상담소</a></li> -->
           <!-- 공개 서재 — 콘텐츠 준비 후 재노출 예정(2026-07-10 Macho 지시로 임시 숨김) -->
         </ul>
       </div>
