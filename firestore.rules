@@ -271,6 +271,40 @@ service cloud.firestore {
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }
 
+    // ── 토론장 사랑방 공유(2026-07-23, 파일럿 공유 백엔드 1단계) ──
+    // 댓글은 100자라 공용 comments(30자 제한)와 분리. 날짜(scope)별 스레드.
+    match /debate_comments/{cid} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 120
+        && request.resource.data.scope is string
+        && request.resource.data.scope.size() <= 40
+        && request.resource.data.side in ['A', 'B']
+        && request.resource.data.author is string
+        && request.resource.data.author.size() <= 24;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+    // 날짜별 공유 투표함 — 증가만 허용(한 번에 최대 +3), 감소·널뛰기 금지
+    match /debate_votes/{day} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.A is int && request.resource.data.B is int
+        && request.resource.data.A >= 0 && request.resource.data.B >= 0
+        && request.resource.data.A <= 5000 && request.resource.data.B <= 5000;
+      allow update: if request.auth != null
+        && request.resource.data.A is int && request.resource.data.B is int
+        && request.resource.data.A >= resource.data.A
+        && request.resource.data.B >= resource.data.B
+        && request.resource.data.A <= resource.data.A + 3
+        && request.resource.data.B <= resource.data.B + 3;
+      allow delete: if false;
+    }
+
     // 공용 한 줄 공감(서재·그때그시절·게임 등) — comments.js, scope 필드로 스레드 구분
     // 운영자는 봇 uid(bot_*)로도 작성 가능(봇 심기)
     match /comments/{cid} {

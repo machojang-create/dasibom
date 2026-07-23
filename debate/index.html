@@ -13,7 +13,7 @@
   <meta property="og:locale" content="ko_KR">
   <meta name="twitter:card" content="summary_large_image">
 
-    <script type="module" crossorigin src="/debate/assets/index-DExlt3KL2.js"></script>
+    <!-- 앱은 사랑방 공유 병합(아래 스크립트)이 끝난 뒤 동적으로 부팅한다 -->
     <link rel="stylesheet" crossorigin href="/debate/assets/index-DE5lo76_.css">
   </head>
   <body>
@@ -29,6 +29,122 @@
         {text:'다 끝나면 이 버튼을 눌러요. 봄이가 결과와 오늘의 장원을 발표해요 🎉', sel:'.text-center.pt-4 > button'}
       ]
     };</script>
+    <script>
+    // ── 사랑방 공유(2026-07-23, 파일럿 공유 백엔드 1단계) ─────────────────────
+    // 토론 댓글·투표를 파이어스토어로 온 동네가 함께 본다.
+    // 원리: ①입장 전에 동네 기록을 받아 로컬에 병합 → 앱 부팅  ②내 댓글·표는 뒤에서 조용히 올림
+    //       ③오늘 첫 방문이라 로컬이 없으면 앱 먼저 띄우고, 동네 기록 도착 시 한 번만 새로 고침
+    (function () {
+      var APP_SRC = '/debate/assets/index-DExlt3KL2.js';
+      var t = new Date(Date.now() - 360 * 60 * 1000);   // 앱과 동일: 아침 6시에 하루가 바뀐다
+      var DATE = t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0');
+      var LSKEY = 'debate_' + DATE, SCOPE = 'debate:' + DATE;
+      var SYNCED_KEY = 'debate_synced_' + DATE, FSIDS_KEY = 'debate_fsids_' + DATE;
+      var booted = false;
+
+      function boot() {
+        if (booted) return; booted = true;
+        var s = document.createElement('script');
+        s.type = 'module'; s.crossOrigin = ''; s.src = APP_SRC;
+        document.head.appendChild(s);
+      }
+      function readJson(k, fb) { try { var v = localStorage.getItem(k); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
+      function writeJson(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+
+      function ensureFs(cb, tries) {
+        tries = tries || 0;
+        if (window.firebase && typeof firebase.firestore === 'function') { cb(firebase.firestore()); return; }
+        if (window.firebase && firebase.app && !document.getElementById('dbt-fs-compat')) {
+          var sc = document.createElement('script'); sc.id = 'dbt-fs-compat';
+          sc.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+          document.head.appendChild(sc);
+        }
+        if (tries > 40) { cb(null); return; }   // 10초 넘으면 공유 없이 진행
+        setTimeout(function () { ensureFs(cb, tries + 1); }, 250);
+      }
+      function withUid(cb) {
+        var un = firebase.auth().onAuthStateChanged(function (u) { un();   // 소셜 세션 보호 — 복원 대기
+          if (u) { cb(u.uid); }
+          else { firebase.auth().signInAnonymously().then(function (r) { cb(r.user.uid); }).catch(function () { cb(null); }); }
+        });
+      }
+
+      // 동네 기록 → 로컬 병합. 반환: 병합으로 로컬이 바뀌었는가
+      function mergeRemote(fs, done) {
+        var rec = readJson(LSKEY, null);
+        fs.collection('debate_comments').where('scope', '==', SCOPE).limit(200).get().then(function (snap) {
+          fs.collection('debate_votes').doc(DATE).get().then(function (vd) {
+            var changed = false;
+            var fsids = readJson(FSIDS_KEY, []);
+            if (rec) {
+              snap.forEach(function (d) {
+                if (fsids.indexOf(d.id) >= 0) return;
+                var x = d.data();
+                rec.comments.push({ id: 'fs-' + d.id, author: x.author || '이웃 어르신', text: x.text, side: x.side, createdAt: (x.ts && x.ts.toMillis) ? x.ts.toMillis() : Date.now() });
+                fsids.push(d.id); changed = true;
+              });
+              if (vd.exists) {
+                var v = vd.data();
+                if (rec.votes.A !== v.A || rec.votes.B !== v.B) { rec.votes = { A: v.A, B: v.B }; changed = true; }
+              } else {
+                // 오늘 첫 공유자 — 내 사랑방 초기값을 동네 기준으로 등록
+                fs.collection('debate_votes').doc(DATE).set({ A: rec.votes.A, B: rec.votes.B }).catch(function () {});
+              }
+              if (changed) { writeJson(LSKEY, rec); writeJson(FSIDS_KEY, fsids); }
+            }
+            done(changed, snap.size);
+          }).catch(function () { done(false, 0); });
+        }).catch(function () { done(false, 0); });
+      }
+
+      // 내가 남긴 댓글·표 올리기(5초 주기)
+      function uploadLoop(fs, uid) {
+        setInterval(function () {
+          var rec = readJson(LSKEY, null); if (!rec) return;
+          var synced = readJson(SYNCED_KEY, []);
+          var fsids = readJson(FSIDS_KEY, []);
+          (rec.comments || []).forEach(function (c) {
+            if (!c.id || c.id.indexOf('user-') !== 0 || synced.indexOf(c.id) >= 0) return;
+            synced.push(c.id); writeJson(SYNCED_KEY, synced);   // 선기록 — 중복 업로드 방지
+            fs.collection('debate_comments').add({
+              scope: SCOPE, text: String(c.text).slice(0, 100), side: c.side === 'B' ? 'B' : 'A',
+              author: String(c.author || '이웃 어르신').slice(0, 20), uid: uid,
+              ts: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(function (ref) {
+              fsids.push(ref.id); writeJson(FSIDS_KEY, fsids);
+              var inc = {}; inc[c.side === 'B' ? 'B' : 'A'] = firebase.firestore.FieldValue.increment(1);
+              fs.collection('debate_votes').doc(DATE).update(inc).catch(function () {
+                var base = { A: 0, B: 0 }; base[c.side === 'B' ? 'B' : 'A'] = 1;
+                fs.collection('debate_votes').doc(DATE).set(base).catch(function () {});
+              });
+            }).catch(function () {
+              var i = synced.indexOf(c.id); if (i >= 0) { synced.splice(i, 1); writeJson(SYNCED_KEY, synced); }   // 실패 — 다음에 다시
+            });
+          });
+        }, 5000);
+      }
+
+      var hadLocal = !!readJson(LSKEY, null);
+      if (!hadLocal) boot();   // 첫 방문: 앱 먼저, 공유는 뒤이어
+      setTimeout(boot, 3500);  // 어떤 경우든 3.5초 안엔 무조건 부팅(공유 실패해도 토론은 된다)
+
+      ensureFs(function (fs) {
+        if (!fs) { boot(); return; }
+        withUid(function (uid) {
+          mergeRemote(fs, function (changed, remoteCount) {
+            if (hadLocal) { boot(); }
+            else if (remoteCount > 0 && !sessionStorage.getItem('debate_refreshed_' + DATE)) {
+              // 첫 방문인데 동네 기록이 있었다 — 병합분 반영 위해 딱 한 번 조용히 새로 고침
+              sessionStorage.setItem('debate_refreshed_' + DATE, '1');
+              setTimeout(function () { mergeRemote(fs, function () { location.reload(); }); }, 2500);
+            }
+            if (uid) uploadLoop(fs, uid);
+            setInterval(function () { mergeRemote(fs, function () {}); }, 25000);   // 동네 새 소식 계속 담아두기(다음 방문 반영)
+          });
+        });
+      });
+    })();
+    </script>
     <script src="/dasibom-bomguide.js?v=2"></script>
     <script src="/dasibom-fontsize.js"></script>
   <script src="/dasibom-points.js?v=1"></script>
