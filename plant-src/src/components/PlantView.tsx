@@ -12,7 +12,8 @@ interface Props {
   onInteract?: () => void;
   onRename?: (newName: string) => void;
   timeOfDay?: 'morning' | 'day' | 'night';
-  waterFx?: number;   // 물주기 연출 트리거(타임스탬프)
+  careKind?: 'water' | 'nutrient' | null;   // 돌봄 연출 종류(2026-07-23)
+  careKey?: number;                          // 트리거 타임스탬프
 }
 
 const getEmoji = (type: string, stage: string, plantEmoji?: string) => {
@@ -25,9 +26,11 @@ const getEmoji = (type: string, stage: string, plantEmoji?: string) => {
 /* 대사(말투)에서 감정을 읽어 표정을 고른다.
    우선순위: 물 없음(죽음) > 목마름(시듦) — 돌봄 신호가 대사 연기에 가려지면 안 됨.
    그 위에서 대사 키워드로: 감동·신남·놀람·잔소리·궁금 > 물 기반 기본 표정. */
-type Mood = 'dead' | 'wilt' | 'moved' | 'excited' | 'surprised' | 'nag' | 'curious' | 'meh' | 'happy' | 'superhappy';
+type Mood = 'dead' | 'wilt' | 'moved' | 'excited' | 'surprised' | 'nag' | 'curious' | 'meh' | 'happy' | 'superhappy' | 'refreshed' | 'energized';
 
-const classifyMood = (water: number, phrase?: string): Mood => {
+const classifyMood = (water: number, phrase?: string, careFx?: string): Mood => {
+  if (careFx === 'water') return 'refreshed';     // 물 주는 순간: 시원~한 표정(2026-07-23)
+  if (careFx === 'nutrient') return 'energized';  // 영양제 맞는 순간: 기운 뿅!
   if (water === 0) return 'dead';
   if (water <= 30) return 'wilt';
   const t = phrase || '';
@@ -41,12 +44,28 @@ const classifyMood = (water: number, phrase?: string): Mood => {
   return 'happy';
 };
 
-const getFacialExpression = (water: number, phrase?: string) => {
-  const mood = classifyMood(water, phrase);
+const getFacialExpression = (water: number, phrase?: string, careFx?: string) => {
+  const mood = classifyMood(water, phrase, careFx);
   const P = { width: 40, height: 20, viewBox: '0 0 50 24', fill: 'none', stroke: 'currentColor',
     strokeWidth: 3.5, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const,
     className: 'w-10 h-5 md:w-12 md:h-6' };
   switch (mood) {
+    case 'refreshed': return (  /* 물 샤워: 지그시 감은 눈 + 캬~ 하고 벌린 작은 입 + 물방울 볼 */
+      <svg {...P} data-mood="refreshed">
+        <path d="M 10 10 Q 15 13 20 10" />
+        <path d="M 30 10 Q 35 13 40 10" />
+        <ellipse cx="25" cy="17" rx="3.2" ry="3.8" fill="currentColor" stroke="none" opacity="0.85" />
+        <circle cx="8" cy="14" r="1.8" fill="#7dd3fc" stroke="none" opacity="0.9" />
+        <circle cx="42" cy="14" r="1.8" fill="#7dd3fc" stroke="none" opacity="0.9" />
+      </svg>);
+    case 'energized': return (  /* 영양 주사: 반짝 별눈(><) + 힘주는 활짝 웃음 + 볼 홍조 */
+      <svg {...P} data-mood="energized">
+        <path d="M 10 8 L 15 11 L 10 14 M 20 8 L 15 11 L 20 14" strokeWidth={3} />
+        <path d="M 30 8 L 35 11 L 30 14 M 40 8 L 35 11 L 40 14" strokeWidth={3} />
+        <path d="M 19 16 Q 25 23 31 16 Z" fill="currentColor" stroke="none" />
+        <circle cx="9" cy="16" r="2.4" fill="#fca5a5" stroke="none" opacity="0.8" />
+        <circle cx="41" cy="16" r="2.4" fill="#fca5a5" stroke="none" opacity="0.8" />
+      </svg>);
     case 'dead': return (
       <svg {...P} data-mood="dead">
         <path d="M 12 7 L 18 13 M 18 7 L 12 13" />
@@ -200,7 +219,7 @@ const PotRender = ({ potId, expression }: { potId: string, expression: ReactNode
 }
 
 
-export default function PlantView({ plant, onInteract, onRename, timeOfDay, waterFx }: Props) {
+export default function PlantView({ plant, onInteract, onRename, timeOfDay, careKind, careKey }: Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(plant.customName || plant.type.name);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -272,17 +291,40 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay, wate
               : getEmoji(plant.type.type, plant.stage, plant.type.emoji)}
           </motion.div>
           
-          <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel, phrase)} />
-          {!!waterFx && (
-            <div key={waterFx} className="absolute -top-4 left-1/2 -translate-x-1/2 w-44 h-60 pointer-events-none z-30">
-              {[0, 1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="absolute rounded-full bg-gradient-to-b from-sky-200 to-sky-400/90 shadow-sm"
-                  style={{ left: (10 + i * 12 + (i % 2) * 4) + '%', top: 0, width: (7 - (i % 3)) + 'px', height: (11 - (i % 3)) + 'px',
-                    animation: 'waterFall 0.85s ease-in ' + (i * 0.09) + 's forwards', opacity: 0 }} />
+          <PotRender potId={plant.potId || 'pot1'} expression={getFacialExpression(plant.waterLevel, phrase, careKind || undefined)} />
+
+          {/* 💧 물주기: 위에서 기우는 물뿌리개 + 쏟아지는 물방울 + 착지 물결(2026-07-23) */}
+          {careKind === 'water' && !!careKey && (
+            <div key={'w' + careKey} className="absolute -top-16 left-1/2 -translate-x-1/2 w-48 h-72 pointer-events-none z-30">
+              <div className="absolute left-[8%] top-0 text-4xl md:text-5xl origin-bottom-right" style={{ animation: 'canTilt 2.1s ease-in-out forwards' }}>🪣</div>
+              {[0, 1, 2, 3, 4, 5, 6, 7].map(i => (
+                <div key={i} className="absolute"
+                  style={{ left: (26 + i * 7 + (i % 2) * 3) + '%', top: '26px',
+                    animation: 'dropFall 0.8s cubic-bezier(.5,0,.9,.5) ' + (0.35 + i * 0.08) + 's forwards', opacity: 0 }}>
+                  <div className="rounded-full bg-gradient-to-b from-sky-100 to-sky-400 shadow-[0_0_4px_rgba(56,189,248,0.7)]"
+                    style={{ width: (6 - (i % 3)) + 'px', height: (10 - (i % 3)) + 'px', borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%' }} />
+                </div>
               ))}
-              <div className="absolute bottom-8 w-24 h-4" style={{ left: '50%', animation: 'waterSplash 0.5s ease-out 0.8s forwards', opacity: 0 }}>
+              <div className="absolute bottom-14 left-1/2 -translate-x-1/2 w-24 h-6" style={{ animation: 'splashRing 0.6s ease-out 0.95s forwards', opacity: 0 }}>
                 <div className="w-full h-full rounded-full border-2 border-sky-300/80" />
               </div>
+            </div>
+          )}
+
+          {/* 💉 영양제: 위에서 콕 찌르는 주사기 + 링거 방울 + 기운 반짝(2026-07-23) */}
+          {careKind === 'nutrient' && !!careKey && (
+            <div key={'n' + careKey} className="absolute -top-14 left-1/2 -translate-x-1/2 w-48 h-72 pointer-events-none z-30">
+              <div className="absolute left-1/2 -translate-x-1/2 top-0 text-4xl md:text-5xl" style={{ animation: 'syringePoke 1.6s ease-in-out forwards' }}>💉</div>
+              {[0, 1, 2, 3].map(i => (
+                <div key={i} className="absolute left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-b from-lime-200 to-emerald-400 shadow-[0_0_5px_rgba(52,211,153,0.8)]"
+                  style={{ width: '7px', height: '9px', top: '36px', borderRadius: '50% 50% 50% 50% / 60% 60% 40% 40%',
+                    animation: 'dropFall 0.7s ease-in ' + (0.5 + i * 0.13) + 's forwards', opacity: 0 }} />
+              ))}
+              {['✨', '💚', '⭐', '✨'].map((s, i) => (
+                <div key={'s' + i} className="absolute text-lg md:text-xl"
+                  style={{ left: (18 + i * 20) + '%', bottom: (54 + (i % 2) * 14) + 'px',
+                    animation: 'sparkPop 0.9s ease-out ' + (0.7 + i * 0.12) + 's forwards', opacity: 0 }}>{s}</div>
+              ))}
             </div>
           )}
         </motion.div>

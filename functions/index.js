@@ -1990,12 +1990,14 @@ exports.createCenterAccount = functions.region('asia-northeast3').https.onCall(a
 //     · crawlJobs(예약, 6h) — 각 채용처를 서버에서 수집 → Firestore `jobs_feed`에 적재
 //     · jobSearch(onCall)   — jobs_feed(수집분) + 워크넷(공공API, 키 있으면) 합쳐 반환
 //   수집처(2026-07 현재):
-//     ① 복지넷 bokji.net — 어르신(B)·복지관(G) 분야 = 노인복지관·요양·주야간보호 전국. ✅가동
-//        robots.txt는 쿼리스트링(/*?)만 차단 → 목록은 POST(URL에 ? 없음)라 준수. 상세?ID=는
-//        봇이 안 긁고 사용자 클릭 링크로만 사용. 6h 주기·식별 UA로 예의.
+//     ① 복지넷 bokji.net — 어르신(B)·복지관(G) 분야 + 케어 키워드(주야간보호·요양·재가·방문요양)
+//        전국 수집. ✅가동. robots.txt는 쿼리스트링(/*?)만 차단 → 목록은 POST(URL에 ? 없음)라 준수.
+//        상세?ID=는 봇이 안 긁고 사용자 클릭 링크로만 사용. 6h 주기·식별 UA로 예의.
 //     ② 워크넷 공공API — worknet.key 설정 시 자동 합류(키 발급은 킵목록 12번, Macho).
-//     ③ (예정) 노인일자리여기(seniorro)·지자체 일자리센터 — 크롤 가능한 것부터 추가.
-//     ✗ 알바천국/알바몬/인크루트 등 민간앱 — ToS상 크롤 금지·로그인/봇차단. 제휴 API만 합법.
+//     ⏳ 정찰했으나 현재 크롤 불가(2026-07-24): 노인일자리여기(seniorro=SPA·봇차단),
+//        서울시어르신취업지원센터(goldenjob=인증서만료·빈응답), 서울50플러스(50plus/sjc=파싱되나
+//        최신공고 2025-12로 정체). 살아나거나 공공API 열리면 crawlBokji 패턴 복제해 추가.
+//     ✗ 알바천국/알바몬/인크루트/사람인 등 민간앱 — ToS상 크롤 금지·로그인/봇차단. 제휴 API만 합법.
 //   ⚠️ jobs_feed는 Functions(Admin)만 읽고 씀(규칙). 개인정보 없음(공개 공고 필드만).
 // ════════════════════════════════════════════════════════════════════════
 const WORKNET_KEY = (() => { try { return functions.config().worknet.key; } catch (e) { return null; } })();
@@ -2017,7 +2019,8 @@ function jobSido(regionText) {
 // ── ① 복지넷 크롤러 ───────────────────────────────────────────────────────
 function bokjiTag(seg, re) { const m = seg.match(re); return m ? m[1].replace(/&nbsp;/g, ' ').replace(/<[^>]+>/g, '').trim() : ''; }
 
-async function crawlBokji(sisulDiv, maxPages) {
+// params 예: {SISULDIV:'B'}(분야) 또는 {KEYWORD:'주야간보호'}(검색어). 목록 HTML은 동일 → 파서 공용.
+async function crawlBokji(params, maxPages) {
   const out = [];
   for (let pg = 1; pg <= maxPages; pg++) {
     let html;
@@ -2025,7 +2028,7 @@ async function crawlBokji(sisulDiv, maxPages) {
       const res = await fetch('https://www.bokji.net/job/off/01.bokji', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'DasibomJobsBot/1.0 (+https://dasibomlife.com; 시니어 채용정보 모음)' },
-        body: 'PG=' + pg + '&SISULDIV=' + sisulDiv
+        body: querystring.stringify(Object.assign({ PG: pg }, params))
       });
       html = await res.text();
     } catch (e) { break; }
@@ -2058,8 +2061,15 @@ async function crawlBokji(sisulDiv, maxPages) {
 async function runJobCrawl() {
   const db = admin.firestore();
   let all = [];
-  all = all.concat(await crawlBokji('B', 4));   // 어르신(요양·주야간보호·노인복지관)
-  all = all.concat(await crawlBokji('G', 3));   // 종합·노인복지관
+  // 분야별(전국): 어르신 = 요양·주야간보호·노인복지관 / 복지관 = 종합복지관
+  all = all.concat(await crawlBokji({ SISULDIV: 'B' }, 4));
+  all = all.concat(await crawlBokji({ SISULDIV: 'G' }, 3));
+  // 케어 키워드 스윕(제목 검색, 전 분야) — 주야간보호·요양·재가가 다른 분류로 올라와도 놓치지 않게.
+  //   SEARCH_GUBUN=REQUIREFIELD(채용 제목)+SEARCH_KEYWORD. 상단 고정 유료광고가 섞여 오므로 제목 매칭만 남김.
+  for (const kw of ['주야간보호', '요양', '재가', '방문요양']) {
+    const rows = await crawlBokji({ SEARCH_GUBUN: 'REQUIREFIELD', SEARCH_KEYWORD: kw }, 1);
+    all = all.concat(rows.filter((j) => j.title.indexOf(kw) >= 0));
+  }
   // 중복 제거(id 기준)
   const seen = {}, uniq = [];
   for (const j of all) { if (seen[j.id]) continue; seen[j.id] = 1; uniq.push(j); }

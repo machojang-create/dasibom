@@ -40,6 +40,34 @@ export function plipSfx() {
   } catch (e) {}
 }
 
+export function boingSfx() {
+  /* 영양제 '뿅!' — 기운 차오르듯 위로 통통 튀는 이중 상승음(2026-07-23) */
+  try {
+    const c = ac(), t = c.currentTime;
+    const o = c.createOscillator(), g = c.createGain(), f = c.createBiquadFilter();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(300, t);
+    o.frequency.exponentialRampToValueAtTime(760, t + 0.10);   // 쑥 올라가고
+    o.frequency.exponentialRampToValueAtTime(560, t + 0.17);   // 살짝 내렸다
+    o.frequency.exponentialRampToValueAtTime(980, t + 0.28);   // 한 번 더 뿅!
+    f.type = 'lowpass'; f.frequency.value = 2400;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.12, t + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.34);
+    o.connect(f); f.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + 0.36);
+    // 반짝 꼬리음
+    const o2 = c.createOscillator(), g2 = c.createGain();
+    o2.type = 'sine'; o2.frequency.setValueAtTime(1500, t + 0.24);
+    o2.frequency.exponentialRampToValueAtTime(2400, t + 0.34);
+    g2.gain.setValueAtTime(0.0001, t + 0.24);
+    g2.gain.exponentialRampToValueAtTime(0.05, t + 0.27);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    o2.connect(g2); g2.connect(c.destination);
+    o2.start(t + 0.24); o2.stop(t + 0.42);
+  } catch (e) {}
+}
+
 let mounted = false;
 export function mountButtonSfx() {
   if (mounted) return; mounted = true;

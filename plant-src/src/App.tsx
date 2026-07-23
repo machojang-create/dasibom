@@ -17,7 +17,7 @@ import GraduationModal from './components/GraduationModal';
 import AnimatedNumber from './components/AnimatedNumber';
 import { DIALOGUES } from './data/dialogues';
 import { SPAM_DIALOGUES } from './data/dialogues_spam';
-import { mountButtonSfx, plipSfx } from './lib/sfx';
+import { mountButtonSfx, plipSfx, boingSfx } from './lib/sfx';
 import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import Petal from './components/Petal';
 
@@ -114,7 +114,13 @@ export default function App() {
   });
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   useEffect(() => { mountButtonSfx(); }, []);   // 🔘 말랑 버튼음 — 모든 버튼 공통
-  const [waterFx, setWaterFx] = useState({ slot: -1, key: 0 });   // 💧 물방울 낙하 연출 트리거
+  // 돌봄 연출/표정(2026-07-23): 물주기·영양제 순간의 물뿌리개·주사기 애니 + 잠깐의 반응 표정
+  const [careFx, setCareFx] = useState<{ slot: number; kind: 'water' | 'nutrient' | null; key: number }>({ slot: -1, kind: null, key: 0 });
+  useEffect(() => {
+    if (!careFx.kind) return;
+    const t = setTimeout(() => setCareFx(c => (c.key === careFx.key ? { slot: -1, kind: null, key: c.key } : c)), 2200);
+    return () => clearTimeout(t);
+  }, [careFx.key, careFx.kind]);
 
   // 배경음: '작은 농장 오후'(2026-07-22 Macho 음원) — 켜둔 채 재방문 시 첫 터치에 이어 재생
   useEffect(() => { autoResumeBgm('/audio/plant_bgm.mp3', 'plant_bgm', () => setIsAudioPlaying(true)); }, []);
@@ -403,10 +409,15 @@ export default function App() {
       if (type === 'water' && timeOfDay === 'day') waterIncrease = 25;
       if (type !== 'water' && timeOfDay === 'night') waterIncrease = Math.floor(waterIncrease * 1.5);
       
+      // 돌봄 연출: 물주기=물뿌리개 샤워, 영양제=주사기+반짝(2026-07-23 Macho)
       if (type === 'water') {
-        setWaterFx({ slot: currentSlotIndex, key: Date.now() });
-        [0, 180, 380].forEach((ms) => setTimeout(plipSfx, ms));   // 또르륵 플립 3방울
+        setCareFx({ slot: currentSlotIndex, kind: 'water', key: Date.now() });
+        [0, 160, 340].forEach((ms) => setTimeout(plipSfx, ms));   // 또르륵 플립 3방울
+      } else {
+        setCareFx({ slot: currentSlotIndex, kind: 'nutrient', key: Date.now() });
+        boingSfx();   // 뿅! 기운 차오르는 소리
       }
+      lastUserSpeakRef.current = Date.now();   // 돌봄 표정 8초 보호
       newPlant.waterLevel = Math.min(100, newPlant.waterLevel + waterIncrease);
       let buf = ((newPlant as any).growthBuf || 0) + levelIncrease;
       while (buf >= 1 && newPlant.level < 12) { newPlant.level += 1; buf -= 1; }
@@ -950,7 +961,7 @@ export default function App() {
                     </div>
                   </div>
                   
-                  <PlantView plant={slot} onInteract={() => speakWithPlant('쓰다듬기', idx)} onRename={(newName) => handleRenamePlant(idx, newName)} timeOfDay={timeOfDay} waterFx={waterFx.slot === idx ? waterFx.key : 0} />
+                  <PlantView plant={slot} onInteract={() => speakWithPlant('쓰다듬기', idx)} onRename={(newName) => handleRenamePlant(idx, newName)} timeOfDay={timeOfDay} careKind={careFx.slot === idx ? careFx.kind : null} careKey={careFx.slot === idx ? careFx.key : 0} />
                 </>
               ) : (
                 <button onClick={() => setIsShopOpen(true)} className="relative flex flex-col items-center justify-end h-64 mt-4 mb-2 z-30 -translate-y-[120px] md:-translate-y-[120px] pointer-events-auto group cursor-pointer">
