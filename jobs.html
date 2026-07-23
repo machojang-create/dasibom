@@ -100,6 +100,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,251,244,.96);backdr
 .carousel::-webkit-scrollbar{display:none}
 .ccard{flex:0 0 78%;scroll-snap-align:start;background:#fff;border:1.5px solid rgba(200,120,74,.16);border-radius:18px;padding:18px;box-shadow:0 3px 14px rgba(120,80,40,.06)}
 .ccard .loc{font-size:calc(13px * var(--ts));font-weight:800;color:#c8784a}
+.ccard .src{display:inline-block;margin-left:7px;font-size:calc(11px * var(--ts));font-weight:800;color:#2E7D32;background:#EAF6EB;border-radius:50px;padding:2px 9px;vertical-align:1px}
 .ccard h4{margin-top:6px;font-size:calc(17px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.45}
 .ccard p{margin-top:7px;font-size:calc(14px * var(--ts));color:#8a7560;line-height:1.6}
 .swipehint{text-align:center;font-size:calc(13px * var(--ts));color:#b5a48f}
@@ -205,7 +206,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(255,251,244,.96);backdr
     </div>
 
     <h2 class="subhead">🗺️ 우리 동네 채용 소식
-      <small>옆으로 밀어서 넘겨보세요 →</small>
+      <small id="noticeSub">복지관·요양·주야간보호까지 여러 곳에서 모았어요 · 옆으로 넘겨보세요 →</small>
     </h2>
     <div class="carousel" id="carousel"></div>
   </section>
@@ -395,12 +396,15 @@ function loadNotices(kw){
     const d=r.data||{};
     if(!d.ok||!d.jobs||!d.jobs.length){ renderMockNotices(); return; }
     document.getElementById('carousel').innerHTML=d.jobs.map(function(j){
-      const inner='<span class="loc">📍 '+esc(j.region||pickedRegion)+'</span><h4>'+esc(j.title)+'</h4>'+
+      const badge=j.source?'<span class="src">'+esc(j.source)+'</span>':'';
+      const inner='<span class="loc">📍 '+esc(j.region||pickedRegion)+badge+'</span><h4>'+esc(j.title)+'</h4>'+
         '<p>'+esc(j.company)+(j.sal?' · '+esc(j.sal):'')+(j.closeDt?'<br>마감 '+esc(j.closeDt):'')+'</p>';
       return j.url
         ? '<a class="ccard" style="display:block;text-decoration:none;color:inherit" target="_blank" rel="noopener" href="'+esc(j.url)+'">'+inner+'</a>'
         : '<div class="ccard">'+inner+'</div>';
     }).join('');
+    const srcTxt=(d.sources&&d.sources.length)?d.sources.join('·')+'에서 모았어요':'';
+    const sub=document.getElementById('noticeSub'); if(sub&&srcTxt) sub.textContent=srcTxt+' · 옆으로 넘겨보세요 →';
   }).catch(function(){ if(seq===noticeSeq) renderMockNotices(); });
 }
 renderMockNotices();        // 먼저 예시로 채우고
