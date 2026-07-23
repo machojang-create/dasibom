@@ -5,10 +5,10 @@
 // 저장소: Firestore 'comments' 컬렉션 {scope,text,uid,ts}. 규칙은 firestore.rules 참고.
 (function(){
   if (window.DasibomComments) return;
-  var MAX = 30; // 바이트
+  var MAX = 20; // 글자 수(2026-07-23 수리: 예전 '30바이트'는 한글 10자만 허용돼 사실상 못 쓰는 제한이었음. 서버 규칙은 30자까지 허용)
   var BAD = ['시발','씨발','병신','개새','좆','니미','fuck','sex','섹스'];
 
-  function bytes(s){ try{ return new Blob([s]).size; }catch(e){ return (s||'').length; } }
+  function bytes(s){ return Array.from(s||'').length; }   // 글자 수(이모지 포함 안전)
   function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
   function clean(t){ var s=t.replace(/\s/g,'').toLowerCase(); return !BAD.some(function(w){return s.indexOf(w)>=0;}); }
   function timeAgo(ms){ if(!ms) return ''; var s=Math.floor((Date.now()-ms)/1000); if(s<60)return '방금'; if(s<3600)return Math.floor(s/60)+'분 전'; if(s<86400)return Math.floor(s/3600)+'시간 전'; return Math.floor(s/86400)+'일 전'; }
@@ -47,13 +47,13 @@
     box.classList.add('dbc-comments');
     box.innerHTML =
       '<div class="dbc-head"><span>💬 '+esc(title)+'</span><span class="dbc-cnt"></span></div>'+
-      '<div class="dbc-form"><input type="text" class="dbc-input" placeholder="짧은 한마디로 마음을 나눠보세요" maxlength="30" autocomplete="off"><button class="dbc-send" disabled>남기기</button></div>'+
-      '<div class="dbc-meta"><span class="dbc-byte">0/'+MAX+'</span><span class="dbc-hint">서로 따뜻한 말로 공감해요 🌸</span></div>'+
+      '<div class="dbc-form"><input type="text" class="dbc-input" placeholder="짧은 한마디로 마음을 나눠보세요" maxlength="20" autocomplete="off"><button class="dbc-send" disabled>남기기</button></div>'+
+      '<div class="dbc-meta"><span class="dbc-byte">0/'+MAX+'자</span><span class="dbc-hint">서로 따뜻한 말로 공감해요 🌸</span></div>'+
       '<div class="dbc-list"><div class="dbc-empty">불러오는 중…</div></div>';
     var input=box.querySelector('.dbc-input'), sendBtn=box.querySelector('.dbc-send'),
         byteEl=box.querySelector('.dbc-byte'), listEl=box.querySelector('.dbc-list'), cntEl=box.querySelector('.dbc-cnt');
 
-    function refreshByte(){ var b=bytes(input.value); byteEl.textContent=b+'/'+MAX; var over=b>MAX; byteEl.className='dbc-byte'+(over?' over':''); sendBtn.disabled=over||input.value.trim().length===0; }
+    function refreshByte(){ var b=bytes(input.value); byteEl.textContent=b+'/'+MAX+'자'; var over=b>MAX; byteEl.className='dbc-byte'+(over?' over':''); sendBtn.disabled=over||input.value.trim().length===0; }
     input.addEventListener('input', refreshByte);
 
     function render(arr){
@@ -89,4 +89,7 @@
   function scan(root){ (root||document).querySelectorAll('.dbc[data-scope]').forEach(build); }
   window.DasibomComments = { mount:function(el,scope,title){ if(!el)return; el.setAttribute('data-scope',scope); if(title)el.setAttribute('data-title',title); build(el); }, scan:scan };
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', function(){ scan(); }); else scan();
+  // 준비 완료 신호(2026-07-23 전수점검): 페이지들이 이 신호를 기다리는데 그동안 아무도 쏘지 않아
+  // 로드 순서에 따라 댓글창이 아예 안 나타나던 레이스 수리
+  try{ document.dispatchEvent(new CustomEvent('dasibom-comments-ready')); }catch(e){}
 })();

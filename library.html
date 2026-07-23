@@ -354,7 +354,7 @@ body{
 <script src="/a11y.js?v=7" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
-<script src="/comments.js?v=2" defer></script>
+<script src="/comments.js?v=4" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
 <script src="/bom_tutorial.js?v=5" defer></script>
 <script>window.BOM_TUT={
@@ -678,13 +678,15 @@ function openReader(m){
     body.innerHTML = '<div class="reader-empty-ch">내용이 없습니다.</div>';
   }
 
-  // 글마다 한 줄 공감(방명록)
-  if(window.DasibomComments && m.id){
+  // 글마다 한 줄 공감(방명록) — comments.js 늦게 로드돼도 신호 받으면 붙는다(2026-07-23)
+  if(m.id){
     const gb = document.createElement('div');
     gb.className = 'dbc';
     gb.style.margin = '26px 0 8px';
     body.appendChild(gb);
-    window.DasibomComments.mount(gb, 'library:' + m.id, '이 이야기에 한마디');
+    const gbMount = function(){ if(window.DasibomComments) window.DasibomComments.mount(gb, 'library:' + m.id, '이 이야기에 한마디'); };
+    if(window.DasibomComments){ gbMount(); }
+    else { document.addEventListener('dasibom-comments-ready', gbMount, {once:true}); }
   }
 
   overlay.classList.remove('hidden');

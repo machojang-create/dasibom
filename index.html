@@ -2278,7 +2278,7 @@
   })();
 </script>
 
-<script src="/comments.js?v=2"></script>
+<script src="/comments.js?v=4"></script>
 <script src="/reactions.js?v=2"></script>
 <script>
 // 오늘의 지혜 감정 반응 바 — 날짜별 scope
@@ -2681,9 +2681,15 @@
         todayWrap.innerHTML = '';
         todayWrap.appendChild(buildNsMini(_todayItem));
       }
-      if (window.DasibomComments && _todayItem && _todayItem.id != null) {
-        var _cmEl = document.getElementById('ns-home-comments');
-        if (_cmEl) window.DasibomComments.mount(_cmEl, 'nostalgia:' + _todayItem.id, '오늘의 추억에 한마디');
+      if (_todayItem && _todayItem.id != null) {
+        // 스레드 주소 통일(2026-07-23): 그때그시절 본문과 같은 일 인덱스 공식 — 홈과 본문이 같은 댓글을 본다
+        var _cmScope = 'nostalgia:' + ((Math.floor((Date.now() - new Date(2025,0,1).getTime())/86400000)%300+300)%300);
+        var _cmMount = function(){
+          var _cmEl = document.getElementById('ns-home-comments');
+          if (_cmEl && window.DasibomComments) window.DasibomComments.mount(_cmEl, _cmScope, '오늘의 추억에 한마디');
+        };
+        if (window.DasibomComments) { _cmMount(); }
+        else { document.addEventListener('dasibom-comments-ready', _cmMount, {once:true}); }
       }
     } catch(e) {
       var w = document.getElementById('ns-today-wrap');
