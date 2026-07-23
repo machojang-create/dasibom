@@ -1983,3 +1983,63 @@ exports.createCenterAccount = functions.region('asia-northeast3').https.onCall(a
    001 테스트 계정을 만들려고 급히 붙였던 HTTP 엔드포인트. 토큰이 코드에 박혀 깃에 올라가는
    구조라, URL+토큰만 알면 누구나 센터 계정을 만들 수 있었음(배포본도 functions:delete로 제거).
    ★센터 계정 발급은 createCenterAccount(master 전용 onCall)로만 할 것. 다시 만들지 말 것. */
+
+// ════════════════════════════════════════
+// 시니어 직업 상담소(jobs.html) — 워크넷 채용정보 연동 (2026-07-23)
+//   인증키: firebase functions:config:set worknet.key="발급받은키"
+//     (발급: 공공데이터포털 data.go.kr → '워크넷 채용정보' 활용신청 — Macho 직접)
+//   키가 없거나 API 장애면 {ok:false} → 클라이언트가 예시 공고로 폴백(화면은 항상 동작)
+//   결과는 jobs_cache/{지역_키워드}에 6시간 캐시 — 호출량·응답속도 방어(규칙: 클라 접근 차단)
+// ════════════════════════════════════════
+const WORKNET_KEY = (() => { try { return functions.config().worknet.key; } catch (e) { return null; } })();
+const WORKNET_URL =
+  ((() => { try { return functions.config().worknet.url; } catch (e) { return null; } })()) ||
+  'http://openapi.work.go.kr/opi/opi/opia/wantedApi.do';
+// 워크넷 지역코드(법정동 상위 5자리) — jobs.html 지역 칩과 1:1
+const JOB_REGION = { '서울': '11000', '경기': '41000', '인천': '28000', '부산': '26000', '대구': '27000', '광주': '29000', '대전': '30000' };
+
+function jobXmlTag(block, tag) {
+  const m = block.match(new RegExp('<' + tag + '>([\\s\\S]*?)</' + tag + '>'));
+  return m ? m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() : '';
+}
+
+exports.jobSearch = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 20, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) return { ok: false, reason: 'auth' };
+    if (!WORKNET_KEY) return { ok: false, reason: 'nokey' };
+    const regionLabel = String((data && data.region) || '').slice(0, 10);
+    const keyword = String((data && data.keyword) || '').slice(0, 20).replace(/[^0-9A-Za-z가-힣 ]/g, '');
+    const regionCode = JOB_REGION[regionLabel] || '';
+    const cacheId = (regionCode || 'all') + '_' + (keyword || 'all');
+    const cacheRef = admin.firestore().collection('jobs_cache').doc(cacheId);
+    try {
+      const c = await cacheRef.get();
+      if (c.exists && Date.now() - c.data().fetchedAt < 6 * 3600 * 1000 && (c.data().jobs || []).length) {
+        return { ok: true, jobs: c.data().jobs, cached: true };
+      }
+    } catch (e) { /* 캐시 실패는 무시하고 원본 호출 */ }
+    const params = { authKey: WORKNET_KEY, callTp: 'L', returnType: 'XML', startPage: '1', display: '20' };
+    if (regionCode) params.region = regionCode;
+    if (keyword) params.keyword = keyword;
+    try {
+      const res = await fetch(WORKNET_URL + '?' + querystring.stringify(params));
+      const xml = await res.text();
+      const blocks = xml.match(/<wanted>[\s\S]*?<\/wanted>/g) || [];
+      const jobs = blocks.map((b) => ({
+        title:   jobXmlTag(b, 'title'),
+        company: jobXmlTag(b, 'company'),
+        sal:     jobXmlTag(b, 'sal') || jobXmlTag(b, 'salTpNm'),
+        region:  jobXmlTag(b, 'region'),
+        career:  jobXmlTag(b, 'career'),
+        closeDt: jobXmlTag(b, 'closeDt'),
+        url:     jobXmlTag(b, 'wantedInfoUrl') || jobXmlTag(b, 'wantedMobileInfoUrl')
+      })).filter((j) => j.title).slice(0, 12);
+      if (!jobs.length) return { ok: false, reason: 'empty' };
+      await cacheRef.set({ jobs, fetchedAt: Date.now(), region: regionLabel, keyword: keyword });
+      return { ok: true, jobs };
+    } catch (e) {
+      return { ok: false, reason: 'api' };
+    }
+  });

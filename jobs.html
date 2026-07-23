@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시니어 직업 상담소 — 다시봄</title>
+<meta name="description" content="인생 2막, 새 일터를 함께 찾아드려요. 경력 맞춤 일자리 추천부터 숨은 적성 찾기까지.">
+<script src="/a11y.js?v=7" defer></script>
+<script src="/dasibom-kiosk-usage.js" defer></script>
+<script src="/attend.js?v=3" defer></script>
+<script src="/bom_voice.js?v=12" defer></script>
+<script src="/bom_guide.js?v=2" defer></script>
+<script src="/bom_tutorial.js?v=5" defer></script>
+<script>window.BOM_TUT={
+  key:'jobs', face:'bom_smile.png', name:'시니어 직업 상담소',
+  welcome:'{호칭}, 여기는 인생 2막 일터를 함께 찾는 상담소예요. 수십 년 쌓아온 경험, 그냥 두기 아깝잖아요 🌷',
+  action:'해오신 일을 적어주시면 봄이가 딱 맞는 자리를 찾아드려요.',
+  tour:[
+    {text:'해오신 일과 동네를 알려주시면 맞춤 일자리를 찾아드려요.', sel:'#askCard'},
+    {text:'우리 동네 실제 채용 소식은 여기서 옆으로 넘겨봐요.', sel:'#carousel'},
+    {text:'내 숨은 적성이 궁금하면 이 단추를 눌러봐요!', sel:'.tabs'}
+  ]
+};</script>
+<script>window.BOM_GUIDES={
+  jobs_consult:{face:'bom_cheer.png',title:'📞 전화 상담',text:'성함과 전화번호만 남기시면 상담사가 직접 전화를 드려요. 번호는 상담 연락에만 쓰고 끝나면 지워드려요.'},
+  jobs_apt:{face:'bom_grin.png',title:'🌱 적성 알아보기',text:'가볍게 8개만 답하면 숨은 적성을 찾아드려요. 정답은 없으니 마음 가는 대로 눌러보세요!'}
+};</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js" defer></script>
+<style>
+:root{--ts:1}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;overflow-x:hidden}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:#FFFBF4;color:#3A2E22;min-height:100vh}
+.wrap{max-width:600px;margin:0 auto;padding:0 18px 80px}
+button{font-family:inherit}
+
+/* 헤더: 왼쪽 홈으로 / 오른쪽 제목 (카드 UI 표준) */
+header{position:sticky;top:0;z-index:100;background:rgba(255,251,244,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(200,120,74,.14);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.back{border:1.5px solid rgba(200,120,74,.3);color:#c8784a;background:none;font-size:calc(15px * var(--ts));font-weight:700;padding:10px 18px;border-radius:50px;cursor:pointer;text-decoration:none}
+.htitle{font-size:calc(17px * var(--ts));font-weight:800;color:#3A2A18}
+
+/* 히어로 */
+.hero{padding:34px 0 6px;text-align:center}
+.hero h1{font-family:'Nanum Myeongjo','Batang',serif;font-size:clamp(26px,6.5vw,32px);font-weight:800;color:#3A2A18;line-height:1.45}
+.hero h1 em{font-style:normal;color:#c8784a}
+.hero p{margin-top:12px;font-size:calc(16px * var(--ts));color:#6b5a48;line-height:1.8}
+
+/* 탭 */
+.tabs{display:flex;gap:9px;margin:26px 0 20px}
+.tab{flex:1;padding:15px 6px;border-radius:16px;border:1.5px solid #EBD9C2;background:#fff;color:#7a6650;font-size:calc(15.5px * var(--ts));font-weight:800;cursor:pointer;line-height:1.35;min-height:60px}
+.tab.on{background:linear-gradient(135deg,#c8784a,#d4845a);border-color:transparent;color:#fff;box-shadow:0 8px 18px -6px rgba(200,120,74,.5)}
+.sec{display:none}
+.sec.on{display:block;animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── 1. 일자리 찾기: 대화형 입력 ── */
+.chatcard{background:#fff;border:1.5px solid rgba(200,120,74,.16);border-radius:22px;padding:22px 20px;box-shadow:0 4px 18px rgba(120,80,40,.07)}
+.bubble{display:flex;gap:12px;align-items:flex-start;margin-bottom:16px}
+.bom{width:44px;height:44px;border-radius:50%;background:#FFF1DE;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.bubble p{background:#FFF6E9;border-radius:4px 18px 18px 18px;padding:13px 16px;font-size:calc(16.5px * var(--ts));line-height:1.7;color:#4a3a26}
+.field{margin:14px 0 6px}
+.field label{display:block;font-size:calc(14.5px * var(--ts));font-weight:800;color:#9a6200;margin-bottom:8px}
+.field input{width:100%;padding:16px;border:1.5px solid #EBD9C2;border-radius:16px;font-size:calc(17px * var(--ts));font-family:inherit;outline:none;background:#FFFDF9;color:#3A2E22}
+.field input:focus{border-color:#c8784a}
+.regions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.rchip{padding:12px 18px;border-radius:50px;border:1.5px solid #EBD9C2;background:#fff;color:#7a6650;font-size:calc(15px * var(--ts));font-weight:700;cursor:pointer;min-height:48px}
+.rchip.on{background:#3A2A18;border-color:#3A2A18;color:#fff}
+.bigbtn{width:100%;margin-top:20px;padding:19px;border:none;border-radius:18px;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:calc(18.5px * var(--ts));font-weight:800;cursor:pointer;box-shadow:0 10px 22px -8px rgba(200,120,74,.55);min-height:60px}
+.bigbtn:active{transform:scale(.98)}
+
+/* 찾는 중 */
+.loading{display:none;text-align:center;padding:44px 0}
+.loading.on{display:block}
+.loading .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:#c8784a;margin:0 5px;animation:bounce 1s infinite}
+.loading .dot:nth-child(2){animation-delay:.15s}.loading .dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,100%{transform:none;opacity:.4}50%{transform:translateY(-10px);opacity:1}}
+.loading p{margin-top:16px;font-size:calc(16px * var(--ts));color:#8a7560}
+
+/* 결과 */
+.result{display:none}
+.result.on{display:block;animation:fade .4s ease}
+.cheer{text-align:center;font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(21px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.55;margin:28px 0 18px}
+.cheer em{font-style:normal;color:#c8784a}
+.jobcard{background:#fff;border:1.5px solid rgba(200,120,74,.16);border-radius:20px;padding:20px;margin-bottom:14px;box-shadow:0 4px 16px rgba(120,80,40,.06)}
+.jobcard .match{display:inline-block;font-size:calc(13px * var(--ts));font-weight:800;color:#2E7D32;background:#EAF6EB;border-radius:50px;padding:5px 13px;margin-bottom:10px}
+.jobcard h3{font-size:calc(19.5px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.4}
+.jobcard .why{margin-top:8px;font-size:calc(15px * var(--ts));line-height:1.7;color:#6b5a48}
+.jobmeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.jm{font-size:calc(13.5px * var(--ts));color:#9A6200;background:#FFF4D6;border-radius:50px;padding:6px 13px;font-weight:700}
+.applybtn{margin-top:14px;width:100%;padding:15px;border:1.5px solid rgba(200,120,74,.35);border-radius:14px;background:#FFF9F1;color:#c8784a;font-size:calc(16px * var(--ts));font-weight:800;cursor:pointer;min-height:52px}
+.retry{display:block;margin:6px auto 0;background:none;border:none;color:#8a7560;font-size:calc(14.5px * var(--ts));font-weight:700;cursor:pointer;text-decoration:underline;padding:12px}
+
+/* 지역 공고 캐러셀 */
+.subhead{margin:34px 0 14px;font-size:calc(18px * var(--ts));font-weight:800;color:#3A2A18}
+.subhead small{display:block;margin-top:5px;font-size:calc(14px * var(--ts));font-weight:400;color:#8a7560}
+.carousel{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 14px;scroll-snap-type:x mandatory;-ms-overflow-style:none;scrollbar-width:none}
+.carousel::-webkit-scrollbar{display:none}
+.ccard{flex:0 0 78%;scroll-snap-align:start;background:#fff;border:1.5px solid rgba(200,120,74,.16);border-radius:18px;padding:18px;box-shadow:0 3px 14px rgba(120,80,40,.06)}
+.ccard .loc{font-size:calc(13px * var(--ts));font-weight:800;color:#c8784a}
+.ccard h4{margin-top:6px;font-size:calc(17px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.45}
+.ccard p{margin-top:7px;font-size:calc(14px * var(--ts));color:#8a7560;line-height:1.6}
+.swipehint{text-align:center;font-size:calc(13px * var(--ts));color:#b5a48f}
+
+/* ── 2. 적성 찾기 ── */
+.quizbox{background:#fff;border:1.5px solid rgba(200,120,74,.16);border-radius:22px;padding:28px 22px;text-align:center;box-shadow:0 4px 18px rgba(120,80,40,.07)}
+.qprog{display:flex;gap:7px;justify-content:center;margin-bottom:22px}
+.qdot{width:11px;height:11px;border-radius:50%;background:#EBD9C2}
+.qdot.on{background:#c8784a}
+.qemoji{font-size:52px;line-height:1}
+.qtext{margin:18px 0 26px;font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(21px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.6;min-height:66px}
+.qbtns{display:flex;gap:12px}
+.qbtn{flex:1;padding:18px 8px;border-radius:18px;border:none;font-size:calc(17.5px * var(--ts));font-weight:800;cursor:pointer;min-height:62px}
+.qyes{background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;box-shadow:0 8px 18px -8px rgba(200,120,74,.55)}
+.qno{background:#F4EBDD;color:#7a6650}
+.qbtn:active{transform:scale(.97)}
+/* 적성 결과 */
+.aresult{display:none;text-align:center}
+.aresult.on{display:block;animation:fade .4s ease}
+.abadge{width:96px;height:96px;border-radius:50%;background:#FFF1DE;display:flex;align-items:center;justify-content:center;font-size:48px;margin:6px auto 16px}
+.atype{font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(24px * var(--ts));font-weight:800;color:#c8784a}
+.adesc{margin:14px 0 20px;font-size:calc(16px * var(--ts));line-height:1.8;color:#4a3a26}
+.ajobs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ajob{font-size:calc(14.5px * var(--ts));font-weight:800;color:#9A6200;background:#FFF4D6;border-radius:50px;padding:9px 16px}
+
+/* ── 3. 새로운 시작 가이드 ── */
+.gcard{position:relative;border-radius:24px;overflow:hidden;margin-bottom:18px;cursor:pointer;border:none;width:100%;text-align:left;padding:0;box-shadow:0 8px 24px rgba(120,80,40,.12)}
+.gthumb{height:150px;display:flex;align-items:center;justify-content:center;font-size:62px}
+.g1 .gthumb{background:linear-gradient(135deg,#FFE3C2,#FFD3A8)}
+.g2 .gthumb{background:linear-gradient(135deg,#DCEFDA,#C4E4C0)}
+.g3 .gthumb{background:linear-gradient(135deg,#FFE1D6,#FFCFC0)}
+.gbody{background:#fff;padding:20px 22px 22px}
+.gtag{display:inline-block;font-size:calc(12.5px * var(--ts));font-weight:800;color:#c8784a;background:#FFF1E4;border-radius:50px;padding:5px 13px}
+.gbody h3{margin-top:10px;font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(20px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.45}
+.gbody p{margin-top:8px;font-size:calc(15px * var(--ts));line-height:1.7;color:#6b5a48}
+.gopen{margin-top:14px;display:inline-block;font-size:calc(15px * var(--ts));font-weight:800;color:#c8784a}
+
+/* 가이드 상세 모달 */
+.modal{display:none;position:fixed;inset:0;z-index:300;background:rgba(58,42,24,.45);align-items:flex-end;justify-content:center}
+.modal.on{display:flex}
+.sheet{width:100%;max-width:600px;max-height:86vh;overflow-y:auto;background:#FFFBF4;border-radius:26px 26px 0 0;padding:26px 22px 40px;animation:up .3s ease}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.sheet h3{font-family:'Nanum Myeongjo','Batang',serif;font-size:calc(21px * var(--ts));font-weight:800;color:#3A2A18;line-height:1.5;padding-right:44px}
+.close{position:absolute;margin-left:auto;background:#F4EBDD;border:none;width:44px;height:44px;border-radius:50%;font-size:20px;color:#7a6650;cursor:pointer;float:right}
+.step{display:flex;gap:14px;margin-top:20px;align-items:flex-start}
+.stepno{width:38px;height:38px;border-radius:50%;background:#FFF1DE;color:#c8784a;font-weight:800;font-size:calc(16px * var(--ts));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step div b{display:block;font-size:calc(16.5px * var(--ts));color:#3A2A18;margin-bottom:4px}
+.step div span{font-size:calc(15px * var(--ts));line-height:1.7;color:#6b5a48}
+
+/* 이력서 템플릿 */
+.tpl .field{margin:16px 0 0}
+.tpl textarea{width:100%;padding:15px;border:1.5px solid #EBD9C2;border-radius:16px;font-size:calc(16px * var(--ts));font-family:inherit;outline:none;background:#fff;color:#3A2E22;resize:none;line-height:1.6}
+.tpl textarea:focus{border-color:#c8784a}
+.copied{display:none;text-align:center;margin-top:12px;font-size:calc(15px * var(--ts));font-weight:800;color:#2E7D32}
+.copied.on{display:block}
+</style>
+</head>
+<body>
+<header>
+  <a class="back" href="/">← 홈으로</a>
+  <span class="htitle">시니어 직업 상담소</span>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <h1>인생 2막,<br><em>새 일터</em>를 함께 찾아봐요</h1>
+    <p>수십 년 쌓아온 경험은 그 자체로 보물이에요.<br>그 보물이 빛날 자리, 봄이가 찾아드릴게요 🌷</p>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-sec="s1" role="tab">💼 내 일자리<br>찾기</button>
+    <button class="tab" data-sec="s2" role="tab" data-bomguide="jobs_apt">🌱 적성<br>알아보기</button>
+    <button class="tab" data-sec="s3" role="tab">📖 새로운 시작<br>가이드</button>
+  </div>
+
+  <!-- ═══ 1. AI 맞춤 일자리 ═══ -->
+  <section class="sec on" id="s1">
+    <div class="chatcard" id="askCard">
+      <div class="bubble">
+        <div class="bom">🌸</div>
+        <p>그동안 어떤 일을 해오셨어요?<br>편하게 말씀해 주시면 꼭 맞는 자리를 찾아볼게요.</p>
+      </div>
+      <div class="field">
+        <label>지난 날의 나의 일</label>
+        <input id="career" type="text" placeholder="예: 은행원 20년, 식당 운영 15년" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>일하고 싶은 동네</label>
+        <div class="regions" id="regions"></div>
+      </div>
+      <button class="bigbtn" id="findBtn">🔎 내게 맞는 일자리 찾기</button>
+    </div>
+
+    <div class="loading" id="loading">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+      <p>봄이가 꼭 맞는 자리를 찾고 있어요…</p>
+    </div>
+
+    <div class="result" id="result">
+      <p class="cheer" id="cheerMsg"></p>
+      <div id="jobList"></div>
+      <button class="retry" id="retryBtn">다시 찾아보기</button>
+    </div>
+
+    <h2 class="subhead">🗺️ 우리 동네 채용 소식
+      <small>옆으로 밀어서 넘겨보세요 →</small>
+    </h2>
+    <div class="carousel" id="carousel"></div>
+  </section>
+
+  <!-- ═══ 2. 숨은 적성 찾기 ═══ -->
+  <section class="sec" id="s2">
+    <div class="quizbox" id="quizBox">
+      <div class="qprog" id="qprog"></div>
+      <div class="qemoji" id="qemoji">🤔</div>
+      <p class="qtext" id="qtext"></p>
+      <div class="qbtns">
+        <button class="qbtn qyes" id="qyes">👍 좋아요</button>
+        <button class="qbtn qno" id="qno">🤔 글쎄요</button>
+      </div>
+    </div>
+    <div class="quizbox aresult" id="aresult">
+      <div class="abadge" id="abadge"></div>
+      <p style="font-size:calc(15px * var(--ts));color:#8a7560">당신의 숨은 적성은…</p>
+      <p class="atype" id="atype"></p>
+      <p class="adesc" id="adesc"></p>
+      <p style="font-size:calc(14.5px * var(--ts));font-weight:800;color:#9a6200;margin-bottom:10px">이런 일과 잘 어울려요</p>
+      <div class="ajobs" id="ajobs"></div>
+      <button class="retry" id="aretry" style="margin-top:22px">다시 해보기</button>
+    </div>
+  </section>
+
+  <!-- ═══ 3. 새로운 시작 가이드 ═══ -->
+  <section class="sec" id="s3">
+    <button class="gcard g1" data-guide="g1">
+      <div class="gthumb">🎓</div>
+      <div class="gbody">
+        <span class="gtag">나라가 내는 배움 비용</span>
+        <h3>배우고 싶던 그 공부,<br>이제 나라 돈으로 하세요</h3>
+        <p>내일배움카드 하나면 최대 500만 원까지 지원받아요. 신청 방법, 차근차근 알려드려요.</p>
+        <span class="gopen">읽어보기 →</span>
+      </div>
+    </button>
+    <button class="gcard g2" data-guide="g2">
+      <div class="gthumb">🏅</div>
+      <div class="gbody">
+        <span class="gtag">다시 찾는 인기 자격증</span>
+        <h3>지금 시작해도<br>충분히 늦지 않았어요</h3>
+        <p>시니어 채용이 활발한 자격증만 골랐어요. 준비 기간과 가는 길을 한눈에 보여드려요.</p>
+        <span class="gopen">읽어보기 →</span>
+      </div>
+    </button>
+    <button class="gcard g3" data-guide="g3">
+      <div class="gthumb">✍️</div>
+      <div class="gbody">
+        <span class="gtag">합격을 부르는 한 장</span>
+        <h3>내 이야기를 담으면<br>이력서가 살아나요</h3>
+        <p>빈칸만 채우면 완성되는 이력서 틀을 준비했어요. 수십 년 경험을 자랑스럽게 담아보세요.</p>
+        <span class="gopen">빈칸 채우기 틀 열기 →</span>
+      </div>
+    </button>
+  </section>
+</div>
+
+<!-- 가이드 모달 -->
+<div class="modal" id="modal">
+  <div class="sheet" id="sheet"></div>
+</div>
+
+<script>
+/* ───────── Firebase 연결(익명 로그인 폴백 — trendy 패턴) ───────── */
+var FB_CFG = {
+  apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+  authDomain:"mylife-650f0.firebaseapp.com",
+  projectId:"mylife-650f0",
+  storageBucket:"mylife-650f0.firebasestorage.app",
+  messagingSenderId:"512010655611",
+  appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+};
+function ensureAuth(){
+  return new Promise(function(resolve,reject){
+    function go(){
+      if(!window.firebase||!firebase.auth){ setTimeout(go,120); return; }
+      if(!firebase.apps.length) firebase.initializeApp(FB_CFG);
+      var un=firebase.auth().onAuthStateChanged(function(u){ un();   // 복원 대기 — 소셜 세션 보호
+        if(u){ resolve(u); return; }
+        firebase.auth().signInAnonymously().then(function(r){ resolve(r.user); }).catch(reject);
+      });
+    }
+    go();
+  });
+}
+function callFn(name,payload){
+  return ensureAuth().then(function(){
+    return firebase.app().functions('asia-northeast3').httpsCallable(name)(payload);
+  });
+}
+
+/* ───────── 공통: 탭 ───────── */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.onclick=()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.sec').forEach(x=>x.classList.remove('on'));
+    t.classList.add('on');
+    document.getElementById(t.dataset.sec).classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+
+/* ───────── 1. AI 맞춤 일자리 ───────── */
+const REGIONS=['서울','경기','인천','부산','대구','광주','대전','그 외 지역'];
+let pickedRegion='서울';
+const regionsEl=document.getElementById('regions');
+REGIONS.forEach(r=>{
+  const b=document.createElement('button');
+  b.className='rchip'+(r===pickedRegion?' on':'');
+  b.textContent=r;
+  b.onclick=()=>{pickedRegion=r;document.querySelectorAll('.rchip').forEach(x=>x.classList.remove('on'));b.classList.add('on');loadNotices(lastPicked.kw);};
+  regionsEl.appendChild(b);
+});
+
+/* 경력 키워드 → 추천 직무(맞춤 큐레이션) + 워크넷 검색어(kw) */
+const JOB_MAP=[
+ {k:['은행','금융','회계','경리','사무'],honor:'지점장님',kw:'사무',jobs:[
+   {t:'시니어 금융 안내 도우미',w:'은행 창구 곁에서 어르신 방문객을 돕는 일',pay:'월 180만 원',time:'주 5일 · 하루 6시간',match:98},
+   {t:'아파트 관리사무소 경리',w:'꼼꼼한 장부 솜씨가 그대로 빛나는 자리',pay:'월 200만 원',time:'주 5일 · 하루 8시간',match:93},
+   {t:'세무사 사무실 서류 도우미',w:'숫자와 서류에 밝은 분을 찾고 있어요',pay:'월 170만 원',time:'주 3일 · 하루 6시간',match:88}]},
+ {k:['교사','강사','선생','교육'],honor:'선생님',kw:'강사',jobs:[
+   {t:'방과후 돌봄 선생님',w:'아이들에게 평생의 가르침을 다시 나눠주세요',pay:'월 160만 원',time:'주 5일 · 하루 4시간',match:97},
+   {t:'시니어 문해 교실 강사',w:'배움이 늦은 어르신들의 든든한 선생님',pay:'시간당 3만 원',time:'주 2일 · 하루 2시간',match:92},
+   {t:'도서관 독서 지도사',w:'책과 함께한 세월이 자격이 되는 자리',pay:'월 150만 원',time:'주 4일 · 하루 5시간',match:87}]},
+ {k:['식당','요리','주방','조리','음식'],honor:'사장님',kw:'조리',jobs:[
+   {t:'학교 급식 조리 도우미',w:'수십 년 손맛이 아이들 밥상에 오르는 일',pay:'월 190만 원',time:'주 5일 · 하루 6시간',match:96},
+   {t:'반찬 가게 조리원',w:'집밥 솜씨 그대로, 동네 반찬 명인으로',pay:'월 180만 원',time:'주 5일 · 하루 7시간',match:91},
+   {t:'요리 클래스 보조 강사',w:'젊은 사람들에게 손맛을 전수해 주세요',pay:'시간당 2.5만 원',time:'주 2일 · 하루 3시간',match:86}]},
+ {k:['운전','기사','배송','택시','버스'],honor:'기사님',kw:'운전',jobs:[
+   {t:'어린이집 통학차량 기사',w:'안전 운전 수십 년, 아이들의 등하원 지킴이',pay:'월 170만 원',time:'주 5일 · 아침저녁',match:96},
+   {t:'복지관 셔틀 운전원',w:'어르신들을 모시는 따뜻한 핸들',pay:'월 160만 원',time:'주 5일 · 하루 5시간',match:90},
+   {t:'가까운 거리 물품 배송',w:'내 동네를 훤히 아는 것이 곧 실력',pay:'건당 정산',time:'원하는 시간만',match:85}]},
+];
+const DEFAULT_JOBS={honor:'대표님',kw:'',jobs:[
+ {t:'시니어 인턴 (공공기관)',w:'오랜 사회 경험 그 자체가 자격이에요',pay:'월 180만 원',time:'주 5일 · 하루 6시간',match:94},
+ {t:'우리 동네 시설 안내원',w:'따뜻한 인사 한마디가 가장 큰 능력',pay:'월 160만 원',time:'주 4일 · 하루 6시간',match:90},
+ {t:'실버 카페 매니저',w:'연륜에서 나오는 여유로 손님을 맞아요',pay:'월 170만 원',time:'주 5일 · 하루 7시간',match:86}]};
+
+let lastPicked=DEFAULT_JOBS, lastCareer='';
+const findBtn=document.getElementById('findBtn');
+findBtn.onclick=()=>{
+  const career=document.getElementById('career').value.trim();
+  if(!career){document.getElementById('career').focus();document.getElementById('career').placeholder='여기에 살짝 적어주세요 🙂';return;}
+  lastCareer=career;
+  document.getElementById('askCard').style.display='none';
+  document.getElementById('loading').classList.add('on');
+  setTimeout(()=>{
+    document.getElementById('loading').classList.remove('on');
+    let picked=DEFAULT_JOBS;
+    for(const m of JOB_MAP){if(m.k.some(kw=>career.includes(kw))){picked=m;break;}}
+    lastPicked=picked;
+    document.getElementById('cheerMsg').innerHTML='봄이가 <em>'+picked.honor+'</em>께 딱 맞는<br>일자리를 찾았어요! 🎉';
+    document.getElementById('jobList').innerHTML=picked.jobs.map((j,i)=>
+      '<div class="jobcard"><span class="match">나와 맞음 '+j.match+'%</span>'+
+      '<h3>'+j.t+'</h3><p class="why">'+j.w+'</p>'+
+      '<div class="jobmeta"><span class="jm">📍 '+pickedRegion+'</span><span class="jm">💰 '+j.pay+'</span><span class="jm">🕐 '+j.time+'</span></div>'+
+      '<button class="applybtn" data-bomguide="jobs_consult" onclick="openConsult('+i+')">📞 전화 상담 신청하기</button></div>'
+    ).join('');
+    document.getElementById('result').classList.add('on');
+    loadNotices(picked.kw);   // 경력 키워드로 우리 동네 실제 공고 갱신
+  },1800);
+};
+document.getElementById('retryBtn').onclick=()=>{
+  document.getElementById('result').classList.remove('on');
+  document.getElementById('askCard').style.display='';
+};
+
+/* 지역별 공고 캐러셀 — 워크넷 실공고(jobSearch), 실패·키 미설정 시 예시 공고로 폴백 */
+const NOTICES=[
+ {loc:'서울 노원구',t:'경로당 프로그램 진행 도우미',d:'주 3일 · 월 90만 원 · 경력 무관'},
+ {loc:'경기 남양주시',t:'공원 환경 지킴이',d:'주 5일 오전 · 월 120만 원'},
+ {loc:'서울 강동구',t:'초등학교 등하굣길 안전 지도',d:'아침저녁 2시간 · 월 60만 원'},
+ {loc:'부산 해운대구',t:'관광 안내소 시니어 안내원',d:'주 4일 · 월 150만 원 · 친절하면 OK'},
+ {loc:'대전 유성구',t:'도서관 서가 정리 도우미',d:'주 3일 · 하루 4시간 · 월 80만 원'},
+ {loc:'인천 부평구',t:'실버 바리스타 (교육 지원)',d:'주 5일 · 월 170만 원 · 교육 무료'}];
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function renderMockNotices(){
+  document.getElementById('carousel').innerHTML=NOTICES.map(n=>
+   '<div class="ccard"><span class="loc">📍 '+n.loc+'</span><h4>'+n.t+'</h4><p>'+n.d+'</p></div>').join('');
+}
+let noticeSeq=0;
+function loadNotices(kw){
+  const seq=++noticeSeq;   // 늦게 온 응답이 최신 화면을 덮지 않게
+  callFn('jobSearch',{region:pickedRegion,keyword:kw||''}).then(function(r){
+    if(seq!==noticeSeq) return;
+    const d=r.data||{};
+    if(!d.ok||!d.jobs||!d.jobs.length){ renderMockNotices(); return; }
+    document.getElementById('carousel').innerHTML=d.jobs.map(function(j){
+      const inner='<span class="loc">📍 '+esc(j.region||pickedRegion)+'</span><h4>'+esc(j.title)+'</h4>'+
+        '<p>'+esc(j.company)+(j.sal?' · '+esc(j.sal):'')+(j.closeDt?'<br>마감 '+esc(j.closeDt):'')+'</p>';
+      return j.url
+        ? '<a class="ccard" style="display:block;text-decoration:none;color:inherit" target="_blank" rel="noopener" href="'+esc(j.url)+'">'+inner+'</a>'
+        : '<div class="ccard">'+inner+'</div>';
+    }).join('');
+  }).catch(function(){ if(seq===noticeSeq) renderMockNotices(); });
+}
+renderMockNotices();        // 먼저 예시로 채우고
+loadNotices('');            // 실공고가 오면 교체
+
+/* ───────── 2. 숨은 적성 찾기 ───────── */
+const QUESTIONS=[
+ {e:'💬',q:'처음 만난 사람과도\n이야기가 술술 풀리는 편이세요?',type:'people'},
+ {e:'🧾',q:'장부 정리나 계산은\n남들보다 꼼꼼하게 하시나요?',type:'detail'},
+ {e:'🌿',q:'화분이나 텃밭 가꾸는 일이\n마음을 편안하게 하나요?',type:'hands'},
+ {e:'📚',q:'아는 것을 남에게 알려줄 때\n뿌듯함을 느끼시나요?',type:'teach'},
+ {e:'🍲',q:'음식을 만들어 나눠줄 때가\n제일 행복하신가요?',type:'hands'},
+ {e:'🤝',q:'어려운 이웃을 보면\n그냥 지나치기 어려우세요?',type:'people'},
+ {e:'🗂️',q:'물건이 제자리에 있어야\n마음이 놓이시나요?',type:'detail'},
+ {e:'🎤',q:'여럿 앞에서 말하는 것이\n부담스럽지 않으세요?',type:'teach'}];
+const APTITUDES={
+ people:{e:'🤝',t:'함께하는 상담가형',d:'사람의 마음을 여는 재주가 있으세요.\n당신의 따뜻한 말 한마디가 누군가에겐 큰 힘이 돼요.',jobs:['시니어 상담 도우미','시설 안내원','돌봄 말벗 서비스']},
+ detail:{e:'🧾',t:'꼼꼼한 살림꾼형',d:'무엇이든 빈틈없이 챙기는 눈썰미가 있으세요.\n숫자와 정리가 필요한 곳이 당신을 기다려요.',jobs:['경리·회계 보조','재고 관리원','도서관 정리 도우미']},
+ hands:{e:'🌿',t:'따뜻한 손길형',d:'손으로 만들고 가꾸는 일에서 빛나는 분이에요.\n정성이 담긴 결과물로 사람들을 행복하게 해요.',jobs:['급식 조리 도우미','도시 텃밭 관리사','공방 보조 강사']},
+ teach:{e:'📚',t:'지혜로운 선생님형',d:'평생 쌓은 지혜를 나눌 때 가장 빛나는 분이에요.\n당신의 이야기가 누군가의 길잡이가 돼요.',jobs:['방과후 선생님','문해 교실 강사','1:1 멘토링 지도사']}};
+let qIdx=0,qScore={people:0,detail:0,hands:0,teach:0};
+const qprog=document.getElementById('qprog');
+QUESTIONS.forEach(()=>{const d=document.createElement('span');d.className='qdot';qprog.appendChild(d);});
+function renderQ(){
+  document.querySelectorAll('.qdot').forEach((d,i)=>d.classList.toggle('on',i<=qIdx));
+  document.getElementById('qemoji').textContent=QUESTIONS[qIdx].e;
+  document.getElementById('qtext').innerHTML=QUESTIONS[qIdx].q.replace('\n','<br>');
+}
+function answerQ(yes){
+  if(yes)qScore[QUESTIONS[qIdx].type]++;
+  qIdx++;
+  if(qIdx<QUESTIONS.length){renderQ();return;}
+  const best=Object.keys(qScore).sort((a,b)=>qScore[b]-qScore[a])[0];
+  const r=APTITUDES[best];
+  document.getElementById('quizBox').style.display='none';
+  document.getElementById('abadge').textContent=r.e;
+  document.getElementById('atype').textContent=r.t;
+  document.getElementById('adesc').innerHTML=r.d.replace('\n','<br>');
+  document.getElementById('ajobs').innerHTML=r.jobs.map(j=>'<span class="ajob">'+j+'</span>').join('');
+  document.getElementById('aresult').classList.add('on');
+}
+document.getElementById('qyes').onclick=()=>answerQ(true);
+document.getElementById('qno').onclick=()=>answerQ(false);
+document.getElementById('aretry').onclick=()=>{
+  qIdx=0;qScore={people:0,detail:0,hands:0,teach:0};
+  document.getElementById('aresult').classList.remove('on');
+  document.getElementById('quizBox').style.display='';
+  renderQ();
+};
+renderQ();
+
+/* ───────── 3. 가이드 모달 ───────── */
+const GUIDES={
+ g1:{t:'🎓 배움 비용, 나라가 냅니다',steps:[
+  ['내일배움카드 만들기','가까운 고용센터에 가시거나, 자녀분과 함께 HRD-Net 누리집에서 신청하세요. 만드는 데 돈이 들지 않아요.'],
+  ['배우고 싶은 과정 고르기','요양보호사, 바리스타, 조경 관리… 300만~500만 원까지 나라가 내드려요.'],
+  ['수업 듣고 수료하기','출석만 잘 하셔도 됩니다. 수료하면 취업 연계까지 도와드려요.']]},
+ g2:{t:'🏅 지금 따기 좋은 자격증',steps:[
+  ['요양보호사 (준비 3개월)','시니어 채용 1순위. 교육원 수업만 이수하면 시험 자격이 생겨요.'],
+  ['숲해설가·산림치유사 (준비 4개월)','자연을 좋아하신다면 딱. 국립공원·수목원에서 일해요.'],
+  ['버섯·화훼 재배 기능사 (준비 6개월)','귀농·텃밭 창업으로 이어지는 인기 자격이에요.'],
+  ['공인중개사 (준비 1년)','시간이 걸리지만 평생 현역으로 일할 수 있어요.']]},
+ g3:null /* 이력서는 템플릿 폼 */
+};
+const modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
+document.querySelectorAll('.gcard').forEach(c=>{
+  c.onclick=()=>{
+    const id=c.dataset.guide;
+    if(id==='g3'){openResume();return;}
+    const g=GUIDES[id];
+    sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button><h3>'+g.t+'</h3>'+
+      g.steps.map((s,i)=>'<div class="step"><span class="stepno">'+(i+1)+'</span><div><b>'+s[0]+'</b><span>'+s[1]+'</span></div></div>').join('');
+    modal.classList.add('on');
+  };
+});
+function closeModal(){modal.classList.remove('on');}
+modal.onclick=e=>{if(e.target===modal)closeModal();};
+
+/* 전화 상담 신청 — job_consults 저장(번호는 상담 연락에만 쓰고 지움) */
+let consultTitle='';
+function openConsult(i){
+  const j=lastPicked.jobs[i]||{};
+  consultTitle=j.t||'';
+  sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
+   '<h3>📞 전화 상담 신청</h3>'+
+   '<p style="margin-top:10px;font-size:calc(15.5px * var(--ts));line-height:1.7;color:#6b5a48">「'+esc(consultTitle)+'」 자리가 궁금하시군요!<br>번호만 남겨주시면 상담사가 직접 전화드릴게요.</p>'+
+   '<div class="tpl">'+
+   '<div class="field"><label>성함</label><textarea id="cName" rows="1" placeholder="예: 김순자"></textarea></div>'+
+   '<div class="field"><label>전화번호</label><textarea id="cPhone" rows="1" placeholder="예: 010-1234-5678" inputmode="tel"></textarea></div>'+
+   '<button class="bigbtn" onclick="submitConsult()">☎️ 전화 기다릴게요</button>'+
+   '<p style="margin-top:12px;text-align:center;font-size:calc(13px * var(--ts));color:#b5a48f">번호는 상담 연락에만 쓰고, 끝나면 바로 지워드려요.</p>'+
+   '<p class="copied" id="cMsg"></p></div>';
+  modal.classList.add('on');
+}
+function submitConsult(){
+  const name=document.getElementById('cName').value.trim();
+  const phone=document.getElementById('cPhone').value.trim().replace(/[^0-9\-]/g,'');
+  const msg=document.getElementById('cMsg');
+  if(!name){msg.style.color='#c0392b';msg.textContent='성함을 살짝 적어주세요 🙂';msg.classList.add('on');return;}
+  if(phone.replace(/\D/g,'').length<9){msg.style.color='#c0392b';msg.textContent='전화번호를 한 번만 확인해 주세요 ☎️';msg.classList.add('on');return;}
+  msg.style.color='';msg.textContent='접수하고 있어요…';msg.classList.add('on');
+  ensureAuth().then(function(u){
+    return firebase.firestore().collection('job_consults').add({
+      uid:u.uid, name:name.slice(0,20), phone:phone.slice(0,20),
+      jobTitle:consultTitle.slice(0,80), career:lastCareer.slice(0,60), region:pickedRegion,
+      createdAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }).then(function(){
+    sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
+     '<div style="text-align:center;padding:26px 0 10px"><div style="font-size:54px">🌷</div>'+
+     '<h3 style="margin-top:14px;padding:0">접수됐어요, '+esc(name)+'님!</h3>'+
+     '<p style="margin-top:12px;font-size:calc(16px * var(--ts));line-height:1.8;color:#6b5a48">상담사가 곧 전화드릴 거예요.<br>모르는 번호여도 한 번만 받아봐 주세요 ☎️</p></div>';
+  }).catch(function(){
+    msg.style.color='#c0392b';msg.textContent='지금은 접수가 어려워요. 잠시 뒤 다시 눌러주세요 🙏';
+  });
+}
+
+/* 이력서 빈칸 채우기 템플릿 */
+function openResume(){
+  sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
+   '<h3>✍️ 빈칸만 채우면 완성되는 이력서</h3>'+
+   '<div class="tpl">'+
+   '<div class="field"><label>내가 오래 해온 일</label><textarea id="r1" rows="2" placeholder="예: OO은행에서 20년간 창구 업무를 맡았습니다"></textarea></div>'+
+   '<div class="field"><label>내가 제일 잘하는 것</label><textarea id="r2" rows="2" placeholder="예: 처음 온 손님도 단골로 만드는 친절함"></textarea></div>'+
+   '<div class="field"><label>새 일터에서 하고 싶은 것</label><textarea id="r3" rows="2" placeholder="예: 오랜 경험으로 손님들을 편안하게 맞이하고 싶습니다"></textarea></div>'+
+   '<button class="bigbtn" onclick="copyResume()">📋 완성된 자기소개 복사하기</button>'+
+   '<p class="copied" id="copied">복사됐어요! 지원서에 붙여넣으세요 ✅</p></div>';
+  modal.classList.add('on');
+}
+function copyResume(){
+  const v=i=>document.getElementById(i).value.trim()||'(빈칸)';
+  const text='[나의 경력]\n'+v('r1')+'\n\n[나의 강점]\n'+v('r2')+'\n\n[포부]\n'+v('r3');
+  (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).catch(()=>{});
+  document.getElementById('copied').classList.add('on');
+}
+</script>
+</body>
+</html>

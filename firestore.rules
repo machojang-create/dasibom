@@ -289,6 +289,21 @@ service cloud.firestore {
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }
+    // 날짜별 공유 추임새(얼씨구·난리났네 등 5종) — 투표함과 같은 증가 전용 규칙
+    match /debate_reacts/{day} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.eolssigu is int && request.resource.data.nanli is int
+        && request.resource.data.aigo is int && request.resource.data.ehem is int
+        && request.resource.data.giga is int;
+      allow update: if request.auth != null
+        && request.resource.data.eolssigu >= resource.data.eolssigu && request.resource.data.eolssigu <= resource.data.eolssigu + 3
+        && request.resource.data.nanli >= resource.data.nanli && request.resource.data.nanli <= resource.data.nanli + 3
+        && request.resource.data.aigo >= resource.data.aigo && request.resource.data.aigo <= resource.data.aigo + 3
+        && request.resource.data.ehem >= resource.data.ehem && request.resource.data.ehem <= resource.data.ehem + 3
+        && request.resource.data.giga >= resource.data.giga && request.resource.data.giga <= resource.data.giga + 3;
+      allow delete: if false;
+    }
     // 날짜별 공유 투표함 — 증가만 허용(한 번에 최대 +3), 감소·널뛰기 금지
     match /debate_votes/{day} {
       allow read: if true;
@@ -462,6 +477,28 @@ service cloud.firestore {
       allow create, update: if request.auth != null && request.auth.uid == uid;
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // ── 시니어 직업 상담소(jobs.html) 2026-07-23 ──────────────────────
+    // 전화 상담 신청 — 전화번호(개인정보)가 담기므로 읽기는 마스터만.
+    // 작성은 인증 사용자(익명 포함) 본인 명의 1건씩, 필드 타입·크기 검증으로 방어.
+    match /job_consults/{cid} {
+      allow read: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 20
+        && request.resource.data.phone is string && request.resource.data.phone.size() >= 9 && request.resource.data.phone.size() <= 20
+        && request.resource.data.jobTitle is string && request.resource.data.jobTitle.size() <= 80
+        && request.resource.data.career is string && request.resource.data.career.size() <= 60
+        && request.resource.data.region is string && request.resource.data.region.size() <= 10;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+    // 워크넷 공고 캐시 — Cloud Functions(jobSearch, Admin SDK)만 읽고 씀
+    match /jobs_cache/{id} {
+      allow read, write: if false;
     }
 
     // 추억의 오락실 — 주간 랭킹·명예의 전당. 문서ID={weekNum}_{game}_{uid}(유저당 주간 1건, 최고점만 갱신)
