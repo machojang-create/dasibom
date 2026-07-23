@@ -259,16 +259,12 @@ export default function App() {
   const [waterQuality, setWaterQuality] = useState<number>(100);
   const [logs, setLogs] = useState<GuppyResponse[]>([]);
   const [viewMode, setViewMode] = useState<'tank' | 'sprites'>('tank');
-  const [selectedGuppyId, setSelectedGuppyId] = useState<string | null>(null);
   const [showSettings, setShowSettings] = useState(false);
   const [soundOn, setSoundOn] = useState(false);
   useEffect(() => {
     mountButtonSfx();   // 🔘 말랑 버튼음 — 모든 버튼 공통
     autoResumeBgm('/audio/guppy_bgm.mp3', 'guppy_bgm', () => setSoundOn(true));   // '작은 수조 산책' 이어 재생
   }, []);
-  const [releaseArm, setReleaseArm] = useState(false);       // 방생 2단 확인 — 실수 방지
-  const [editingName, setEditingName] = useState(false);
-  const [editNameVal, setEditNameVal] = useState('');
   const [lightingMode, setLightingMode] = useState<string>('day');   // LIGHT_PRESETS 키(2026-07-22 6종 개편)
   const [lightStrength, setLightStrength] = useState<number>(40);    // 조명 강도 10~70%
   const [tankSkin, setTankSkin] = useState<string>('basic');         // TANK_SKINS 키
@@ -512,6 +508,7 @@ export default function App() {
   const tankRef = useRef<HTMLDivElement>(null);
   
   const requestRef = useRef<number>();
+  const hiddenAtRef = useRef<number>(0);   // 백그라운드 진입 시각 — 복귀 시 허기 정산용
   const lastTimeRef = useRef<number>();
   const lastFeedTimeRef = useRef<number>(0);
   const lastNoFoodToastRef = useRef<number>(0);
@@ -904,8 +901,27 @@ export default function App() {
     requestRef.current = requestAnimationFrame(update);
     const onVis = () => {
       if (document.visibilityState === 'hidden') {
+        hiddenAtRef.current = Date.now();   // 백그라운드 진입 시각 기록
         if (requestRef.current) { cancelAnimationFrame(requestRef.current); requestRef.current = undefined; }
       } else {
+        // 백그라운드에 있던 만큼 허기 정산(2026-07-23 Macho 지적) — rAF는 멈췄지만 시간은 흘렀다.
+        // 저장 주기가 savedAt을 계속 갱신해 로드 정산이 못 잡던 사각지대를 여기서 메운다.
+        if (hiddenAtRef.current) {
+          const hrs = Math.max(0, (Date.now() - hiddenAtRef.current) / 3600000);
+          hiddenAtRef.current = 0;
+          if (hrs > 0.05) {   // 3분 이상 비웠을 때만
+            const offRate = decorationsRef.current.includes('log') ? 0.9 : 1;
+            let sickToast = false;
+            guppiesRef.current = guppiesRef.current.map(g => {
+              const nh = Math.max(0, g.hunger - hrs * 6 * offRate);
+              let sh = (g as any).starveH || 0; let sk = g.isSick;
+              if (nh <= 0.5) { const h2z = Math.max(0, g.hunger / (6 * offRate)); sh += Math.max(0, hrs - h2z); if (sh >= 12 && !sk) { sk = true; sickToast = true; } }
+              return { ...g, hunger: nh, starveH: sh, isSick: sk } as any;
+            });
+            setGuppiesState(guppiesRef.current);
+            if (sickToast) setTimeout(() => showToast('오래 굶어 병이 났어요', '크릴새우를 먹이면 기운을 차려요 🤒', '🦐'), 800);
+          }
+        }
         lastTimeRef.current = undefined;   // 복귀 시 dt 폭주 방지
         if (!requestRef.current) requestRef.current = requestAnimationFrame(update);
       }
@@ -1416,12 +1432,11 @@ export default function App() {
                          guppiesRef.current[idx].vx = guppiesRef.current[idx].vx > 0 ? -90 : 90;
                          guppiesRef.current[idx].vy = (Math.random() - 0.5) * 70;
                       }
-                      setReleaseArm(false); setEditingName(false);
-                      setSelectedGuppyId(guppy.id);
+                      // 중앙 팝업 대신 머리 위 이름표만 잠깐(2026-07-23) — 먹이 흐름을 막지 않는다
                       setActiveNames(prev => ({ ...prev, [guppy.id]: true }));
                       setTimeout(() => {
                         setActiveNames(prev => ({ ...prev, [guppy.id]: false }));
-                      }, 5000);
+                      }, 3000);
                     }}
                     style={{
                       transform: `translate3d(${guppy.x}px, ${guppy.y}px, 0) translate(-50%, -50%) scale(${guppy.scale * 1.8})`,
@@ -1456,16 +1471,26 @@ export default function App() {
                         {guppySpeech[guppy.id]}
                       </div>
                     )}
-                    {(showNames || activeNames[guppy.id] || selectedGuppyId === guppy.id) && (
-                      <div 
-                        className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1.5 flex items-center justify-center bg-black/30 backdrop-blur-md rounded-full text-center whitespace-nowrap z-20 pointer-events-none transition-colors shadow-lg border border-white/20"
-                        style={{ 
+                    {(showNames || activeNames[guppy.id]) && (
+                      <div
+                        className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-3 py-1.5 flex items-center justify-center backdrop-blur-md rounded-full text-center whitespace-nowrap z-20 pointer-events-none shadow-lg"
+                        style={{
                           transform: `scale(${1 / (guppy.scale * 1.8)})`,
-                          backgroundColor: selectedGuppyId === guppy.id ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                          border: selectedGuppyId === guppy.id ? '1px solid rgba(255, 255, 255, 0.7)' : '1px solid rgba(255,255,255,0.2)'
+                          backgroundColor: activeNames[guppy.id] ? 'rgba(20,61,46,0.82)' : 'rgba(0, 0, 0, 0.3)',
+                          border: activeNames[guppy.id] ? '1px solid rgba(255,255,255,0.55)' : '1px solid rgba(255,255,255,0.2)'
                         }}
                       >
-                        <span className="text-[10px] sm:text-xs font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-none">{guppy.data.guppy_name}</span>
+                        {activeNames[guppy.id] ? (
+                          <span className="text-[10px] sm:text-xs font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-none flex items-center gap-1.5">
+                            {guppy.data.guppy_name}
+                            <span className="text-sky-200">Lv.{guppy.level}</span>
+                            <span className={guppy.isSick ? 'text-rose-300' : guppy.hunger > 30 ? 'text-emerald-200' : 'text-amber-200'}>
+                              {guppy.isSick ? '🤒' : '🍚' + Math.floor(guppy.hunger) + '%'}
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-[10px] sm:text-xs font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] leading-none">{guppy.data.guppy_name}</span>
+                        )}
                       </div>
                     )}
                   </div>
@@ -1515,80 +1540,8 @@ export default function App() {
                   </div>
                 )}
 
-                {selectedGuppyId && (() => {
-                  const sel = guppies.find(g => g.id === selectedGuppyId);
-                  if (!sel) return null;
-                  const rawGold = sel.level * 50 * (sel.data.rarity === '전설' ? 5 : sel.data.rarity === '희귀' ? 2 : 1) + Math.floor(sel.stats.speed * 50);
-                  return (
-                  <div
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[60] pointer-events-auto bg-black/75 backdrop-blur-xl rounded-3xl p-5 border border-white/20 shadow-2xl w-[86vw] max-w-[300px]"
-                    onClick={(e) => e.stopPropagation()}
-                    onPointerDown={(e) => e.stopPropagation()}
-                  >
-                    <div className="flex justify-between items-center mb-2.5 gap-2">
-                      {editingName ? (
-                        <div className="flex items-center gap-1.5 flex-1 min-w-0">
-                          <input autoFocus value={editNameVal} onChange={(e) => setEditNameVal(e.target.value)} maxLength={8}
-                            className="flex-1 min-w-0 bg-white/15 text-white font-bold rounded-lg px-2 py-2 outline-none border border-white/30 text-[15px]" />
-                          <button onClick={() => { renameGuppy(sel.id, editNameVal); setEditingName(false); }}
-                            className="shrink-0 bg-emerald-500/85 text-white font-black px-3 py-2 rounded-lg text-[13px]">저장</button>
-                        </div>
-                      ) : (
-                        <h3 className="font-black text-white text-[17px] flex items-center gap-2 min-w-0">
-                          <span className="truncate">{sel.data.guppy_name}</span>
-                          <button onClick={() => { setEditNameVal(sel.data.guppy_name); setEditingName(true); }}
-                            className="shrink-0 w-9 h-9 grid place-items-center bg-white/10 hover:bg-white/20 rounded-full text-white/70" aria-label="이름 바꾸기">
-                            <Edit2 className="w-4 h-4" />
-                          </button>
-                        </h3>
-                      )}
-                      <button
-                        onClick={() => setSelectedGuppyId(null)}
-                        onPointerDown={(e) => { e.stopPropagation(); setSelectedGuppyId(null); }}
-                        className="shrink-0 w-10 h-10 flex items-center justify-center text-white/60 hover:text-white bg-white/5 hover:bg-white/10 rounded-full text-xl"
-                      >&times;</button>
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <div className="flex justify-between items-center bg-white/5 p-2 rounded-lg mb-1">
-                        <span className="text-white font-bold">Lv.{sel.level}</span>
-                        <div className="flex-1 mx-3 bg-black/50 h-2 rounded-full overflow-hidden">
-                          <div className="h-full bg-sky-400 rounded-full" style={{ width: `${Math.min(100, (sel.xp / (sel.level * 100)) * 100)}%` }} />
-                        </div>
-                      </div>
-                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">품종</span>
-                        <span className={`text-[13px] font-bold px-2 py-0.5 rounded-full ${sel.data.rarity === '전설' ? 'bg-pink-500/20 text-pink-300' : sel.data.rarity === '희귀' ? 'bg-yellow-500/20 text-yellow-300' : 'bg-white/10 text-white'}`}>{sel.data.rarity}</span></div>
-                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">배부름</span><span className="font-bold text-white text-[13px]">{Math.floor(sel.hunger)}%</span></div>
-                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">눈썰미</span><span className="font-bold text-white text-[13px]">{Math.round((sel.stats.vision / 800) * 100)}%</span></div>
-                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">헤엄 실력</span><span className="font-bold text-white text-[13px]">{Math.round(sel.stats.speed * 100)}%</span></div>
-                      <div className="flex justify-between items-center"><span className="text-sky-300 text-[13px] font-bold">몸집</span><span className="font-bold text-white text-[13px]">{Math.round((sel.stats.size / 0.3) * 100)}%</span></div>
-                      {sel.isSick && (
-                        <div className="bg-red-500/20 border border-red-400/30 rounded-lg p-2 text-center text-red-200 text-[13px] font-bold">🤒 아파요 — 약이나 👑크릴을 먹여 주세요</div>
-                      )}
-                      <div className="flex flex-col mt-1 bg-white/5 p-2 rounded-lg border border-white/5">
-                        <span className="text-sky-300 text-[11px] mb-1 font-bold">타고난 재주</span>
-                        <span className="font-bold text-white text-[13px] mb-0.5">
-                          {sel.data.rarity === '전설' ? '✨ 물살을 가르는 명수' : sel.data.rarity === '희귀' ? '✨ 반짝이는 비늘' : '✨ 씩씩한 헤엄'}
-                        </span>
-                        <span className="text-[12px] text-white/70 leading-tight">
-                          {sel.data.rarity === '전설' ? '어떤 물살도 거뜬해요. 남들보다 빨리 자라요.' : sel.data.rarity === '희귀' ? '먹이를 잘 찾고 눈치가 빨라요.' : '건강하게 무럭무럭 자라요.'}
-                        </span>
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (!releaseArm) { setReleaseArm(true); setTimeout(() => setReleaseArm(false), 4000); return; }
-                          setReleaseArm(false); setSelectedGuppyId(null);
-                          handleRelease(sel.id, rawGold);
-                        }}
-                        className={`mt-2 w-full font-bold py-3 rounded-xl transition-colors text-[13px] border ${releaseArm ? 'bg-red-500/60 border-red-400 text-white' : 'bg-red-500/15 hover:bg-red-500/30 border-red-500/30 text-red-200'}`}
-                      >
-                        {releaseArm ? '정말 보내줄까요? 한 번 더 누르면 떠나요 🌊' : '자연으로 방생하기'}
-                      </button>
-                    </div>
-                  </div>
-                  );
-                })()}
-
-                {/* Removed Feed Button */}
+                {/* 중앙 스탯 팝업 제거(2026-07-23 Macho): 먹이 주다 실수로 탭해도 안 막히게.
+                    탭하면 머리 위 이름표(아래 activeNames)만 잠깐, 상세·이름변경·방생은 '생물 관리' 탭에서. */}
               </>
             ) : null}
           </div>
@@ -1602,6 +1555,7 @@ export default function App() {
           gold={gold}
           onCommune={handleCommune}
           onRelease={handleRelease}
+          onRename={renameGuppy}
           released={released}
         />
       )}

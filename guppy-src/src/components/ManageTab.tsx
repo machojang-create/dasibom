@@ -38,15 +38,19 @@ export const ManageTab = React.memo(function ManageTab({
   gold,
   onCommune,
   onRelease,
+  onRename,
   released
 }: {
   guppies: GuppyInstance[];
   gold: number;
   onCommune: (id: string) => void;
   onRelease: (id: string, reward: number) => void;
+  onRename?: (id: string, name: string) => void;
   released?: { name: string; rarity: string; level: number; at: number; body: string; tail: string; pattern: string }[];
 }) {
   const [releasingGuppy, setReleasingGuppy] = useState<GuppyInstance | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editVal, setEditVal] = useState('');
 
   const getStatusText = (hunger: number) => {
     if (hunger > 70) return '든든하고 행복';
@@ -125,10 +129,21 @@ export const ManageTab = React.memo(function ManageTab({
                 
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-col xl:flex-row xl:items-center justify-between mb-2 gap-2">
-                    <h3 className="text-lg font-black text-slate-800 flex items-center gap-2 break-keep">
-                      <span className="truncate">{guppy.data.guppy_name}</span>
-                      <span className="text-slate-300 hover:text-blue-500 cursor-pointer transition-colors shrink-0">✎</span>
-                    </h3>
+                    {editId === guppy.id ? (
+                      <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                        <input autoFocus value={editVal} maxLength={8} onChange={(e) => setEditVal(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' && editVal.trim()) { onRename?.(guppy.id, editVal.trim()); setEditId(null); } }}
+                          className="flex-1 min-w-0 bg-slate-100 border border-slate-300 rounded-lg px-2 py-1.5 text-lg font-black text-slate-800 outline-none focus:border-blue-400" />
+                        <button onClick={() => { if (editVal.trim()) onRename?.(guppy.id, editVal.trim()); setEditId(null); }}
+                          className="shrink-0 bg-emerald-500 text-white font-black px-3 py-1.5 rounded-lg text-sm">저장</button>
+                      </div>
+                    ) : (
+                      <h3 className="text-lg font-black text-slate-800 flex items-center gap-2 break-keep">
+                        <span className="truncate">{guppy.data.guppy_name}</span>
+                        <button onClick={() => { setEditId(guppy.id); setEditVal(guppy.data.guppy_name); }}
+                          className="text-slate-300 hover:text-blue-500 cursor-pointer transition-colors shrink-0" aria-label="이름 바꾸기">✎</button>
+                      </h3>
+                    )}
                     <div className={`self-start px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1.5 shrink-0 ${guppy.isSick ? 'bg-rose-100 text-rose-700' : getStatusColor(guppy.hunger)}`}>
                       <span>{guppy.isSick ? '🤒' : guppy.hunger > 70 ? '😋' : guppy.hunger > 30 ? '😐' : '🥺'}</span> {guppy.isSick ? '아파요 — 크릴새우가 약이에요' : getStatusText(guppy.hunger)}
                     </div>
