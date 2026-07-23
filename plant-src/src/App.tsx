@@ -831,15 +831,15 @@ export default function App() {
             {isAudioPlaying ? <Volume2 className="w-6 h-6 mb-0.5" /> : <VolumeX className="w-6 h-6 mb-0.5" />}
             <span className="text-[10px] font-bold">소리</span>
           </button>
-          <button onClick={() => setIsEncyclopediaOpen(true)} className="flex flex-col items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white text-green-600 hover:bg-white transition-colors">
+          <button data-bomguide="pdex" onClick={() => setIsEncyclopediaOpen(true)} className="flex flex-col items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white text-green-600 hover:bg-white transition-colors">
             <BookOpen className="w-6 h-6 mb-0.5" />
             <span className="text-[10px] font-bold">도감</span>
           </button>
-          <button onClick={() => setIsPotShopOpen(true)} className="flex flex-col items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white text-blue-500 hover:bg-white transition-colors">
+          <button data-bomguide="ppot" onClick={() => setIsPotShopOpen(true)} className="flex flex-col items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white text-blue-500 hover:bg-white transition-colors">
             <Store className="w-6 h-6 mb-0.5" />
             <span className="text-[10px] font-bold">화분</span>
           </button>
-          <button onClick={() => setIsShopOpen(true)} className="flex flex-col items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white text-yellow-500 hover:bg-white transition-colors relative">
+          <button data-bomguide="ps" onClick={() => setIsShopOpen(true)} className="flex flex-col items-center justify-center w-14 h-14 bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border-2 border-white text-yellow-500 hover:bg-white transition-colors relative">
             <ShoppingBag className="w-6 h-6 mb-0.5" />
             <span className="text-[10px] font-bold">씨앗</span>
           </button>
@@ -857,7 +857,7 @@ export default function App() {
           const premiumShort = money < 40;
           return (
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 md:gap-4 px-2 pointer-events-auto">
-          <button onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${waterShort ? 'grayscale opacity-60 saturate-[.5]' : timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button data-bomguide="pw" onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${waterShort ? 'grayscale opacity-60 saturate-[.5]' : timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'day' && !waterShort && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <Droplet className="w-8 h-8 md:w-9 md:h-9 mb-1 drop-shadow relative z-10" fill="currentColor" />
             <span className="font-bold text-[15px] md:text-base drop-shadow-md tracking-tight text-center relative z-10">물주기</span>
@@ -867,7 +867,7 @@ export default function App() {
               <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">{waterIsPaid ? <><Petal className="w-3 h-3" />1</> : '오늘 첫 잔 무료'}</span>
             )}
           </button>
-          <button onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] ${(normalShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !normalShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button data-bomguide="pn" onClick={() => applyItem('normal_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f2cd5c] to-[#e0af2c] ${(normalShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !normalShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && !normalShort && !isOld && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">🌿</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">영양제<br/><span className="text-[11px] font-semibold opacity-90">잎이 쑥 자라요</span></span>
@@ -879,7 +879,7 @@ export default function App() {
               <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
             )}
           </button>
-          <button onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] ${(premiumShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !premiumShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
+          <button data-bomguide="pp" onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] ${(premiumShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !premiumShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
             {timeOfDay === 'night' && !premiumShort && !isOld && <div className="absolute inset-0 rounded-xl bg-white/20 animate-pulse pointer-events-none" />}
             <span className="text-2xl mb-0.5 relative z-10">✨</span>
             <span className="font-bold text-[14px] md:text-[15px] drop-shadow-md tracking-tight text-center relative z-10 leading-tight">고급 영양제<br/><span className="text-[11px] font-semibold opacity-90">쑥쑥 두 배!</span></span>

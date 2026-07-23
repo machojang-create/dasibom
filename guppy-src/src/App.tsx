@@ -1182,7 +1182,7 @@ export default function App() {
                 {/* Left: Water Quality & Filter */}
                 <div className="flex gap-2 pointer-events-auto shrink-0">
                   <button 
-                    onClick={handleClean}
+                    data-bomguide="gclean" onClick={handleClean}
                     className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-black/20 hover:bg-black/30 backdrop-blur-md rounded-full text-white font-black text-xs sm:text-sm shadow-lg border border-white/30 whitespace-nowrap drop-shadow-md transition-colors"
                     title="어항 청소하기"
                   >
@@ -1225,7 +1225,7 @@ export default function App() {
                 {/* Right: 어항 설정 */}
                 <div className="flex gap-2 pointer-events-auto shrink-0">
                   <button
-                    onClick={() => setShowSettings(v => !v)}
+                    data-bomguide="gset" onClick={() => setShowSettings(v => !v)}
                     className={`w-11 h-11 flex items-center justify-center backdrop-blur-md rounded-full text-white shadow-lg border border-white/30 transition-colors text-xl ${showSettings ? 'bg-teal-500/70' : 'bg-black/20 hover:bg-black/30'}`}
                     aria-label="어항 설정"
                   >⚙️</button>
@@ -1648,7 +1648,7 @@ export default function App() {
           { k: 'guppy_shop', icon: '🐟', label: '구피 상점' },
           { k: 'shop', icon: '🍚', label: '먹이 상점' },
         ] as const).map(t => (
-          <button key={t.k} onClick={() => setMainMenuTab(t.k)}
+          <button key={t.k} data-bomguide={t.k === 'manage' ? 'gmanage' : t.k === 'guppy_shop' ? 'gadopt' : t.k === 'shop' ? 'gfood' : undefined} onClick={() => setMainMenuTab(t.k)}
             className={`flex-1 min-h-[60px] flex flex-col items-center justify-center gap-0.5 font-black text-[13px] transition-colors ${mainMenuTab === t.k ? 'text-teal-600' : 'text-slate-400'}`}>
             <span className="text-[20px] leading-none">{t.icon}</span>
             {t.label}

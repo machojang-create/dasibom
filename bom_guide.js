@@ -45,7 +45,7 @@
   function open(k, el) {
     var g = (window.BOM_GUIDES || {})[k]; if (!g) return false;
     ensure();
-    faceEl.src = 'img/' + (g.face || 'bom_smile.png');
+    faceEl.src = '/img/' + (g.face || 'bom_smile.png');   /* 절대경로 — 하위경로(/plant/ 등)에서 깨짐 방지 */
     titleEl.textContent = g.title || '';
     textEl.textContent = g.text || '';
     _pendingEl = el || null;

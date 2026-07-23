@@ -211,7 +211,8 @@ export const ManageTab = React.memo(function ManageTab({
                   <Heart className="w-4 h-4" />
                   쓰다듬기 (무료)
                 </button>
-                <button 
+                <button
+                  data-bomguide="grelease"
                   onClick={() => setReleasingGuppy(guppy)}
                   className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-colors"
                 >
