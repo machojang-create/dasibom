@@ -64,7 +64,7 @@
     function load(){
       try{
         firebase.firestore().collection('comments').where('scope','==',scope).limit(80).get()
-          .then(function(snap){ var now=Date.now(); var arr=[]; snap.forEach(function(d){ var x=d.data(); var ms=(x.ts&&x.ts.toMillis)?x.ts.toMillis():0; if(ms<=now) arr.push({text:x.text, ts:ms}); }); arr.sort(function(a,b){return b.ts-a.ts;}); render(arr); })
+          .then(function(snap){ var cut=Date.now()+3*60000; var arr=[]; snap.forEach(function(d){ var x=d.data(); var ms=(x.ts&&x.ts.toMillis)?x.ts.toMillis():Date.now(); if(ms<=cut) arr.push({text:x.text, ts:ms}); }); arr.sort(function(a,b){return b.ts-a.ts;}); render(arr); })
           .catch(function(e){ listEl.innerHTML='<div class="dbc-empty">공감을 불러오지 못했어요. (규칙 배포 후 작동)</div>'; });
       }catch(e){}
     }
