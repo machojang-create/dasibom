@@ -235,5 +235,16 @@ render();
 })();
 </script>
 <script src="/dasibom-share.js?v=1"></script>
+
+<!-- 한 줄 공감(공용 폼) — 2026-07-23 전 콘텐츠 확산 -->
+<div id="dsbCmtMount" style="max-width:720px;margin:30px auto 14px;padding:0 16px"></div>
+<script>
+(function(){
+  var scope="people:main";
+  function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"인물 지도에 한마디"); }
+  if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
+})();
+</script>
+<script src="/comments.js?v=5" defer></script>
 </body>
 </html>

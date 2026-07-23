@@ -82,7 +82,16 @@
     sendBtn.addEventListener('click', submit);
     input.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!sendBtn.disabled) submit(); });
 
-    function init(){ if(window.firebase&&firebase.firestore){ load(); } else { setTimeout(init,400); } }
+    // 어느 페이지든 '갖다 붙이면 끝'(2026-07-23 Macho): firestore-compat이 없으면 스스로 로드한다
+    function init(){
+      if(window.firebase && typeof firebase.firestore==='function'){ load(); return; }
+      if(window.firebase && firebase.app && !document.getElementById('dbc-fs-compat')){
+        var sc=document.createElement('script'); sc.id='dbc-fs-compat';
+        sc.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
+        (document.head||document.documentElement).appendChild(sc);
+      }
+      setTimeout(init,400);
+    }
     init();
   }
 
