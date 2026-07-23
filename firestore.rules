@@ -509,7 +509,13 @@ service cloud.firestore {
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }
-    // 워크넷 공고 캐시 — Cloud Functions(jobSearch, Admin SDK)만 읽고 씀
+    // 시니어 채용정보 통합 피드 — 예약 크롤러(crawlJobs)가 채우고 jobSearch가 읽음.
+    // 전부 Cloud Functions(Admin SDK)만. 클라이언트는 jobSearch 함수 통해서만 받음.
+    // (공개 채용공고 필드만 담김 — 개인정보 없음)
+    match /jobs_feed/{id} {
+      allow read, write: if false;
+    }
+    // (구) 워크넷 캐시 — jobs_feed로 통합, 잔재 문서 접근 차단 유지
     match /jobs_cache/{id} {
       allow read, write: if false;
     }

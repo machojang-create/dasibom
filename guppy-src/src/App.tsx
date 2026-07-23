@@ -10,6 +10,7 @@ import Petal from './components/Petal';
 import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import { TANK_SKINS, LIGHT_PRESETS } from './tankSkins';
 import { mountButtonSfx } from './lib/sfx';
+import FoodBit from './components/FoodBit';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
 const dsb = () => (window as any).DasibomPoints;
@@ -1486,14 +1487,12 @@ export default function App() {
                 {foods.map(food => (
                   <div 
                     key={food.id}
-                    className={`absolute top-0 left-0 w-2 h-2 rounded-full border-2 shadow-md transition-transform duration-75 ${
-                      food.type === 'premium' 
-                        ? 'bg-pink-500 border-pink-300 drop-shadow-[0_0_8px_rgba(236,72,153,0.8)] animate-pulse' 
-                        : 'bg-yellow-600 border-yellow-800'
-                    }`}
+                    className="absolute top-0 left-0 pointer-events-none transition-transform duration-75"
                     ref={(el) => { foodElsRef.current[food.id] = el; }}
                     style={{ transform: `translate3d(${food.x}px, ${food.y}px, 0) translate(-50%, -50%)`, willChange: 'transform' }}
-                  />
+                  >
+                    <FoodBit type={food.type} seed={food.id} />
+                  </div>
                 ))}
 
                 {/* 기포: CSS 반복 애니(프레임 연산 0) — 시드 고정 14개 무한 상승(2026-07-22 최적화) */}

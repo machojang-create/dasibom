@@ -1984,13 +1984,20 @@ exports.createCenterAccount = functions.region('asia-northeast3').https.onCall(a
    구조라, URL+토큰만 알면 누구나 센터 계정을 만들 수 있었음(배포본도 functions:delete로 제거).
    ★센터 계정 발급은 createCenterAccount(master 전용 onCall)로만 할 것. 다시 만들지 말 것. */
 
-// ════════════════════════════════════════
-// 시니어 직업 상담소(jobs.html) — 워크넷 채용정보 연동 (2026-07-23)
-//   인증키: firebase functions:config:set worknet.key="발급받은키"
-//     (발급: 공공데이터포털 data.go.kr → '워크넷 채용정보' 활용신청 — Macho 직접)
-//   키가 없거나 API 장애면 {ok:false} → 클라이언트가 예시 공고로 폴백(화면은 항상 동작)
-//   결과는 jobs_cache/{지역_키워드}에 6시간 캐시 — 호출량·응답속도 방어(규칙: 클라 접근 차단)
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════
+// 시니어 직업 상담소(jobs.html) — 시니어 채용정보 통합 (2026-07-23~)
+//   여러 채용처를 한곳에 모아 보여준다. 구조:
+//     · crawlJobs(예약, 6h) — 각 채용처를 서버에서 수집 → Firestore `jobs_feed`에 적재
+//     · jobSearch(onCall)   — jobs_feed(수집분) + 워크넷(공공API, 키 있으면) 합쳐 반환
+//   수집처(2026-07 현재):
+//     ① 복지넷 bokji.net — 어르신(B)·복지관(G) 분야 = 노인복지관·요양·주야간보호 전국. ✅가동
+//        robots.txt는 쿼리스트링(/*?)만 차단 → 목록은 POST(URL에 ? 없음)라 준수. 상세?ID=는
+//        봇이 안 긁고 사용자 클릭 링크로만 사용. 6h 주기·식별 UA로 예의.
+//     ② 워크넷 공공API — worknet.key 설정 시 자동 합류(키 발급은 킵목록 12번, Macho).
+//     ③ (예정) 노인일자리여기(seniorro)·지자체 일자리센터 — 크롤 가능한 것부터 추가.
+//     ✗ 알바천국/알바몬/인크루트 등 민간앱 — ToS상 크롤 금지·로그인/봇차단. 제휴 API만 합법.
+//   ⚠️ jobs_feed는 Functions(Admin)만 읽고 씀(규칙). 개인정보 없음(공개 공고 필드만).
+// ════════════════════════════════════════════════════════════════════════
 const WORKNET_KEY = (() => { try { return functions.config().worknet.key; } catch (e) { return null; } })();
 const WORKNET_URL =
   ((() => { try { return functions.config().worknet.url; } catch (e) { return null; } })()) ||
@@ -1998,48 +2005,155 @@ const WORKNET_URL =
 // 워크넷 지역코드(법정동 상위 5자리) — jobs.html 지역 칩과 1:1
 const JOB_REGION = { '서울': '11000', '경기': '41000', '인천': '28000', '부산': '26000', '대구': '27000', '광주': '29000', '대전': '30000' };
 
+// 지역 텍스트 → 화면 칩(시도) 정규화. 못 맞추면 '기타'.
+function jobSido(regionText) {
+  const t = String(regionText || '');
+  const M = [['서울', '서울'], ['경기', '경기'], ['인천', '인천'], ['부산', '부산'],
+             ['대구', '대구'], ['광주', '광주'], ['대전', '대전']];
+  for (const [needle, label] of M) if (t.indexOf(needle) === 0 || t.indexOf(needle) >= 0) return label;
+  return '기타';
+}
+
+// ── ① 복지넷 크롤러 ───────────────────────────────────────────────────────
+function bokjiTag(seg, re) { const m = seg.match(re); return m ? m[1].replace(/&nbsp;/g, ' ').replace(/<[^>]+>/g, '').trim() : ''; }
+
+async function crawlBokji(sisulDiv, maxPages) {
+  const out = [];
+  for (let pg = 1; pg <= maxPages; pg++) {
+    let html;
+    try {
+      const res = await fetch('https://www.bokji.net/job/off/01.bokji', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'DasibomJobsBot/1.0 (+https://dasibomlife.com; 시니어 채용정보 모음)' },
+        body: 'PG=' + pg + '&SISULDIV=' + sisulDiv
+      });
+      html = await res.text();
+    } catch (e) { break; }
+    // 행 단위 분리: goView(id)를 앵커로 각 tr 세그먼트 추출
+    const rows = html.split(/<tr[\s>]/).filter((s) => s.indexOf('goView(') >= 0);
+    if (!rows.length) break;
+    for (const seg of rows) {
+      const id = bokjiTag(seg, /goView\('(\d+)'\)/);
+      if (!id) continue;
+      const title = bokjiTag(seg, /goView\('\d+'\)">([^<]+)</);
+      const org   = bokjiTag(seg, /class="crop">([^<]+)</);
+      const cat   = bokjiTag(seg, /class="type">([^<]+)/);
+      const lis   = (seg.match(/<li>([\s\S]*?)<\/li>/g) || []).map((x) => x.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim());
+      const region  = lis[0] || '';
+      const empType = lis[1] || '';
+      let closeDt = bokjiTag(seg, /class="finish">([^<]+)</);
+      if (!closeDt && seg.indexOf('채용시까지') >= 0) closeDt = '채용시까지';
+      if (!title) continue;
+      out.push({
+        source: '복지넷', src: 'bokji', id: 'bokji_' + id,
+        title, org, region, sido: jobSido(region), empType, closeDt,
+        cat, url: 'https://www.bokji.net/job/off/01_01.bokji?ID=' + id
+      });
+    }
+  }
+  return out;
+}
+
+// 수집 실행부 — 예약/수동 공용. 어르신(B)+복지관(G) 전국 수집 후 jobs_feed 갱신.
+async function runJobCrawl() {
+  const db = admin.firestore();
+  let all = [];
+  all = all.concat(await crawlBokji('B', 4));   // 어르신(요양·주야간보호·노인복지관)
+  all = all.concat(await crawlBokji('G', 3));   // 종합·노인복지관
+  // 중복 제거(id 기준)
+  const seen = {}, uniq = [];
+  for (const j of all) { if (seen[j.id]) continue; seen[j.id] = 1; uniq.push(j); }
+  const now = Date.now();
+  // 배치 적재(500개 제한 여유). fetchedAt 갱신 = 살아있는 공고 표시.
+  let batch = db.batch(), n = 0;
+  for (const j of uniq) {
+    batch.set(db.collection('jobs_feed').doc(j.id), Object.assign({}, j, { fetchedAt: now }), { merge: true });
+    if (++n % 400 === 0) { await batch.commit(); batch = db.batch(); }
+  }
+  if (n % 400 !== 0) await batch.commit();
+  // 이틀 넘게 재확인 안 된 공고(마감/삭제 추정) 정리
+  try {
+    const stale = await db.collection('jobs_feed').where('fetchedAt', '<', now - 2 * 86400 * 1000).limit(300).get();
+    if (!stale.empty) { const b2 = db.batch(); stale.forEach((d) => b2.delete(d.ref)); await b2.commit(); }
+  } catch (e) { /* 인덱스 없거나 실패해도 수집은 성공 */ }
+  return uniq.length;
+}
+
+// 예약 크롤러 — 6시간마다(KST). Blaze+Cloud Scheduler 필요(배포 시 자동 설정).
+exports.crawlJobs = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 120, memory: '256MB' })
+  .pubsub.schedule('every 6 hours').timeZone('Asia/Seoul')
+  .onRun(async () => { try { const c = await runJobCrawl(); console.log('crawlJobs 적재', c); } catch (e) { console.error('crawlJobs 실패', e); } return null; });
+
+// 수동 트리거(마스터 전용) — 배포 직후 즉시 1회 채우기·점검용.
+exports.crawlJobsNow = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 120, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth || ['machojang@gmail.com', 'machojang@naver.com'].indexOf(context.auth.token.email) < 0) return { ok: false, reason: 'forbidden' };
+    const c = await runJobCrawl();
+    return { ok: true, count: c };
+  });
+
+// ── 워크넷 공공API(키 있을 때만) ──────────────────────────────────────────
 function jobXmlTag(block, tag) {
   const m = block.match(new RegExp('<' + tag + '>([\\s\\S]*?)</' + tag + '>'));
   return m ? m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim() : '';
 }
+async function fetchWorknet(regionLabel, keyword) {
+  if (!WORKNET_KEY) return [];
+  const params = { authKey: WORKNET_KEY, callTp: 'L', returnType: 'XML', startPage: '1', display: '20' };
+  if (JOB_REGION[regionLabel]) params.region = JOB_REGION[regionLabel];
+  if (keyword) params.keyword = keyword;
+  try {
+    const res = await fetch(WORKNET_URL + '?' + querystring.stringify(params));
+    const xml = await res.text();
+    return (xml.match(/<wanted>[\s\S]*?<\/wanted>/g) || []).map((b) => ({
+      source: '워크넷', src: 'worknet',
+      title:   jobXmlTag(b, 'title'),
+      org:     jobXmlTag(b, 'company'),
+      empType: jobXmlTag(b, 'sal') || jobXmlTag(b, 'salTpNm'),
+      region:  jobXmlTag(b, 'region'),
+      sido:    jobSido(jobXmlTag(b, 'region')),
+      closeDt: jobXmlTag(b, 'closeDt'),
+      url:     jobXmlTag(b, 'wantedInfoUrl') || jobXmlTag(b, 'wantedMobileInfoUrl')
+    })).filter((j) => j.title);
+  } catch (e) { return []; }
+}
 
+// ── 통합 검색 — 화면(jobs.html)이 호출 ────────────────────────────────────
 exports.jobSearch = functions
   .region('asia-northeast3')
-  .runWith({ timeoutSeconds: 20, memory: '128MB' })
+  .runWith({ timeoutSeconds: 20, memory: '256MB' })
   .https.onCall(async (data, context) => {
     if (!context.auth) return { ok: false, reason: 'auth' };
-    if (!WORKNET_KEY) return { ok: false, reason: 'nokey' };
     const regionLabel = String((data && data.region) || '').slice(0, 10);
-    const keyword = String((data && data.keyword) || '').slice(0, 20).replace(/[^0-9A-Za-z가-힣 ]/g, '');
-    const regionCode = JOB_REGION[regionLabel] || '';
-    const cacheId = (regionCode || 'all') + '_' + (keyword || 'all');
-    const cacheRef = admin.firestore().collection('jobs_cache').doc(cacheId);
+    const keyword = String((data && data.keyword) || '').slice(0, 20).replace(/[^0-9A-Za-z가-힣 ]/g, '').trim();
+    const db = admin.firestore();
+    let feed = [];
     try {
-      const c = await cacheRef.get();
-      if (c.exists && Date.now() - c.data().fetchedAt < 6 * 3600 * 1000 && (c.data().jobs || []).length) {
-        return { ok: true, jobs: c.data().jobs, cached: true };
-      }
-    } catch (e) { /* 캐시 실패는 무시하고 원본 호출 */ }
-    const params = { authKey: WORKNET_KEY, callTp: 'L', returnType: 'XML', startPage: '1', display: '20' };
-    if (regionCode) params.region = regionCode;
-    if (keyword) params.keyword = keyword;
-    try {
-      const res = await fetch(WORKNET_URL + '?' + querystring.stringify(params));
-      const xml = await res.text();
-      const blocks = xml.match(/<wanted>[\s\S]*?<\/wanted>/g) || [];
-      const jobs = blocks.map((b) => ({
-        title:   jobXmlTag(b, 'title'),
-        company: jobXmlTag(b, 'company'),
-        sal:     jobXmlTag(b, 'sal') || jobXmlTag(b, 'salTpNm'),
-        region:  jobXmlTag(b, 'region'),
-        career:  jobXmlTag(b, 'career'),
-        closeDt: jobXmlTag(b, 'closeDt'),
-        url:     jobXmlTag(b, 'wantedInfoUrl') || jobXmlTag(b, 'wantedMobileInfoUrl')
-      })).filter((j) => j.title).slice(0, 12);
-      if (!jobs.length) return { ok: false, reason: 'empty' };
-      await cacheRef.set({ jobs, fetchedAt: Date.now(), region: regionLabel, keyword: keyword });
-      return { ok: true, jobs };
-    } catch (e) {
-      return { ok: false, reason: 'api' };
+      // 수집분(jobs_feed): 지역 있으면 시도로 필터, 없으면 최신 묶음
+      let q = db.collection('jobs_feed');
+      if (JOB_REGION[regionLabel]) q = q.where('sido', '==', regionLabel);
+      const snap = await q.limit(60).get();
+      snap.forEach((d) => feed.push(d.data()));
+    } catch (e) { feed = []; }
+    // 키워드가 있으면 제목/기관에 포함되는 것 우선, 없으면 전체
+    if (keyword) {
+      const hit = feed.filter((j) => (j.title + ' ' + (j.org || '')).indexOf(keyword) >= 0);
+      if (hit.length) feed = hit;
     }
+    // 워크넷 합류(키 있을 때만) — 지역/키워드로 조회
+    const wn = await fetchWorknet(regionLabel, keyword);
+    let jobs = feed.concat(wn);
+    // 최신·마감임박 위주 정렬은 생략(수집분엔 신뢰 날짜 부족) — fetchedAt 최신 우선
+    jobs.sort((a, b) => (b.fetchedAt || 0) - (a.fetchedAt || 0));
+    jobs = jobs.slice(0, 12).map((j) => ({
+      title: j.title, org: j.org || '', company: j.org || '', sal: j.empType || '',
+      region: j.region || '', career: j.career || '', closeDt: j.closeDt || '',
+      url: j.url || '', source: j.source || ''
+    }));
+    if (!jobs.length) return { ok: false, reason: WORKNET_KEY ? 'empty' : 'nofeed' };
+    return { ok: true, jobs, sources: [...new Set(jobs.map((j) => j.source).filter(Boolean))] };
   });
