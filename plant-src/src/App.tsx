@@ -388,6 +388,17 @@ export default function App() {
   };
 
   const applyEffect = (type: 'water' | 'normal_nut' | 'premium_nut') => {
+    // 돌봄 연출·효과음은 setSlots 업데이터 밖에서(2026-07-23 재수정): 업데이터 안 중첩 setState는
+    // 프로덕션에서 이중호출·누락 위험 → 영양제 연출이 안 뜨던 원인. 여기서 최상위로 호출.
+    if (type === 'water') {
+      setCareFx({ slot: currentSlotIndex, kind: 'water', key: Date.now() });
+      [0, 160, 340].forEach((ms) => setTimeout(plipSfx, ms));
+    } else {
+      setCareFx({ slot: currentSlotIndex, kind: 'nutrient', key: Date.now() });
+      boingSfx();
+    }
+    lastUserSpeakRef.current = Date.now();
+
     setSlots(prev => {
       const targetPlant = prev[currentSlotIndex];
       if (!targetPlant) return prev;
@@ -409,15 +420,6 @@ export default function App() {
       if (type === 'water' && timeOfDay === 'day') waterIncrease = 25;
       if (type !== 'water' && timeOfDay === 'night') waterIncrease = Math.floor(waterIncrease * 1.5);
       
-      // 돌봄 연출: 물주기=물뿌리개 샤워, 영양제=주사기+반짝(2026-07-23 Macho)
-      if (type === 'water') {
-        setCareFx({ slot: currentSlotIndex, kind: 'water', key: Date.now() });
-        [0, 160, 340].forEach((ms) => setTimeout(plipSfx, ms));   // 또르륵 플립 3방울
-      } else {
-        setCareFx({ slot: currentSlotIndex, kind: 'nutrient', key: Date.now() });
-        boingSfx();   // 뿅! 기운 차오르는 소리
-      }
-      lastUserSpeakRef.current = Date.now();   // 돌봄 표정 8초 보호
       newPlant.waterLevel = Math.min(100, newPlant.waterLevel + waterIncrease);
       let buf = ((newPlant as any).growthBuf || 0) + levelIncrease;
       while (buf >= 1 && newPlant.level < 12) { newPlant.level += 1; buf -= 1; }
