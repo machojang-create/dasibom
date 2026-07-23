@@ -69,19 +69,49 @@
         });
       }
 
+      // 새 이웃 소식 배지 — 앱이 떠 있는 중에 동네 댓글이 오면 알려주고, 누르면 새로 보인다
+      function newsBadge(n) {
+        var el = document.getElementById('dbtNews');
+        if (!el) {
+          el = document.createElement('button'); el.id = 'dbtNews';
+          el.style.cssText = 'position:fixed;left:14px;bottom:88px;z-index:9998;background:#E63946;color:#fff;border:3px solid #000;border-radius:50px;padding:10px 16px;font-weight:900;font-size:14px;box-shadow:3px 3px 0 #000;cursor:pointer;font-family:inherit';
+          el.addEventListener('click', function () { location.reload(); });
+          document.body.appendChild(el);
+        }
+        el.textContent = '🔔 새 이웃 소식 ' + n + '개 — 눌러서 보기';
+      }
+      var newsCount = 0;
+
+      // 추임새 공유: 부팅 전 초기값 주입 + 클릭 시 동네 카운트 올리기(번들 훅 __dsbReactUp)
+      var REACT_SEED = { eolssigu: 124, nanli: 86, aigo: 142, ehem: 95, giga: 153 };
+      function wireReacts(fs) {
+        window.__dsbReactUp = function (k) {
+          if (!(k in REACT_SEED)) return;
+          var inc = {}; inc[k] = firebase.firestore.FieldValue.increment(1);
+          fs.collection('debate_reacts').doc(DATE).update(inc).catch(function () {
+            var base = {}; for (var kk in REACT_SEED) base[kk] = REACT_SEED[kk];
+            base[k] = REACT_SEED[k] + 1;
+            fs.collection('debate_reacts').doc(DATE).set(base).catch(function () {});
+          });
+        };
+        return fs.collection('debate_reacts').doc(DATE).get().then(function (d) {
+          if (d.exists) { window.__dsbReactInit = d.data(); }
+        }).catch(function () {});
+      }
+
       // 동네 기록 → 로컬 병합. 반환: 병합으로 로컬이 바뀌었는가
       function mergeRemote(fs, done) {
         var rec = readJson(LSKEY, null);
         fs.collection('debate_comments').where('scope', '==', SCOPE).limit(200).get().then(function (snap) {
           fs.collection('debate_votes').doc(DATE).get().then(function (vd) {
-            var changed = false;
+            var changed = false, added = 0;
             var fsids = readJson(FSIDS_KEY, []);
             if (rec) {
               snap.forEach(function (d) {
                 if (fsids.indexOf(d.id) >= 0) return;
                 var x = d.data();
                 rec.comments.push({ id: 'fs-' + d.id, author: x.author || '이웃 어르신', text: x.text, side: x.side, createdAt: (x.ts && x.ts.toMillis) ? x.ts.toMillis() : Date.now() });
-                fsids.push(d.id); changed = true;
+                fsids.push(d.id); changed = true; added++;
               });
               if (vd.exists) {
                 var v = vd.data();
@@ -92,9 +122,9 @@
               }
               if (changed) { writeJson(LSKEY, rec); writeJson(FSIDS_KEY, fsids); }
             }
-            done(changed, snap.size);
-          }).catch(function () { done(false, 0); });
-        }).catch(function () { done(false, 0); });
+            done(changed, snap.size, added);
+          }).catch(function () { done(false, 0, 0); });
+        }).catch(function () { done(false, 0, 0); });
       }
 
       // 내가 남긴 댓글·표 올리기(5초 주기)
@@ -131,6 +161,7 @@
       ensureFs(function (fs) {
         if (!fs) { boot(); return; }
         withUid(function (uid) {
+          wireReacts(fs).then(function () {
           mergeRemote(fs, function (changed, remoteCount) {
             if (hadLocal) { boot(); }
             else if (remoteCount > 0 && !sessionStorage.getItem('debate_refreshed_' + DATE)) {
@@ -139,7 +170,11 @@
               setTimeout(function () { mergeRemote(fs, function () { location.reload(); }); }, 2500);
             }
             if (uid) uploadLoop(fs, uid);
-            setInterval(function () { mergeRemote(fs, function () {}); }, 25000);   // 동네 새 소식 계속 담아두기(다음 방문 반영)
+            // 세션 중에도 동네 새 댓글을 계속 담고, 오면 배지로 알린다
+            setInterval(function () { mergeRemote(fs, function (chg, rc, added) {
+              if (added > 0) { newsCount += added; newsBadge(newsCount); }
+            }); }, 25000);
+          });
           });
         });
       });
