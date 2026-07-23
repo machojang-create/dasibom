@@ -428,13 +428,8 @@ export default function App() {
         lastUserSpeakRef.current = Date.now();
         return;
       }
-      // 연타 거부: 대사만 나오고 물은 안 들어간다(투정의 진정성)
-      if (isSpamming('water')) {
-        const pool = SPAM_DIALOGUES.water[dialect] || [];
-        plantSay(pool[Math.floor(Math.random() * pool.length)] || '고마해라!');
-        lastUserSpeakRef.current = Date.now();
-        return;
-      }
+      // 연타 잠금 제거(2026-07-23 Macho 지적): 물이 유료가 된 뒤에도 무료 시절 '10초 3회' 제한이 남아
+      // 거부된 클릭까지 기록에 쌓여 계속 누르면 영영 잠기던 결함 — 재화 소비는 자유, 과습 가드만 유지.
       // 하루 첫 잔 무료(정성=레벨업), 추가 물은 1잎(2026-07-22 Macho — 물도 재화 루프에)
       const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/;
       if ((cur as any).lastWaterDay !== today) { applyEffect('water'); return; }

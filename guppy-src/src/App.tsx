@@ -366,7 +366,11 @@ export default function App() {
       if (Array.isArray(sv.released)) { setReleased(sv.released); releasedRef.current = sv.released; }
       if (typeof sv.medicine === 'number') setMedicine(sv.medicine);
       if (sv.tankTheme) setTankTheme(sv.tankTheme);
-      if (typeof sv.waterQuality === 'number') setWaterQuality(sv.waterQuality);
+      // 수질 오프라인 정산(2026-07-23): 비운 시간만큼 실제 시간당 2씩 감소(허기와 같은 원리)
+      if (typeof sv.waterQuality === 'number') {
+        const wqHours = sv.savedAt ? Math.max(0, (Date.now() - sv.savedAt) / 3600000) : 0;
+        setWaterQuality(Math.max(0, sv.waterQuality - wqHours * 2));
+      }
       if (sv.lightingMode && LIGHT_PRESETS[sv.lightingMode]) setLightingMode(sv.lightingMode);
       if (typeof sv.lightStrength === 'number') setLightStrength(Math.max(10, Math.min(70, sv.lightStrength)));
       if (sv.tankSkin && TANK_SKINS[sv.tankSkin]) setTankSkin(sv.tankSkin);
@@ -1125,9 +1129,9 @@ export default function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       if (guppiesRef.current.length > 0) {
-        // Natural degradation takes exactly 1 hour (3600 seconds) to go from 100% to 0%.
-        // 100% / 3600 = 0.02777...% per second.
-        setWaterQuality(prev => Math.max(0, prev - (100 / 3600)));
+        // 수질 밸런스(2026-07-23 Macho 지적): 1시간=0 데모 잔재 → 실제 시간당 2(이틀에 100→0).
+        // 매일 들르면 늘 탁해 보이던 문제 해소 — 이틀쯤 비우면 청소할 맛이 나는 정도로.
+        setWaterQuality(prev => Math.max(0, prev - (2 / 3600)));
       }
     }, 1000);
     return () => clearInterval(interval);
