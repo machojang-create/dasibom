@@ -399,8 +399,8 @@ function updateSavedCount(){var n=getSaved().length;var el=document.getElementBy
 function jobCardHTML(job){
   var saved=isSaved(job.id);
   var tags=(job.tags||[]).map(function(t){return '<span class="jc-tag'+(t.src?' src':'')+'">'+esc(t.src||t)+'</span>';}).join('');
-  var applied=job.url?'<span class="jc-apply">공고 자세히 보기 →</span>':'';
-  return '<div class="jcard'+(job.url?' clk':'')+'" data-url="'+esc(job.url||'')+'">'+
+  var applied='<span class="jc-apply">자세히 보기 →</span>';
+  return '<div class="jcard clk" data-url="'+esc(job.url||'')+'">'+
     '<div class="jc-top"><div class="jc-main">'+
       (job.company?'<span class="jc-co">'+esc(job.company)+'</span>':'')+
       '<h3 class="jc-title">'+esc(job.title)+'</h3></div>'+
@@ -417,8 +417,8 @@ function bindCards(container){
       var card=btn.closest('.jcard');var job=cardToJob(card,btn.dataset.id);
       var nowOn=toggleSaved(job);btn.classList.toggle('on',nowOn);btn.innerHTML=nowOn?IC.bmF:IC.bm;};
   });
-  container.querySelectorAll('.jcard.clk').forEach(function(card){
-    card.onclick=function(){var u=card.dataset.url;if(u)window.open(u,'_blank','noopener');};
+  container.querySelectorAll('.jcard').forEach(function(card){
+    card.onclick=function(){var bm=card.querySelector('.jc-bm');openJobDetail(cardToJob(card,bm?bm.dataset.id:''));};
   });
 }
 function cardToJob(card,id){
@@ -428,6 +428,35 @@ function cardToJob(card,id){
     pay:(card.querySelector('.jc-row b')||{}).textContent||'',
     url:card.dataset.url||'',
     tags:[].map.call(card.querySelectorAll('.jc-tag'),function(t){return t.textContent;})};
+}
+
+/* 일자리 상세 시트 — 앱 안에서 정보 먼저, 그다음 실제 공고 원문 버튼 */
+function openJobDetail(job){
+  var saved=isSaved(job.id);
+  var rows='';
+  if(job.company)rows+='<div class="jc-row" style="font-size:calc(17px*var(--ts))"><b style="color:var(--sage)">'+esc(job.company)+'</b></div>';
+  if(job.location)rows+='<div class="jc-row" style="font-size:calc(17px*var(--ts))">'+IC.map+'<span>'+esc(job.location)+'</span></div>';
+  if(job.pay)rows+='<div class="jc-row" style="font-size:calc(17px*var(--ts))">'+IC.won+'<b>'+esc(job.pay)+'</b></div>';
+  var tags=(job.tags||[]).map(function(t){var s=/복지넷|워크넷|주야간|요양|재가|복지관/.test(t);return '<span class="jc-tag'+(s?' src':'')+'">'+esc(t)+'</span>';}).join('');
+  var applyBtn=job.url
+    ? '<button class="btn-primary" style="margin-top:20px" onclick="window.open(\''+esc(job.url)+'\',\'_blank\',\'noopener\')">📄 복지넷에서 전체 공고 보고 지원하기</button>'
+      +'<p style="margin-top:10px;text-align:center;font-size:calc(13.5px*var(--ts));color:var(--muted)">자세한 자격·근무조건·연락처는 원문에서 확인하세요</p>'
+    : '<div style="margin-top:20px;background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:16px;padding:16px;font-size:calc(15px*var(--ts));line-height:1.6;color:var(--ink2)">이건 예시 공고예요. 곧 우리 동네 실제 채용 소식이 올라오면, 여기서 바로 전체 공고를 보고 지원할 수 있어요 🌷</div>';
+  var bmBtn='<button class="me-btn" style="margin:14px 0 0;width:100%" onclick="detailToggleSave(this)" data-id="'+esc(job.id)+'">'+
+    '<div class="l"><div class="bi pink">'+(saved?IC.bmF:IC.bm)+'</div><div><h4 id="dSaveLabel">'+(saved?'찜한 일자리 (눌러서 해제)':'이 일자리 찜해두기')+'</h4></div></div><span class="chev">♡</span></button>';
+  detailJob=job;
+  sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
+    '<h3 style="padding-right:44px">'+esc(job.title)+'</h3>'+
+    '<div class="jc-meta" style="margin-top:16px;gap:10px">'+rows+'</div>'+
+    (tags?'<div class="jc-tags" style="margin-top:14px">'+tags+'</div>':'')+
+    applyBtn+bmBtn;
+  openModal();
+}
+var detailJob=null;
+function detailToggleSave(btn){
+  var nowOn=toggleSaved(detailJob);
+  btn.querySelector('.bi').innerHTML=nowOn?IC.bmF:IC.bm;
+  document.getElementById('dSaveLabel').textContent=nowOn?'찜한 일자리 (눌러서 해제)':'이 일자리 찜해두기';
 }
 
 /* ───────── 예시(폴백) 일자리 — 크롤 피드가 비어도 항상 풍성하게 ───────── */

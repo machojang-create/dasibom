@@ -2115,11 +2115,12 @@ async function runJobCrawl() {
   return uniq.length;
 }
 
-// 예약 크롤러 — 6시간마다(KST). Blaze+Cloud Scheduler 필요(배포 시 자동 설정).
+// 예약 크롤러 — 매시간(KST). 첫 배포 후 다음 정시에 자동 첫 실행 → jobs_feed 자동 시딩.
+//   (수집량이 하루 새로 크게 안 바뀌므로 매시간이면 충분히 신선. 부하 과하면 'every 3 hours'로.)
 exports.crawlJobs = functions
   .region('asia-northeast3')
   .runWith({ timeoutSeconds: 120, memory: '256MB' })
-  .pubsub.schedule('every 6 hours').timeZone('Asia/Seoul')
+  .pubsub.schedule('every 1 hours').timeZone('Asia/Seoul')
   .onRun(async () => { try { const c = await runJobCrawl(); console.log('crawlJobs 적재', c); } catch (e) { console.error('crawlJobs 실패', e); } return null; });
 
 // 수동 트리거(마스터 전용) — 배포 직후 즉시 1회 채우기·점검용.
