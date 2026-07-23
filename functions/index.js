@@ -1063,6 +1063,29 @@ exports.adminGrantPoints = functions
     return { ok: true, uid: targetUid, balance: (snap.data() && snap.data().dsbPoints) || 0 };
   });
 
+// ── QA 청소관리인 봇 전용 꽃잎 충전(2026-07-24) ─────────────────────────────
+//   봇이 실제 구매·소비 경로를 테스트하려면 꽃잎이 있어야 함(영양제 미검증 사고 재발 방지).
+//   공개 리포엔 비밀키 없음 — functions:config `qa.secret`(서버)와 봇 폴더 .qaenv(비공개)만 앎.
+//   본인 uid만, 상한 9999까지 채움(무한 인플레 방지). 실계정 피해 0(꽃잎은 게임 재화).
+exports.qaGrantPetals = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 30, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const cfgSecret = (functions.config().qa && functions.config().qa.secret) || '';
+    if (!cfgSecret || !data || data.secret !== cfgSecret) {
+      throw new functions.https.HttpsError('permission-denied', 'QA 전용 함수입니다.');
+    }
+    const CAP = 9999;
+    const uref = admin.firestore().collection('users').doc(context.auth.uid);
+    const snap = await uref.get();
+    const cur = (snap.data() && snap.data().dsbPoints) || 0;
+    if (cur >= CAP) return { ok: true, balance: cur, topped: 0 };
+    const add = CAP - cur;
+    await uref.set({ dsbPoints: admin.firestore.FieldValue.increment(add), qaBot: true }, { merge: true });
+    return { ok: true, balance: CAP, topped: add };
+  });
+
 // ── 꽃잎 쪽지 보내기(운영자) — 개인 또는 전체(이벤트). 수령은 어르신이 쪽지함에서 버튼으로 ──
 exports.adminSendMail = functions
   .region('asia-northeast3')
@@ -2000,6 +2023,8 @@ exports.createCenterAccount = functions.region('asia-northeast3').https.onCall(a
 //     ✗ 알바천국/알바몬/인크루트/사람인 등 민간앱 — ToS상 크롤 금지·로그인/봇차단. 제휴 API만 합법.
 //   ⚠️ jobs_feed는 Functions(Admin)만 읽고 씀(규칙). 개인정보 없음(공개 공고 필드만).
 // ════════════════════════════════════════════════════════════════════════
+// fetch 폴백: Node20 런타임엔 global fetch가 있지만, 로컬 shell/구버전 대비 node-fetch로 폴백(둘 다 동일 API)
+const _fetch = (typeof fetch === 'function') ? fetch : require('node-fetch');
 const WORKNET_KEY = (() => { try { return functions.config().worknet.key; } catch (e) { return null; } })();
 const WORKNET_URL =
   ((() => { try { return functions.config().worknet.url; } catch (e) { return null; } })()) ||
@@ -2025,7 +2050,7 @@ async function crawlBokji(params, maxPages) {
   for (let pg = 1; pg <= maxPages; pg++) {
     let html;
     try {
-      const res = await fetch('https://www.bokji.net/job/off/01.bokji', {
+      const res = await _fetch('https://www.bokji.net/job/off/01.bokji', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'DasibomJobsBot/1.0 (+https://dasibomlife.com; 시니어 채용정보 모음)' },
         body: querystring.stringify(Object.assign({ PG: pg }, params))
@@ -2061,13 +2086,14 @@ async function crawlBokji(params, maxPages) {
 async function runJobCrawl() {
   const db = admin.firestore();
   let all = [];
-  // 분야별(전국): 어르신 = 요양·주야간보호·노인복지관 / 복지관 = 종합복지관
-  all = all.concat(await crawlBokji({ SISULDIV: 'B' }, 4));
-  all = all.concat(await crawlBokji({ SISULDIV: 'G' }, 3));
+  // 분야별(전국): 어르신 = 요양·주야간보호·노인복지관 / 복지관 = 종합복지관.
+  //   복지넷은 분야별 20페이지 이상(페이지당 ~11건). 빈 페이지가 나오면 crawlBokji가 자동 중단.
+  all = all.concat(await crawlBokji({ SISULDIV: 'B' }, 15));   // ~150건
+  all = all.concat(await crawlBokji({ SISULDIV: 'G' }, 8));    // ~80건
   // 케어 키워드 스윕(제목 검색, 전 분야) — 주야간보호·요양·재가가 다른 분류로 올라와도 놓치지 않게.
   //   SEARCH_GUBUN=REQUIREFIELD(채용 제목)+SEARCH_KEYWORD. 상단 고정 유료광고가 섞여 오므로 제목 매칭만 남김.
   for (const kw of ['주야간보호', '요양', '재가', '방문요양']) {
-    const rows = await crawlBokji({ SEARCH_GUBUN: 'REQUIREFIELD', SEARCH_KEYWORD: kw }, 1);
+    const rows = await crawlBokji({ SEARCH_GUBUN: 'REQUIREFIELD', SEARCH_KEYWORD: kw }, 2);
     all = all.concat(rows.filter((j) => j.title.indexOf(kw) >= 0));
   }
   // 중복 제거(id 기준)
@@ -2101,7 +2127,8 @@ exports.crawlJobsNow = functions
   .region('asia-northeast3')
   .runWith({ timeoutSeconds: 120, memory: '256MB' })
   .https.onCall(async (data, context) => {
-    if (!context.auth || ['machojang@gmail.com', 'machojang@naver.com'].indexOf(context.auth.token.email) < 0) return { ok: false, reason: 'forbidden' };
+    if (!context.auth) return { ok: false, reason: 'auth' };
+    if (!(await isMasterCall(context))) return { ok: false, reason: 'forbidden', email: (context.auth.token && context.auth.token.email) || '(없음)' };
     const c = await runJobCrawl();
     return { ok: true, count: c };
   });
@@ -2117,7 +2144,7 @@ async function fetchWorknet(regionLabel, keyword) {
   if (JOB_REGION[regionLabel]) params.region = JOB_REGION[regionLabel];
   if (keyword) params.keyword = keyword;
   try {
-    const res = await fetch(WORKNET_URL + '?' + querystring.stringify(params));
+    const res = await _fetch(WORKNET_URL + '?' + querystring.stringify(params));
     const xml = await res.text();
     return (xml.match(/<wanted>[\s\S]*?<\/wanted>/g) || []).map((b) => ({
       source: '워크넷', src: 'worknet',
@@ -2146,7 +2173,7 @@ exports.jobSearch = functions
       // 수집분(jobs_feed): 지역 있으면 시도로 필터, 없으면 최신 묶음
       let q = db.collection('jobs_feed');
       if (JOB_REGION[regionLabel]) q = q.where('sido', '==', regionLabel);
-      const snap = await q.limit(60).get();
+      const snap = await q.limit(150).get();
       snap.forEach((d) => feed.push(d.data()));
     } catch (e) { feed = []; }
     // 키워드가 있으면 제목/기관에 포함되는 것 우선, 없으면 전체
@@ -2159,11 +2186,12 @@ exports.jobSearch = functions
     let jobs = feed.concat(wn);
     // 최신·마감임박 위주 정렬은 생략(수집분엔 신뢰 날짜 부족) — fetchedAt 최신 우선
     jobs.sort((a, b) => (b.fetchedAt || 0) - (a.fetchedAt || 0));
-    jobs = jobs.slice(0, 12).map((j) => ({
+    const total = jobs.length;
+    jobs = jobs.slice(0, 80).map((j) => ({
       title: j.title, org: j.org || '', company: j.org || '', sal: j.empType || '',
       region: j.region || '', career: j.career || '', closeDt: j.closeDt || '',
       url: j.url || '', source: j.source || ''
     }));
     if (!jobs.length) return { ok: false, reason: WORKNET_KEY ? 'empty' : 'nofeed' };
-    return { ok: true, jobs, sources: [...new Set(jobs.map((j) => j.source).filter(Boolean))] };
+    return { ok: true, jobs, total, sources: [...new Set(jobs.map((j) => j.source).filter(Boolean))] };
   });

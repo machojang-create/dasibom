@@ -448,29 +448,33 @@ function feedToJob(j,i){
 }
 
 /* ───────── 실공고 로딩 ───────── */
-var allReal=[],realShown=6;
+var allReal=[],realShown=10,realIsFallback=false;
 function renderReal(){
   var list=document.getElementById('realList');
   var arr=allReal.slice(0,realShown);
   list.innerHTML=arr.map(jobCardHTML).join('');
   bindCards(list);
-  document.getElementById('realMore').style.display=allReal.length>realShown?'':'none';
+  var mb=document.getElementById('realMore');
+  if(allReal.length>realShown){mb.style.display='';mb.textContent='더 많은 일자리 보기 ('+(allReal.length-realShown)+'건 더)';}
+  else mb.style.display='none';
 }
 function loadReal(regionLabel,kw){
   var sub=document.getElementById('realSub');
   callFn('jobSearch',{region:regionLabel||'',keyword:kw||''}).then(function(r){
     var d=r.data||{};
     if(d.ok&&d.jobs&&d.jobs.length){
-      allReal=d.jobs.map(feedToJob);
-      if(d.sources&&d.sources.length)sub.textContent=d.sources.join('·')+'에서 모은 따끈한 채용 소식이에요';
+      allReal=d.jobs.map(feedToJob);realIsFallback=false;
+      var cnt=d.total||allReal.length;
+      var srcTxt=(d.sources&&d.sources.length)?d.sources.join('·'):'복지넷';
+      sub.textContent=srcTxt+'에서 모은 채용 소식 '+cnt+'건이에요';
     }else{
-      allReal=FALLBACK_JOBS.slice();
-      sub.textContent='복지관·주야간보호·요양까지 우리 동네 소식을 모았어요';
+      allReal=FALLBACK_JOBS.slice();realIsFallback=true;
+      sub.textContent='곧 우리 동네 실제 채용 소식으로 채워져요 (지금은 예시)';
     }
-    realShown=6;renderReal();
-  }).catch(function(){allReal=FALLBACK_JOBS.slice();realShown=6;renderReal();});
+    realShown=10;renderReal();
+  }).catch(function(){allReal=FALLBACK_JOBS.slice();realIsFallback=true;realShown=10;renderReal();});
 }
-document.getElementById('realMore').onclick=function(){realShown+=6;renderReal();};
+document.getElementById('realMore').onclick=function(){realShown+=10;renderReal();};
 
 /* 지역 고르기 */
 var REGIONS=['서울','경기','인천','부산','대구','광주','대전','그 외'];
