@@ -249,7 +249,15 @@ export default function App() {
       const ns = [...prev]; ns[currentSlotIndex] = { ...t, phrase: msg }; return ns;
     });
   };
-  const NO_PETAL_MSG = '꽃잎이 모자라네... 친구들한테 다시봄 자랑 좀 하고, 꽃잎 받아 온나! 🌷';
+  // 부족 안내 회전(2026-07-23 전수점검): 같은 말풍선이 떠 있으면 다시 눌러도 '무반응'처럼 보인다 — 매번 다른 문구로
+  const NO_PETAL_POOL = [
+    '꽃잎이 모자라네... 친구들한테 다시봄 자랑 좀 하고, 꽃잎 받아 온나! 🌷',
+    '아이고, 꽃잎 주머니가 비었데이. 오늘의 추억 구경하고 한마디 남기면 꽃잎이 생긴다!',
+    '꽃잎이 부족하구마. 토론장 가서 한 표 던지고 오는 건 어떻노? 🌸',
+  ];
+  const noPetalIdxRef = useRef(0);
+  const NO_PETAL_MSG_FN = () => NO_PETAL_POOL[(noPetalIdxRef.current++) % NO_PETAL_POOL.length];
+  const NO_PETAL_MSG = NO_PETAL_POOL[0];
 
   // ★결제 잠금: 서버 응답(1~3초) 전의 연타를 전부 무시 — 중복 결제 방지(2026-07-21 버그 수정)
   const spendBusyRef = useRef(false);
@@ -257,6 +265,9 @@ export default function App() {
     if (spendBusyRef.current) return false;
     const P = dsb(); if (!P) return false;
     spendBusyRef.current = true;
+    // 즉각 반응(2026-07-23): 서버 확인 몇 초 사이가 '무반응'처럼 보이지 않게 — 누르는 순간 말을 건다
+    plantSay('꽃잎 세어 보꾸마, 한 숨만 기다리 주라...');
+    lastUserSpeakRef.current = Date.now();
     let settled = false;
     const safety = setTimeout(() => {   // 서버 무응답 시 잠금이 영원히 안 풀리던 구멍(2026-07-22)
       if (!settled) { settled = true; spendBusyRef.current = false; cb({ code: 'timeout' }, null); }
@@ -273,7 +284,7 @@ export default function App() {
     const idx = unlockedSlots;                  // 첫 번째 잠긴 자리
     if (idx >= slots.length || !SLOT_UNLOCK_PRICE[idx]) return;
     const firedSlot = guardedSpend('plant_slot' + (idx + 1), (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance);
       setUnlockedSlots(idx + 1);
     });
@@ -284,7 +295,7 @@ export default function App() {
     if (currentPlant) { setIsShopOpen(false); plantSay('이 화분엔 이미 친구가 살고 있어요. 빈 화분에 심어주세요!'); lastUserSpeakRef.current = Date.now(); return; }
     const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
     const firedSeed = guardedSpend('seed', (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG); return; }
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance);
       const newPlant: UserPlant = { 
         id: Date.now().toString(), 
@@ -310,7 +321,7 @@ export default function App() {
     }
     const slotIdx = currentSlotIndex;   // ★레이스 방지
     const firedPot = guardedSpend(potId, (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); plantSay(NO_PETAL_MSG); return; }
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance);
       setSlots(prev => { const ns = [...prev]; ns[slotIdx] = { ...prev[slotIdx]!, potId }; return ns; });
       setIsPotShopOpen(false);
@@ -434,7 +445,7 @@ export default function App() {
       const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/;
       if ((cur as any).lastWaterDay !== today) { applyEffect('water'); return; }
       const fired = guardedSpend('plant_water', (err: any, d: any) => {
-        if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
+        if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
         setMoney(d.balance);
         applyEffect('water');
       });
@@ -451,7 +462,7 @@ export default function App() {
     }
     if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
     const firedNut = guardedSpend(type, (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG); return; }
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance);
       applyEffect(type);
     });
@@ -825,7 +836,7 @@ export default function App() {
         {/* Right Menu */}
         <div className="absolute top-20 md:top-24 right-4 md:right-6 flex flex-col gap-3 pointer-events-auto items-end z-40">
           <button 
-            onClick={() => setIsAudioPlaying(toggleBgm('/audio/plant_bgm.mp3', 'plant_bgm'))} 
+            onClick={() => { const on = toggleBgm('/audio/plant_bgm.mp3', 'plant_bgm'); setIsAudioPlaying(on); plantSay(on ? '음악 틀었데이~ 물소리랑 참 잘 어울린다 🎵' : '음악은 잠깐 쉬어 가꼬. 조용한 것도 좋데이.'); lastUserSpeakRef.current = Date.now(); }} 
             className={`flex flex-col items-center justify-center w-14 h-14 ${isAudioPlaying ? 'bg-indigo-500 text-white' : 'bg-white/80 text-gray-400'} backdrop-blur-md rounded-2xl shadow-lg border-2 border-white hover:bg-opacity-100 transition-colors`}
           >
             {isAudioPlaying ? <Volume2 className="w-6 h-6 mb-0.5" /> : <VolumeX className="w-6 h-6 mb-0.5" />}

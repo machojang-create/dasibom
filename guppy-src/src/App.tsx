@@ -331,6 +331,8 @@ export default function App() {
     if (!P) { showToast('연결 대기', '잠시 후 다시 시도해 주세요', '🌸'); cb(false); return; }
     if (spendBusyRef.current) { showToast('한 박자만요', '방금 요청을 처리하고 있어요', '⏳'); cb(false); return; }
     spendBusyRef.current = true;
+    // 즉각 반응(2026-07-23 전수점검): 서버 확인이 3초쯤 걸릴 수 있어 그동안 '무반응'처럼 보이던 문제 — 누르는 순간 안내
+    showToast('꽃잎 세는 중', '금방 확인해 드릴게요', '🌸');
     let settled = false;
     const safety = setTimeout(() => { if (!settled) { settled = true; spendBusyRef.current = false; showToast('연결이 늦어요', '조금 뒤 다시 시도해 주세요', '🌸'); cb(false); } }, 12000);
     P.spend(item, (err: any, d: any) => {

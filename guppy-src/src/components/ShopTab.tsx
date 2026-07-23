@@ -303,7 +303,8 @@ export const ShopTab = React.memo(function ShopTab({
                       </div>
                       <button
                         onClick={() => {
-                          if (owned) { setTankSkin?.(id); return; }
+                          if (active) { showToast?.('지금 쓰고 있는 물빛이에요', '다른 물빛도 한번 골라보세요 🖼️', '💧'); return; }
+                          if (owned) { setTankSkin?.(id); showToast?.('물빛을 갈아입혔어요', (TANK_SKINS[id]?.name || '') + ' — 어항이 새로워졌어요!', '🖼️'); return; }
                           (spendPetal as any)('guppy_skin_' + id, (ok: boolean) => {
                             if (!ok) return;
                             setOwnedSkins?.(prev => Array.from(new Set([...prev, id])));
