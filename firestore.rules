@@ -289,6 +289,19 @@ service cloud.firestore {
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }
+    // 파일럿 공용 참여 통계(2026-07-23) — '오늘 함께한 이웃 N명' 류. count는 증가 전용, 유형 필드는 자유(민감정보 아님)
+    match /pilot_stats/{docId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.count is int
+        && request.resource.data.count >= 0 && request.resource.data.count <= 10;
+      allow update: if request.auth != null
+        && request.resource.data.count is int
+        && request.resource.data.count >= resource.data.count
+        && request.resource.data.count <= resource.data.count + 3;
+      allow delete: if false;
+    }
+
     // 날짜별 공유 추임새(얼씨구·난리났네 등 5종) — 투표함과 같은 증가 전용 규칙
     match /debate_reacts/{day} {
       allow read: if true;

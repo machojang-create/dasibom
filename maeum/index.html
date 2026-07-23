@@ -29,6 +29,16 @@
         '봄이가 그 성향에 맞는 따뜻한 조언을 들려드려요!'
       ]
     };</script>
+    <script>
+    // 함께한 이웃 통계(2026-07-23): 마음결 검사를 마치면 지금까지 함께한 이웃 수를 알려준다
+    window.DSB_STATS = {
+      storeKey: 'mbtiHistory',
+      docId: 'maeum_all',
+      typeOf: function(x){ return x && (x.mbti || null); },
+      msg: function(n){ return '🌸 지금까지 ' + n + '분이 마음결을 알아봤어요'; }
+    };
+    </script>
+    <script src="/dasibom-pilotstats.js?v=1" defer></script>
     <script src="/dasibom-bomguide.js?v=2"></script>
     <script src="/dasibom-fontsize.js"></script>
   <script src="/dasibom-points.js?v=1"></script>

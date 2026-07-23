@@ -29,6 +29,20 @@
         {text:'지금 기분을 고르면 맞춤 실험도 즉석에서 만들어드려요!', sel:'.grid > .cursor-pointer:nth-child(2)'}
       ]
     };</script>
+    <script>
+    // 함께한 이웃 통계(2026-07-23 파일럿 공유 전면화): 실험을 마치면 동네 참여 수가 +1 되고 따뜻하게 알려준다
+    (function(){
+      var d = new Date();
+      var day = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      window.DSB_STATS = {
+        storeKey: 'mindlab_past_results',
+        docId: 'maeumlab_' + day,
+        typeOf: function(x){ return x && (x.type || x.title || null); },
+        msg: function(n){ return '🌸 오늘 ' + n + '번째로 마음 실험을 함께했어요'; }
+      };
+    })();
+    </script>
+    <script src="/dasibom-pilotstats.js?v=1" defer></script>
     <script src="/dasibom-bomguide.js?v=2"></script>
     <script src="/dasibom-fontsize.js"></script>
   <script src="/dasibom-points.js?v=1"></script>
