@@ -542,11 +542,14 @@ export default function App() {
     let currentGuppies = [...guppiesRef.current];
     // (기포는 CSS 반복 애니로 이전 — 프레임 연산 0)
 
-    // Update foods
-    currentFoods = currentFoods.map(f => ({
-      ...f,
-      y: Math.min(f.y + f.vy * dt, tankHeight - 20)
-    })).filter(f => f.y < tankHeight - 10);
+    // Update foods — 낙하 + 수명(2026-07-24 Macho 신고 수리: 안 먹힌 먹이가 바닥에 영영 쌓여
+    //   그 근처 구피가 계속 먹고 99% 고정되던 버그. 바닥 안착 후 12초 지나면 스르르 사라짐).
+    currentFoods = currentFoods.map(f => {
+      const ny = Math.min(f.y + f.vy * dt, tankHeight - 20);
+      const settled = ny >= tankHeight - 21;
+      const age = ((f as any).age || 0) + (settled ? dt : 0);   // 바닥에 닿은 뒤부터 나이 먹음
+      return { ...f, y: ny, age } as any;
+    }).filter(f => ((f as any).age || 0) < 12);   // 바닥 안착 12초 뒤 제거
 
     // Breeding check
     const newBabies: GuppyInstance[] = [];
