@@ -2029,6 +2029,10 @@ const WORKNET_KEY = (() => { try { return functions.config().worknet.key; } catc
 const WORKNET_URL =
   ((() => { try { return functions.config().worknet.url; } catch (e) { return null; } })()) ||
   'http://openapi.work.go.kr/opi/opi/opia/wantedApi.do';
+// 노인인력개발원 '노인일자리여기' 구인정보 API(진짜 시니어 본인 지원 일자리). 인증키: functions:config:set senuri.key="..."
+//   발급: data.go.kr → '한국노인인력개발원 노인 구인정보'(15015153) 활용신청(자동승인). 응답 XML.
+const SENURI_KEY = (() => { try { return functions.config().senuri.key; } catch (e) { return null; } })();
+const SENURI_URL = 'http://apis.data.go.kr/B552474/SenuriService/getJobList';
 // 워크넷 지역코드(법정동 상위 5자리) — jobs.html 지역 칩과 1:1
 const JOB_REGION = { '서울': '11000', '경기': '41000', '인천': '28000', '부산': '26000', '대구': '27000', '광주': '29000', '대전': '30000' };
 
@@ -2089,31 +2093,34 @@ async function crawlBokji(params, maxPages) {
   return out;
 }
 
-// 수집 실행부 — 예약/수동 공용. 어르신(B)+복지관(G) 전국 수집 후 jobs_feed 갱신.
+// 수집 실행부 — 예약/수동 공용. 진짜 '시니어 본인 지원' 일자리만 jobs_feed에 적재.
+//   ★2026-07-24 방향 전환(Macho 지적): 복지넷은 '복지관 직원 채용'(사회복지사·요양보호사 등 자격/경력직)이라
+//     시니어 채용이 아님 → 소스에서 제외. 진짜 시니어 일자리는 공공 API(노인인력개발원·워크넷)뿐.
+//     두 API는 인증키 필요 → 키 없으면 수집 0(화면은 예시 폴백). 키 넣으면 대량 적재.
 async function runJobCrawl() {
   const db = admin.firestore();
   let all = [];
-  // 분야별(전국): 어르신 = 요양·주야간보호·노인복지관 / 복지관 = 종합복지관.
-  //   복지넷은 분야별 20페이지 이상(페이지당 ~11건). 빈 페이지가 나오면 crawlBokji가 자동 중단.
-  all = all.concat(await crawlBokji({ SISULDIV: 'B' }, 15));   // ~150건
-  all = all.concat(await crawlBokji({ SISULDIV: 'G' }, 8));    // ~80건
-  // 케어 키워드 스윕(제목 검색, 전 분야) — 주야간보호·요양·재가가 다른 분류로 올라와도 놓치지 않게.
-  //   SEARCH_GUBUN=REQUIREFIELD(채용 제목)+SEARCH_KEYWORD. 상단 고정 유료광고가 섞여 오므로 제목 매칭만 남김.
-  for (const kw of ['주야간보호', '요양', '재가', '방문요양']) {
-    const rows = await crawlBokji({ SEARCH_GUBUN: 'REQUIREFIELD', SEARCH_KEYWORD: kw }, 2);
-    all = all.concat(rows.filter((j) => j.title.indexOf(kw) >= 0));
-  }
+  all = all.concat(await fetchSenuri());        // 노인인력개발원 노인일자리(키)
+  all = all.concat(await fetchWorknetFeed());   // 워크넷 고령자 채용(키)
   // 중복 제거(id 기준)
   const seen = {}, uniq = [];
   for (const j of all) { if (seen[j.id]) continue; seen[j.id] = 1; uniq.push(j); }
   const now = Date.now();
-  // 배치 적재(500개 제한 여유). fetchedAt 갱신 = 살아있는 공고 표시.
+  // 배치 적재. fetchedAt 갱신 = 살아있는 공고 표시.
   let batch = db.batch(), n = 0;
   for (const j of uniq) {
     batch.set(db.collection('jobs_feed').doc(j.id), Object.assign({}, j, { fetchedAt: now }), { merge: true });
     if (++n % 400 === 0) { await batch.commit(); batch = db.batch(); }
   }
   if (n % 400 !== 0) await batch.commit();
+  // 구 복지넷(src=bokji) 데이터 정리 — 부적합이라 더는 안 씀. 남아 있으면 즉시 삭제.
+  try {
+    for (let i = 0; i < 3; i++) {
+      const ob = await db.collection('jobs_feed').where('src', '==', 'bokji').limit(400).get();
+      if (ob.empty) break;
+      const b = db.batch(); ob.forEach((d) => b.delete(d.ref)); await b.commit();
+    }
+  } catch (e) { /* 실패해도 수집엔 지장 없음 */ }
   // 이틀 넘게 재확인 안 된 공고(마감/삭제 추정) 정리
   try {
     const stale = await db.collection('jobs_feed').where('fetchedAt', '<', now - 2 * 86400 * 1000).limit(300).get();
@@ -2167,6 +2174,65 @@ async function fetchWorknet(regionLabel, keyword) {
   } catch (e) { return []; }
 }
 
+// 워크넷 예약 수집(여러 페이지) — jobs_feed 적재용. 키 없으면 [].
+//   ⚠️ 태그·엔드포인트는 키 받은 뒤 첫 크롤 로그(worknet sample)로 실제 응답 확인 후 확정.
+async function fetchWorknetFeed() {
+  if (!WORKNET_KEY) return [];
+  const out = [];
+  for (let pg = 1; pg <= 5; pg++) {
+    const params = { authKey: WORKNET_KEY, callTp: 'L', returnType: 'XML', startPage: String(pg), display: '100' };
+    try {
+      const res = await _fetch(WORKNET_URL + '?' + querystring.stringify(params));
+      const xml = await res.text();
+      if (pg === 1) console.log('worknet sample:', xml.slice(0, 500));
+      const items = xml.match(/<wanted>[\s\S]*?<\/wanted>/g) || [];
+      if (!items.length) break;
+      items.forEach((b) => {
+        const title = jobXmlTag(b, 'title'); if (!title) return;
+        const region = jobXmlTag(b, 'region');
+        out.push({
+          source: '워크넷', src: 'worknet', id: 'worknet_' + (jobXmlTag(b, 'wantedAuthNo') || jobXmlTag(b, 'infoSvc') || title),
+          title, org: jobXmlTag(b, 'company'), region, sido: jobSido(region),
+          empType: jobXmlTag(b, 'sal') || jobXmlTag(b, 'salTpNm'), career: jobXmlTag(b, 'career'),
+          closeDt: jobXmlTag(b, 'closeDt'), url: jobXmlTag(b, 'wantedInfoUrl') || jobXmlTag(b, 'wantedMobileInfoUrl')
+        });
+      });
+    } catch (e) { break; }
+  }
+  return out;
+}
+
+// ── 노인인력개발원 '노인일자리여기' 구인정보 — 진짜 시니어 본인 지원 일자리 ──────
+//   ⚠️ 응답 태그는 키 받은 뒤 첫 크롤 로그(senuri sample)로 실제 확인 후 확정(현재는 문서 기반 추정 태그).
+async function fetchSenuri() {
+  if (!SENURI_KEY) return [];
+  const out = [];
+  for (let pg = 1; pg <= 6; pg++) {
+    const url = SENURI_URL + '?serviceKey=' + encodeURIComponent(SENURI_KEY) + '&numOfRows=100&pageNo=' + pg;
+    try {
+      const res = await _fetch(url);
+      const xml = await res.text();
+      if (pg === 1) console.log('senuri sample:', xml.slice(0, 700));
+      const items = xml.match(/<item>[\s\S]*?<\/item>/g) || [];
+      if (!items.length) break;
+      items.forEach((b) => {
+        const t = (tag) => jobXmlTag(b, tag);
+        const title = t('recrtTitle') || t('wantedTitle'); if (!title) return;
+        const region = t('workPlcNm') || t('plDetAddr') || t('workAddr') || t('plbizNm');
+        out.push({
+          source: '노인일자리', src: 'senuri', id: 'senuri_' + (t('jobId') || title),
+          title, org: t('plbizNm') || t('acptOgdpNm') || t('workPlcNm') || '',
+          region, sido: jobSido(region),
+          empType: t('emplymShpNm') || t('emplymShp') || '', career: '', mem: t('reqCnt') || t('rcritNmpr') || '',
+          period: '', closeDt: t('deadline') || t('acptEndDt') || t('rcritEndDe') || '',
+          url: t('homepage') || 'https://www.seniorro.or.kr/'
+        });
+      });
+    } catch (e) { break; }
+  }
+  return out;
+}
+
 // ── 통합 검색 — 화면(jobs.html)이 호출 ────────────────────────────────────
 exports.jobSearch = functions
   .region('asia-northeast3')
@@ -2189,10 +2255,8 @@ exports.jobSearch = functions
       const hit = feed.filter((j) => (j.title + ' ' + (j.org || '')).indexOf(keyword) >= 0);
       if (hit.length) feed = hit;
     }
-    // 워크넷 합류(키 있을 때만) — 지역/키워드로 조회
-    const wn = await fetchWorknet(regionLabel, keyword);
-    let jobs = feed.concat(wn);
-    // 최신·마감임박 위주 정렬은 생략(수집분엔 신뢰 날짜 부족) — fetchedAt 최신 우선
+    // 워크넷·노인일자리는 예약 크롤(crawlJobs)이 jobs_feed에 미리 적재 → 여기선 feed만 읽음(빠름)
+    let jobs = feed;
     jobs.sort((a, b) => (b.fetchedAt || 0) - (a.fetchedAt || 0));
     const total = jobs.length;
     jobs = jobs.slice(0, 80).map((j) => ({
@@ -2201,6 +2265,6 @@ exports.jobSearch = functions
       mem: j.mem || '', period: j.period || '', closeDt: j.closeDt || '',
       url: j.url || '', source: j.source || ''
     }));
-    if (!jobs.length) return { ok: false, reason: WORKNET_KEY ? 'empty' : 'nofeed' };
+    if (!jobs.length) return { ok: false, reason: (SENURI_KEY || WORKNET_KEY) ? 'empty' : 'nokey' };
     return { ok: true, jobs, total, sources: [...new Set(jobs.map((j) => j.source).filter(Boolean))] };
   });

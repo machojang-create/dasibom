@@ -1,13 +1,24 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 
 /* 구입 축하 연출(2026-07-24 Macho) — 봄이가 등장해 초등학생 가르치듯 친절하게:
-   뭘 얻었나·얼마 썼나·다음에 뭐하나. window.DASIBOM_BOM===false 면 봄이 없이 중립 톤(독립앱 대비). */
+   뭘 얻었나·얼마 썼나·다음에 뭐하나. 봄이 목소리(무료 ElevenLabs)로도 말한다.
+   window.DASIBOM_BOM===false 면 봄이 없이 중립 톤(독립앱 대비). */
 export type Cele = { key: number; icon: string; name: string; spent: number; balance: number; tip: string };
 
 const bomOn = () => (typeof window === 'undefined' ? true : (window as any).DASIBOM_BOM !== false);
 
 export default function BuyCele({ cele, onClose }: { cele: Cele | null; onClose: () => void }) {
   const withBom = bomOn();
+
+  // 봄이가 직접 말한다 — 축하 카드가 뜰 때(무료 ElevenLabs, 문장 캐시). 카드 닫히면 멈춤.
+  useEffect(() => {
+    const w = window as any;
+    if (cele && withBom && w.BomVoice && w.BomVoice.say) {
+      try { w.BomVoice.say(cele.name + ' 획득! ' + cele.tip); } catch (e) {}
+    }
+    return () => { try { if (w.BomVoice && w.BomVoice.stop) w.BomVoice.stop(); } catch (e) {} };
+  }, [cele && cele.key]);
   return (
     <AnimatePresence>
       {cele && (

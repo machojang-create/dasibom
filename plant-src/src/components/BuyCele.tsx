@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 
-/* 화분 구입 축하 연출(2026-07-24 Macho) — 봄이가 등장해 초등학생 가르치듯 친절하게.
+/* 화분 구입 축하 연출(2026-07-24 Macho) — 봄이가 등장해 초등학생 가르치듯 친절하게, 목소리로도.
    window.DASIBOM_BOM===false 면 봄이 없이 중립 톤(독립앱 대비). */
 export type Cele = { key: number; icon: string; name: string; spent: number; balance: number; tip: string };
 
@@ -8,6 +9,15 @@ const bomOn = () => (typeof window === 'undefined' ? true : (window as any).DASI
 
 export default function BuyCele({ cele, onClose }: { cele: Cele | null; onClose: () => void }) {
   const withBom = bomOn();
+
+  useEffect(() => {
+    const w = window as any;
+    if (cele && withBom && w.BomVoice && w.BomVoice.say) {
+      try { w.BomVoice.say(cele.name + ' 획득! ' + cele.tip); } catch (e) {}
+    }
+    return () => { try { if (w.BomVoice && w.BomVoice.stop) w.BomVoice.stop(); } catch (e) {} };
+  }, [cele && cele.key]);
+
   return (
     <AnimatePresence>
       {cele && (
