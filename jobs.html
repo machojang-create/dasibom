@@ -134,9 +134,25 @@ button{font-family:inherit;cursor:pointer}
 .emptybox .ic{width:76px;height:76px;border-radius:50%;background:var(--chip);display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
 .emptybox .ic svg{width:38px;height:38px}
 .emptybox p{font-size:calc(17px * var(--ts));color:var(--ink2);font-weight:600}
-.skel{height:120px;border-radius:20px;background:linear-gradient(100deg,#f1ede4 30%,#f8f5ee 50%,#f1ede4 70%);
+.skel{height:110px;border-radius:16px;background:linear-gradient(100deg,#f1ede4 30%,#f8f5ee 50%,#f1ede4 70%);
   background-size:200% 100%;animation:sk 1.3s infinite;border:1px solid var(--border)}
 @keyframes sk{to{background-position:-200% 0}}
+
+/* 로딩 연출 — 봄이가 공고를 모으는 감성 연출 */
+.loadwrap{display:none;padding:26px 2px 6px;text-align:center}
+.loadwrap.on{display:block;animation:fade .3s ease}
+.loadbom{font-size:52px;line-height:1;animation:bomBounce 1.5s ease-in-out infinite}
+@keyframes bomBounce{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-13px) rotate(4deg)}}
+.loadmsg{margin:14px 0 2px;font-size:calc(17px * var(--ts));font-weight:700;color:var(--ink);line-height:1.6;min-height:2.6em;transition:opacity .35s}
+.loaddots{display:flex;gap:9px;justify-content:center;margin:12px 0 22px}
+.loaddots span{width:11px;height:11px;border-radius:50%;background:var(--sage);animation:dotp 1.2s infinite}
+.loaddots span:nth-child(2){animation-delay:.18s}
+.loaddots span:nth-child(3){animation-delay:.36s}
+@keyframes dotp{0%,100%{opacity:.3;transform:translateY(0)}50%{opacity:1;transform:translateY(-8px)}}
+.loadskels{display:flex;flex-direction:column;gap:12px}
+.loadskels .skel:nth-child(2){animation-delay:.15s;opacity:.85}
+.loadskels .skel:nth-child(3){animation-delay:.3s;opacity:.7}
+@media(prefers-reduced-motion:reduce){.loadbom,.loaddots span{animation:none}}
 
 /* 적성 */
 .quizbox{margin:20px;background:#fff;border:1px solid var(--border);border-radius:24px;padding:28px 22px;text-align:center;box-shadow:0 3px 14px rgba(120,90,50,.05)}
@@ -243,9 +259,13 @@ button{font-family:inherit;cursor:pointer}
           <button class="more" id="regionBtn">지역 ▾</button>
         </div>
         <p id="realSub" style="font-size:calc(15px * var(--ts));color:var(--muted);margin:-6px 0 14px">복지관·주야간보호·요양까지 우리 동네 소식을 모았어요</p>
-        <div class="jlist" id="realList">
-          <div class="skel"></div><div class="skel"></div><div class="skel"></div>
+        <div id="realLoading" class="loadwrap">
+          <div class="loadbom">🌸</div>
+          <p class="loadmsg" id="loadmsg">봄이가 우리 동네 채용 소식을<br>하나하나 모으고 있어요 🌷</p>
+          <div class="loaddots"><span></span><span></span><span></span></div>
+          <div class="loadskels"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
         </div>
+        <div class="jlist" id="realList"></div>
         <button class="morebtn" id="realMore" style="display:none">더 많은 일자리 보기</button>
       </div>
 
@@ -519,7 +539,32 @@ function feedToJob(j,i){
 
 /* ───────── 실공고 로딩 ───────── */
 var allReal=[],realShown=12,realIsFallback=false;
+/* 로딩 연출 — 봄이가 공고를 모으는 감성 문구 회전 */
+var LOAD_MSGS=[
+  '봄이가 우리 동네 채용 소식을<br>하나하나 모으고 있어요 🌷',
+  '{호칭}께 딱 맞는 일자리를<br>찾고 있어요…',
+  '좋은 자리 놓치지 않게<br>꼼꼼히 살펴보는 중이에요 🔎',
+  '거의 다 됐어요,<br>조금만 기다려 주세요 😊'
+];
+var loadTimer=null;
+function showLoading(){
+  var lw=document.getElementById('realLoading'); if(!lw) return;
+  document.getElementById('realList').innerHTML='';
+  document.getElementById('realMore').style.display='none';
+  lw.classList.add('on');
+  var msg=document.getElementById('loadmsg'); var i=0;
+  var h=honor();
+  var fill=function(s){return s.replace('{호칭}', h);};
+  msg.innerHTML=fill(LOAD_MSGS[0]);
+  clearInterval(loadTimer);
+  loadTimer=setInterval(function(){
+    i=(i+1)%LOAD_MSGS.length; msg.style.opacity='0';
+    setTimeout(function(){ msg.innerHTML=fill(LOAD_MSGS[i]); msg.style.opacity='1'; }, 300);
+  }, 2200);
+}
+function hideLoading(){ clearInterval(loadTimer); var lw=document.getElementById('realLoading'); if(lw) lw.classList.remove('on'); }
 function renderReal(){
+  hideLoading();
   var list=document.getElementById('realList');
   var arr=allReal.slice(0,realShown);
   list.innerHTML=arr.map(jobCardHTML).join('');
@@ -530,6 +575,7 @@ function renderReal(){
 }
 function loadReal(regionLabel,kw){
   var sub=document.getElementById('realSub');
+  showLoading();
   callFn('jobSearch',{region:regionLabel||'',keyword:kw||''}).then(function(r){
     var d=r.data||{};
     if(d.ok&&d.jobs&&d.jobs.length){
@@ -559,7 +605,7 @@ document.getElementById('regionBtn').onclick=function(){
 };
 function pickRegion(r){pickedRegion=(r==='전체'||r==='그 외')?'':r;
   document.getElementById('regionBtn').textContent=(r==='전체'?'지역':r)+' ▾';
-  closeModal();document.getElementById('realList').innerHTML='<div class="skel"></div><div class="skel"></div>';loadReal(pickedRegion,'');}
+  closeModal();loadReal(pickedRegion,'');}
 
 /* ───────── AI 맞춤 찾기 ───────── */
 var JOB_MAP=[
@@ -602,7 +648,6 @@ document.getElementById('findBtn').onclick=function(){
       '<button class="morebtn" style="margin-top:14px" onclick="document.getElementById(\'tab-jobs\').scrollIntoView({behavior:\'smooth\'});">아래 실시간 채용 목록도 함께 보기 ↓</button></div>';
     bindCards(box);
     // 실공고도 경력 키워드+지역으로 갱신
-    document.getElementById('realList').innerHTML='<div class="skel"></div><div class="skel"></div>';
     loadReal(pickedRegion,rec.kw);
   },1400);
 };
