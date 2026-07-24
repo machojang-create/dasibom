@@ -40,6 +40,13 @@ html,body{width:100%;overflow-x:hidden}
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 .app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--cream);position:relative;box-shadow:0 0 40px rgba(120,90,50,.06)}
+/* 넓은 화면: 게시판을 와이드하게 — 일자리 목록이 2~3열로 더 많이 노출 */
+@media(min-width:700px){
+  .app{max-width:960px}
+  .bnav-in{max-width:960px}
+  .jlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+}
+@media(min-width:1040px){ .jlist{grid-template-columns:repeat(3,minmax(0,1fr))} }
 
 /* 상단바 (← 홈으로 / 제목) */
 .topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;
@@ -88,29 +95,35 @@ button{font-family:inherit;cursor:pointer}
 .aires-box{background:#fff;border:1px solid var(--border);border-radius:20px;padding:20px}
 .aires-box .cap{font-size:calc(17px * var(--ts));font-weight:800;color:var(--coral);margin-bottom:14px}
 
-/* 일자리 카드 (업로드 JobCard 재현) */
-.jlist{display:flex;flex-direction:column;gap:14px}
-.jcard{background:var(--cream);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 2px 10px rgba(120,90,50,.05);
-  position:relative;display:flex;flex-direction:column;gap:10px}
+/* 일자리 카드 — 컴팩트(글씨 크기는 유지, 여백만 축소해 더 많이 노출) */
+.jlist{display:flex;flex-direction:column;gap:12px}
+.jcard{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px 15px;box-shadow:0 2px 8px rgba(120,90,50,.05);
+  position:relative;display:flex;flex-direction:column;gap:8px;height:100%}
 .jcard.clk{cursor:pointer}
 .jcard.clk:active{transform:scale(.995)}
 .jc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.jc-co{display:inline-block;font-size:calc(13.5px * var(--ts));font-weight:800;color:var(--sage);background:var(--chip);
-  padding:5px 11px;border-radius:9px;margin-bottom:8px}
-.jc-title{font-size:calc(19px * var(--ts));font-weight:800;color:var(--ink);line-height:1.34;word-break:keep-all}
-.jc-bm{flex-shrink:0;width:44px;height:44px;border-radius:50%;border:none;background:var(--chip);color:var(--muted);
+.jc-co{display:inline-block;font-size:calc(13px * var(--ts));font-weight:800;color:var(--sage);background:var(--chip);
+  padding:4px 10px;border-radius:8px;margin-bottom:6px}
+.jc-title{font-size:calc(18px * var(--ts));font-weight:800;color:var(--ink);line-height:1.32;word-break:keep-all}
+.jc-bm{flex-shrink:0;width:40px;height:40px;border-radius:50%;border:none;background:var(--chip);color:var(--muted);
   display:flex;align-items:center;justify-content:center}
 .jc-bm.on{background:var(--coral-bg);color:var(--coral)}
-.jc-bm svg{width:24px;height:24px}
-.jc-meta{display:flex;flex-direction:column;gap:7px}
-.jc-row{display:flex;align-items:center;gap:8px;font-size:calc(16.5px * var(--ts));color:var(--ink2)}
-.jc-row svg{width:20px;height:20px;flex-shrink:0}
-.jc-row .i-map{color:var(--muted)}.jc-row .i-won{color:var(--sage)}
-.jc-row b{font-weight:700}
-.jc-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
-.jc-tag{font-size:calc(14px * var(--ts));font-weight:600;color:var(--ink2);background:var(--chip);padding:5px 11px;border-radius:9px}
-.jc-tag.src{color:#2E7D32;background:#EAF6EB;font-weight:800}
-.jc-apply{margin-top:2px;font-size:calc(14.5px * var(--ts));font-weight:800;color:var(--sage);display:flex;align-items:center;gap:4px}
+.jc-bm svg{width:22px;height:22px}
+.jc-loc{display:flex;align-items:center;gap:6px;font-size:calc(15px * var(--ts));color:var(--ink2)}
+.jc-loc svg{width:18px;height:18px;flex-shrink:0;color:var(--muted)}
+.jc-chips{display:flex;flex-wrap:wrap;gap:6px}
+.jc-chip{font-size:calc(13.5px * var(--ts));font-weight:700;color:var(--ink2);background:var(--chip);padding:4px 10px;border-radius:8px;white-space:nowrap}
+.jc-chip.pay{color:#B5651D;background:#FBF0E2;font-weight:800}
+.jc-chip.src{color:#2E7D32;background:#EAF6EB;font-weight:800}
+.jc-apply{margin-top:auto;padding-top:2px;font-size:calc(14px * var(--ts));font-weight:800;color:var(--sage)}
+/* 상세 시트 정보 행 */
+.d-meta{margin-top:16px;display:flex;flex-direction:column;gap:11px}
+.d-row{display:flex;align-items:center;gap:9px;font-size:calc(16.5px * var(--ts));color:var(--ink2)}
+.d-row svg{width:21px;height:21px;flex-shrink:0;color:var(--muted)}
+.d-row .d-ic{font-size:calc(17px * var(--ts));width:22px;text-align:center;flex-shrink:0}
+.d-row .d-co{font-size:calc(18px * var(--ts));font-weight:800;color:var(--sage)}
+.d-row b{font-weight:800;color:var(--ink)}
+.d-note{margin-top:18px;font-size:calc(14px * var(--ts));color:var(--ink2);background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:12px;padding:12px 14px;line-height:1.55}
 
 .morebtn{width:100%;padding:16px;margin-top:4px;font-size:calc(17px * var(--ts));font-weight:800;color:var(--sage);
   background:var(--chip);border:none;border-radius:14px;min-height:52px}
@@ -395,64 +408,68 @@ function toggleSaved(job){var a=getSaved();var i=a.findIndex(function(j){return 
   if(i>=0)a.splice(i,1);else a.push(job);setSaved(a);updateSavedCount();return i<0;}
 function updateSavedCount(){var n=getSaved().length;var el=document.getElementById('savedSub');if(el)el.textContent='관심 있는 공고 '+n+'건';}
 
-/* ───────── 일자리 카드 렌더 ───────── */
+/* ───────── 일자리 카드 렌더 (인덱스 방식: 클릭 시 원본 job 객체 조회) ───────── */
+var JOBIDX={};
+function chip(t,cls){return '<span class="jc-chip'+(cls?' '+cls:'')+'">'+esc(t)+'</span>';}
+function careerLabel(c){return c==='무관'?'경력무관':c;}
+function jobChips(job){
+  var c='';
+  if(job.pay)c+=chip('💰 '+job.pay,'pay');
+  if(job.deadline)c+=chip(job.deadline==='채용시까지'?'📅 상시모집':'📅 ~'+job.deadline);
+  if(job.empType)c+=chip(job.empType);
+  if(job.career)c+=chip(careerLabel(job.career));
+  if(job.mem)c+=chip('👥 '+job.mem+'명');
+  if(job.tags)job.tags.forEach(function(t){if(typeof t==='string')c+=chip(t);});
+  if(job.source)c+=chip(job.source,'src');
+  return c;
+}
 function jobCardHTML(job){
+  JOBIDX[job.id]=job;
   var saved=isSaved(job.id);
-  var tags=(job.tags||[]).map(function(t){return '<span class="jc-tag'+(t.src?' src':'')+'">'+esc(t.src||t)+'</span>';}).join('');
-  var applied='<span class="jc-apply">자세히 보기 →</span>';
-  return '<div class="jcard clk" data-url="'+esc(job.url||'')+'">'+
+  return '<div class="jcard clk" data-id="'+esc(job.id)+'">'+
     '<div class="jc-top"><div class="jc-main">'+
       (job.company?'<span class="jc-co">'+esc(job.company)+'</span>':'')+
       '<h3 class="jc-title">'+esc(job.title)+'</h3></div>'+
     '<button class="jc-bm'+(saved?' on':'')+'" data-id="'+esc(job.id)+'" aria-label="찜하기">'+(saved?IC.bmF:IC.bm)+'</button></div>'+
-    '<div class="jc-meta">'+
-      (job.location?'<div class="jc-row">'+IC.map+'<span>'+esc(job.location)+'</span></div>':'')+
-      (job.pay?'<div class="jc-row">'+IC.won+'<b>'+esc(job.pay)+'</b></div>':'')+
-    '</div>'+
-    (tags?'<div class="jc-tags">'+tags+'</div>':'')+applied+'</div>';
+    (job.location?'<div class="jc-loc">'+IC.map+'<span>'+esc(job.location)+'</span></div>':'')+
+    '<div class="jc-chips">'+jobChips(job)+'</div>'+
+    '<span class="jc-apply">자세히 보기 →</span></div>';
 }
 function bindCards(container){
   container.querySelectorAll('.jc-bm').forEach(function(btn){
-    btn.onclick=function(e){e.stopPropagation();
-      var card=btn.closest('.jcard');var job=cardToJob(card,btn.dataset.id);
+    btn.onclick=function(e){e.stopPropagation();var job=JOBIDX[btn.dataset.id];if(!job)return;
       var nowOn=toggleSaved(job);btn.classList.toggle('on',nowOn);btn.innerHTML=nowOn?IC.bmF:IC.bm;};
   });
   container.querySelectorAll('.jcard').forEach(function(card){
-    card.onclick=function(){var bm=card.querySelector('.jc-bm');openJobDetail(cardToJob(card,bm?bm.dataset.id:''));};
+    card.onclick=function(){var job=JOBIDX[card.dataset.id];if(job)openJobDetail(job);};
   });
 }
-function cardToJob(card,id){
-  return {id:id,title:card.querySelector('.jc-title').textContent,
-    company:(card.querySelector('.jc-co')||{}).textContent||'',
-    location:(card.querySelector('.jc-row span')||{}).textContent||'',
-    pay:(card.querySelector('.jc-row b')||{}).textContent||'',
-    url:card.dataset.url||'',
-    tags:[].map.call(card.querySelectorAll('.jc-tag'),function(t){return t.textContent;})};
-}
 
-/* 일자리 상세 시트 — 앱 안에서 정보 먼저, 그다음 실제 공고 원문 버튼 */
+/* 일자리 상세 시트 — 앱 안에서 주요 정보 먼저, 그다음 실제 공고 원문 버튼 */
+var detailJob=null;
 function openJobDetail(job){
+  JOBIDX[job.id]=job;detailJob=job;
   var saved=isSaved(job.id);
   var rows='';
-  if(job.company)rows+='<div class="jc-row" style="font-size:calc(17px*var(--ts))"><b style="color:var(--sage)">'+esc(job.company)+'</b></div>';
-  if(job.location)rows+='<div class="jc-row" style="font-size:calc(17px*var(--ts))">'+IC.map+'<span>'+esc(job.location)+'</span></div>';
-  if(job.pay)rows+='<div class="jc-row" style="font-size:calc(17px*var(--ts))">'+IC.won+'<b>'+esc(job.pay)+'</b></div>';
-  var tags=(job.tags||[]).map(function(t){var s=/복지넷|워크넷|주야간|요양|재가|복지관/.test(t);return '<span class="jc-tag'+(s?' src':'')+'">'+esc(t)+'</span>';}).join('');
+  if(job.company)rows+='<div class="d-row"><span class="d-co">'+esc(job.company)+'</span></div>';
+  if(job.location)rows+='<div class="d-row">'+IC.map+'<span>'+esc(job.location)+'</span></div>';
+  if(job.pay)rows+='<div class="d-row">'+IC.won+'<b>'+esc(job.pay)+'</b></div>';
+  if(job.period)rows+='<div class="d-row"><span class="d-ic">📅</span><span>모집기간 '+esc(job.period)+'</span></div>';
+  else if(job.deadline)rows+='<div class="d-row"><span class="d-ic">📅</span><span>'+(job.deadline==='채용시까지'?'상시 모집(채용 시 마감)':'마감 '+esc(job.deadline))+'</span></div>';
+  if(job.empType||job.career){var e=[job.empType,job.career?careerLabel(job.career):''].filter(Boolean).join(' · ');rows+='<div class="d-row"><span class="d-ic">💼</span><span>'+esc(e)+'</span></div>';}
+  if(job.mem)rows+='<div class="d-row"><span class="d-ic">👥</span><span>모집 '+esc(job.mem)+'명</span></div>';
+  if(job.source)rows+='<div class="d-row"><span class="d-ic">🔖</span><span>'+esc(job.source)+' 공고</span></div>';
   var applyBtn=job.url
-    ? '<button class="btn-primary" style="margin-top:20px" onclick="window.open(\''+esc(job.url)+'\',\'_blank\',\'noopener\')">📄 복지넷에서 전체 공고 보고 지원하기</button>'
-      +'<p style="margin-top:10px;text-align:center;font-size:calc(13.5px*var(--ts));color:var(--muted)">자세한 자격·근무조건·연락처는 원문에서 확인하세요</p>'
+    ? (( !job.pay ? '<p class="d-note">※ 급여·자격·근무시간 등 자세한 조건은 아래 「전체 공고」에서 확인하세요</p>' : '')
+       +'<button class="btn-primary" style="margin-top:16px" onclick="window.open(\''+esc(job.url)+'\',\'_blank\',\'noopener\')">📄 복지넷에서 전체 공고 보고 지원하기</button>')
     : '<div style="margin-top:20px;background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:16px;padding:16px;font-size:calc(15px*var(--ts));line-height:1.6;color:var(--ink2)">이건 예시 공고예요. 곧 우리 동네 실제 채용 소식이 올라오면, 여기서 바로 전체 공고를 보고 지원할 수 있어요 🌷</div>';
-  var bmBtn='<button class="me-btn" style="margin:14px 0 0;width:100%" onclick="detailToggleSave(this)" data-id="'+esc(job.id)+'">'+
+  var bmBtn='<button class="me-btn" style="margin:14px 0 0;width:100%" onclick="detailToggleSave(this)">'+
     '<div class="l"><div class="bi pink">'+(saved?IC.bmF:IC.bm)+'</div><div><h4 id="dSaveLabel">'+(saved?'찜한 일자리 (눌러서 해제)':'이 일자리 찜해두기')+'</h4></div></div><span class="chev">♡</span></button>';
-  detailJob=job;
   sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
     '<h3 style="padding-right:44px">'+esc(job.title)+'</h3>'+
-    '<div class="jc-meta" style="margin-top:16px;gap:10px">'+rows+'</div>'+
-    (tags?'<div class="jc-tags" style="margin-top:14px">'+tags+'</div>':'')+
-    applyBtn+bmBtn;
+    '<div class="d-meta">'+rows+'</div>'+applyBtn+bmBtn;
   openModal();
 }
-var detailJob=null;
 function detailToggleSave(btn){
   var nowOn=toggleSaved(detailJob);
   btn.querySelector('.bi').innerHTML=nowOn?IC.bmF:IC.bm;
@@ -461,23 +478,23 @@ function detailToggleSave(btn){
 
 /* ───────── 예시(폴백) 일자리 — 크롤 피드가 비어도 항상 풍성하게 ───────── */
 var FALLBACK_JOBS=[
-  {id:'fb1',title:'노인복지관 사회복지 보조',company:'○○구 노인종합복지관',location:'우리 동네',pay:'월 180만 원',tags:['주 5일','초보 가능',{src:'복지관'}]},
-  {id:'fb2',title:'주야간보호센터 요양보호사',company:'햇살데이케어센터',location:'우리 동네',pay:'월 210만 원',tags:['자격증 소지','통근 가능',{src:'주야간보호'}]},
-  {id:'fb3',title:'재가 방문요양 보호사',company:'푸른재가노인복지센터',location:'우리 동네',pay:'시급 12,000원',tags:['원하는 시간','차량 우대',{src:'재가'}]},
-  {id:'fb4',title:'경로당 프로그램 도우미',company:'행복경로당',location:'우리 동네',pay:'월 90만 원',tags:['주 3일','경력 무관']},
-  {id:'fb5',title:'시니어 카페 바리스타',company:'실버다방',location:'우리 동네',pay:'시급 10,030원',tags:['교육 제공','초보 환영']},
-  {id:'fb6',title:'공원 환경 지킴이',company:'○○구청',location:'우리 동네',pay:'월 110만 원',tags:['오전 4시간','야외 근무']},
-  {id:'fb7',title:'초등학교 등하굣길 안전 지도',company:'○○초등학교',location:'우리 동네',pay:'월 80만 원',tags:['아침·오후','어린이 보호']},
-  {id:'fb8',title:'도서관 서가 정리 도우미',company:'구립도서관',location:'우리 동네',pay:'월 90만 원',tags:['주 3일','조용한 실내']}
+  {id:'fb1',title:'노인복지관 사회복지 보조',company:'○○구 노인종합복지관',location:'우리 동네',pay:'월 180만 원',empType:'계약직',career:'무관',source:'복지관'},
+  {id:'fb2',title:'주야간보호센터 요양보호사',company:'햇살데이케어센터',location:'우리 동네',pay:'월 210만 원',empType:'정규직',career:'자격증',source:'주야간보호'},
+  {id:'fb3',title:'재가 방문요양 보호사',company:'푸른재가노인복지센터',location:'우리 동네',pay:'시급 12,000원',empType:'파트타임',career:'자격증',source:'재가'},
+  {id:'fb4',title:'경로당 프로그램 도우미',company:'행복경로당',location:'우리 동네',pay:'월 90만 원',empType:'파트타임',career:'무관'},
+  {id:'fb5',title:'시니어 카페 바리스타',company:'실버다방',location:'우리 동네',pay:'시급 10,030원',empType:'파트타임',career:'무관'},
+  {id:'fb6',title:'공원 환경 지킴이',company:'○○구청',location:'우리 동네',pay:'월 110만 원',empType:'계약직',career:'무관'},
+  {id:'fb7',title:'초등학교 등하굣길 안전 지도',company:'○○초등학교',location:'우리 동네',pay:'월 80만 원',empType:'파트타임',career:'무관'},
+  {id:'fb8',title:'도서관 서가 정리 도우미',company:'구립도서관',location:'우리 동네',pay:'월 90만 원',empType:'계약직',career:'무관'}
 ];
 function feedToJob(j,i){
-  var tags=[];if(j.source)tags.push({src:j.source});if(j.closeDt)tags.push('마감 '+j.closeDt);if(j.career)tags.push(j.career);
   return {id:'feed_'+(j.url||j.title||i),title:j.title,company:j.company||j.org||'',
-    location:j.region||'',pay:j.sal||'',url:j.url||'',tags:tags};
+    location:j.region||'',url:j.url||'',source:j.source||'',
+    deadline:j.closeDt||'',period:j.period||'',empType:j.empType||'',career:j.career||'',mem:j.mem||''};
 }
 
 /* ───────── 실공고 로딩 ───────── */
-var allReal=[],realShown=10,realIsFallback=false;
+var allReal=[],realShown=12,realIsFallback=false;
 function renderReal(){
   var list=document.getElementById('realList');
   var arr=allReal.slice(0,realShown);
@@ -500,10 +517,10 @@ function loadReal(regionLabel,kw){
       allReal=FALLBACK_JOBS.slice();realIsFallback=true;
       sub.textContent='곧 우리 동네 실제 채용 소식으로 채워져요 (지금은 예시)';
     }
-    realShown=10;renderReal();
-  }).catch(function(){allReal=FALLBACK_JOBS.slice();realIsFallback=true;realShown=10;renderReal();});
+    realShown=12;renderReal();
+  }).catch(function(){allReal=FALLBACK_JOBS.slice();realIsFallback=true;realShown=12;renderReal();});
 }
-document.getElementById('realMore').onclick=function(){realShown+=10;renderReal();};
+document.getElementById('realMore').onclick=function(){realShown+=12;renderReal();};
 
 /* 지역 고르기 */
 var REGIONS=['서울','경기','인천','부산','대구','광주','대전','그 외'];

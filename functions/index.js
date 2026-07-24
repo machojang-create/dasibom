@@ -2070,13 +2070,18 @@ async function crawlBokji(params, maxPages) {
       const cat   = bokjiTag(seg, /class="type">([^<]+)/);
       const lis   = (seg.match(/<li>([\s\S]*?)<\/li>/g) || []).map((x) => x.replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim());
       const region  = lis[0] || '';
-      const empType = lis[1] || '';
+      const empType = lis[1] || '';   // 고용형태(정규/계약/파트타임 등)
+      const career  = lis[2] || '';   // 경력(무관/경력 등)
+      const mem     = bokjiTag(seg, /class="mem">([^<]+)</);   // 모집인원
+      // 모집기간(시작 ~ 종료) — <td class="date">2026-07-13 ~ 2026-07-27</td>
+      let period = bokjiTag(seg, /class="date">([\s\S]*?)<\/td>/);
+      period = period.replace(/\s+/g, ' ').trim();
       let closeDt = bokjiTag(seg, /class="finish">([^<]+)</);
       if (!closeDt && seg.indexOf('채용시까지') >= 0) closeDt = '채용시까지';
       if (!title) continue;
       out.push({
         source: '복지넷', src: 'bokji', id: 'bokji_' + id,
-        title, org, region, sido: jobSido(region), empType, closeDt,
+        title, org, region, sido: jobSido(region), empType, career, mem, period, closeDt,
         cat, url: 'https://www.bokji.net/job/off/01_01.bokji?ID=' + id
       });
     }
@@ -2191,8 +2196,9 @@ exports.jobSearch = functions
     jobs.sort((a, b) => (b.fetchedAt || 0) - (a.fetchedAt || 0));
     const total = jobs.length;
     jobs = jobs.slice(0, 80).map((j) => ({
-      title: j.title, org: j.org || '', company: j.org || '', sal: j.empType || '',
-      region: j.region || '', career: j.career || '', closeDt: j.closeDt || '',
+      title: j.title, org: j.org || '', company: j.org || '',
+      region: j.region || '', empType: j.empType || '', career: j.career || '',
+      mem: j.mem || '', period: j.period || '', closeDt: j.closeDt || '',
       url: j.url || '', source: j.source || ''
     }));
     if (!jobs.length) return { ok: false, reason: WORKNET_KEY ? 'empty' : 'nofeed' };
