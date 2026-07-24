@@ -309,7 +309,7 @@ export const ShopTab = React.memo(function ShopTab({
                             if (!ok) return;
                             setOwnedSkins?.(prev => Array.from(new Set([...prev, id])));
                             setTankSkin?.(id);
-                            showToast?.('물빛을 갈아입혔어요', sk.name + ' — 어항이 새로워졌어요!', '🖼️');
+                            // 구입 축하는 BuyCele가 담당(중복 토스트 제거, 2026-07-24)
                           });
                         }}
                         className={`w-full py-2 rounded-lg text-[12px] font-black transition-colors ${active ? 'bg-slate-800 text-white' : owned ? 'bg-teal-500 hover:bg-teal-600 text-white' : afford ? 'bg-blue-500 hover:bg-blue-600 text-white' : 'bg-slate-200 text-slate-400 opacity-70'}`}

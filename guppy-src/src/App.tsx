@@ -11,6 +11,8 @@ import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import { TANK_SKINS, LIGHT_PRESETS } from './tankSkins';
 import { mountButtonSfx } from './lib/sfx';
 import FoodBit from './components/FoodBit';
+import BuyCele, { Cele } from './components/BuyCele';
+import { buyInfo } from './buyInfo';
 
 /* 다시봄 꽃잎 브리지 — 잔액·차감은 서버 권위(dasibom-points.js가 페이지에서 제공) */
 const dsb = () => (window as any).DasibomPoints;
@@ -313,6 +315,9 @@ export default function App() {
 
   // ── 다시봄 꽃잎(서버 화폐): 특별 품종·장식 전용. 조개(내부 화폐)와 분리 ──
   const [petals, setPetals] = useState(0);
+  const petalsRef = useRef(0);
+  useEffect(() => { petalsRef.current = petals; }, [petals]);
+  const [cele, setCele] = useState<Cele | null>(null);   // 구입 축하 연출(2026-07-24)
   useEffect(() => {
     let tries = 0;
     const t = setInterval(() => {
@@ -341,6 +346,14 @@ export default function App() {
         showToast('꽃잎이 모자라요', '다른 콘텐츠를 즐기고 친구에게 공유하면 꽃잎이 모여요 🌸', '🌸');
         cb(false); return;
       }
+      // 구입 축하 연출(2026-07-24): 뭘 얻었나·얼마 썼나·다음 안내를 중앙에 친절하게.
+      // 차감액은 서버가 준 d.spent를 그대로 씀(클라 잔액 stale해도 정확).
+      const prev = petalsRef.current;
+      const spent = (typeof d.spent === 'number') ? d.spent
+        : (typeof prev === 'number' && prev >= d.balance) ? (prev - d.balance) : 0;
+      const info = buyInfo(item);
+      setToastMessage(null);   // '꽃잎 세는 중' 토스트 지우고 축하 연출로
+      setCele({ key: Date.now(), icon: info.icon, name: info.name, spent, balance: d.balance, tip: info.tip });
       setPetals(d.balance); cb(true);
     });
   }, []);
@@ -1162,6 +1175,9 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#eaf2f8] text-slate-800 flex flex-col p-1 sm:p-2 md:p-3 gap-1 sm:gap-2 tracking-tight font-sans font-medium pb-[78px]">
       
+      {/* 구입 축하 연출 — 봄이 등장(2026-07-24) */}
+      <BuyCele cele={cele} onClose={() => setCele(null)} />
+
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[100] animate-bounce">
