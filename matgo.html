@@ -97,7 +97,17 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 @keyframes bshake{25%{transform:translateY(1.5px)}55%{transform:translateY(-1px)}100%{transform:translateY(0)}}
 
 /* ── 바닥판 ── */
-.board{background:radial-gradient(circle at center,var(--felt),var(--felt-dark));border:6px solid #8A6A3A;border-radius:18px;padding:14px 10px;margin-top:10px;min-height:230px;position:relative}
+.board{background:var(--board-bg,radial-gradient(circle at center,var(--felt),var(--felt-dark)));border:6px solid #8A6A3A;border-radius:18px;padding:14px 10px;margin-top:10px;min-height:230px;position:relative}
+/* 승리 이펙트: 화면 위에서 흩날려 내려온다 */
+.winfx{position:fixed;inset:0;z-index:9995;pointer-events:none;overflow:hidden}
+.winfx span{position:absolute;top:-8%;animation:winfxFall linear forwards;will-change:transform,opacity}
+@keyframes winfxFall{0%{transform:translateY(-10vh) rotate(0);opacity:0}10%{opacity:1}100%{transform:translateY(112vh) rotate(320deg);opacity:.9}}
+/* 상점 섹션 */
+.shop-sec{font-weight:900;font-size:14px;color:var(--sage-deep);margin:14px 2px 8px;padding-bottom:4px;border-bottom:1.5px solid #E7E0CE}
+.shop-sec:first-child{margin-top:0}
+.shop-grid-inner{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.felt-thumb{width:100%;height:100%;border:5px solid #8A6A3A;border-radius:9px}
+.fx-thumb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(160deg,#FFF7E6,#FDE9BE)}
 .floor{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:flex-start;min-height:190px}
 .fslot{position:relative;width:var(--cw);height:var(--ch)}
 .fslot .card{position:absolute;top:0;left:0}
@@ -293,9 +303,9 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 <div class="mm-overlay" id="shopOverlay" onclick="if(event.target===this)this.classList.remove('on')">
   <div class="mm-box" style="max-width:440px">
     <div class="mm-title">🛍️ 화투 상점</div>
-    <div class="mm-body" style="margin-bottom:10px">카드 뒷면을 바꿔보세요.<br><span style="font-size:12.5px;color:var(--muted)">맞고를 이겨 모은 <b>🪙 코인</b>으로 살 수 있어요 · 한 번 사면 계속 내 것</span></div>
+    <div class="mm-body" style="margin-bottom:10px">카드 뒷면·바닥 테이블보·승리 이펙트를 꾸며보세요.<br><span style="font-size:12.5px;color:var(--muted)">맞고를 이겨 모은 <b>🪙 코인</b>으로 살 수 있어요 · 한 번 사면 계속 내 것</span></div>
     <div id="shopCoins" style="font-size:15px;font-weight:800;color:var(--sage-deep);margin-bottom:12px"></div>
-    <div id="shopGrid" class="shop-grid"></div>
+    <div id="shopGrid" style="max-height:58vh;overflow-y:auto;padding:2px"></div>
   </div>
 </div>
 
@@ -421,6 +431,11 @@ try{ var s=JSON.parse(localStorage.getItem('matgo_stats')); if(s) STATS=s; }catc
 if(STATS.xp==null) STATS.xp = STATS.points||0;
 if(!Array.isArray(STATS.ownedSkins)) STATS.ownedSkins = [];
 if(STATS.equippedSkin===undefined) STATS.equippedSkin = null;
+// 바닥 테이블보 · 승리 이펙트(2026-07-24) — 기본품은 공짜로 보유
+if(!Array.isArray(STATS.ownedFelts)) STATS.ownedFelts = ['basic'];
+if(STATS.equippedFelt===undefined) STATS.equippedFelt = 'basic';
+if(!Array.isArray(STATS.ownedFx)) STATS.ownedFx = ['none'];
+if(STATS.equippedFx===undefined) STATS.equippedFx = 'none';
 
 /* 뒷면 스킨 카탈로그 — 이미지는 코드 생성(scripts/gen_card_backs.js), 저작권 우리 것. 겜블 요소 없음(직접 구매). */
 var SKIN_COST = 500;
@@ -437,6 +452,48 @@ function applyCardBack(){
   var root=document.documentElement;
   if(STATS.equippedSkin) root.style.setProperty('--cardback', "url('"+skinUrl(STATS.equippedSkin)+"')");
   else root.style.removeProperty('--cardback');
+}
+
+/* ── 바닥 테이블보(판 배경) — 전부 CSS 생성, 이미지 자산 불필요 ── */
+var FELT_COST = 300;
+var FELTS = [
+  { id:'basic',  name:'초록 융단', free:true, css:'' },
+  { id:'indigo', name:'남빛 비단', css:'radial-gradient(circle at 50% 38%,#31507A,#16283F)' },
+  { id:'wine',   name:'홍목단',    css:'radial-gradient(circle at 50% 38%,#6E3040,#3C1622)' },
+  { id:'hanji',  name:'한지 미색', css:'radial-gradient(circle at 50% 38%,#EDE3C8,#CBBB92)' },
+  { id:'najeon', name:'자개 청록', css:'radial-gradient(circle at 50% 38%,#1F6560,#0B2E2C)' },
+  { id:'night',  name:'밤하늘',    css:'radial-gradient(circle at 50% 28%,#26324A,#0D1522)' }
+];
+function feltCss(id){ var f=FELTS.filter(function(x){return x.id===id;})[0]; return f&&f.css?f.css:''; }
+function applyFelt(){
+  var root=document.documentElement, c=feltCss(STATS.equippedFelt);
+  if(c) root.style.setProperty('--board-bg', c); else root.style.removeProperty('--board-bg');
+}
+
+/* ── 승리 이펙트 — 이길 때 화면에 흩날리는 연출. 전부 이모지+CSS ── */
+var FX_COST = 400;
+var WINFX = [
+  { id:'none',     name:'없음',       free:true, emoji:'🚫' },
+  { id:'petals',   name:'꽃잎 흩날림', emoji:'🌸', chars:['🌸','🌺','🌷'] },
+  { id:'confetti', name:'꽃가루 폭죽', emoji:'🎉', chars:['🎉','🎊','✨'] },
+  { id:'sparkle',  name:'색동 반짝',   emoji:'✨', chars:['✨','⭐','💫'] },
+  { id:'coins',    name:'황금 동전비', emoji:'🪙', chars:['🪙','💰','✨'] }
+];
+function playWinFx(){
+  var id=STATS.equippedFx; if(!id||id==='none') return;
+  var f=WINFX.filter(function(x){return x.id===id;})[0]; if(!f||!f.chars) return;
+  var layer=document.createElement('div'); layer.className='winfx';
+  for(var i=0;i<30;i++){
+    var s=document.createElement('span');
+    s.textContent=f.chars[i%f.chars.length];
+    s.style.left=(Math.random()*100)+'%';
+    s.style.animationDelay=(Math.random()*0.6)+'s';
+    s.style.animationDuration=(1.9+Math.random()*1.5)+'s';
+    s.style.fontSize=(16+Math.random()*22)+'px';
+    layer.appendChild(s);
+  }
+  document.body.appendChild(layer);
+  setTimeout(function(){ layer.remove(); }, 3800);
 }
 function saveStats(){
   try{ localStorage.setItem('matgo_stats',JSON.stringify(STATS)); }catch(e){}
@@ -1186,39 +1243,59 @@ function openTonePicker(){
   document.getElementById('toneOverlay').classList.add('on');
 }
 
-/* ── 화투 상점 ── */
+/* ── 화투 상점 (뒷면 · 테이블보 · 승리 이펙트 3섹션) ── */
+function shopBlock(title, items, cost, ownKey, eqKey, buyFn, equipFn, thumb){
+  var cards=items.map(function(it){
+    var owned=(STATS[ownKey]||[]).indexOf(it.id)>-1 || it.free;
+    var eq=STATS[eqKey]===it.id;
+    var btn;
+    if(eq) btn='<button class="shop-buy on" disabled>사용 중 ✓</button>';
+    else if(owned) btn='<button class="shop-buy equip" onclick="'+equipFn+'(\''+it.id+'\')">'+(it.free?'끄기/쓰기':'사용하기')+'</button>';
+    else { var can=STATS.points>=cost; btn='<button class="shop-buy buy" '+(can?'':'disabled')+' onclick="'+buyFn+'(\''+it.id+'\')">🪙 '+cost+'</button>'; }
+    return '<div class="shop-item"><div class="shop-thumb'+(eq?' on':'')+'">'+thumb(it)
+      +(owned&&!eq&&!it.free?'<span class="tick">보유</span>':'')+'</div>'
+      +'<div class="shop-name">'+it.name+'</div>'+btn+'</div>';
+  }).join('');
+  return '<div class="shop-sec">'+title+'</div><div class="shop-grid-inner">'+cards+'</div>';
+}
 function renderShop(){
   document.getElementById('shopCoins').textContent='🪙 '+STATS.points+' 코인';
-  var grid=document.getElementById('shopGrid');
-  grid.innerHTML=SKINS.map(function(s){
-    var owned=STATS.ownedSkins.indexOf(s.id)>-1;
-    var equipped=STATS.equippedSkin===s.id;
-    var btn;
-    if(equipped) btn='<button class="shop-buy on" disabled>사용 중 ✓</button>';
-    else if(owned) btn='<button class="shop-buy equip" onclick="equipSkin(\''+s.id+'\')">사용하기</button>';
-    else { var can=STATS.points>=SKIN_COST;
-      btn='<button class="shop-buy buy" '+(can?'':'disabled')+' onclick="buySkin(\''+s.id+'\')">🪙 '+SKIN_COST+'</button>'; }
-    return '<div class="shop-item">'
-      +'<div class="shop-thumb'+(equipped?' on':'')+'"><img src="'+skinUrl(s.id)+'" alt="'+s.name+'">'
-      +(owned&&!equipped?'<span class="tick">보유</span>':'')+'</div>'
-      +'<div class="shop-name">'+s.name+'</div>'+btn+'</div>';
-  }).join('');
+  var html='';
+  html+=shopBlock('🎴 카드 뒷면', SKINS, SKIN_COST, 'ownedSkins','equippedSkin','buySkin','equipSkin',
+    function(s){ return '<img src="'+skinUrl(s.id)+'" alt="'+s.name+'">'; });
+  html+=shopBlock('🟢 바닥 테이블보', FELTS, FELT_COST, 'ownedFelts','equippedFelt','buyFelt','equipFelt',
+    function(f){ return '<div class="felt-thumb" style="background:'+(f.css||'radial-gradient(circle at center,var(--felt),var(--felt-dark))')+'"></div>'; });
+  html+=shopBlock('🎆 승리 이펙트', WINFX, FX_COST, 'ownedFx','equippedFx','buyFx','equipFx',
+    function(x){ return '<div class="fx-thumb">'+x.emoji+'</div>'; });
+  document.getElementById('shopGrid').innerHTML=html;
 }
 function openShop(){ renderShop(); document.getElementById('shopOverlay').classList.add('on'); }
-function buySkin(id){
-  if(STATS.ownedSkins.indexOf(id)>-1) return;          // 이미 보유(중복 결제 방지)
-  if(STATS.points<SKIN_COST){ toast('코인이 조금 모자라요. 한 판 더 이겨볼까요?'); return; }
-  STATS.points-=SKIN_COST;                              // ★코인만 차감(xp·레벨 불변)
-  STATS.ownedSkins.push(id);
-  STATS.equippedSkin=id;                                // 사면 바로 장착
-  saveStats(); applyCardBack(); renderStats(); renderShop();
-  var s=SKINS.filter(function(x){return x.id===id;})[0];
-  toast('‘'+(s?s.name:'')+'’ 뒷면을 장착했어요! 🎴');
+
+// 공용 구매: 코인 차감 → 보유 등록 → 즉시 장착 → 저장/적용
+function genBuy(id, items, cost, ownKey, eqKey, applyFn){
+  if((STATS[ownKey]||[]).indexOf(id)>-1) return;       // 중복 결제 방지
+  if(STATS.points<cost){ toast('코인이 조금 모자라요. 한 판 더 이겨볼까요?'); return; }
+  STATS.points-=cost;                                   // ★코인만 차감(xp·레벨 불변)
+  STATS[ownKey]=(STATS[ownKey]||[]); STATS[ownKey].push(id);
+  STATS[eqKey]=id;
+  saveStats(); if(applyFn) applyFn(); renderStats(); renderShop();
+  var it=items.filter(function(x){return x.id===id;})[0];
+  toast('‘'+(it?it.name:'')+'’ 장착했어요! ✨');
 }
-function equipSkin(id){
-  if(STATS.ownedSkins.indexOf(id)<0) return;
-  STATS.equippedSkin=id; saveStats(); applyCardBack(); renderShop();
+function genEquip(id, ownKey, eqKey, applyFn){
+  if(!((STATS[ownKey]||[]).indexOf(id)>-1)){
+    // 공짜 기본품(basic/none)은 보유목록에 없어도 장착 허용
+    var free=(ownKey==='ownedFelts'&&id==='basic')||(ownKey==='ownedFx'&&id==='none');
+    if(!free) return;
+  }
+  STATS[eqKey]=id; saveStats(); if(applyFn) applyFn(); renderShop();
 }
+function buySkin(id){ genBuy(id, SKINS, SKIN_COST, 'ownedSkins','equippedSkin', applyCardBack); }
+function equipSkin(id){ genEquip(id, 'ownedSkins','equippedSkin', applyCardBack); }
+function buyFelt(id){ genBuy(id, FELTS, FELT_COST, 'ownedFelts','equippedFelt', applyFelt); }
+function equipFelt(id){ genEquip(id, 'ownedFelts','equippedFelt', applyFelt); }
+function buyFx(id){ genBuy(id, WINFX, FX_COST, 'ownedFx','equippedFx', null); if(id!=='none') playWinFx(); }   // 사면 바로 미리보기
+function equipFx(id){ genEquip(id, 'ownedFx','equippedFx', null); if(id!=='none') playWinFx(); }
 
 var _bomHideTimer=null, _bomLastAt=0, _bomLastPriority=0;
 // who='ai'(봄이가 함) → self 대사, who='me'(할배가 함) → user 대사. 생략 시 현재 턴 액터.
@@ -1702,6 +1779,7 @@ function endGame(winner){
   G.over=true; G.busy=true;
   sfx(winner==='me'?'win':winner==='ai'?'lose':'draw');
   bomSay(winner==='ai'?'win':winner==='me'?'lose':'draw','ai'); // 게임 결과는 봄이 관점 고정
+  if(winner==='me') playWinFx();   // 내가 이기면 장착한 승리 이펙트 재생
   if(winner===null){
     STATS.draws++; STATS.points+=1; STATS.xp+=1; saveStats(); // 참가 코인(+xp)
     modal('나가리', '둘 다 점수를 내지 못했어요.<span class="big">😅</span>무승부입니다!<br><span style="font-size:13px;color:var(--muted)">참가 포인트 +1P</span>',
@@ -1752,6 +1830,7 @@ document.getElementById('sndBtn').textContent=SND_ON?'🔊':'🔇';
 document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
 renderStats();
 applyCardBack();  // 저장된 장착 스킨을 카드 뒷면에 반영
+applyFelt();      // 저장된 바닥 테이블보 반영
 loadPremium();   // statsFB 정의 이후에 호출(위 주석 참고)
 showStartScreen();   // 자동 시작 대신 시작화면부터(2026-07-24) — [시작하기]를 눌러야 판이 열린다
 </script>
