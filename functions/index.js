@@ -2203,7 +2203,10 @@ async function fetchWorknetFeed() {
 }
 
 // ── 노인인력개발원 '노인일자리여기' 구인정보 — 진짜 시니어 본인 지원 일자리 ──────
-//   ⚠️ 응답 태그는 키 받은 뒤 첫 크롤 로그(senuri sample)로 실제 확인 후 확정(현재는 문서 기반 추정 태그).
+//   실제 응답 태그(2026-07-24 확정): recrtTitle=제목, oranNm=기관, workPlcNm=근무지,
+//     frDd~toDd=접수기간(YYYYMMDD), deadline=접수상태(접수중/마감), emplymShp=고용형태코드.
+function fmtYmd(s) { s = String(s || '').replace(/[^0-9]/g, ''); return s.length >= 8 ? s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6, 8) : ''; }
+const SENURI_EMP = { CM0101: '정규직', CM0102: '계약직', CM0103: '시간제', CM0104: '일용직', CM0201: '기타' };
 async function fetchSenuri() {
   if (!SENURI_KEY) return [];
   const out = [];
@@ -2212,20 +2215,20 @@ async function fetchSenuri() {
     try {
       const res = await _fetch(url);
       const xml = await res.text();
-      if (pg === 1) console.log('senuri sample:', xml.slice(0, 700));
       const items = xml.match(/<item>[\s\S]*?<\/item>/g) || [];
       if (!items.length) break;
       items.forEach((b) => {
         const t = (tag) => jobXmlTag(b, tag);
-        const title = t('recrtTitle') || t('wantedTitle'); if (!title) return;
-        const region = t('workPlcNm') || t('plDetAddr') || t('workAddr') || t('plbizNm');
+        const title = t('recrtTitle'); if (!title) return;
+        if (t('deadline') === '마감') return;   // 마감된 공고는 제외(접수중만)
+        const region = t('workPlcNm');
+        const fr = fmtYmd(t('frDd')), to = fmtYmd(t('toDd'));
         out.push({
           source: '노인일자리', src: 'senuri', id: 'senuri_' + (t('jobId') || title),
-          title, org: t('plbizNm') || t('acptOgdpNm') || t('workPlcNm') || '',
-          region, sido: jobSido(region),
-          empType: t('emplymShpNm') || t('emplymShp') || '', career: '', mem: t('reqCnt') || t('rcritNmpr') || '',
-          period: '', closeDt: t('deadline') || t('acptEndDt') || t('rcritEndDe') || '',
-          url: t('homepage') || 'https://www.seniorro.or.kr/'
+          title, org: t('oranNm') || '', region, sido: jobSido(region),
+          empType: SENURI_EMP[t('emplymShp')] || '', career: '', mem: '',
+          period: (fr && to) ? fr + ' ~ ' + to : '', closeDt: to || '',
+          url: 'https://www.seniorro.or.kr/'
         });
       });
     } catch (e) { break; }
