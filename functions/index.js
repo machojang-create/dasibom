@@ -2052,7 +2052,9 @@ async function crawlBokji(params, maxPages) {
     try {
       const res = await _fetch('https://www.bokji.net/job/off/01.bokji', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'DasibomJobsBot/1.0 (+https://dasibomlife.com; 시니어 채용정보 모음)' },
+        // ⚠️ 복지넷 WAF가 데이터센터(GCP) IP에서 봇 UA를 차단 → 빈 페이지(657ms·0건 원인, 2026-07-24 진단).
+        //    브라우저 UA로 해결(로컬 한국IP에선 봇UA도 통과했지만 GCP에선 필수). robots·하루주기 준수는 유지.
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36' },
         body: querystring.stringify(Object.assign({ PG: pg }, params))
       });
       html = await res.text();
