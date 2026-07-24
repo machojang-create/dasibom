@@ -40,13 +40,11 @@ html,body{width:100%;overflow-x:hidden}
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
 button{font-family:inherit;cursor:pointer}
 .app{max-width:480px;margin:0 auto;min-height:100vh;background:var(--cream);position:relative;box-shadow:0 0 40px rgba(120,90,50,.06)}
-/* 넓은 화면: 게시판을 와이드하게 — 일자리 목록이 2~3열로 더 많이 노출 */
+/* 넓은 화면: 앱 폭 확대 (일자리 2~3열 grid는 .jlist 정의 뒤 미디어쿼리로 — 순서상 뒤여야 flex를 이김) */
 @media(min-width:700px){
   .app{max-width:960px}
   .bnav-in{max-width:960px}
-  .jlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
 }
-@media(min-width:1040px){ .jlist{grid-template-columns:repeat(3,minmax(0,1fr))} }
 
 /* 상단바 (← 홈으로 / 제목) */
 .topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;
@@ -97,7 +95,10 @@ button{font-family:inherit;cursor:pointer}
 
 /* 일자리 카드 — 컴팩트(글씨 크기는 유지, 여백만 축소해 더 많이 노출) */
 .jlist{display:flex;flex-direction:column;gap:12px}
-.jcard{background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px 15px;box-shadow:0 2px 8px rgba(120,90,50,.05);
+/* 넓은 화면: 2~3열 grid (flex 정의 뒤에 와야 display:grid가 이김) */
+@media(min-width:700px){ .jlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px} }
+@media(min-width:1040px){ .jlist{grid-template-columns:repeat(3,minmax(0,1fr))} }
+.jcard{width:100%;min-width:0;background:#fff;border:1px solid var(--border);border-radius:16px;padding:14px 15px;box-shadow:0 2px 8px rgba(120,90,50,.05);
   position:relative;display:flex;flex-direction:column;gap:8px;height:100%}
 .jcard.clk{cursor:pointer}
 .jcard.clk:active{transform:scale(.995)}
