@@ -124,6 +124,8 @@ button{font-family:inherit;cursor:pointer}
 .d-row .d-co{font-size:calc(18px * var(--ts));font-weight:800;color:var(--sage)}
 .d-row b{font-weight:800;color:var(--ink)}
 .d-note{margin-top:18px;font-size:calc(14px * var(--ts));color:var(--ink2);background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:12px;padding:12px 14px;line-height:1.55}
+.d-desc{margin-top:14px;font-size:calc(15px * var(--ts));line-height:1.7;color:var(--ink2);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 15px;max-height:240px;overflow-y:auto}
+.applymini{display:block;text-align:center;margin-top:12px;font-size:calc(15px * var(--ts));font-weight:800;color:var(--sage);text-decoration:none;padding:12px}
 
 .morebtn{width:100%;padding:16px;margin-top:4px;font-size:calc(17px * var(--ts));font-weight:800;color:var(--sage);
   background:var(--chip);border:none;border-radius:14px;min-height:52px}
@@ -459,16 +461,36 @@ function openJobDetail(job){
   if(job.empType||job.career){var e=[job.empType,job.career?careerLabel(job.career):''].filter(Boolean).join(' · ');rows+='<div class="d-row"><span class="d-ic">💼</span><span>'+esc(e)+'</span></div>';}
   if(job.mem)rows+='<div class="d-row"><span class="d-ic">👥</span><span>모집 '+esc(job.mem)+'명</span></div>';
   if(job.source)rows+='<div class="d-row"><span class="d-ic">🔖</span><span>'+esc(job.source)+' 공고</span></div>';
-  var applyBtn=job.url
-    ? (( !job.pay ? '<p class="d-note">※ 급여·자격·근무시간 등 자세한 조건은 아래 「전체 공고」에서 확인하세요</p>' : '')
-       +'<button class="btn-primary" style="margin-top:16px" onclick="window.open(\''+esc(job.url)+'\',\'_blank\',\'noopener\')">📄 복지넷에서 전체 공고 보고 지원하기</button>')
-    : '<div style="margin-top:20px;background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:16px;padding:16px;font-size:calc(15px*var(--ts));line-height:1.6;color:var(--ink2)">이건 예시 공고예요. 곧 우리 동네 실제 채용 소식이 올라오면, 여기서 바로 전체 공고를 보고 지원할 수 있어요 🌷</div>';
+  // 액션 영역: 노인일자리(detailId)면 상세를 불러와 연락처·전화, 외부url이면 전체공고, 예시면 안내
+  var action;
+  if(job.detailId) action='<div id="dAction"><p class="d-note">📞 담당자 연락처와 상세 내용을 불러오는 중이에요…</p></div>';
+  else if(job.url) action='<div id="dAction"><button class="btn-primary" style="margin-top:16px" onclick="window.open(\''+esc(job.url)+'\',\'_blank\',\'noopener\')">📄 전체 공고 보고 지원하기</button></div>';
+  else action='<div id="dAction"><div class="d-note">이건 예시 공고예요. 실제 채용 소식이 올라오면, 여기서 상세 내용과 담당자 연락처를 보고 바로 지원할 수 있어요 🌷</div></div>';
   var bmBtn='<button class="me-btn" style="margin:14px 0 0;width:100%" onclick="detailToggleSave(this)">'+
     '<div class="l"><div class="bi pink">'+(saved?IC.bmF:IC.bm)+'</div><div><h4 id="dSaveLabel">'+(saved?'찜한 일자리 (눌러서 해제)':'이 일자리 찜해두기')+'</h4></div></div><span class="chev">♡</span></button>';
   sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
     '<h3 style="padding-right:44px">'+esc(job.title)+'</h3>'+
-    '<div class="d-meta">'+rows+'</div>'+applyBtn+bmBtn;
+    '<div class="d-meta">'+rows+'</div>'+action+bmBtn;
   openModal();
+  if(job.detailId) loadJobDetail(job);
+}
+function loadJobDetail(job){
+  callFn('jobDetail',{jobId:job.detailId}).then(function(r){
+    var el=document.getElementById('dAction'); if(!el) return;
+    var d=(r.data&&r.data.ok)?r.data.detail:null;
+    if(!d){ el.innerHTML='<div class="d-note">상세 내용을 지금은 불러올 수 없어요. 노인일자리여기(seniorro.or.kr)에서 「'+esc(job.title)+'」로 찾아보실 수 있어요.</div>'; return; }
+    var extra='';
+    if(d.age)extra+='<div class="d-row"><span class="d-ic">🎂</span><span>만 '+esc(d.age)+'세 이상 지원 가능</span></div>';
+    if(d.num)extra+='<div class="d-row"><span class="d-ic">👥</span><span>모집 '+esc(d.num)+'명</span></div>';
+    if(d.addr)extra+='<div class="d-row"><span class="d-ic">🏢</span><span>'+esc(d.addr)+'</span></div>';
+    var desc=d.desc?'<div class="d-desc">'+esc(d.desc).replace(/\n/g,'<br>')+'</div>':'';
+    var telNum=(d.tel||'').replace(/[^0-9+]/g,'');
+    var tel=telNum?'<a class="btn-primary" style="margin-top:18px;text-decoration:none" href="tel:'+esc(telNum)+'">📞 담당자에게 전화하기</a>'+
+      '<p style="text-align:center;margin-top:8px;font-size:calc(15px*var(--ts));color:var(--ink2)">'+(d.clerk?esc(d.clerk)+' · ':'')+esc(d.tel)+'</p>':'';
+    var home=d.homepage?'<a class="applymini" href="'+esc(d.homepage)+'" target="_blank" rel="noopener">사업장 홈페이지 열기 →</a>':'';
+    el.innerHTML=(extra?'<div class="d-meta" style="margin-top:12px">'+extra+'</div>':'')+desc+tel+home+
+      (telNum?'':'<div class="d-note" style="margin-top:14px">전화번호가 등록되지 않은 공고예요. 노인일자리여기(seniorro.or.kr)에서 확인해보세요.</div>');
+  }).catch(function(){ var el=document.getElementById('dAction'); if(el)el.innerHTML='<div class="d-note">상세 내용을 지금은 불러올 수 없어요. 잠시 뒤 다시 눌러주세요.</div>'; });
 }
 function detailToggleSave(btn){
   var nowOn=toggleSaved(detailJob);
@@ -490,8 +512,8 @@ var FALLBACK_JOBS=[
   {id:'fb10',title:'택배·물품 분류 도우미',company:'○○물류센터',location:'우리 동네',pay:'시급 11,000원',empType:'파트타임',career:'무관'}
 ];
 function feedToJob(j,i){
-  return {id:'feed_'+(j.url||j.title||i),title:j.title,company:j.company||j.org||'',
-    location:j.region||'',url:j.url||'',source:j.source||'',
+  return {id:'feed_'+(j.detailId||j.url||j.title||i),title:j.title,company:j.company||j.org||'',
+    location:j.region||'',url:j.url||'',source:j.source||'',detailId:j.detailId||'',
     deadline:j.closeDt||'',period:j.period||'',empType:j.empType||'',career:j.career||'',mem:j.mem||''};
 }
 

@@ -2225,16 +2225,43 @@ async function fetchSenuri() {
         const fr = fmtYmd(t('frDd')), to = fmtYmd(t('toDd'));
         out.push({
           source: '노인일자리', src: 'senuri', id: 'senuri_' + (t('jobId') || title),
+          detailId: t('jobId') || '',   // 상세 조회(jobDetail)용
           title, org: t('oranNm') || '', region, sido: jobSido(region),
           empType: SENURI_EMP[t('emplymShp')] || '', career: '', mem: '',
           period: (fr && to) ? fr + ' ~ ' + to : '', closeDt: to || '',
-          url: 'https://www.seniorro.or.kr/'
+          url: ''   // 딥링크 없음 → 앱 내 상세 시트에서 jobDetail로 상세·연락처 표시
         });
       });
     } catch (e) { break; }
   }
   return out;
 }
+
+// ── 노인일자리 공고 상세 — 화면에서 카드 열 때 호출(연락처·상세설명·모집인원 등) ──
+//   getJobInfo(id=jobId). 시니어에겐 지원 링크보다 '담당자 전화'가 실용적.
+exports.jobDetail = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 15, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) return { ok: false };
+    const jobId = String((data && data.jobId) || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 40);
+    if (!jobId || !SENURI_KEY) return { ok: false };
+    try {
+      const url = SENURI_URL.replace('getJobList', 'getJobInfo') + '?serviceKey=' + encodeURIComponent(SENURI_KEY) + '&id=' + jobId;
+      const res = await _fetch(url);
+      const xml = await res.text();
+      const b = (xml.match(/<item>[\s\S]*?<\/item>/) || [])[0] || '';
+      if (!b) return { ok: false };
+      const t = (tag) => jobXmlTag(b, tag);
+      const fr = fmtYmd(t('frAcptDd')), to = fmtYmd(t('toAcptDd'));
+      return { ok: true, detail: {
+        title: t('wantedTitle'), org: t('plbizNm'), addr: t('plDetAddr'),
+        clerk: t('clerk'), tel: t('clerkContt'), num: t('clltPrnnum'), age: t('age'),
+        desc: t('etcItm'), period: (fr && to) ? fr + ' ~ ' + to : '',
+        homepage: /^https?:\/\//.test(t('homepage')) ? t('homepage') : ''
+      } };
+    } catch (e) { return { ok: false }; }
+  });
 
 // ── 통합 검색 — 화면(jobs.html)이 호출 ────────────────────────────────────
 exports.jobSearch = functions
@@ -2266,7 +2293,7 @@ exports.jobSearch = functions
       title: j.title, org: j.org || '', company: j.org || '',
       region: j.region || '', empType: j.empType || '', career: j.career || '',
       mem: j.mem || '', period: j.period || '', closeDt: j.closeDt || '',
-      url: j.url || '', source: j.source || ''
+      url: j.url || '', source: j.source || '', detailId: j.detailId || '', src: j.src || ''
     }));
     if (!jobs.length) return { ok: false, reason: (SENURI_KEY || WORKNET_KEY) ? 'empty' : 'nokey' };
     return { ok: true, jobs, total, sources: [...new Set(jobs.map((j) => j.source).filter(Boolean))] };
