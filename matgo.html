@@ -40,6 +40,15 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .card.hand{width:var(--hw);height:var(--hh);cursor:pointer;transition:transform .14s}
 .card.hand.sel{transform:translateY(-14px);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft),0 8px 14px rgba(0,0,0,.3)}
 .card.back{background-image:var(--cardback,repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px));background-size:cover;background-position:center;border-color:#5A2020}
+/* 보너스패: 스프라이트 대신 커스텀 얼굴(봄이/로고)+피 라벨 (손패·바닥·획득·더미공개 공통) */
+.bcard{background-image:none !important;overflow:hidden;display:flex;flex-direction:column}
+.bcard2{background:linear-gradient(160deg,#FFF0F5,#FFD7E6);border-color:#F4A9C4}
+.bcard3{background:linear-gradient(160deg,#FFF9E8,#FFE7AE);border-color:#EAC96A}
+.bcard .bcard-logo{display:flex;align-items:center;justify-content:center;flex:1;padding-top:8%}
+.bcard .bcard-pi{text-align:center;font-weight:900;font-size:11px;color:#7A4B00;background:rgba(255,255,255,.7);border-radius:0 0 5px 5px;padding:1px 0;letter-spacing:-.02em}
+.bcard2 .bcard-pi{color:#B03060}
+.kj-toggle{margin-top:5px;border:1.5px dashed #C99A2E;background:#FFF7E4;color:#7A4B00;font-weight:800;font-size:12px;border-radius:11px;padding:5px 10px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.kj-toggle:active{opacity:.6}
 /* 짝이 있는 손패: 네온 테두리가 강하게 깜빡이며 둥실둥실 떠 있음 */
 .card.matchable::after{content:'';position:absolute;inset:-6px;border:4px solid #FFD54F;border-radius:11px;animation:mpulse .65s infinite alternate;pointer-events:none}
 .card.hand.matchable:not(.sel){animation:mfloat 1.3s ease-in-out infinite}
@@ -321,7 +330,8 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
    봄이와 맞고 — 2인(나 vs 봄이 AI)
    화투 이미지: sunduk/freegostop 오픈소스(상업적 사용 자유)
    룰: 표준 맞고 7점 기준. 흔들기·폭탄·뻑·쪽·따닥·싹쓸이·피박·광박·고박 포함.
-   단순화: 국진(9월 열끗)은 열끗 고정, 멍박·첫뻑 보너스 없음.
+   보너스패 2장(2피=봄이 얼굴, 3피=다시봄 로고): 손패·더미 모두 등장, 나오면 바로 내 피+한 번 더.
+   국진(9월 열끗)은 열끗↔쌍피 선택 가능(사람=토글, 봄이=유리한 쪽 자동).
    ═══════════════════════════════════════════════════════════════ */
 
 /* ── 카드 데이터 ──
@@ -348,6 +358,9 @@ function buildDeck(){
       deck.push({ month:m, type:def[0], tag:def[1]||null, col:col, id:m+'-'+col });
     });
   }
+  // 보너스패(2026-07-24 Macho): 2피=봄이 웃는 얼굴, 3피=다시봄 로고. month 0이라 어떤 달과도 안 맞고, 나오면 바로 내 피가 된다.
+  deck.push({ month:0, type:'BONUS', pi:2, tag:'bom',  col:0, id:'B2', bonus:true });
+  deck.push({ month:0, type:'BONUS', pi:3, tag:'logo', col:0, id:'B3', bonus:true });
   return deck;
 }
 /* 난수: 브라우저 암호학적 난수(crypto) 우선 — Math.random 편향 의심 원천 차단 */
@@ -366,10 +379,19 @@ function cardStyle(c){
   var x = (c.col/3)*100, y = (row/11)*100;
   return 'background-position:'+x+'% '+y+'%';
 }
+// 보너스패 로고(다시봄 꽃) — 3피 카드 얼굴
+var DSB_FLOWER='<svg viewBox="0 0 512 512" style="width:66%;height:66%"><defs><linearGradient id="bfP" x1="0" y1="0" x2="0.9" y2="1"><stop offset="0" stop-color="#FFD95E"/><stop offset="0.55" stop-color="#FFC531"/><stop offset="1" stop-color="#F5A800"/></linearGradient><linearGradient id="bfL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#AACD3E"/><stop offset="1" stop-color="#7FAF22"/></linearGradient></defs><path d="M 268 296 C 258 372 226 420 172 446" stroke="#5C9E31" stroke-width="15" fill="none" stroke-linecap="round"/><path d="M 266 382 C 300 344 356 338 384 356 C 370 398 306 416 266 382 Z" fill="url(#bfL)"/><g fill="url(#bfP)"><g transform="rotate(-9 256 232)"><path transform="translate(256 232)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/><path transform="translate(256 232) rotate(72)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/><path transform="translate(256 232) rotate(144)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/><path transform="translate(256 232) rotate(216)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/><path transform="translate(256 232) rotate(288)" d="M 0 -10 C -56 -38 -80 -100 -50 -138 C -34 -158 -14 -160 0 -148 C 14 -160 34 -158 50 -138 C 80 -100 56 -38 0 -10 Z"/></g></g></svg>';
+function bonusInner(c){
+  var art=(c.tag==='bom')
+    ? '<img src="/img/bom_smile.png" alt="봄이" style="width:80%;height:62%;object-fit:contain;margin:9% auto 0;display:block" onerror="this.style.display=\'none\'">'
+    : '<div class="bcard-logo">'+DSB_FLOWER+'</div>';
+  return art+'<div class="bcard-pi">+'+c.pi+'피</div>';
+}
 function cardEl(c, cls){
   var d=document.createElement('div');
-  d.className='card'+(cls?' '+cls:'');
-  d.style.cssText=cardStyle(c);
+  d.className='card'+(cls?' '+cls:'')+(c.bonus?' bcard bcard'+c.pi:'');
+  if(c.bonus){ d.innerHTML=bonusInner(c); }
+  else { d.style.cssText=cardStyle(c); }
   if(HIDE_IDS[c.id]) d.style.visibility='hidden';
   d.dataset.id=c.id;
   return d;
@@ -502,6 +524,25 @@ function startFromScreen(){
   document.getElementById('startOverlay').classList.remove('on');
   tryNewGame();
 }
+// ── 도중 이탈 경고(2026-07-24 Macho, 어뷰징 방지) : 질 것 같다고 몰래 나가는 걸 막는다.
+//    판 진행 중 홈으로/새로고침하면 '판은 사라지고 판수는 차감'을 알린다 ──
+function gameActive(){ var so=document.getElementById('startOverlay'); return !!(G && !G.over) && !(so && so.classList.contains('on')); }
+var _leaving=false;
+document.addEventListener('click', function(e){
+  if(_leaving || !gameActive()) return;
+  var home=e.target.closest && e.target.closest('.dbh-home');
+  if(!home) return;
+  e.preventDefault(); e.stopPropagation();
+  modal('정말 나가시겠어요?',
+    '지금 나가시면 <b>이 판은 사라지고</b>, 오늘 치신 판수(한 판)는 <b>그대로 차감</b>돼요.<span class="big">🌸</span>'+
+    '봄이랑 끝까지 쳐보는 건 어떠세요? 져도 괜찮아요, 재미로 치는 거니까요!',
+    [{label:'계속 칠래요', fn:function(){}},
+     {label:'그래도 나갈래요', sub:true, fn:function(){ _leaving=true; location.href='/?home=1'; }}]);
+}, true);
+window.addEventListener('beforeunload', function(e){
+  if(_leaving || !gameActive()) return;
+  e.preventDefault(); e.returnValue='';   // 새로고침·닫기 시 브라우저 기본 이탈 경고
+});
 // 프리미엄 여부 조회(비동기) — 10판째 이전에 도착하므로 게이트에 지장 없음.
 // ★반드시 statsFB 정의(_statsFbReady 초기화) 이후에 호출할 것 → 스크립트 맨 아래에서 실행.
 function loadPremium(){
@@ -703,8 +744,9 @@ function revealFlip(card, fromRect, cb){
   wrap.style.transition='transform .28s ease, width .28s ease, height .28s ease';
   var inner=document.createElement('div'); inner.className='rv-inner';
   var back=document.createElement('div'); back.className='rv-face rv-back';
-  var front=document.createElement('div'); front.className='rv-face rv-front';
-  front.style.cssText+=';'+cardStyle(card);
+  var front=document.createElement('div'); front.className='rv-face rv-front'+(card.bonus?' bcard bcard'+card.pi:'');
+  if(card.bonus){ front.style.backgroundImage='none'; front.innerHTML=bonusInner(card); }
+  else { front.style.cssText+=';'+cardStyle(card); }
   inner.appendChild(back); inner.appendChild(front); wrap.appendChild(inner);
   document.body.appendChild(wrap);
   requestAnimationFrame(function(){ requestAnimationFrame(function(){
@@ -747,6 +789,16 @@ function newGame(){
     for(var i2=0;i2<8;i2++) floor.push(deck.pop());
     tries++;
   }while(tries<12 && badDeal(me,ai,floor));
+
+  // 바닥에 보너스패가 깔리면 안 됨(어떤 달과도 안 맞음) → 더미의 일반패와 교체, 보너스는 더미 아래로
+  for(var fi=floor.length-1; fi>=0; fi--){
+    if(floor[fi].bonus){
+      var b=floor.splice(fi,1)[0];
+      var ri=deck.length-1; while(ri>=0 && deck[ri].bonus) ri--;
+      if(ri>=0) floor.push(deck.splice(ri,1)[0]);
+      deck.unshift(b);
+    }
+  }
 
   G={
     deck:deck,
@@ -829,12 +881,15 @@ function floorTake(month){
   var cards=G.floor[i].cards; G.floor.splice(i,1); return cards;
 }
 
-/* ── 점수 계산 ── */
-function calcScore(p){
+/* ── 점수 계산 ──
+   보너스패는 c.pi(2/3)만큼 피에 합산. 국진(9월 열끗)은 kjAsPi면 열끗에서 빼고 쌍피(+2피)로 계산. */
+function _score(p, kjAsPi){
   var kw=p.cap.filter(function(c){return c.type==='KWANG';});
-  var yl=p.cap.filter(function(c){return c.type==='YEOL';});
+  var ylAll=p.cap.filter(function(c){return c.type==='YEOL';});
+  var yl=kjAsPi?ylAll.filter(function(c){return c.tag!=='kukjin';}):ylAll;
   var tt=p.cap.filter(function(c){return c.type==='TTI';});
-  var piCnt=p.cap.reduce(function(n,c){return n+(c.type==='PI'?1:c.type==='SSANGPI'?2:0);},0);
+  var piCnt=p.cap.reduce(function(n,c){return n+(c.type==='PI'?1:c.type==='SSANGPI'?2:c.type==='BONUS'?(c.pi||0):0);},0);
+  if(kjAsPi && ylAll.some(function(c){return c.tag==='kukjin';})) piCnt+=2;
   var s=0, parts=[];
   // 광
   if(kw.length===5){ s+=15; parts.push(['오광',15]); }
@@ -857,6 +912,13 @@ function calcScore(p){
   if(piCnt>=10){ var v=piCnt-9; s+=v; parts.push(['피 '+piCnt+'장',v]); }
   return { score:s, parts:parts, kw:kw.length, yl:yl.length, tt:tt.length, pi:piCnt };
 }
+// 국진을 쌍피로 쓸지 판단: 사람=토글값(기본 열끗), 봄이=점수 유리한 쪽 자동
+function kukjinAsPi(p){
+  if(!p.cap.some(function(c){return c.type==='YEOL'&&c.tag==='kukjin';})) return false;
+  if(p===G.me) return !!p.kukjinPi;
+  return _score(p,true).score>_score(p,false).score;
+}
+function calcScore(p){ return _score(p, kukjinAsPi(p)); }
 
 /* ── 렌더 ── */
 function render(){
@@ -900,21 +962,38 @@ function capBadges(p){
   if(p.shake) out.push('<span style="color:var(--sage-deep);font-weight:800">흔듦×'+Math.pow(2,p.shake)+'</span>');
   return out.join(' · ');
 }
+var _isKukjin=function(c){return c.type==='YEOL'&&c.tag==='kukjin';};
+// 카드가 실제로 계산되는 그룹(국진 쌍피 선택·보너스 반영)
+function effGroup(c,kjPi){
+  if(c.type==='KWANG') return '광';
+  if(c.type==='TTI') return '띠';
+  if(c.type==='YEOL') return (kjPi&&_isKukjin(c))?'피':'열끗';
+  return '피'; // PI · SSANGPI · BONUS
+}
+function piVal(c){ return c.type==='SSANGPI'?2 : c.type==='BONUS'?(c.pi||0) : _isKukjin(c)?2 : 1; }
 function renderStrip(id,cap){
   var el=document.getElementById(id); el.innerHTML='';
+  var p=(id==='myStrip')?G.me:G.ai;
+  var kjPi=kukjinAsPi(p);
   // 실제 화투처럼 광 / 열끗 / 띠 / 피 그룹으로 모아서 정렬
-  var groups=[['광',['KWANG']],['열끗',['YEOL']],['띠',['TTI']],['피',['SSANGPI','PI']]];
-  groups.forEach(function(g){
-    var cards=cap.filter(function(c){return g[1].indexOf(c.type)>=0;});
+  ['광','열끗','띠','피'].forEach(function(gname){
+    var cards=cap.filter(function(c){return effGroup(c,kjPi)===gname;});
     if(!cards.length) return;
     var box=document.createElement('div'); box.className='cap-group';
     var lbl=document.createElement('span'); lbl.className='cap-lbl';
-    var n=(g[0]==='피')?cards.reduce(function(s,c){return s+(c.type==='SSANGPI'?2:1);},0):cards.length;
-    lbl.textContent=g[0]+' '+n;
+    var n=(gname==='피')?cards.reduce(function(s,c){return s+piVal(c);},0):cards.length;
+    lbl.textContent=gname+' '+n;
     box.appendChild(lbl);
     cards.sort(function(a,b){return a.month-b.month;}).forEach(function(c){ box.appendChild(cardEl(c)); });
     el.appendChild(box);
   });
+  // 국진 쌍피/열끗 선택(내 획득칸에 국진이 있을 때만) — 2026-07-24 Macho
+  if(id==='myStrip' && cap.some(_isKukjin)){
+    var t=document.createElement('button'); t.className='kj-toggle';
+    t.textContent=kjPi?'🃏 국진: 쌍피로 씀 (눌러서 열끗)':'🃏 국진: 열끗으로 씀 (눌러서 쌍피)';
+    t.onclick=function(){ G.me.kukjinPi=!G.me.kukjinPi; sfx('pick'); render(); };
+    el.appendChild(t);
+  }
 }
 function finalPreview(p,base){ return base; }
 function say(t){ document.getElementById('turnMsg').textContent=t; }
@@ -1249,7 +1328,39 @@ function slamAt(id){
   sfx('slap');
 }
 
+// 손패의 보너스패: 내려놓으면 바로 내 피가 되고, 더미에서 한 장 보충한 뒤 같은 사람이 이어서 한 번 더 낸다(표준)
+function playBonusFromHand(who,card){
+  G.busy=true; _actor=who; _bomSaidThisTurn=false;
+  var p=G[who==='me'?'me':'ai'];
+  sfx('pick');
+  var from=handRect(who,card.id);
+  p.hand.splice(p.hand.indexOf(card),1);
+  p.cap.push(card);
+  var repl=G.deck.pop();                       // 손패 보충(더미에서 1장)
+  if(repl){ p.hand.push(repl); if(who==='me') sortHand(p.hand); }
+  banner('보너스 +'+card.pi+'피!');
+  HIDE_IDS[card.id]=1;
+  if(repl && who==='me') HIDE_IDS[repl.id]=1;
+  render();
+  // 보너스 카드가 내 획득칸으로 날아감
+  var dest=(function(){ var el=document.querySelector((who==='me'?'#myStrip':'#oppStrip')+' .card[data-id="'+card.id+'"]'); return el?rectOf(el):stripRect(who); })();
+  flyClone(card, from, dest, 320, function(){ unhide(card.id); sfx('collect'); });
+  if(!_bomSaidThisTurn) bomSay('capture',who);
+  setTimeout(function(){
+    if(repl && who==='me') unhide(repl.id);
+    render();
+    // 손패가 바닥나면(더미도 없어 보충 못함) 턴 넘김/종료 판정
+    if(p.hand.length===0){
+      if(G.me.hand.length===0 && G.ai.hand.length===0){ endGame(null); return; }
+      nextTurn(who); return;
+    }
+    G.busy=false;
+    if(who==='me'){ say('보너스! 한 장 더 내주세요'); }
+    else { setTimeout(aiPlay,700); }
+  }, 560);
+}
 function playCard(who, card){
+  if(card.bonus){ playBonusFromHand(who,card); return; }
   G.busy=true;
   var p=G[who==='me'?'me':'ai'];
   sfx('pick');
@@ -1280,6 +1391,13 @@ function playCard(who, card){
       setTimeout(function(){
         // ── 더미 뒤집기: 판 중앙 공개(1.2초) 후 매칭 진행 ──
         var flip=G.deck.pop();
+        // 보너스패가 더미에서 나오면: 바로 내 피로 담고 한 장 더 뒤집는다(표준 룰)
+        while(flip && flip.bonus){
+          capture.push(flip);
+          animFrom[flip.id]=deckRect();   // 더미 자리에서 내 획득칸으로 날아가도록
+          banner('보너스 +'+flip.pi+'피!');
+          flip=G.deck.pop();
+        }
         if(!flip){ finishTurn(who,capture,steals,animFrom); return; }
         var dR=deckRect();
         toast((who==='me'?'':'봄이 · ')+'더미에서 '+flip.month+'월 패가 나왔어요');
@@ -1548,6 +1666,7 @@ function nextTurn(who){
 
 /* ── AI: 그리디 ── */
 function cardValue(c){
+  if(c.bonus) return 12;   // 보너스패는 공짜 피+한 번 더 → 늘 먼저 낸다
   if(c.type==='KWANG') return 10;
   if(c.type==='SSANGPI') return 6;
   if(c.type==='YEOL') return c.tag==='godori'?8:5;
@@ -1558,6 +1677,9 @@ function aiPlay(){
   if(G.over) return;
   var hand=G.ai.hand;
   if(!hand.length){ finishTurn('ai',[],0); return; }
+  // 보너스패가 있으면 무조건 먼저(공짜 피 + 한 번 더)
+  var bon=hand.find(function(c){return c.bonus;});
+  if(bon){ playCard('ai',bon); return; }
   var floorMonths={}; G.floor.forEach(function(f){floorMonths[f.month]=f.cards;});
   // 먹을 수 있는 패 중 가치 최고
   var best=null,bestV=-1;
