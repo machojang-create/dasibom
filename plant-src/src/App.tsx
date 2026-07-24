@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { UserPlant, PlantData, EncyclopediaEntry, WeatherType } from './types';
-import { PLANT_TYPES, STORY_EVENTS, GRADUATION_EMOTIONAL_PHRASES } from './data';
+import { PLANT_TYPES, POT_TYPES, STORY_EVENTS, GRADUATION_EMOTIONAL_PHRASES } from './data';
 import PlantView from './components/PlantView';
 import Shop from './components/Shop';
 import EncyclopediaView from './components/EncyclopediaView';
@@ -20,6 +20,8 @@ import { SPAM_DIALOGUES } from './data/dialogues_spam';
 import { mountButtonSfx, plipSfx, boingSfx } from './lib/sfx';
 import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import Petal from './components/Petal';
+import BuyCele, { Cele } from './components/BuyCele';
+import { plantBuyInfo } from './buyInfo';
 
 /* 다시봄 브리지: 페이지(플랫폼)가 얹어주는 꽃잎 API — 잔액·소비는 전부 서버 권위 */
 const dsb = () => (window as any).DasibomPoints;
@@ -266,8 +268,10 @@ export default function App() {
   const NO_PETAL_MSG = NO_PETAL_POOL[0];
 
   // ★결제 잠금: 서버 응답(1~3초) 전의 연타를 전부 무시 — 중복 결제 방지(2026-07-21 버그 수정)
+  const [cele, setCele] = useState<Cele | null>(null);   // 구입 축하 연출(2026-07-24)
   const spendBusyRef = useRef(false);
-  const guardedSpend = (item: string, cb: (err: any, d: any) => void) => {
+  // celeName: 상점 구매(씨앗·화분·자리)면 봄이 축하 카드를 띄운다. 물·영양제는 전용 연출이 있어 안 띄움.
+  const guardedSpend = (item: string, cb: (err: any, d: any) => void, celeName?: string) => {
     if (spendBusyRef.current) return false;
     const P = dsb(); if (!P) return false;
     spendBusyRef.current = true;
@@ -281,7 +285,14 @@ export default function App() {
     P.spend(item, (err: any, d: any) => {
       if (settled) return;
       settled = true; clearTimeout(safety);
-      spendBusyRef.current = false; cb(err, d);
+      spendBusyRef.current = false;
+      // 구입 축하 연출(2026-07-24) — 봄이 등장·차감액(서버 d.spent)·다음 안내
+      if (!err && d && d.ok && celeName) {
+        const info = plantBuyInfo(item, item === 'seed' ? celeName : undefined, item.indexOf('pot') === 0 ? celeName : undefined);
+        const spent = (typeof d.spent === 'number') ? d.spent : 0;
+        setCele({ key: Date.now(), icon: info.icon, name: info.name, spent, balance: d.balance, tip: info.tip });
+      }
+      cb(err, d);
     });
     return true;
   };
@@ -293,7 +304,7 @@ export default function App() {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance);
       setUnlockedSlots(idx + 1);
-    });
+    }, '자리');
     if (!firedSlot) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
@@ -315,7 +326,7 @@ export default function App() {
       setSlots(prev => { const ns = [...prev]; ns[slotIdx] = newPlant; return ns; });
       setIsShopOpen(false);
       setEncyclopedia(prev => prev.map(e => e.plantId === plant.id ? { ...e, discovered: true } : e));
-    });
+    }, plant.name);
     if (!firedSeed) { setIsShopOpen(false); plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
@@ -331,7 +342,7 @@ export default function App() {
       setMoney(d.balance);
       setSlots(prev => { const ns = [...prev]; ns[slotIdx] = { ...prev[slotIdx]!, potId }; return ns; });
       setIsPotShopOpen(false);
-    });
+    }, (POT_TYPES.find(p => p.id === potId)?.name || '새 화분'));
     if (!firedPot) { setIsPotShopOpen(false); plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
@@ -979,6 +990,7 @@ export default function App() {
         ))}
       </div>
 
+      <BuyCele cele={cele} onClose={() => setCele(null)} />
       <Shop isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} onBuySeed={buySeed} money={money} isSlotFull={currentPlant !== null} />
       <EncyclopediaView isOpen={isEncyclopediaOpen} onClose={() => setIsEncyclopediaOpen(false)} entries={encyclopedia} badges={badges} memorials={memorials} />
       <PotShopView isOpen={isPotShopOpen} onClose={() => setIsPotShopOpen(false)} onBuyPot={buyPot} money={money} isSlotEmpty={currentPlant === null} />
