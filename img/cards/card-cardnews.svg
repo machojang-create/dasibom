@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#BFE8CC"/><stop offset="1" stop-color="#7FCBA0"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.72" cy="0.28" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.35"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="card1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EBF7EF"/>
+    </linearGradient>
+    <linearGradient id="card2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0FAF4"/><stop offset="1" stop-color="#D8F0E3"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+  <ellipse cx="400" cy="408" rx="290" ry="22" fill="#2E5A3E" opacity="0.13"/>
+
+  <!-- 뒤쪽 카드 (살짝 기울임) -->
+  <g transform="translate(400 220) rotate(-8)">
+    <rect x="-130" y="-150" width="260" height="310" rx="20" fill="url(#card2)" stroke="#AADDBC" stroke-width="2" opacity="0.85"/>
+  </g>
+
+  <!-- 중간 카드 -->
+  <g transform="translate(400 220) rotate(-2)">
+    <rect x="-130" y="-150" width="260" height="310" rx="20" fill="url(#card1)" stroke="#C2E5CE" stroke-width="2"/>
+  </g>
+
+  <!-- 앞쪽 메인 카드 -->
+  <g transform="translate(400 215)">
+    <rect x="-130" y="-150" width="260" height="310" rx="20" fill="#FFFFFF" stroke="#B8DFC7" stroke-width="2"/>
+    <!-- 상단 컬러 바 -->
+    <rect x="-130" y="-150" width="260" height="52" rx="20" fill="#5C7A4A"/>
+    <rect x="-130" y="-118" width="260" height="20" fill="#5C7A4A"/>
+    <!-- 제목 줄 -->
+    <rect x="-90" y="-128" width="100" height="10" rx="5" fill="#ffffff" opacity="0.9"/>
+    <rect x="-90" y="-112" width="68" height="8" rx="4" fill="#ffffff" opacity="0.55"/>
+    <!-- 큰 숫자/스탯 -->
+    <text x="0" y="-34" text-anchor="middle" font-family="Georgia,serif" font-size="64" font-weight="bold" fill="#3F5A30" opacity="0.9">93%</text>
+    <!-- 구분선 -->
+    <rect x="-100" y="-4" width="200" height="2" rx="1" fill="#D0EBD8"/>
+    <!-- 텍스트 줄들 -->
+    <rect x="-90" y="12" width="180" height="9" rx="4" fill="#7AB88A" opacity="0.55"/>
+    <rect x="-90" y="30" width="140" height="9" rx="4" fill="#7AB88A" opacity="38"/>
+    <rect x="-90" y="48" width="160" height="9" rx="4" fill="#7AB88A" opacity="0.45"/>
+    <!-- 하단 CTA 버튼 -->
+    <rect x="-80" y="88" width="160" height="36" rx="18" fill="#5C7A4A"/>
+    <rect x="-40" y="100" width="80" height="12" rx="6" fill="#ffffff" opacity="0.85"/>
+    <!-- 페이지 도트 -->
+    <circle cx="-16" cy="144" r="5" fill="#5C7A4A"/>
+    <circle cx="0" cy="144" r="4" fill="#5C7A4A" opacity="0.35"/>
+    <circle cx="14" cy="144" r="4" fill="#5C7A4A" opacity="0.35"/>
+  </g>
+
+  <!-- 오른쪽 배지 -->
+  <g transform="translate(570 160)">
+    <rect x="-42" y="-22" width="84" height="44" rx="22" fill="#C9A961" opacity="0.92"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="bold" fill="#fff">18편</text>
+  </g>
+
+  <!-- 별 장식 -->
+  <path d="M 200 87 L 203.64 96.36 L 213 100 L 203.64 103.64 L 200 113 L 196.36 103.64 L 187 100 L 196.36 96.36 Z" fill="#ffffff" opacity="0.85"/>
+  <path d="M 620 330 L 622 336 L 628 338 L 622 340 L 620 346 L 618 340 L 612 338 L 618 336 Z" fill="#ffffff" opacity="0.6"/>
+</svg>
