@@ -464,6 +464,7 @@ body.shake{animation:bShake .35s}
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
+<script src="/dasibom-bomcheer.js?v=1" defer></script>
 <script src="/bom_tutorial.js?v=5" defer></script>
 <script>window.BOM_TUT={
   key:'game', face:'bom_fab.png', name:'오늘의 뇌 건강',
@@ -2054,6 +2055,13 @@ async function showFinalResult(){
     if(el)el.classList.toggle('tleg-active',k===tier);
   });
   showScreen('s-result');snd('finish');spawnCenter();updateHomeDots();renderHomeCal();
+  // 봄이 리액션(2026-07-24): 두뇌운동을 끝내면 봄이가 등장해 결과를 칭찬·낭독
+  try{ if(window.BomCheer){ var _gn=GAME_NAMES[_game]||_game;
+    var _cmsg = completed ? ('5단계를 모두 완주하셨어요! 오늘 머리 운동 아주 잘하셨어요 🎉')
+      : (pct>=60 ? (_gn+' '+pct+'점! 참 잘하셨어요, 내일 또 도전해요 😊')
+                 : ('오늘도 머리 운동 하셨으니 충분해요! 꾸준함이 최고예요 🌱'));
+    BomCheer.show({ title: completed?'완주 축하해요! 🏆':'수고하셨어요! 👏', msg:_cmsg, face:'bom_cheer.png', emoji: completed?'🏆':'👏' });
+  } }catch(e){}
 }
 
 // ── Calendar ──

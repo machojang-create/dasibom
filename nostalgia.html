@@ -494,6 +494,7 @@ body{
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
+<script src="/dasibom-bomcheer.js?v=1" defer></script>
 <script src="/bom_tutorial.js?v=5" defer></script>
 <script>window.BOM_TUT={
   key:'nostalgia', face:'bom_grin.png', name:'그때 그 시절',
@@ -955,6 +956,10 @@ document.addEventListener('DOMContentLoaded', function(){
       +'<br>'+esc(quiz.explain)
       +(restored?'':'<br><span style="font-size:13px;color:#9A8456">내일 아침, 새 퀴즈가 찾아옵니다 🌅</span>');
     r.classList.add('show');
+    // 봄이 리액션(2026-07-24): 오늘 처음 정답을 맞히면 봄이가 등장해 칭찬·낭독(복원 표시는 제외)
+    if(correct && !restored){
+      try{ if(window.BomCheer) BomCheer.show({title:'딩동댕! 정답이에요 🌸', msg:'참 잘 기억하고 계시네요! 내일도 새 퀴즈로 만나요.', face:'bom_cheer.png', emoji:'🌸'}); }catch(e){}
+    }
   }
 
   function imgBlock(src, era, icon, prompt){
