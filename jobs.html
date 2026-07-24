@@ -511,8 +511,9 @@ function loadJobDetail(job){
     var tel=telNum?'<a class="btn-primary" style="margin-top:18px;text-decoration:none" href="tel:'+esc(telNum)+'">📞 담당자에게 전화하기</a>'+
       '<p style="text-align:center;margin-top:8px;font-size:calc(15px*var(--ts));color:var(--ink2)">'+(d.clerk?esc(d.clerk)+' · ':'')+esc(d.tel)+'</p>':'';
     var home=d.homepage?'<a class="applymini" href="'+esc(d.homepage)+'" target="_blank" rel="noopener">사업장 홈페이지 열기 →</a>':'';
-    el.innerHTML=(extra?'<div class="d-meta" style="margin-top:12px">'+extra+'</div>':'')+desc+tel+home+
-      (telNum?'':'<div class="d-note" style="margin-top:14px">전화번호가 등록되지 않은 공고예요. 노인일자리여기(seniorro.or.kr)에서 확인해보세요.</div>');
+    var senuriLink='<a class="applymini" href="https://www.seniorro.or.kr/noin/searchJob.do" target="_blank" rel="noopener">📋 노인일자리여기에서 공고 찾기 →</a>';
+    el.innerHTML=(extra?'<div class="d-meta" style="margin-top:12px">'+extra+'</div>':'')+desc+tel+senuriLink+home+
+      (telNum?'':'<div class="d-note" style="margin-top:14px">전화번호가 등록되지 않은 공고예요. 아래 노인일자리여기에서 확인해보세요.</div>');
   }).catch(function(){ var el=document.getElementById('dAction'); if(el)el.innerHTML='<div class="d-note">상세 내용을 지금은 불러올 수 없어요. 잠시 뒤 다시 눌러주세요.</div>'; });
 }
 function detailToggleSave(btn){
