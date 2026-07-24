@@ -115,6 +115,7 @@ button{font-family:inherit;cursor:pointer}
 .jc-chips{display:flex;flex-wrap:wrap;gap:6px}
 .jc-chip{font-size:calc(13.5px * var(--ts));font-weight:700;color:var(--ink2);background:var(--chip);padding:4px 10px;border-radius:8px;white-space:nowrap}
 .jc-chip.pay{color:#B5651D;background:#FBF0E2;font-weight:800}
+.jc-chip.age{color:#B0568A;background:#FBEAF3;font-weight:800}
 .jc-chip.src{color:#2E7D32;background:#EAF6EB;font-weight:800}
 .jc-apply{margin-top:auto;padding-top:2px;font-size:calc(14px * var(--ts));font-weight:800;color:var(--sage)}
 /* 상세 시트 정보 행 */
@@ -438,10 +439,11 @@ function careerLabel(c){return c==='무관'?'경력무관':c;}
 function jobChips(job){
   var c='';
   if(job.pay)c+=chip('💰 '+job.pay,'pay');
+  if(job.age)c+=chip('🎂 '+job.age+'세 이상','age');
   if(job.deadline)c+=chip(job.deadline==='채용시까지'?'📅 상시모집':'📅 ~'+job.deadline);
   if(job.empType)c+=chip(job.empType);
   if(job.career)c+=chip(careerLabel(job.career));
-  if(job.mem)c+=chip('👥 '+job.mem+'명');
+  if(job.mem)c+=chip('👥 '+job.mem+'명 모집');
   if(job.tags)job.tags.forEach(function(t){if(typeof t==='string')c+=chip(t);});
   if(job.source)c+=chip(job.source,'src');
   return c;
@@ -535,7 +537,7 @@ var FALLBACK_JOBS=[
 function feedToJob(j,i){
   return {id:'feed_'+(j.detailId||j.url||j.title||i),title:j.title,company:j.company||j.org||'',
     location:j.region||'',url:j.url||'',source:j.source||'',detailId:j.detailId||'',
-    deadline:j.closeDt||'',period:j.period||'',empType:j.empType||'',career:j.career||'',mem:j.mem||''};
+    deadline:j.closeDt||'',period:j.period||'',empType:j.empType||'',career:j.career||'',age:j.age||'',mem:j.mem||''};
 }
 
 /* ───────── 실공고 로딩 ───────── */

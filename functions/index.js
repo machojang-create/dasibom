@@ -2207,6 +2207,24 @@ async function fetchWorknetFeed() {
 //     frDd~toDd=접수기간(YYYYMMDD), deadline=접수상태(접수중/마감), emplymShp=고용형태코드.
 function fmtYmd(s) { s = String(s || '').replace(/[^0-9]/g, ''); return s.length >= 8 ? s.slice(0, 4) + '-' + s.slice(4, 6) + '-' + s.slice(6, 8) : ''; }
 const SENURI_EMP = { CM0101: '정규직', CM0102: '계약직', CM0103: '시간제', CM0104: '일용직', CM0201: '기타' };
+// 동시성 제한 실행(상세 API 대량 호출 시 과부하 방지)
+async function mapLimit(arr, limit, fn) {
+  let i = 0;
+  const workers = Array(Math.min(limit, arr.length)).fill(0).map(async () => {
+    while (i < arr.length) { const idx = i++; try { await fn(arr[idx]); } catch (e) {} }
+  });
+  await Promise.all(workers);
+}
+// 노인일자리 상세(모집연령·인원) — 크롤 보강용 경량 조회
+async function senuriDetailLite(jobId) {
+  try {
+    const url = SENURI_URL.replace('getJobList', 'getJobInfo') + '?serviceKey=' + encodeURIComponent(SENURI_KEY) + '&id=' + jobId;
+    const xml = await (await _fetch(url)).text();
+    const b = (xml.match(/<item>[\s\S]*?<\/item>/) || [])[0] || '';
+    if (!b) return {};
+    return { age: jobXmlTag(b, 'age'), num: jobXmlTag(b, 'clltPrnnum') };
+  } catch (e) { return {}; }
+}
 async function fetchSenuri() {
   if (!SENURI_KEY) return [];
   const out = [];
@@ -2227,13 +2245,20 @@ async function fetchSenuri() {
           source: '노인일자리', src: 'senuri', id: 'senuri_' + (t('jobId') || title),
           detailId: t('jobId') || '',   // 상세 조회(jobDetail)용
           title, org: t('oranNm') || '', region, sido: jobSido(region),
-          empType: SENURI_EMP[t('emplymShp')] || '', career: '', mem: '',
+          empType: SENURI_EMP[t('emplymShp')] || '', career: '', age: '', mem: '',
           period: (fr && to) ? fr + ' ~ ' + to : '', closeDt: to || '',
           url: ''   // 딥링크 없음 → 앱 내 상세 시트에서 jobDetail로 상세·연락처 표시
         });
       });
     } catch (e) { break; }
   }
+  // 상세 보강: 각 공고의 모집연령·인원을 카드에도 노출(동시성 8로 과부하 방지)
+  await mapLimit(out, 8, async (job) => {
+    if (!job.detailId) return;
+    const d = await senuriDetailLite(job.detailId);
+    if (d.age) job.age = d.age;
+    if (d.num) job.mem = d.num;
+  });
   return out;
 }
 
@@ -2292,7 +2317,7 @@ exports.jobSearch = functions
     jobs = jobs.slice(0, 80).map((j) => ({
       title: j.title, org: j.org || '', company: j.org || '',
       region: j.region || '', empType: j.empType || '', career: j.career || '',
-      mem: j.mem || '', period: j.period || '', closeDt: j.closeDt || '',
+      age: j.age || '', mem: j.mem || '', period: j.period || '', closeDt: j.closeDt || '',
       url: j.url || '', source: j.source || '', detailId: j.detailId || '', src: j.src || ''
     }));
     if (!jobs.length) return { ok: false, reason: (SENURI_KEY || WORKNET_KEY) ? 'empty' : 'nokey' };
