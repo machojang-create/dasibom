@@ -128,6 +128,17 @@ button{font-family:inherit;cursor:pointer}
 .d-note{margin-top:18px;font-size:calc(14px * var(--ts));color:var(--ink2);background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:12px;padding:12px 14px;line-height:1.55}
 .d-desc{margin-top:14px;font-size:calc(15px * var(--ts));line-height:1.7;color:var(--ink2);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 15px;max-height:240px;overflow-y:auto}
 .applymini{display:block;text-align:center;margin-top:12px;font-size:calc(15px * var(--ts));font-weight:800;color:var(--sage);text-decoration:none;padding:12px}
+/* 시니어 일자리 사이트 허브 */
+.hubgrid{display:flex;flex-direction:column;gap:12px}
+@media(min-width:700px){ .hubgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px} }
+.hubcard{display:flex;gap:14px;align-items:flex-start;background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;text-decoration:none;box-shadow:0 2px 8px rgba(120,90,50,.05)}
+.hubcard:active{transform:scale(.995)}
+.hubicon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:27px;flex-shrink:0}
+.h1 .hubicon{background:#EDF1E8}.h2 .hubicon{background:#E9EEF3}.h3 .hubicon{background:#EAF3EC}.h4 .hubicon{background:#FBEAF3}.h5 .hubicon{background:#FBF0E2}.h6 .hubicon{background:#E8F3EA}
+.hubtxt{min-width:0}
+.hubtxt h3{font-size:calc(17px * var(--ts));font-weight:800;color:var(--ink);line-height:1.35}
+.hubtxt p{margin-top:5px;font-size:calc(14.5px * var(--ts));line-height:1.55;color:var(--ink2);word-break:keep-all}
+.hubgo{display:inline-block;margin-top:9px;font-size:calc(14px * var(--ts));font-weight:800;color:var(--sage)}
 
 .morebtn{width:100%;padding:16px;margin-top:4px;font-size:calc(17px * var(--ts));font-weight:800;color:var(--sage);
   background:var(--chip);border:none;border-radius:14px;min-height:52px}
@@ -287,6 +298,39 @@ button{font-family:inherit;cursor:pointer}
           <button class="btn-primary" id="findBtn">나에게 딱 맞는 일자리 찾기 →</button>
           <div class="aires" id="aires"></div>
         </div>
+      </div>
+
+      <!-- 시니어 일자리 사이트 허브 -->
+      <div class="sec" style="padding-top:2px">
+        <div class="sec-h"><h2><span class="dot">●</span> 이런 곳에서도 찾아보세요</h2></div>
+        <p style="font-size:calc(15px * var(--ts));color:var(--muted);margin:-6px 0 14px">봄이가 믿을 만한 시니어 일자리 사이트만 모았어요. 눌러서 둘러보세요 🌷</p>
+        <div class="hubgrid">
+          <a class="hubcard h1" href="https://www.seniorro.or.kr/noin/main.do" target="_blank" rel="noopener">
+            <div class="hubicon">🧓</div>
+            <div class="hubtxt"><h3>노인일자리여기</h3><p>나라가 운영하는 대표 사이트. 어르신 맞춤 일자리를 동네별로 찾고 신청까지.</p><span class="hubgo">바로가기 →</span></div>
+          </a>
+          <a class="hubcard h2" href="https://www.work.go.kr/senior/main/main.do" target="_blank" rel="noopener">
+            <div class="hubicon">🧭</div>
+            <div class="hubtxt"><h3>워크넷 중장년</h3><p>전국 중장년·고령자 채용을 한눈에. 경비·미화부터 사무·기술직까지.</p><span class="hubgo">바로가기 →</span></div>
+          </a>
+          <a class="hubcard h3" href="https://www.50plus.or.kr/" target="_blank" rel="noopener">
+            <div class="hubicon">🌿</div>
+            <div class="hubtxt"><h3>서울시50플러스</h3><p>서울 사시는 50+라면 여기. 일자리·교육·상담을 한 곳에서.</p><span class="hubgo">바로가기 →</span></div>
+          </a>
+          <a class="hubcard h4" href="https://www.bokji.net/job/off/01.bokji" target="_blank" rel="noopener">
+            <div class="hubicon">🤝</div>
+            <div class="hubtxt"><h3>복지넷 채용</h3><p>복지관·요양시설의 돌봄·복지 일자리를 찾으실 때.</p><span class="hubgo">바로가기 →</span></div>
+          </a>
+          <a class="hubcard h5" href="https://www.kordi.or.kr/" target="_blank" rel="noopener">
+            <div class="hubicon">🏛️</div>
+            <div class="hubtxt"><h3>한국노인인력개발원</h3><p>노인일자리 사업(공익활동·사회서비스형 등) 안내와 신청 정보.</p><span class="hubgo">바로가기 →</span></div>
+          </a>
+          <a class="hubcard h6" href="https://www.work24.go.kr/" target="_blank" rel="noopener">
+            <div class="hubicon">💼</div>
+            <div class="hubtxt"><h3>고용24</h3><p>정부 통합 취업 포털. 채용부터 직업훈련·실업급여까지 한 번에.</p><span class="hubgo">바로가기 →</span></div>
+          </a>
+        </div>
+        <p style="text-align:center;font-size:calc(13px * var(--ts));color:var(--muted);margin-top:16px">각 사이트는 새 창으로 열려요. 문의는 공고의 담당자에게 직접 전화하시면 가장 빨라요 ☎️</p>
       </div>
     </section>
 
