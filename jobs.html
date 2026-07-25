@@ -128,6 +128,14 @@ button{font-family:inherit;cursor:pointer}
 .d-note{margin-top:18px;font-size:calc(14px * var(--ts));color:var(--ink2);background:var(--amber-bg);border:1px solid #EBDCB2;border-radius:12px;padding:12px 14px;line-height:1.55}
 .d-desc{margin-top:14px;font-size:calc(15px * var(--ts));line-height:1.7;color:var(--ink2);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 15px;max-height:240px;overflow-y:auto}
 .applymini{display:block;text-align:center;margin-top:12px;font-size:calc(15px * var(--ts));font-weight:800;color:var(--sage);text-decoration:none;padding:12px}
+/* 노인일자리여기 강조 버튼 (상세시트 최상단 액션) */
+.btn-jobsite{display:block;text-align:center;margin-top:18px;padding:17px;border-radius:16px;background:#C96A55;color:#fff;
+  font-size:calc(17px * var(--ts));font-weight:800;text-decoration:none;box-shadow:0 8px 18px -8px rgba(201,106,85,.6)}
+.btn-jobsite:active{transform:scale(.98)}
+/* 자기소개서 작성법 항목 */
+.rstep b{display:block;font-size:calc(16.5px * var(--ts));font-weight:800;color:var(--ink);margin-bottom:5px}
+.rstep span{display:block;font-size:calc(15px * var(--ts));line-height:1.6;color:var(--ink2)}
+.rex{margin-top:8px;font-size:calc(14.5px * var(--ts));line-height:1.55;color:var(--sage-d);background:#EDF1E8;border-radius:10px;padding:9px 12px}
 /* 시니어 일자리 사이트 허브 */
 .hubgrid{display:flex;flex-direction:column;gap:12px}
 @media(min-width:700px){ .hubgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px} }
@@ -378,9 +386,9 @@ button{font-family:inherit;cursor:pointer}
         <button class="gcard g3" data-guide="g3">
           <div class="gthumb">✍️</div>
           <div class="gbody"><span class="gtag">합격을 부르는 한 장</span>
-            <h3>내 이야기를 담으면<br>이력서가 살아나요</h3>
-            <p class="gd">빈칸만 채우면 완성되는 이력서 틀을 준비했어요. 수십 년 경험을 자랑스럽게 담아보세요.</p>
-            <span class="gopen">빈칸 채우기 틀 열기 →</span></div>
+            <h3>자기소개서,<br>이렇게 쓰면 돼요</h3>
+            <p class="gd">항목별 작성법과 예시 문장, 그대로 쓰는 양식까지. 대괄호만 내 이야기로 바꾸면 완성돼요.</p>
+            <span class="gopen">작성법·양식 보기 →</span></div>
         </button>
       </div>
     </section>
@@ -407,14 +415,14 @@ button{font-family:inherit;cursor:pointer}
           <div><h4>찜한 일자리 보관함</h4><div class="sub" id="savedSub">관심 있는 공고 0건</div></div></div>
         <span class="chev">›</span>
       </button>
-      <button class="me-btn" id="consultBtn">
-        <div class="l"><div class="bi sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div>
-          <div><h4>취업 상담 신청하기</h4><div class="sub">전화번호만 남기면 상담사가 연락드려요</div></div></div>
+      <button class="me-btn" id="siteHubBtn">
+        <div class="l"><div class="bi sage"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/></svg></div>
+          <div><h4>시니어 일자리 사이트 모음</h4><div class="sub">노인일자리여기·워크넷 등 믿을 만한 곳 바로가기</div></div></div>
         <span class="chev">›</span>
       </button>
       <button class="me-btn" id="resumeBtn">
         <div class="l"><div class="bi blue"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
-          <div><h4>이력서 자기소개 만들기</h4><div class="sub">빈칸만 채우면 자기소개가 완성돼요</div></div></div>
+          <div><h4>이력서·자기소개서 도움말</h4><div class="sub">쓰는 법과 예시 문장으로 차근차근</div></div></div>
         <span class="chev">›</span>
       </button>
     </section>
@@ -555,9 +563,10 @@ function loadJobDetail(job){
     var tel=telNum?'<a class="btn-primary" style="margin-top:18px;text-decoration:none" href="tel:'+esc(telNum)+'">📞 담당자에게 전화하기</a>'+
       '<p style="text-align:center;margin-top:8px;font-size:calc(15px*var(--ts));color:var(--ink2)">'+(d.clerk?esc(d.clerk)+' · ':'')+esc(d.tel)+'</p>':'';
     var home=d.homepage?'<a class="applymini" href="'+esc(d.homepage)+'" target="_blank" rel="noopener">사업장 홈페이지 열기 →</a>':'';
-    var senuriLink='<a class="applymini" href="https://www.seniorro.or.kr/noin/searchJob.do" target="_blank" rel="noopener">📋 노인일자리여기에서 공고 찾기 →</a>';
-    el.innerHTML=(extra?'<div class="d-meta" style="margin-top:12px">'+extra+'</div>':'')+desc+tel+senuriLink+home+
-      (telNum?'':'<div class="d-note" style="margin-top:14px">전화번호가 등록되지 않은 공고예요. 아래 노인일자리여기에서 확인해보세요.</div>');
+    var senuriLink='<a class="btn-jobsite" href="https://www.seniorro.or.kr/noin/searchJob.do" target="_blank" rel="noopener">📋 노인일자리여기에서 공고 보기</a>'+
+      '<p style="text-align:center;margin-top:8px;font-size:calc(13px*var(--ts));color:var(--muted)">이 공고의 원문·지원방법을 확인할 수 있어요</p>';
+    el.innerHTML=(extra?'<div class="d-meta" style="margin-top:12px">'+extra+'</div>':'')+desc+senuriLink+tel+home+
+      (telNum?'':'<div class="d-note" style="margin-top:14px">전화번호가 등록되지 않은 공고예요. 위 「노인일자리여기에서 공고 보기」로 확인해보세요.</div>');
   }).catch(function(){ var el=document.getElementById('dAction'); if(el)el.innerHTML='<div class="d-note">상세 내용을 지금은 불러올 수 없어요. 잠시 뒤 다시 눌러주세요.</div>'; });
 }
 function detailToggleSave(btn){
@@ -737,40 +746,73 @@ renderQ();
 
 /* ───────── 가이드 모달 ───────── */
 var GUIDES={
- g1:{t:'🎓 배움 비용, 나라가 냅니다',steps:[
-  ['내일배움카드 만들기','가까운 고용센터에 가시거나, 자녀분과 함께 HRD-Net 누리집에서 신청하세요. 만드는 데 돈이 들지 않아요.'],
-  ['배우고 싶은 과정 고르기','요양보호사, 바리스타, 조경 관리… 300만~500만 원까지 나라가 내드려요.'],
-  ['수업 듣고 수료하기','출석만 잘 하셔도 됩니다. 수료하면 취업 연계까지 도와드려요.']]},
- g2:{t:'🏅 지금 따기 좋은 자격증',steps:[
-  ['요양보호사 (준비 3개월)','시니어 채용 1순위. 교육원 수업만 이수하면 시험 자격이 생겨요.'],
-  ['숲해설가·산림치유사 (준비 4개월)','자연을 좋아하신다면 딱. 국립공원·수목원에서 일해요.'],
-  ['버섯·화훼 재배 기능사 (준비 6개월)','귀농·텃밭 창업으로 이어지는 인기 자격이에요.'],
-  ['공인중개사 (준비 1년)','시간이 걸리지만 평생 현역으로 일할 수 있어요.']]}};
+ g1:{t:'🎓 배움 비용, 나라가 냅니다 — 내일배움카드',
+  intro:'국민내일배움카드 하나면 <b>5년간 훈련비를 기본 300만 원, 조건에 따라 최대 500만 원</b>까지 나라가 내드려요. 요양보호사·조리·바리스타·전기·지게차 등 원하는 걸 배워 새 일에 도전할 수 있어요.',
+  steps:[
+   ['누가 받을 수 있나요?','만 15세 이상이면 대부분 발급돼요. (일부 대기업 고소득자 등만 제한) 은퇴하셨어도 문제없습니다. 고용24에서 발급 가능 여부를 먼저 조회할 수 있어요.'],
+   ['어떻게 신청하나요?','고용24(work24.go.kr)에서 온라인으로 하거나, 가까운 고용센터에 방문하세요. 자녀분과 함께 하시면 더 쉬워요. 카드 만드는 데는 돈이 들지 않아요.'],
+   ['무엇을 배울 수 있나요?','요양보호사, 조리, 바리스타, 전기, 지게차·굴착기, 컴퓨터 등 수백 가지. 취업이 잘 되는 과정 위주로 고르시는 게 좋아요.'],
+   ['비용은 얼마나 드나요?','훈련비 대부분을 나라가 내고, 과정에 따라 15~55% 정도만 본인 부담이에요. 저소득층·국민취업지원 대상자는 전액 무료 과정도 많습니다.'],
+   ['수료하면요?','출석만 잘 하시면 됩니다. 수료 후엔 자격증 시험 응시나 취업 연계까지 이어져요.']],
+  links:[{n:'고용24에서 내일배움카드 신청',u:'https://www.work24.go.kr/hr/'},{n:'발급 안내 자세히 보기',u:'https://www.work24.go.kr/hr/h/a/1100/selectIssuGudn.do'}]},
+ g2:{t:'🏅 지금 따기 좋은 자격증',
+  intro:'시니어 채용이 활발한 자격증만 골랐어요. 대부분 <b>내일배움카드로 거의 무료로</b> 배울 수 있고, <b>나이 제한이 없습니다</b>.',
+  steps:[
+   ['요양보호사 · 준비 2~3개월','시니어 채용 1순위예요. 교육원에서 320시간 과정을 이수하면 시험 자격이 생겨요. 요양원·주야간보호센터·방문요양 등 일자리가 아주 많고, 내일배움카드 지원도 됩니다.'],
+   ['지게차·굴착기 운전기능사 · 준비 1~2개월','물류창고·건설현장에서 꾸준히 필요해요. 필기와 실기로 비교적 빨리 딸 수 있습니다.'],
+   ['조리기능사·바리스타 · 준비 2~3개월','학교·복지관 급식이나 시니어 카페에서 일해요. 오랜 손맛과 정성이 그대로 자산이 됩니다.'],
+   ['숲해설가·산림치유지도사 · 준비 3~6개월','자연을 좋아하신다면 딱이에요. 국립공원·수목원·휴양림에서 일합니다.'],
+   ['전기기능사 · 준비 5~6개월','시간은 걸리지만 안정적이고 오래 일할 수 있는 기술직이에요.'],
+   ['공인중개사 · 준비 약 1년','준비 기간은 길지만, 자격을 따면 평생 현역으로 일할 수 있어요.']],
+  links:[{n:'내일배움카드로 배우기(고용24)',u:'https://www.work24.go.kr/hr/'},{n:'자격증 정보 · 원서접수(Q-Net)',u:'https://www.q-net.or.kr/'}]}};
 var modal=document.getElementById('modal'),sheet=document.getElementById('sheet');
 function openModal(){modal.classList.add('on');}
 function closeModal(){modal.classList.remove('on');}
 modal.onclick=function(e){if(e.target===modal)closeModal();};
 document.querySelectorAll('.gcard').forEach(function(c){
   c.onclick=function(){var id=c.dataset.guide;if(id==='g3'){openResume();return;}
-    var g=GUIDES[id];sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button><h3>'+g.t+'</h3>'+
-      g.steps.map(function(s,i){return '<div class="step"><span class="stepno">'+(i+1)+'</span><div class="sx"><b>'+s[0]+'</b><span>'+s[1]+'</span></div></div>';}).join('');
+    var g=GUIDES[id];
+    var steps=g.steps.map(function(s,i){return '<div class="step"><span class="stepno">'+(i+1)+'</span><div class="sx"><b>'+s[0]+'</b><span>'+s[1]+'</span></div></div>';}).join('');
+    var links=(g.links||[]).map(function(l,i){return i===0
+      ? '<a class="btn-primary" style="margin-top:14px;text-decoration:none" href="'+l.u+'" target="_blank" rel="noopener">'+esc(l.n)+' →</a>'
+      : '<a class="applymini" href="'+l.u+'" target="_blank" rel="noopener">'+esc(l.n)+' →</a>';}).join('');
+    sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button><h3>'+g.t+'</h3>'+
+      (g.intro?'<div class="d-note" style="margin-top:12px">'+g.intro+'</div>':'')+
+      '<div style="margin-top:18px;display:flex;flex-direction:column;gap:15px">'+steps+'</div>'+links;
     openModal();};
 });
 
-/* ───────── 이력서 템플릿 ───────── */
+/* ───────── 자기소개서 도움말 (작성법 + 예시 + 그대로 쓰는 양식) ───────── */
+var RESUME_SAMPLE=
+'안녕하십니까. [지원하는 일] 자리에 지원한 [본인 이름]입니다.\n\n'+
+'저는 [○○에서 ○년간 무슨 일]을 해왔습니다. 오랜 세월 [사람을 대하며 / 꼼꼼히 일하며 / 기술을 익히며] 쌓은 경험이 저의 가장 큰 자산입니다.\n\n'+
+'저의 가장 큰 강점은 성실함입니다. 오랫동안 지각이나 결근 없이 맡은 일을 해왔고, 지금도 매일 건강을 챙기고 있어 몸이 튼튼합니다. 한 번 맡은 일은 끝까지 책임지는 것을 원칙으로 삼아 왔습니다.\n\n'+
+'비록 저에게 새로운 분야일 수 있지만, 그동안의 경험과 성실함이 분명 도움이 되리라 믿습니다. 나이가 많다고 뒤처지지 않도록, 배우는 자세로 누구보다 열심히 일하겠습니다.\n\n'+
+'감사합니다.';
 function openResume(){
-  sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button><h3>✍️ 빈칸만 채우면 완성되는 이력서</h3>'+
-   '<div class="field"><label>내가 오래 해온 일</label><textarea id="r1" rows="2" placeholder="예: OO은행에서 20년간 창구 업무를 맡았습니다"></textarea></div>'+
-   '<div class="field"><label>내가 제일 잘하는 것</label><textarea id="r2" rows="2" placeholder="예: 처음 온 손님도 단골로 만드는 친절함"></textarea></div>'+
-   '<div class="field"><label>새 일터에서 하고 싶은 것</label><textarea id="r3" rows="2" placeholder="예: 오랜 경험으로 손님들을 편안하게 맞이하고 싶습니다"></textarea></div>'+
-   '<button class="btn-primary" style="margin-top:18px" onclick="copyResume()">📋 완성된 자기소개 복사하기</button>'+
-   '<p class="msg" id="rmsg" style="color:var(--sage)">복사됐어요! 지원서에 붙여넣으세요 ✅</p>';
+  var items=[
+   ['① 첫인사와 지원 동기','왜 이 일을 하고 싶은지 한두 문장이면 충분해요. 지원하는 회사·일에 맞춰서 쓰세요.','예) 평생 사람을 대하는 일을 해와서, 어르신을 돕는 이 일이 저와 꼭 맞다고 생각해 지원했습니다.'],
+   ['② 나의 경력 — 구체적으로','무슨 일을 몇 년 했는지 숫자를 넣어 쓰세요. 숫자가 들어가면 훨씬 믿음이 갑니다.','예) ○○은행에서 20년간 창구에서 하루 100명 넘는 손님을 응대했습니다.'],
+   ['③ 나의 강점 — 성실·건강','성실함·책임감·건강은 시니어의 가장 큰 무기예요. 이걸 꼭 담으세요.','예) 20년간 지각·결근이 거의 없었고, 지금도 매일 아침 운동으로 건강을 지킵니다.'],
+   ['④ 각오 — 배우는 자세','새 일터에서 어떻게 일할지 겸손하게. 짧게 마무리하세요.','예) 새로운 일이지만 배우는 자세로 누구보다 성실히 임하겠습니다.']
+  ];
+  var guide=items.map(function(s){return '<div class="rstep"><b>'+s[0]+'</b><span>'+s[1]+'</span><div class="rex">'+esc(s[2])+'</div></div>';}).join('');
+  sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
+   '<h3>✍️ 자기소개서, 이렇게 쓰면 돼요</h3>'+
+   '<div class="d-note" style="margin-top:12px">시니어 자기소개서는 길 필요 없어요. <b>A4 반 장이면 충분</b>합니다. 화려한 말보다 <b>구체적인 경력·숫자</b>와 <b>성실함·건강</b>을 담는 게 핵심이에요.</div>'+
+   '<div style="margin-top:18px;display:flex;flex-direction:column;gap:16px">'+guide+'</div>'+
+   '<p style="margin-top:24px;font-weight:800;font-size:calc(16.5px * var(--ts));color:var(--ink)">📄 이 양식을 그대로 쓰세요</p>'+
+   '<p style="margin-top:4px;font-size:calc(14px * var(--ts));color:var(--ink2)">대괄호 [ ] 안만 내 이야기로 바꾸면 자기소개서가 완성됩니다.</p>'+
+   '<div class="d-desc" id="rsample" style="white-space:pre-wrap;margin-top:10px;max-height:none">'+esc(RESUME_SAMPLE)+'</div>'+
+   '<button class="btn-primary" style="margin-top:16px" onclick="copyResume()">📋 이 양식 복사하기</button>'+
+   '<p class="msg" id="rmsg" style="color:var(--sage)">복사됐어요! 붙여넣고 대괄호[ ] 부분만 고치면 돼요 ✅</p>';
   openModal();
 }
-function copyResume(){var v=function(i){return (document.getElementById(i).value.trim()||'(빈칸)');};
-  var text='[나의 경력]\n'+v('r1')+'\n\n[나의 강점]\n'+v('r2')+'\n\n[포부]\n'+v('r3');
-  (navigator.clipboard?navigator.clipboard.writeText(text):Promise.reject()).catch(function(){});
-  document.getElementById('rmsg').classList.add('on');}
+function copyResume(){
+  var t=(document.getElementById('rsample')||{}).textContent||RESUME_SAMPLE;
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).catch(function(){});
+  var m=document.getElementById('rmsg');if(m)m.classList.add('on');
+}
 
 /* ───────── 내 정보: 찜한 보관함 / 상담 ───────── */
 document.getElementById('savedBtn').onclick=function(){
@@ -781,39 +823,11 @@ document.getElementById('savedBtn').onclick=function(){
   bindCards(sheet);openModal();
 };
 document.getElementById('resumeBtn').onclick=openResume;
-document.getElementById('consultBtn').onclick=function(){openConsult('');};
-
-function openConsult(jobTitle){
-  sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
-   '<h3>📞 취업 상담 신청</h3>'+
-   '<p style="margin-top:10px;font-size:calc(16px * var(--ts));line-height:1.7;color:var(--ink2)">'+
-   (jobTitle?'「'+esc(jobTitle)+'」 자리가 궁금하시군요! ':'')+'번호만 남겨주시면 상담사가 직접 전화드릴게요.</p>'+
-   '<div class="field"><label>성함</label><textarea id="cName" rows="1" placeholder="예: 김순자"></textarea></div>'+
-   '<div class="field"><label>전화번호</label><textarea id="cPhone" rows="1" placeholder="예: 010-1234-5678" inputmode="tel"></textarea></div>'+
-   '<button class="btn-primary" style="margin-top:18px" onclick="submitConsult(\''+esc(jobTitle).replace(/'/g,'')+'\')">☎️ 전화 기다릴게요</button>'+
-   '<p style="margin-top:12px;text-align:center;font-size:calc(13px * var(--ts));color:var(--muted)">번호는 상담 연락에만 쓰고, 끝나면 바로 지워드려요.</p>'+
-   '<p class="msg" id="cMsg"></p>';
-  openModal();
-}
-function submitConsult(jobTitle){
-  var name=document.getElementById('cName').value.trim();
-  var phone=document.getElementById('cPhone').value.trim().replace(/[^0-9\-]/g,'');
-  var msg=document.getElementById('cMsg');
-  if(!name){msg.style.color='#c0392b';msg.textContent='성함을 살짝 적어주세요 🙂';msg.classList.add('on');return;}
-  if(phone.replace(/\D/g,'').length<9){msg.style.color='#c0392b';msg.textContent='전화번호를 한 번만 확인해 주세요 ☎️';msg.classList.add('on');return;}
-  msg.style.color='var(--sage)';msg.textContent='접수하고 있어요…';msg.classList.add('on');
-  ensureAuth().then(function(u){
-    return firebase.firestore().collection('job_consults').add({
-      uid:u.uid,name:name.slice(0,20),phone:phone.slice(0,20),
-      jobTitle:String(jobTitle||'').slice(0,80),career:(document.getElementById('career').value||'').slice(0,60),
-      region:pickedRegion,createdAt:firebase.firestore.FieldValue.serverTimestamp()});
-  }).then(function(){
-    sheet.innerHTML='<button class="close" onclick="closeModal()">✕</button>'+
-     '<div style="text-align:center;padding:26px 0 10px"><div style="font-size:54px">🌷</div>'+
-     '<h3 style="margin-top:14px;padding:0">접수됐어요, '+esc(name)+' 님!</h3>'+
-     '<p style="margin-top:12px;font-size:calc(16px * var(--ts));line-height:1.8;color:var(--ink2)">상담사가 곧 전화드릴 거예요.<br>모르는 번호여도 한 번만 받아봐 주세요 ☎️</p></div>';
-  }).catch(function(){msg.style.color='#c0392b';msg.textContent='지금은 접수가 어려워요. 잠시 뒤 다시 눌러주세요 🙏';});
-}
+// 시니어 일자리 사이트 모음 → 일자리 탭 하단 허브로 이동
+document.getElementById('siteHubBtn').onclick=function(){
+  document.querySelector('[data-tab="tab-jobs"]').click();
+  setTimeout(function(){var h=document.querySelector('.hubgrid');if(h)h.scrollIntoView({behavior:'smooth',block:'start'});},250);
+};
 function renderSaved(){updateSavedCount();}
 
 /* ───────── 시작 ───────── */
