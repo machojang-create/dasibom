@@ -398,17 +398,18 @@ export default function App() {
     });
   };
 
-  const applyEffect = (type: 'water' | 'normal_nut' | 'premium_nut') => {
-    // 돌봄 연출·효과음은 setSlots 업데이터 밖에서(2026-07-23 재수정): 업데이터 안 중첩 setState는
-    // 프로덕션에서 이중호출·누락 위험 → 영양제 연출이 안 뜨던 원인. 여기서 최상위로 호출.
-    if (type === 'water') {
-      setCareFx({ slot: currentSlotIndex, kind: 'water', key: Date.now() });
-      [0, 160, 340].forEach((ms) => setTimeout(plipSfx, ms));
-    } else {
-      setCareFx({ slot: currentSlotIndex, kind: 'nutrient', key: Date.now() });
-      boingSfx();
-    }
+  // 돌봄 연출·효과음(표정+물방울/주사기)을 탭 즉시 부를 수 있게 분리(2026-07-25 Macho: "영양제 연출 아직도 안나와").
+  // 원인: 영양제는 서버 결제 성공을 기다린 뒤에야 연출을 냈는데, 앱을 막 열어 인증(소셜은 복원 2~4초) 전에
+  // 누르면 결제가 늦어/실패해 연출이 통째로 누락됐다. 이제 탭 순간 이걸 먼저 내고, 성장·차감은 결제 성공 시 적용.
+  const triggerCareFx = (kind: 'water' | 'nutrient') => {
+    setCareFx({ slot: currentSlotIndex, kind, key: Date.now() });
+    if (kind === 'water') { [0, 160, 340].forEach((ms) => setTimeout(plipSfx, ms)); }
+    else { boingSfx(); }
     lastUserSpeakRef.current = Date.now();
+  };
+  const applyEffect = (type: 'water' | 'normal_nut' | 'premium_nut', skipFx?: boolean) => {
+    if (!skipFx) triggerCareFx(type === 'water' ? 'water' : 'nutrient');
+    else lastUserSpeakRef.current = Date.now();
 
     setSlots(prev => {
       const targetPlant = prev[currentSlotIndex];
@@ -485,10 +486,11 @@ export default function App() {
       }
     }
     if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
+    triggerCareFx('nutrient');   // ★탭 즉시 주사기·기운 연출(인증·결제 경합과 무관하게 늘 보이게, 2026-07-25 Macho)
     const firedNut = guardedSpend(type, (err: any, d: any) => {
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance);
-      applyEffect(type);
+      applyEffect(type, true);   // 연출은 이미 냈으니 성장·차감만
     });
     if (!firedNut) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
