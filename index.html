@@ -1938,8 +1938,8 @@
   <div class="wrap"><div id="dsbPointsCard"></div>
     <!-- 📱 홈 화면 앱 추가(2026-07-22 Macho) — 설치형처럼 바탕화면 아이콘 만들기 -->
     <div id="dsbInstallCard" style="display:none;margin-top:14px;background:#fff;border:2px solid #E2E9E0;border-radius:20px;padding:18px 20px;text-align:center;box-shadow:0 10px 26px -18px rgba(0,0,0,.25)">
-      <div style="font-size:17px;font-weight:800;color:#1F2A1A;margin-bottom:4px">📱 다시봄을 폰 화면에 놓아드릴까요?</div>
-      <div style="font-size:13.5px;color:#7a8a72;font-weight:600;margin-bottom:12px">바탕화면 아이콘을 누르면 앱처럼 바로 열려요</div>
+      <div id="dsbInstallTitle" style="font-size:17px;font-weight:800;color:#1F2A1A;margin-bottom:4px">📱 다시봄을 폰 화면에 놓아드릴까요?</div>
+      <div id="dsbInstallSub" style="font-size:13.5px;color:#7a8a72;font-weight:600;margin-bottom:12px">아이콘을 누르면 앱처럼 바로 열려요</div>
       <button id="dsbInstallBtn" style="border:none;border-radius:50px;padding:13px 26px;font-size:15px;font-weight:900;color:#fff;background:linear-gradient(145deg,#13d3a6,#0e9d7d);cursor:pointer;box-shadow:0 10px 22px -10px rgba(14,157,125,.55)">홈 화면에 추가하기</button>
       <div id="dsbInstallHow" style="display:none;margin-top:12px;font-size:14px;color:#4a5a44;font-weight:700;line-height:1.7;background:#F1F7F0;border-radius:14px;padding:12px"></div>
     </div>
@@ -1947,21 +1947,49 @@
   <script>
   (function(){
     var card=document.getElementById('dsbInstallCard'), btn=document.getElementById('dsbInstallBtn'), how=document.getElementById('dsbInstallHow');
+    var titleEl=document.getElementById('dsbInstallTitle'), subEl=document.getElementById('dsbInstallSub');
     // 이미 앱으로 설치돼 열렸으면 안 보여줌
     if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return;
     if (navigator.standalone) return;
+
+    // 기기·브라우저 판별 — 안내 문구를 각 기기에 딱 맞게(2026-07-25 Macho: 데스크탑엔 '홈 화면에 추가'가 없음)
+    var ua=navigator.userAgent;
+    var isIOS=/iPhone|iPad|iPod/.test(ua) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+    var isAndroid=/Android/.test(ua);
+    var isMobile=isIOS || isAndroid || /Mobile/.test(ua);
+    var isEdge=/Edg\//.test(ua), isChrome=/Chrome\//.test(ua) && !isEdge, isFirefox=/Firefox\//.test(ua), isSafari=/Safari\//.test(ua) && !isChrome && !isEdge;
+
+    // 제목·부제·버튼 문구를 기기에 맞게
+    if (!isMobile) {
+      titleEl.innerHTML='🖥️ 다시봄을 바탕화면 앱으로 설치할까요?';
+      subEl.textContent='설치하면 앱처럼 창으로 바로 열려요';
+      btn.textContent='앱으로 설치하기';
+    } else {
+      titleEl.innerHTML='📱 다시봄을 폰 화면에 놓아드릴까요?';
+      subEl.textContent='아이콘을 누르면 앱처럼 바로 열려요';
+      btn.textContent='홈 화면에 추가하기';
+    }
     card.style.display='block';
+
     var deferred=null;
     window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; });
-    btn.addEventListener('click', function(){
-      if (deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; }); return; }
-      var ua=navigator.userAgent;
+
+    function manualGuide(){
       how.style.display='block';
-      if (/iPhone|iPad/.test(ua)) {
-        how.innerHTML='아이폰은 이렇게 해요:<br>① 아래 <b>공유 버튼(네모+화살표)</b>을 누르고<br>② <b>"홈 화면에 추가"</b>를 누르면 끝!';
+      if (isIOS) {
+        how.innerHTML='아이폰·아이패드는 이렇게 해요:<br>① 아래 <b>공유 버튼(⬆️ 네모+화살표)</b>을 누르고<br>② <b>“홈 화면에 추가”</b>를 누르면 끝!';
+      } else if (isAndroid) {
+        how.innerHTML='안드로이드 폰은 이렇게 해요:<br>브라우저 오른쪽 위 <b>⋮ 메뉴</b> → <b>“앱 설치”</b>(또는 “홈 화면에 추가”)를 눌러 주세요.';
+      } else if (isFirefox) {
+        how.innerHTML='이 브라우저는 앱 설치를 지원하지 않아요.<br><b>크롬·엣지</b>로 다시봄을 열면 바탕화면 앱으로 설치할 수 있어요.';
       } else {
-        how.innerHTML='브라우저 오른쪽 위 <b>⋮ 메뉴</b>를 누르고<br><b>"홈 화면에 추가"</b> 또는 <b>"앱 설치"</b>를 눌러 주세요.';
+        // 데스크탑 크롬·엣지
+        how.innerHTML='컴퓨터는 이렇게 해요:<br>주소창 <b>오른쪽 끝의 설치 아이콘(⊕ 모니터 모양)</b>을 누르거나,<br>오른쪽 위 <b>⋮ 메뉴 → “다시봄 설치”(앱 설치)</b>를 눌러 주세요.';
       }
+    }
+    btn.addEventListener('click', function(){
+      if (deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; }); return; }  // 설치 가능하면 바로 네이티브 설치창
+      manualGuide();  // 아니면 이 기기에 맞는 방법 안내
     });
   })();
   </script>

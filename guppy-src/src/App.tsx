@@ -1260,8 +1260,13 @@ export default function App() {
                    </button>
                 </div>
 
-                {/* Right: 어항 설정 */}
+                {/* Right: 물소리 온오프(외부 상시 노출, 2026-07-25 Macho) + 어항 설정 */}
                 <div className="flex gap-2 pointer-events-auto shrink-0">
+                  <button
+                    onClick={() => setSoundOn(toggleBgm('/audio/guppy_bgm.mp3', 'guppy_bgm'))}
+                    className={`w-11 h-11 flex items-center justify-center backdrop-blur-md rounded-full text-white shadow-lg border border-white/30 transition-colors text-xl ${soundOn ? 'bg-teal-500/70' : 'bg-black/20 hover:bg-black/30'}`}
+                    aria-label={soundOn ? '물소리 끄기' : '물소리 켜기'} title="물소리(보글보글) 켜고 끄기"
+                  >{soundOn ? '🔊' : '🔇'}</button>
                   <button
                     data-bomguide="gset" onClick={() => setShowSettings(v => !v)}
                     className={`w-11 h-11 flex items-center justify-center backdrop-blur-md rounded-full text-white shadow-lg border border-white/30 transition-colors text-xl ${showSettings ? 'bg-teal-500/70' : 'bg-black/20 hover:bg-black/30'}`}
