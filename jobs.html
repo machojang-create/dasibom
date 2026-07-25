@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>시니어 직업 상담소 — 다시봄</title>
-<meta name="description" content="인생 2막, 새 일터를 함께 찾아드려요. 우리 동네 시니어 채용 소식부터 적성 찾기까지.">
+<meta name="description" content="인생 2막, 새 일터를 함께 찾아드려요. 전국 시니어 채용 소식부터 적성 찾기까지.">
 <script src="/a11y.js?v=7" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
@@ -14,7 +14,7 @@
 <script src="/comments.js?v=6" defer></script>
 <script>window.BOM_TUT={
   key:'jobs', face:'bom_smile.png', name:'시니어 직업 상담소',
-  welcome:'{호칭}, 여기는 인생 2막 일터를 함께 찾는 상담소예요. 아래로 우리 동네 채용 소식이 쭉 펼쳐져 있으니 편하게 구경해봐요 🌷',
+  welcome:'{호칭}, 여기는 인생 2막 일터를 함께 찾는 상담소예요. 아래로 시니어 채용 소식이 쭉 펼쳐져 있으니 편하게 구경해봐요 🌷',
   action:'마음에 드는 일자리는 북마크(♡)로 담아두면 나중에 다시 볼 수 있어요.',
   tour:[
     {text:'지금 채용 중인 일자리가 여기 쭉 있어요. 손가락으로 위아래로 넘겨봐요.', sel:'#realList'},
@@ -282,10 +282,10 @@ button{font-family:inherit;cursor:pointer}
           <h2><span class="dot">●</span> 지금 채용 중인 일자리</h2>
           <button class="more" id="regionBtn">지역 ▾</button>
         </div>
-        <p id="realSub" style="font-size:calc(15px * var(--ts));color:var(--muted);margin:-6px 0 14px">복지관·주야간보호·요양까지 우리 동네 소식을 모았어요</p>
+        <p id="realSub" style="font-size:calc(15px * var(--ts));color:var(--muted);margin:-6px 0 14px">복지관·주야간보호·요양까지 채용 소식을 모았어요</p>
         <div id="realLoading" class="loadwrap">
           <div class="loadbom">🌸</div>
-          <p class="loadmsg" id="loadmsg">봄이가 우리 동네 채용 소식을<br>하나하나 모으고 있어요 🌷</p>
+          <p class="loadmsg" id="loadmsg">봄이가 시니어 채용 소식을<br>하나하나 모으고 있어요 🌷</p>
           <div class="loaddots"><span></span><span></span><span></span></div>
           <div class="loadskels"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
         </div>
@@ -580,16 +580,16 @@ function detailToggleSave(btn){
 
 /* ───────── 예시(폴백) 일자리 — 크롤 피드가 비어도 항상 풍성하게 ───────── */
 var FALLBACK_JOBS=[
-  {id:'fb1',title:'아파트 경비원',company:'○○아파트 관리사무소',location:'우리 동네',pay:'월 220만 원',empType:'교대근무',career:'무관'},
-  {id:'fb2',title:'건물·학교 미화원(청소)',company:'○○시설관리',location:'우리 동네',pay:'월 200만 원',empType:'오전근무',career:'무관'},
-  {id:'fb3',title:'노인맞춤돌봄 생활지원사',company:'○○시니어클럽',location:'우리 동네',pay:'월 76만 원',empType:'주5일 오전',career:'무관'},
-  {id:'fb4',title:'공영주차장 관리원',company:'○○구 시설공단',location:'우리 동네',pay:'월 210만 원',empType:'교대근무',career:'무관'},
-  {id:'fb5',title:'초등학교 등하교 교통지도',company:'○○초등학교',location:'우리 동네',pay:'월 80만 원',empType:'아침·오후',career:'무관'},
-  {id:'fb6',title:'공원·거리 환경 지킴이',company:'○○구청 노인일자리',location:'우리 동네',pay:'월 76만 원',empType:'주5일',career:'무관'},
-  {id:'fb7',title:'학교 급식 배식 도우미',company:'○○학교',location:'우리 동네',pay:'월 90만 원',empType:'점심시간',career:'무관'},
-  {id:'fb8',title:'공공기관 시니어 사무보조',company:'○○공단',location:'우리 동네',pay:'월 180만 원',empType:'주5일',career:'무관'},
-  {id:'fb9',title:'도서관 서가 정리 도우미',company:'구립도서관',location:'우리 동네',pay:'월 90만 원',empType:'주3일',career:'무관'},
-  {id:'fb10',title:'택배·물품 분류 도우미',company:'○○물류센터',location:'우리 동네',pay:'시급 11,000원',empType:'파트타임',career:'무관'}
+  {id:'fb1',title:'아파트 경비원',company:'○○아파트 관리사무소',location:'',pay:'월 220만 원',empType:'교대근무',career:'무관'},
+  {id:'fb2',title:'건물·학교 미화원(청소)',company:'○○시설관리',location:'',pay:'월 200만 원',empType:'오전근무',career:'무관'},
+  {id:'fb3',title:'노인맞춤돌봄 생활지원사',company:'○○시니어클럽',location:'',pay:'월 76만 원',empType:'주5일 오전',career:'무관'},
+  {id:'fb4',title:'공영주차장 관리원',company:'○○구 시설공단',location:'',pay:'월 210만 원',empType:'교대근무',career:'무관'},
+  {id:'fb5',title:'초등학교 등하교 교통지도',company:'○○초등학교',location:'',pay:'월 80만 원',empType:'아침·오후',career:'무관'},
+  {id:'fb6',title:'공원·거리 환경 지킴이',company:'○○구청 노인일자리',location:'',pay:'월 76만 원',empType:'주5일',career:'무관'},
+  {id:'fb7',title:'학교 급식 배식 도우미',company:'○○학교',location:'',pay:'월 90만 원',empType:'점심시간',career:'무관'},
+  {id:'fb8',title:'공공기관 시니어 사무보조',company:'○○공단',location:'',pay:'월 180만 원',empType:'주5일',career:'무관'},
+  {id:'fb9',title:'도서관 서가 정리 도우미',company:'구립도서관',location:'',pay:'월 90만 원',empType:'주3일',career:'무관'},
+  {id:'fb10',title:'택배·물품 분류 도우미',company:'○○물류센터',location:'',pay:'시급 11,000원',empType:'파트타임',career:'무관'}
 ];
 function feedToJob(j,i){
   return {id:'feed_'+(j.detailId||j.url||j.title||i),title:j.title,company:j.company||j.org||'',
@@ -601,7 +601,7 @@ function feedToJob(j,i){
 var allReal=[],realShown=12,realIsFallback=false;
 /* 로딩 연출 — 봄이가 공고를 모으는 감성 문구 회전 */
 var LOAD_MSGS=[
-  '봄이가 우리 동네 채용 소식을<br>하나하나 모으고 있어요 🌷',
+  '봄이가 시니어 채용 소식을<br>하나하나 모으고 있어요 🌷',
   '{호칭}께 딱 맞는 일자리를<br>찾고 있어요…',
   '좋은 자리 놓치지 않게<br>꼼꼼히 살펴보는 중이에요 🔎',
   '거의 다 됐어요,<br>조금만 기다려 주세요 😊'
@@ -645,7 +645,7 @@ function loadReal(regionLabel,kw){
       sub.textContent=srcTxt+'에서 모은 채용 소식 '+cnt+'건이에요';
     }else{
       allReal=FALLBACK_JOBS.slice();realIsFallback=true;
-      sub.textContent='곧 우리 동네 실제 채용 소식으로 채워져요 (지금은 예시)';
+      sub.textContent='곧 실제 채용 소식으로 채워져요 (지금은 예시)';
     }
     realShown=12;renderReal();
   }).catch(function(){allReal=FALLBACK_JOBS.slice();realIsFallback=true;realShown=12;renderReal();});
@@ -671,25 +671,25 @@ function pickRegion(r){pickedRegion=(r==='전체'||r==='그 외')?'':r;
 var JOB_MAP=[
  {k:['은행','금융','회계','경리','사무'],honor:'지점장님',kw:'사무',jobs:[
    {title:'시니어 금융 안내 도우미',company:'○○은행',location:'가까운 지점',pay:'월 180만 원',tags:['주 5일','금융경력 우대']},
-   {title:'아파트 관리사무소 경리',company:'○○아파트',location:'우리 동네',pay:'월 200만 원',tags:['꼼꼼함 우대']},
-   {title:'세무사 사무실 서류 도우미',company:'○○세무회계',location:'우리 동네',pay:'월 170만 원',tags:['주 3일']}]},
+   {title:'아파트 관리사무소 경리',company:'○○아파트',location:'',pay:'월 200만 원',tags:['꼼꼼함 우대']},
+   {title:'세무사 사무실 서류 도우미',company:'○○세무회계',location:'',pay:'월 170만 원',tags:['주 3일']}]},
  {k:['교사','강사','선생','교육'],honor:'선생님',kw:'강사',jobs:[
-   {title:'방과후 돌봄 선생님',company:'○○초등학교',location:'우리 동네',pay:'월 160만 원',tags:['오후 4시간']},
-   {title:'시니어 문해 교실 강사',company:'평생학습관',location:'우리 동네',pay:'시간당 3만 원',tags:['주 2일']},
-   {title:'도서관 독서 지도사',company:'구립도서관',location:'우리 동네',pay:'월 150만 원',tags:['주 4일']}]},
+   {title:'방과후 돌봄 선생님',company:'○○초등학교',location:'',pay:'월 160만 원',tags:['오후 4시간']},
+   {title:'시니어 문해 교실 강사',company:'평생학습관',location:'',pay:'시간당 3만 원',tags:['주 2일']},
+   {title:'도서관 독서 지도사',company:'구립도서관',location:'',pay:'월 150만 원',tags:['주 4일']}]},
  {k:['식당','요리','주방','조리','음식'],honor:'사장님',kw:'조리',jobs:[
-   {title:'학교 급식 조리 도우미',company:'○○학교',location:'우리 동네',pay:'월 190만 원',tags:['주 5일','오전']},
-   {title:'반찬 가게 조리원',company:'우리동네 반찬',location:'우리 동네',pay:'월 180만 원',tags:['손맛 우대']},
-   {title:'요리 클래스 보조 강사',company:'문화센터',location:'우리 동네',pay:'시간당 2.5만 원',tags:['주 2일']}]},
+   {title:'학교 급식 조리 도우미',company:'○○학교',location:'',pay:'월 190만 원',tags:['주 5일','오전']},
+   {title:'반찬 가게 조리원',company:'동네 반찬',location:'',pay:'월 180만 원',tags:['손맛 우대']},
+   {title:'요리 클래스 보조 강사',company:'문화센터',location:'',pay:'시간당 2.5만 원',tags:['주 2일']}]},
  {k:['운전','기사','배송','택시','버스'],honor:'기사님',kw:'운전',jobs:[
-   {title:'어린이집 통학차량 기사',company:'새싹어린이집',location:'우리 동네',pay:'월 170만 원',tags:['아침·저녁']},
-   {title:'복지관 셔틀 운전원',company:'노인복지관',location:'우리 동네',pay:'월 160만 원',tags:['주 5일']},
-   {title:'가까운 거리 물품 배송',company:'동네 물류',location:'우리 동네',pay:'건당 정산',tags:['원하는 시간']}]}
+   {title:'어린이집 통학차량 기사',company:'새싹어린이집',location:'',pay:'월 170만 원',tags:['아침·저녁']},
+   {title:'복지관 셔틀 운전원',company:'노인복지관',location:'',pay:'월 160만 원',tags:['주 5일']},
+   {title:'가까운 거리 물품 배송',company:'동네 물류',location:'',pay:'건당 정산',tags:['원하는 시간']}]}
 ];
 var DEFAULT_REC={honor:'대표님',kw:'',jobs:[
-  {title:'시니어 인턴 (공공기관)',company:'○○공단',location:'우리 동네',pay:'월 180만 원',tags:['주 5일','경험 우대']},
-  {title:'우리 동네 시설 안내원',company:'복합문화센터',location:'우리 동네',pay:'월 160만 원',tags:['주 4일']},
-  {title:'실버 카페 매니저',company:'실버카페',location:'우리 동네',pay:'월 170만 원',tags:['주 5일']}]};
+  {title:'시니어 인턴 (공공기관)',company:'○○공단',location:'',pay:'월 180만 원',tags:['주 5일','경험 우대']},
+  {title:'지역 시설 안내원',company:'복합문화센터',location:'',pay:'월 160만 원',tags:['주 4일']},
+  {title:'실버 카페 매니저',company:'실버카페',location:'',pay:'월 170만 원',tags:['주 5일']}]};
 
 document.getElementById('findBtn').onclick=function(){
   var career=document.getElementById('career').value.trim();
