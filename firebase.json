@@ -19,6 +19,14 @@
         "destination": "/auth/naver/callback.html"
       },
       {
+        "source": "/jobs",
+        "destination": "/jobs.html"
+      },
+      {
+        "source": "/jobs/**",
+        "destination": "/jobs.html"
+      },
+      {
         "source": "/admin",
         "destination": "/admin.html"
       },
