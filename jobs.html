@@ -54,7 +54,10 @@ button{font-family:inherit;cursor:pointer}
 .topbar .ttl{font-size:calc(16px * var(--ts));font-weight:800;color:var(--ink)}
 
 /* 탭 패널 */
-.view{padding-bottom:96px}
+.view{padding-bottom:150px}
+/* ★버그수정: 공용 글씨크기·다크모드 위젯(dsb-a11y, z:99990)이 하단 고정 내비를 덮어
+   소통방·내정보 탭이 안 눌리던 문제 → 위젯을 내비 위로 올림(이 페이지에만 하단 내비가 있음) */
+.dsb-a11y{bottom:82px !important}
 .panel{display:none;animation:fade .3s ease}
 .panel.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
