@@ -1601,15 +1601,32 @@ function playCard(who, card){
 
       setTimeout(function(){
         // ── 더미 뒤집기: 판 중앙 공개(1.2초) 후 매칭 진행 ──
-        var flip=G.deck.pop();
-        // 보너스패가 더미에서 나오면: 바로 내 피로 담고 한 장 더 뒤집는다(표준 룰)
-        while(flip && flip.bonus){
-          capture.push(flip);
-          animFrom[flip.id]=deckRect();   // 더미 자리에서 내 획득칸으로 날아가도록
-          banner('보너스 +'+flip.pi+'피!');
-          flip=G.deck.pop();
+        // 보너스패도 다른 패처럼 '공개(reveal)→이동'(2026-07-25 Macho): 순간이동 금지.
+        // 수집/매장(뻑)은 실제 뒤집기 결과가 정해진 뒤로 미룬다.
+        var pendingBonuses=[], isPpukTurn=false;
+        function routeBonuses(done){
+          if(!pendingBonuses.length){ done(); return; }
+          if(isPpukTurn){
+            // 뻑! 이 턴에 뒤집힌 보너스도 못 먹고 바닥 뻑더미에 같이 쌓인다(나중에 그 달 먹는 이가 함께 가져감)
+            var grp=G.floor.find(function(f){return f.month===card.month;});
+            pendingBonuses.forEach(function(pb){ if(grp) grp.cards.push(pb.card); HIDE_IDS[pb.card.id]=1; });
+            render();
+            pendingBonuses.forEach(function(pb){
+              var d=document.querySelector('#floor .card[data-id="'+pb.card.id+'"]'); var tr=d?rectOf(d):null;
+              if(tr){ pb.revealEl.style.transition='transform .34s cubic-bezier(.35,.75,.35,1), width .34s, height .34s';
+                pb.revealEl.style.transform='translate('+tr.x+'px,'+tr.y+'px)'; pb.revealEl.style.width=tr.w+'px'; pb.revealEl.style.height=tr.h+'px';
+                setTimeout(function(){ if(pb.revealEl)pb.revealEl.remove(); unhide(pb.card.id); }, 360); }
+              else { if(pb.revealEl)pb.revealEl.remove(); unhide(pb.card.id); }
+            });
+            setTimeout(done, 430);
+          } else {
+            // 평소: 공개된 중앙에서 내 획득칸으로 날아가 수집(finishTurn이 animFrom=centerRect에서 비행)
+            pendingBonuses.forEach(function(pb){ capture.push(pb.card); animFrom[pb.card.id]=pb.centerRect; if(pb.revealEl)pb.revealEl.remove(); });
+            done();
+          }
         }
-        if(!flip){ finishTurn(who,capture,steals,animFrom); return; }
+        function doRealFlip(flip){
+        if(!flip){ routeBonuses(function(){ finishTurn(who,capture,steals,animFrom); }); return; }
         var dR=deckRect();
         toast((who==='me'?'':'봄이 · ')+'더미에서 '+flip.month+'월 패가 나왔어요');
 
@@ -1654,27 +1671,27 @@ function playCard(who, card){
                 setTimeout(function(){
                   revealEl.remove();
                   unhide(flip.id); slamAt(flip.id);
-                  finishTurn(who,capture,steals,animFrom);
+                  routeBonuses(function(){ finishTurn(who,capture,steals,animFrom); });
                 }, 360);
               } else {
                 if(revealEl) revealEl.remove();
                 flyClone(flip, centerRect, tr, 320, function(){
                   unhide(flip.id); slamAt(flip.id);
-                  finishTurn(who,capture,steals,animFrom);
+                  routeBonuses(function(){ finishTurn(who,capture,steals,animFrom); });
                 });
               }
             } else {
               // 획득되는 패: 정산 비행이 중앙 위치에서 시작하므로 공개 카드는 여기서 제거
               if(revealEl) revealEl.remove();
-              finishTurn(who,capture,steals,animFrom);
+              routeBonuses(function(){ finishTurn(who,capture,steals,animFrom); });
             }
           }
 
           if(playedMatched==='pending1' && flip.month===card.month){
-            // 뻑! 내 패+바닥패+뒤집은 패 3장이 같은 달 → 못 먹고 쌓임
+            // 뻑! 내 패+바닥패+뒤집은 패 3장이 같은 달 → 못 먹고 쌓임 (이 턴 보너스도 같이 묻힌다)
             flipGroup.cards.push(flip);
             banner('뻑!');
-            playedMatched=false; flipOnFloor=true;
+            playedMatched=false; flipOnFloor=true; isPpukTurn=true;
             finishFlip();
           }
           else if(playedMatched==='pending2' && flip.month===card.month){
@@ -1742,6 +1759,21 @@ function playCard(who, card){
             }
           }
         }); // revealFlip 끝
+        }  // doRealFlip 끝
+        // 더미에서 한 장씩 — 보너스면 공개(reveal)하고 담아두었다가, 실제 패가 나오면 그때 매칭·정산.
+        function drawNext(){
+          var f=G.deck.pop();
+          if(f && f.bonus){
+            revealFlip(f, deckRect(), function(cr, re){
+              banner('보너스 +'+f.pi+'피!');
+              pendingBonuses.push({ card:f, revealEl:re, centerRect:cr });
+              drawNext();
+            });
+            return;
+          }
+          doRealFlip(f);
+        }
+        drawNext();
       }, 260);
     };
 
