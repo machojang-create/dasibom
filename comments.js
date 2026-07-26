@@ -27,7 +27,9 @@
       '.dbc-send:disabled{opacity:.45;cursor:default}'+
       '.dbc-meta{display:flex;justify-content:space-between;align-items:center;margin:9px 4px 0;font-size:12px;color:#8AA294}'+
       '.dbc-byte.over{color:#e2574c;font-weight:700}'+
-      '.dbc-list{margin-top:16px;display:flex;flex-direction:column;gap:9px}'+
+      '.dbc-list{margin-top:16px;display:flex;flex-direction:column;gap:9px;max-height:440px;overflow-y:auto}'+
+      '.dbc-more{align-self:center;margin-top:4px;padding:9px 20px;border:1.5px solid #cfe0d5;border-radius:50px;background:#F3F8F4;color:#2f6b52;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}'+
+      '.dbc-more:active{opacity:.6}'+
       '.dbc-item{background:#F3F8F4;border-radius:14px;padding:11px 15px;font-size:15px;color:#2C3A30;line-height:1.6;display:flex;justify-content:space-between;align-items:center;gap:10px}'+
       '.dbc-item .dbc-txt{word-break:break-all}'+
       '.dbc-item .dbc-time{font-size:11px;color:#9DB0A2;flex-shrink:0;white-space:nowrap}'+
@@ -56,10 +58,16 @@
     function refreshByte(){ var b=bytes(input.value); byteEl.textContent=b+'/'+MAX+'자'; var over=b>MAX; byteEl.className='dbc-byte'+(over?' over':''); sendBtn.disabled=over||input.value.trim().length===0; }
     input.addEventListener('input', refreshByte);
 
+    var _shown=5;   // 최신 5개만 노출, '더보기'로 +5씩(2026-07-26 Macho: 100개면 100줄 되지 않게)
     function render(arr){
       if(!arr.length){ listEl.innerHTML='<div class="dbc-empty">아직 공감이 없어요. 첫 한마디를 남겨보세요 🌸</div>'; cntEl.textContent=''; return; }
       cntEl.textContent=arr.length+'개';
-      listEl.innerHTML=arr.map(function(c){ return '<div class="dbc-item"><span class="dbc-txt">'+esc(c.text)+'</span><span class="dbc-time">'+timeAgo(c.ts)+'</span></div>'; }).join('');
+      var n=Math.min(_shown, arr.length);
+      var html=arr.slice(0,n).map(function(c){ return '<div class="dbc-item"><span class="dbc-txt">'+esc(c.text)+'</span><span class="dbc-time">'+timeAgo(c.ts)+'</span></div>'; }).join('');
+      if(arr.length>n) html+='<button class="dbc-more" type="button">더보기 · 남은 '+(arr.length-n)+'개</button>';
+      listEl.innerHTML=html;
+      var mb=listEl.querySelector('.dbc-more');
+      if(mb) mb.addEventListener('click', function(){ _shown+=5; render(arr); });
     }
     function load(){
       try{
