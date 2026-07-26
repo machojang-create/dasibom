@@ -895,5 +895,16 @@ function popToast(msg){var el=document.getElementById('toast');el.textContent=ms
   // 팝업 좌측 상단에 봄이가 걸쳐 등장(브랜딩 공용 규칙)
   BomPop.bind({ overlay:'#modalBg', box:'.modal', face:'bom_think' }); // 성분 설명
 </script>
+
+<!-- 한 줄 공감(공용 폼) — 2026-07-26 전 콘텐츠 확산 -->
+<div id="dsbCmtMount" style="max-width:720px;margin:30px auto 130px;padding:0 16px"></div>
+<script>
+(function(){
+  var scope="health:main";
+  function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"건강 이야기, 한마디 나눠요"); }
+  if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
+})();
+</script>
+<script src="/comments.js?v=7" defer></script>
 </body>
 </html>

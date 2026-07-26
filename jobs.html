@@ -11,7 +11,7 @@
 <script src="/bom_voice.js?v=12" defer></script>
 <script src="/bom_guide.js?v=2" defer></script>
 <script src="/bom_tutorial.js?v=5" defer></script>
-<script src="/comments.js?v=6" defer></script>
+<script src="/comments.js?v=7" defer></script>
 <script>window.BOM_TUT={
   key:'jobs', face:'bom_smile.png', name:'시니어 직업 상담소',
   welcome:'{호칭}, 여기는 인생 2막 일터를 함께 찾는 상담소예요. 아래로 시니어 채용 소식이 쭉 펼쳐져 있으니 편하게 구경해봐요 🌷',
@@ -836,6 +836,16 @@ function renderSaved(){updateSavedCount();}
 /* ───────── 시작 ───────── */
 updateSavedCount();
 loadReal('','');
+</script>
+
+<!-- 한 줄 공감(공용 폼) — 2026-07-26 전 콘텐츠 확산 -->
+<div id="dsbCmtMount" style="max-width:720px;margin:30px auto 130px;padding:0 16px"></div>
+<script>
+(function(){
+  var scope="jobs:main";
+  function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"채용 소식, 한마디 남겨보세요"); }
+  if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
+})();
 </script>
 </body>
 </html>

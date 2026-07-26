@@ -82,13 +82,32 @@
     sendBtn.addEventListener('click', submit);
     input.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!sendBtn.disabled) submit(); });
 
-    // 어느 페이지든 '갖다 붙이면 끝'(2026-07-23 Macho): firestore-compat이 없으면 스스로 로드한다
+    // 어느 페이지든 '갖다 붙이면 끝'(2026-07-23 Macho): 필요한 firebase를 스스로 로드한다.
+    var _bootstrapping=false;
+    function loadScript(src, cb){ var s=document.createElement('script'); s.src=src; s.onload=cb; s.onerror=cb; (document.head||document.documentElement).appendChild(s); }
     function init(){
       if(window.firebase && typeof firebase.firestore==='function'){ load(); return; }
+      // firebase-app은 있는데 firestore만 없을 때 → firestore-compat만 추가
       if(window.firebase && firebase.app && !document.getElementById('dbc-fs-compat')){
         var sc=document.createElement('script'); sc.id='dbc-fs-compat';
         sc.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js';
         (document.head||document.documentElement).appendChild(sc);
+      }
+      // firebase가 아예 없는 페이지(예: 카드뉴스) → app+auth+firestore 전체를 자체 부트스트랩(2026-07-26 Macho: 카드뉴스 댓글 미작동 수리)
+      else if(!window.firebase && !_bootstrapping){
+        _bootstrapping=true;
+        var B='https://www.gstatic.com/firebasejs/9.23.0/';
+        loadScript(B+'firebase-app-compat.js', function(){
+          loadScript(B+'firebase-auth-compat.js', function(){
+            loadScript(B+'firebase-firestore-compat.js', function(){
+              try{ if(window.firebase && !firebase.apps.length) firebase.initializeApp({
+                apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0", authDomain:"mylife-650f0.firebaseapp.com",
+                projectId:"mylife-650f0", storageBucket:"mylife-650f0.firebasestorage.app",
+                messagingSenderId:"512010655611", appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+              }); }catch(e){}
+            });
+          });
+        });
       }
       setTimeout(init,400);
     }
