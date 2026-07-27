@@ -92,7 +92,32 @@ function logAiUsage(tag, model, inTok, outTok) {
   } catch (e) {}
 }
 
+// ── 전역 AI 킬스위치(2026-07-27 Macho) ────────────────────────────────────
+//   per-user 캡(챗봇30·파일럿100·자서전60 등) 위의 마지막 안전판.
+//   사용자 폭증·익명 어뷰징(uid를 여러 개 파서 per-user 캡 우회)으로 총비용이 튀는 것을 막는다.
+//   모든 AI가 aiText 한 곳을 거치므로 여기서 막으면 캡이 빠진 함수(제목·케어인사이트)까지 커버.
+//   원리: usage_ai_daily/{날짜}.calls(logAiUsage가 이미 증가)를 읽어 상한 넘으면 그날 AI만 잠시 쉼.
+//   ★상한값은 사업 판단 — 아래 한 줄만 바꾸면 됨(정상 트래픽의 몇 배로 넉넉히).
+//     15000콜 ≈ 하루 약 1.5만원(≈1원/콜) 상한. 콘텐츠 소비(추억·게임·명언 등)는 영향 0.
+const GLOBAL_DAILY_AI_CAP = 15000;
+async function _globalAiGate() {
+  try {
+    const day = new Date().toISOString().slice(0, 10);
+    const snap = await admin.firestore().collection('usage_ai_daily').doc(day).get();
+    const calls = (snap.exists && snap.data().calls) || 0;
+    if (calls >= GLOBAL_DAILY_AI_CAP) {
+      const e = new Error('봄이가 오늘 참 많은 분과 이야기를 나눴어요. 잠시 쉬었다가 곧 다시 만나요 🌱');
+      e._globalCap = true;
+      throw e;
+    }
+  } catch (e) {
+    if (e && e._globalCap) throw e;   // 상한 초과 → 차단
+    /* 카운터 조회 실패는 통과(가용성 우선) — 킬스위치 때문에 서비스가 멈추면 안 됨 */
+  }
+}
+
 async function aiText(opt) {
+  await _globalAiGate();   // 전역 천장 먼저 확인
   if (AI_PROVIDER === 'gemini') {
     const body = {
       contents: [{ parts: [{ text: opt.user }] }],
