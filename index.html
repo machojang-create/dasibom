@@ -21,6 +21,20 @@
 <meta name="twitter:description" content="은퇴 이후의 삶은 끝이 아닌 또 하나의 시작입니다.">
 <meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
 <link rel="manifest" href="/manifest.json">
+<!-- PWA 설치 이벤트를 '가장 이른 시점'에 전역으로 캡처(2026-07-28 Macho: 바로 설치되게).
+     beforeinstallprompt는 페이지 로드 초반에 한 번 발생 — 리스너가 늦게 붙으면 놓쳐서
+     '바로 설치' 대신 수동 안내로 빠진다. head에서 미리 잡아 window.__dsbDeferred에 보관. -->
+<script>
+  window.__dsbDeferred = null;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault(); window.__dsbDeferred = e;
+    try { document.dispatchEvent(new CustomEvent('dsb-installable')); } catch(_){}
+  });
+  window.addEventListener('appinstalled', function(){
+    window.__dsbDeferred = null;
+    try { var c=document.getElementById('dsbInstallCard'); if(c) c.style.display='none'; } catch(_){}
+  });
+</script>
 <meta name="theme-color" content="#0e9d7d">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
@@ -128,6 +142,25 @@
     transition:border-color .2s,color .2s;white-space:nowrap;
   }
   .nav-logout:hover{border-color:var(--ink-2);color:var(--ink-2)}
+
+  /* 모바일 상단 정보바 가독성(2026-07-28 Macho): 좁은 화면에서 계정 영역이 뭉쳐
+     "로그인" 뱃지가 세로로 접히고 여백이 무너지던 문제 — 요소를 줄이고 간격을 정리. */
+  @media(max-width:600px){
+    .nav .row{height:60px}
+    .nav-auth-svg,.logo svg{width:38px !important;height:38px !important}
+    #nav-auth{gap:8px}
+    .nav-user{gap:8px}
+    .nav-provider{display:none}          /* '○○ 로그인' 뱃지줄 숨김 — 세로 겹침의 주범 */
+    .nav-user-info{gap:0}
+    .nav-name{max-width:84px;font-size:14px}
+    .nav-avatar{width:32px;height:32px}
+    .nav .cta{padding:9px 15px;font-size:14px}
+    .nav-logout{padding:8px 13px;font-size:13px}
+  }
+  @media(max-width:380px){
+    .nav-name{display:none}              /* 아주 좁으면 이름은 접고 아바타만(누구인지 구분은 유지) */
+    #nav-auth{gap:7px}
+  }
 
   /* Hero */
   .hero{
@@ -1990,8 +2023,10 @@
     }
     card.style.display='block';
 
-    var deferred=null;
-    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; });
+    // 설치 이벤트는 head에서 이미 전역(window.__dsbDeferred)으로 잡아둠. 늦게 도착해도 반영.
+    var deferred=window.__dsbDeferred || null;
+    window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferred=e; window.__dsbDeferred=e; });
+    document.addEventListener('dsb-installable', function(){ deferred=window.__dsbDeferred; });
 
     function manualGuide(){
       how.style.display='block';
@@ -2007,8 +2042,9 @@
       }
     }
     btn.addEventListener('click', function(){
-      if (deferred){ deferred.prompt(); deferred.userChoice.then(function(){ deferred=null; }); return; }  // 설치 가능하면 바로 네이티브 설치창
-      manualGuide();  // 아니면 이 기기에 맞는 방법 안내
+      var d = deferred || window.__dsbDeferred;   // 클릭 순간에도 최신 전역값 확인(늦게 도착 대비)
+      if (d){ d.prompt(); d.userChoice.then(function(){ deferred=null; window.__dsbDeferred=null; }); return; }  // 설치 가능하면 바로 네이티브 설치창
+      manualGuide();  // 아니면(iOS·미지원·이미 설치 등) 이 기기에 맞는 방법 안내
     });
   })();
   </script>
