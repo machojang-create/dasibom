@@ -1707,6 +1707,55 @@
 <!-- (다시봄 이름의 의미 트리거는 상단 hero로 이동) -->
 
 <!-- CONTENTS -->
+<style id="mkHomeCss">
+/* 홈 콘텐츠 개편(2026-07-28): ⭐자주 보는 것 + 색칩 카테고리 + 봄이 안내 */
+#contents .wrap{max-width:1120px}
+.mk-favs{background:linear-gradient(120deg,#FFF7E6,#FBF1DC);border:1px solid #ECDFC2;border-radius:22px;padding:16px 20px;margin:0 auto 6px;box-shadow:0 14px 32px -22px rgba(150,110,30,.4)}
+body.dark .mk-favs{background:linear-gradient(120deg,#2a2318,#241f16);border-color:#3a3125}
+.mk-favs-h{font-family:"Nanum Myeongjo",serif;font-size:20px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mk-favs-hint{font-size:13px;color:var(--muted);font-weight:600}
+.mk-favguide{display:flex;align-items:center;gap:12px;background:#FFF3D9;border:1px solid #F0DEA8;border-radius:16px;padding:11px 14px;margin:12px 0 2px;box-shadow:0 8px 18px -13px rgba(150,110,30,.45)}
+body.dark .mk-favguide{background:#33291a;border-color:#4a3d24}
+.mk-favguide img{width:46px;height:46px;border-radius:50%;flex:none;background:#fff;box-shadow:0 0 0 2px #F0DEA8;object-fit:cover}
+.mk-favguide .g-txt{font-size:14.5px;font-weight:700;color:#6b4e1f;line-height:1.55}
+body.dark .mk-favguide .g-txt{color:#e8d3a0}
+.mk-favguide .g-txt b{color:#C9962F}
+.mk-favguide .g-x{margin-left:auto;flex:none;background:none;border:none;color:#b79a5e;font-size:17px;cursor:pointer;padding:4px 8px;align-self:flex-start}
+.mk-fav-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px;padding:12px 0 2px}
+.mk-fav-tile{background:#fff;border:1px solid #E8DDC6;border-radius:16px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:11px;box-shadow:0 6px 14px -10px rgba(120,85,30,.35);position:relative;text-decoration:none}
+body.dark .mk-fav-tile{background:#2b2620;border-color:#3f362a}
+.mk-fav-tile img{width:48px;height:48px;flex:none;object-fit:cover;border-radius:12px}
+.mk-fav-tile .t{font-size:15px;font-weight:800;color:var(--ink);line-height:1.25;word-break:keep-all}
+.mk-fav-tile .rec{position:absolute;top:-8px;right:8px;background:#C9962F;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px}
+.mk-recent-h{font-size:13px;font-weight:800;color:var(--muted);margin:12px 0 6px}
+.mk-recent-row{display:flex;gap:8px;flex-wrap:wrap}
+.mk-recent-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #E8DDC6;border-radius:50px;padding:6px 14px 6px 6px;cursor:pointer;text-decoration:none;box-shadow:0 4px 10px -8px rgba(120,85,30,.35)}
+body.dark .mk-recent-chip{background:#2b2620;border-color:#3f362a}
+.mk-recent-chip img{width:32px;height:32px;border-radius:50%;object-fit:cover}
+.mk-recent-chip span{font-size:14px;font-weight:800;color:var(--ink);white-space:nowrap}
+.mk-nav{position:sticky;top:64px;z-index:20;margin:16px auto 4px;background:var(--paper,#F7F3EA);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+body.dark .mk-nav{background:#15130f}
+.mk-nav-in{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:11px 4px}
+.mk-navlink{text-decoration:none;font-size:15px;font-weight:800;padding:10px 18px;border-radius:50px;white-space:nowrap;color:var(--nc);background:color-mix(in srgb,var(--nc) 13%, transparent);transition:background .15s,color .15s}
+.mk-navlink:hover{background:color-mix(in srgb,var(--nc) 22%, transparent)}
+.mk-navlink.on{color:#fff;background:var(--nc);box-shadow:0 7px 16px -7px color-mix(in srgb,var(--nc) 70%, transparent)}
+.mk-sec{margin:6px auto 2px;scroll-margin-top:132px}
+.mk-sec-h{font-family:"Nanum Myeongjo",serif;font-size:22px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:11px;margin:22px 0 14px;padding-bottom:9px;border-bottom:2px solid color-mix(in srgb,var(--sc) 40%,transparent)}
+.mk-sec-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--sc) 16%,#fff);border:1px solid color-mix(in srgb,var(--sc) 32%,transparent)}
+body.dark .mk-sec-ic{background:color-mix(in srgb,var(--sc) 22%,#242420)}
+.mk-sec-n{font-size:14px;font-weight:800;color:#fff;background:var(--sc);border-radius:50px;padding:2px 11px}
+/* 별표 오버레이 + 태그 겹침 방지 */
+.card{position:relative}
+/* 카드가 새 섹션으로 옮겨져 reveal 옵저버가 안 걸리는 문제 → 항상 보이게(연출 대신 가독성 우선) */
+.mk-sec .card[data-reveal]{opacity:1 !important;transform:none !important;filter:none !important}
+.card .top{padding-right:30px}
+.mk-star{position:absolute;top:12px;right:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.9);box-shadow:0 4px 12px -4px rgba(0,0,0,.28);cursor:pointer;font-size:20px;line-height:1;color:#c9a83f;display:grid;place-items:center;padding:0}
+body.dark .mk-star{background:rgba(40,36,30,.85);color:#e6c04d}
+.mk-star.on{color:#F2B01E;background:#FFF6DB}
+.mk-star:hover{transform:scale(1.08)}
+@media(max-width:560px){.mk-fav-row{grid-template-columns:repeat(2,1fr)}.mk-nav{top:56px}}
+</style>
+
 <section class="contents svc-section" id="contents">
 <span id="svc-cards"></span>
   <div class="wrap">
@@ -1716,8 +1765,10 @@
         기억을 기록하고, 몸을 돌보고, 즐겁게 놀고, 새로운 것을 배우는 — 다시봄의 방식.
       </p>
     </div>
-    <div class="cards">
-      <a class="card card-1" href="/memoir" data-reveal="">
+    
+    <section class="mk-favs" id="mkFavs"><div class="mk-favs-h">⭐ 내가 자주 보는 것 <span class="mk-favs-hint" id="mkFavHint"></span></div><div class="mk-favguide" id="mkFavGuide" style="display:none"><img src="/img/bom_fab.png" alt="봄이"><div class="g-txt">저예요, <b>봄이</b>! 자주 보시는 건 카드의 <b>☆ 별표</b>를 살짝 눌러 여기 <b>‘자주 보는 것’</b>에 올려두세요. 다음엔 한 번에 찾으실 수 있어요 🌸</div><button class="g-x" onclick="dsbDismissFavGuide()" aria-label="닫기" type="button">✕</button></div><div class="mk-fav-row" id="mkFavRow"></div><div id="mkRecent" style="display:none"><div class="mk-recent-h">🕘 방금 본 것</div><div class="mk-recent-row" id="mkRecentRow"></div></div></section>
+    <nav class="mk-nav" aria-label="카테고리"><div class="mk-nav-in"><a class="mk-navlink" href="#sec-memory" data-sec="memory" style="--nc:#C67A3A">추억·기록</a><a class="mk-navlink" href="#sec-play" data-sec="play" style="--nc:#5B8A48">놀이·두뇌</a><a class="mk-navlink" href="#sec-mind" data-sec="mind" style="--nc:#8A6FA8">마음·쉼</a><a class="mk-navlink" href="#sec-life" data-sec="life" style="--nc:#3E7C8C">생활·소통</a></div></nav>
+    <section class="mk-sec" id="sec-memory" style="--sc:#C67A3A"><h2 class="mk-sec-h"><span class="mk-sec-ic">🕰</span>추억·기록<span class="mk-sec-n">2</span></h2><div class="cards"><a class="card card-1" data-key="memoir" data-cat="memory" href="/memoir" data-reveal=""><button class="mk-star" data-key="memoir" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">RECORD</span>
@@ -1733,41 +1784,22 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <a class="card card-2" href="/health" data-reveal="">
+<a class="card card-12" data-key="ongi" data-cat="memory" href="/ongi" data-reveal=""><button class="mk-star" data-key="ongi" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
-            <span class="idx">NOURISH</span>
-            <span class="tag">맞춤형 건강 가이드</span>
+            <span class="idx">ONGI</span>
+            <span class="tag">잠 못 드는 밤</span>
           </div>
-          <h3 class="title">건강<br>돋보기</h3>
-          <p class="desc">내 몸에 꼭 맞는 영양 한 알, 매일 아침 전해드리는 건강 비결.</p>
+          <h3 class="title">추억의<br>소리, 온기</h3>
+          <p class="desc">간이역 난로, 아궁이 장작불, 처마 밑 풍경 소리… 마음이 사르르 풀리는 열세 가지 추억의 소리로 오늘 밤 포근히 쉬어가세요.</p>
         </div>
         <div class="visual">
-          <img src="/img/cards/card-health.svg" alt="돋보기와 영양제, 허브잎" loading="lazy">
-          <div class="ph">건강 정보 확인하기</div>
+          <img src="/img/cards/card-ongi.svg" alt="따뜻한 등불과 번지는 소리" loading="lazy">
+          <div class="ph">추억의 소리 들으러 가기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
-      </a>
-
-      <a class="card card-3" href="/trendy" data-reveal="">
-        <div>
-          <div class="top">
-            <span class="idx">TREND</span>
-            <span class="tag">시대별 유행어 사전</span>
-          </div>
-          <h3 class="title">말동무<br>사전</h3>
-          <p class="desc">1970년대부터 요즘 신조어까지, 손주들 말도 술술 이해하는 재미있는 유행어 사전.</p>
-        </div>
-        <div class="visual">
-          <img src="/img/cards/card-trendy.svg" alt="라디오와 세대별 말풍선" loading="lazy">
-          <div class="ph">유행어 구경하기</div>
-        </div>
-        <span class="arrow-cta" aria-hidden="true">→</span>
-      </a>
-
-      <!-- 게임 카드는 추억의 오락실로 교체(2026-06-26) — 뇌건강게임은 메인 "오늘의 두뇌 운동"이 전부이므로 카드 불필요해짐 -->
-      <a class="card card-4" href="/arcade" data-reveal="">
+      </a></div></section>
+    <section class="mk-sec" id="sec-play" style="--sc:#5B8A48"><h2 class="mk-sec-h"><span class="mk-sec-ic">🎴</span>놀이·두뇌<span class="mk-sec-n">3</span></h2><div class="cards"><a class="card card-4" data-key="arcade" data-cat="play" href="/arcade" data-reveal=""><button class="mk-star" data-key="arcade" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">PLAY</span>
@@ -1782,9 +1814,7 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <!-- 봄이네 사랑방 1호 — 봄이와 맞고 (2026-07-03 독립 카드 승격, Macho 승인) -->
-      <a class="card card-5" href="/matgo" data-reveal="">
+<a class="card card-5" data-key="matgo" data-cat="play" href="/matgo" data-reveal=""><button class="mk-star" data-key="matgo" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">HWATU</span>
@@ -1799,9 +1829,22 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <!-- 봄이의 꿈 풀이 — 파일럿 앱 편입(2026-07-10, 구글AI스튜디오→봄이 공용AI로 전환) -->
-      <a class="card card-6" href="/dream" data-reveal="">
+<a class="card card-7" data-key="gag" data-cat="play" href="/gag" data-reveal=""><button class="mk-star" data-key="gag" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">HUMOR</span>
+            <span class="tag">봄이네 사랑방</span>
+          </div>
+          <h3 class="title">오늘의<br>아재퀴즈</h3>
+          <p class="desc">피식 웃게 되는 아재개그와 넌센스 퀴즈. 긁으면 정답이 나오는 재미로 매일 한 번 웃어요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-gag.svg" alt="웃는 얼굴과 물음표 말풍선" loading="lazy">
+          <div class="ph">오늘의 유머 보기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a></div></section>
+    <section class="mk-sec" id="sec-mind" style="--sc:#8A6FA8"><h2 class="mk-sec-h"><span class="mk-sec-ic">🍃</span>마음·쉼<span class="mk-sec-n">5</span></h2><div class="cards"><a class="card card-6" data-key="dream" data-cat="mind" href="/dream" data-reveal=""><button class="mk-star" data-key="dream" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">DREAM</span>
@@ -1816,8 +1859,7 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <a class="card card-7" href="/plant" data-reveal="">
+<a class="card card-7" data-key="plant" data-cat="mind" href="/plant" data-reveal=""><button class="mk-star" data-key="plant" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">PLANT</span>
@@ -1832,8 +1874,7 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <a class="card card-8" href="/guppy" data-reveal="">
+<a class="card card-8" data-key="guppy" data-cat="mind" href="/guppy" data-reveal=""><button class="mk-star" data-key="guppy" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">AQUARIUM</span>
@@ -1848,26 +1889,7 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <!-- 오늘의 아재퀴즈 — 파일럿 앱 편입(2026-07-11, 자체 Firebase DB 유지) -->
-      <a class="card card-7" href="/gag" data-reveal="">
-        <div>
-          <div class="top">
-            <span class="idx">HUMOR</span>
-            <span class="tag">봄이네 사랑방</span>
-          </div>
-          <h3 class="title">오늘의<br>아재퀴즈</h3>
-          <p class="desc">피식 웃게 되는 아재개그와 넌센스 퀴즈. 긁으면 정답이 나오는 재미로 매일 한 번 웃어요.</p>
-        </div>
-        <div class="visual">
-          <img src="/img/cards/card-gag.svg" alt="웃는 얼굴과 물음표 말풍선" loading="lazy">
-          <div class="ph">오늘의 유머 보기</div>
-        </div>
-        <span class="arrow-cta" aria-hidden="true">→</span>
-      </a>
-
-      <!-- 마음결 — 파일럿 앱 편입(2026-07-11, 구글AI스튜디오→봄이 공용AI) -->
-      <a class="card card-8" href="/maeum" data-reveal="">
+<a class="card card-8" data-key="maeum" data-cat="mind" href="/maeum" data-reveal=""><button class="mk-star" data-key="maeum" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">MIND</span>
@@ -1882,9 +1904,52 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <!-- 시니어 대환장 토론장 — 파일럿 앱 편입(2026-07-11) -->
-      <a class="card card-9" href="/debate" data-reveal="">
+<a class="card card-10" data-key="maeumlab" data-cat="mind" href="/maeumlab" data-reveal=""><button class="mk-star" data-key="maeumlab" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">MIND LAB</span>
+            <span class="tag">마음 들여다보기</span>
+          </div>
+          <h3 class="title">마음<br>실험실</h3>
+          <p class="desc">재미난 마음 실험으로 나도 몰랐던 내 마음을 가만히 들여다봐요. 따뜻한 풀이는 덤이에요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-maeumlab.svg" alt="분홍빛 액체가 담긴 플라스크와 하트" loading="lazy">
+          <div class="ph">실험 시작하기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a></div></section>
+    <section class="mk-sec" id="sec-life" style="--sc:#3E7C8C"><h2 class="mk-sec-h"><span class="mk-sec-ic">💬</span>생활·소통<span class="mk-sec-n">4</span></h2><div class="cards"><a class="card card-2" data-key="health" data-cat="life" href="/health" data-reveal=""><button class="mk-star" data-key="health" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">NOURISH</span>
+            <span class="tag">맞춤형 건강 가이드</span>
+          </div>
+          <h3 class="title">건강<br>돋보기</h3>
+          <p class="desc">내 몸에 꼭 맞는 영양 한 알, 매일 아침 전해드리는 건강 비결.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-health.svg" alt="돋보기와 영양제, 허브잎" loading="lazy">
+          <div class="ph">건강 정보 확인하기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+<a class="card card-3" data-key="trendy" data-cat="life" href="/trendy" data-reveal=""><button class="mk-star" data-key="trendy" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">TREND</span>
+            <span class="tag">시대별 유행어 사전</span>
+          </div>
+          <h3 class="title">말동무<br>사전</h3>
+          <p class="desc">1970년대부터 요즘 신조어까지, 손주들 말도 술술 이해하는 재미있는 유행어 사전.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-trendy.svg" alt="라디오와 세대별 말풍선" loading="lazy">
+          <div class="ph">유행어 구경하기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+<a class="card card-9" data-key="debate" data-cat="life" href="/debate" data-reveal=""><button class="mk-star" data-key="debate" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">DEBATE</span>
@@ -1899,26 +1964,7 @@
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
-
-      <!-- 마음 실험실 — 파일럿 앱 편입(2026-07-12, 구글AI스튜디오→봄이 공용AI, 상담가 톤) -->
-      <a class="card card-10" href="/maeumlab" data-reveal="">
-        <div>
-          <div class="top">
-            <span class="idx">MIND LAB</span>
-            <span class="tag">마음 들여다보기</span>
-          </div>
-          <h3 class="title">마음<br>실험실</h3>
-          <p class="desc">재미난 마음 실험으로 나도 몰랐던 내 마음을 가만히 들여다봐요. 따뜻한 풀이는 덤이에요.</p>
-        </div>
-        <div class="visual">
-          <img src="/img/cards/card-maeumlab.svg" alt="분홍빛 액체가 담긴 플라스크와 하트" loading="lazy">
-          <div class="ph">실험 시작하기</div>
-        </div>
-        <span class="arrow-cta" aria-hidden="true">→</span>
-      </a>
-
-      <!-- 시니어 직업 상담소 — 노출(2026-07-24 Macho 승인). 복지넷 실공고 크롤(전국 노인복지관·주야간보호·요양·재가) + 전화상담 신청 + 봄이 튜토리얼. 워크넷 공공API는 키 대기(킵목록 12). -->
-      <a class="card card-11" href="/jobs" data-reveal="">
+<a class="card card-11" data-key="jobs" data-cat="life" href="/jobs" data-reveal=""><button class="mk-star" data-key="jobs" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">JOBS</span>
@@ -1932,30 +1978,8 @@
           <div class="ph">내 일자리 찾기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
-      </a>
-
-      <!-- 온기 — 파일럿 앱 편입(2026-07-27, 추억의 소리 사운드스케이프 13종) -->
-      <a class="card card-12" href="/ongi" data-reveal="">
-        <div>
-          <div class="top">
-            <span class="idx">ONGI</span>
-            <span class="tag">잠 못 드는 밤</span>
-          </div>
-          <h3 class="title">추억의<br>소리, 온기</h3>
-          <p class="desc">간이역 난로, 아궁이 장작불, 처마 밑 풍경 소리… 마음이 사르르 풀리는 열세 가지 추억의 소리로 오늘 밤 포근히 쉬어가세요.</p>
-        </div>
-        <div class="visual">
-          <img src="/img/cards/card-ongi.svg" alt="따뜻한 등불과 번지는 소리" loading="lazy">
-          <div class="ph">추억의 소리 들으러 가기</div>
-        </div>
-        <span class="arrow-cta" aria-hidden="true">→</span>
-      </a>
-
-      <!-- (건강 카드뉴스는 건강 돋보기 '건강 이야기' 탭 안으로 이동 — 2026-07-25.
-           홈에 건강 입구가 2개면 시니어가 망설임. /cardnews 라우트는 그대로 살아있음) -->
-
-      <!-- (다시봄 서재는 '나의 추억, 너의 기억'(자서전) 안으로 이동) -->
-    </div>
+      </a></div></section>
+  
 
     <!-- 마음의 유언 — 메인 노출은 아직 이름(2026-06-24, Macho). 링크(/letter)는 살아있음, 메인 배너만 숨김.
     <a class="letter-tease" href="/letter" data-reveal="">
@@ -4224,5 +4248,41 @@ body.dark #dsbSoundInvite .si-text{color:#e8d9c2}
   // 팝업 좌측 상단에 봄이가 걸쳐 등장(브랜딩 공용 규칙)
   BomPop.bind({ overlay:'#storyModal', box:'.story-modal-card', face:'bom_grin' }); // 이름의 의미
 </script>
+<script>
+/* 홈 즐겨찾기·자주 보는 것·최근·봄이 안내 (2026-07-28 Macho 반영). 콘텐츠 소비는 API 0. */
+(function(){
+  var CARD_DATA={"memoir": {"title": "나의 추억, 너의 기억", "svg": "/img/cards/card-memoir.svg", "color": "#C67A3A"}, "health": {"title": "건강 돋보기", "svg": "/img/cards/card-health.svg", "color": "#3E7C8C"}, "trendy": {"title": "말동무 사전", "svg": "/img/cards/card-trendy.svg", "color": "#3E7C8C"}, "arcade": {"title": "추억의 오락실", "svg": "/img/cards/card-arcade.svg", "color": "#5B8A48"}, "matgo": {"title": "봄이와 맞고", "svg": "/img/cards/card-matgo.svg", "color": "#5B8A48"}, "dream": {"title": "봄이의 꿈 풀이", "svg": "/img/cards/card-dream.svg", "color": "#8A6FA8"}, "plant": {"title": "수다쟁이 화분", "svg": "/img/cards/card-plant.svg", "color": "#8A6FA8"}, "guppy": {"title": "우리집 구피 어항", "svg": "/img/cards/card-guppy.svg", "color": "#8A6FA8"}, "gag": {"title": "오늘의 아재퀴즈", "svg": "/img/cards/card-gag.svg", "color": "#5B8A48"}, "maeum": {"title": "마음결 성향 백서", "svg": "/img/cards/card-maeum.svg", "color": "#8A6FA8"}, "debate": {"title": "대환장 토론장", "svg": "/img/cards/card-debate.svg", "color": "#3E7C8C"}, "maeumlab": {"title": "마음 실험실", "svg": "/img/cards/card-maeumlab.svg", "color": "#8A6FA8"}, "jobs": {"title": "시니어 직업 상담소", "svg": "/img/cards/card-jobs.svg", "color": "#3E7C8C"}, "ongi": {"title": "추억의 소리, 온기", "svg": "/img/cards/card-ongi.svg", "color": "#C67A3A"}};
+  var _DEF=["matgo","plant","memoir","ongi"];
+  function _ls(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
+  function _sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+  var favs=_ls("dsb_favs",[]);
+  var usage=_ls("dsb_usage",{});
+  function recordVisit(k){if(!CARD_DATA[k])return;var u=usage[k]||{c:0,t:0};u.c++;u.t=Date.now();usage[k]=u;_sv("dsb_usage",usage);}
+  function topFreq(n){return Object.keys(usage).filter(function(k){return CARD_DATA[k];}).sort(function(a,b){return (usage[b].c-usage[a].c)||(usage[b].t-usage[a].t);}).slice(0,n);}
+  function recentN(n){return Object.keys(usage).filter(function(k){return CARD_DATA[k];}).sort(function(a,b){return usage[b].t-usage[a].t;}).slice(0,n);}
+  function tile(k,badge){var d=CARD_DATA[k];if(!d)return "";return '<a class="mk-fav-tile" href="/'+k+'" data-key="'+k+'"><img src="'+d.svg+'" alt=""><span class="t">'+d.title+'</span>'+(badge?'<span class="rec">'+badge+'</span>':'')+'</a>';}
+  function syncStars(){document.querySelectorAll(".mk-star").forEach(function(b){var on=favs.indexOf(b.getAttribute("data-key"))>=0;b.textContent=on?"★":"☆";b.classList.toggle("on",on);b.setAttribute("aria-pressed",on?"true":"false");});}
+  function renderFavs(){
+    var row=document.getElementById("mkFavRow"),hint=document.getElementById("mkFavHint");if(!row)return;
+    if(favs.length){row.innerHTML=favs.map(function(k){return tile(k,null);}).join("");hint.textContent="☆ 로 더 담거나 뺄 수 있어요";}
+    else{var f=topFreq(4);if(f.length){row.innerHTML=f.map(function(k){return tile(k,"자주 보심");}).join("");hint.textContent="자주 여신 걸 봄이가 자동으로 올려뒀어요 — ☆ 로 고정할 수도 있어요";}
+    else{row.innerHTML=_DEF.map(function(k){return tile(k,"추천");}).join("");hint.textContent="자주 보실 콘텐츠의 ☆ 를 눌러 여기 올려두세요";}}
+    var rc=document.getElementById("mkRecent"),rr=document.getElementById("mkRecentRow"),r3=recentN(3);
+    if(rc){if(r3.length){rc.style.display="block";rr.innerHTML=r3.map(function(k){var d=CARD_DATA[k];return '<a class="mk-recent-chip" href="/'+k+'"><img src="'+d.svg+'"><span>'+d.title+'</span></a>';}).join("");}else{rc.style.display="none";}}
+    syncStars();updateFavGuide();
+  }
+  function dismissFavGuide(){var g=document.getElementById("mkFavGuide");if(g)g.style.display="none";try{localStorage.setItem("dsb_fav_guide_ts",String(Date.now()));}catch(e){}}
+  window.dsbDismissFavGuide=dismissFavGuide;
+  function updateFavGuide(){var g=document.getElementById("mkFavGuide");if(!g)return;if(favs.length>0){g.style.display="none";return;}var ts=0;try{ts=parseInt(localStorage.getItem("dsb_fav_guide_ts")||"0",10);}catch(e){}if((Date.now()-ts)<3600000)return;g.style.display="flex";try{localStorage.setItem("dsb_fav_guide_ts",String(Date.now()));}catch(e){}}
+  document.addEventListener("click",function(e){var b=e.target.closest(".mk-star");if(!b)return;e.preventDefault();e.stopPropagation();var k=b.getAttribute("data-key"),i=favs.indexOf(k);if(i>=0)favs.splice(i,1);else favs.push(k);_sv("dsb_favs",favs);renderFavs();},true);
+  document.addEventListener("click",function(e){if(e.target.closest(".mk-star"))return;var a=e.target.closest(".mk-sec .card, .mk-fav-tile, .mk-recent-chip");if(!a)return;var k=a.getAttribute("data-key")||(a.getAttribute("href")||"").replace(/^\//,"").split("/")[0];recordVisit(k);});
+  var _lk=[].slice.call(document.querySelectorAll(".mk-navlink"));
+  var _sc=_lk.map(function(a){return document.getElementById("sec-"+a.getAttribute("data-sec"));});
+  function _spy(){var y=window.scrollY+96,idx=0;_sc.forEach(function(s,i){if(s&&(s.getBoundingClientRect().top+window.scrollY-96)<=y)idx=i;});_lk.forEach(function(a,i){a.classList.toggle("on",i===idx);});}
+  window.addEventListener("scroll",_spy,{passive:true});
+  renderFavs();_spy();
+})();
+</script>
+
 </body>
 </html>
