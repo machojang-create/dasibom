@@ -2072,9 +2072,10 @@
 <script src="/dasibom-share.js?v=1"></script>
 <script src="/dasibom-points.js?v=1"></script>
 <script>
-  // 홈 방문 = 일일 출석 꽃잎(하루 1회). ?ref= 공유 유입은 dasibom-points.js가 자동 처리.
+  // 출석 꽃잎은 dasibom-points.js의 autoAttend가 '오늘 첫 활동' 때 봄이 팝업으로 지급(어느 콘텐츠에서든).
+  // 여기선 꽃잎 잔액·초대 카드만 렌더. ?ref= 공유 유입도 dasibom-points.js가 자동 처리.
   (function(){
-    function go(){ if(!window.DasibomPoints) return false; DasibomPoints.earn('attend'); DasibomPoints.card('dsbPointsCard'); return true; }
+    function go(){ if(!window.DasibomPoints) return false; DasibomPoints.card('dsbPointsCard'); return true; }
     if(!go()) window.addEventListener('load',go);
   })();
 </script>

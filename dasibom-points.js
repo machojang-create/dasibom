@@ -115,6 +115,68 @@
     } catch (e) {}
   }
 
+  /* ── 출석(하루 첫 활동) 봄이 팝업(2026-07-27 Macho) ──
+     "출석 = 활동 인지"를 명확히: 오늘 첫 활동 때 봄이가 나와 꽃잎을 건넨다.
+     작은 토스트로 스쳐 지나가면 어르신이 못 알아채므로 중앙 팝업으로. */
+  function _ensureAttendCss() {
+    if (document.getElementById('dsbattCss')) return;
+    var s = document.createElement('style'); s.id = 'dsbattCss';
+    s.textContent =
+      '.dsbatt-ov{position:fixed;inset:0;z-index:100000;display:flex;align-items:center;justify-content:center;' +
+      'background:rgba(30,22,10,.42);backdrop-filter:blur(2px);transition:opacity .26s;' +
+      "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;padding:24px}" +
+      '.dsbatt-box{background:linear-gradient(160deg,#FFFDF7,#F5ECD6);border:1px solid #E7DCBE;border-radius:28px;' +
+      'padding:26px 26px 22px;max-width:340px;width:100%;text-align:center;box-shadow:0 26px 60px -24px rgba(90,60,10,.6);' +
+      'animation:dsbattPop .5s cubic-bezier(.34,1.7,.5,1) both}' +
+      '@keyframes dsbattPop{0%{opacity:0;transform:translateY(22px) scale(.7)}60%{opacity:1;transform:translateY(-5px) scale(1.05)}100%{opacity:1;transform:translateY(0) scale(1)}}' +
+      '.dsbatt-face{width:96px;height:96px;border-radius:50%;object-fit:cover;object-position:center top;background:#fff;' +
+      'border:3px solid #fff;box-shadow:0 8px 20px -8px rgba(0,0,0,.35);margin:-58px auto 8px;display:block}' +
+      '.dsbatt-t{font-size:22px;font-weight:900;color:#33492A;margin-top:4px}' +
+      '.dsbatt-p{font-size:18px;font-weight:800;color:#5b3a1a;margin:10px 0 6px}' +
+      '.dsbatt-p b{color:#D06A8C;font-size:22px}' +
+      '.dsbatt-s{font-size:14px;line-height:1.6;color:#8a7a5c;word-break:keep-all;margin-bottom:16px}' +
+      '.dsbatt-btn{display:block;width:100%;border:none;border-radius:50px;padding:15px;cursor:pointer;' +
+      "font-family:inherit;font-weight:900;font-size:17px;color:#241B06;background:linear-gradient(145deg,#F2B8CE,#E58AAE)}" +
+      '.dsbatt-btn:active{transform:scale(.99)}' +
+      '@media (prefers-reduced-motion:reduce){.dsbatt-box{animation:none}}';
+    document.head.appendChild(s);
+  }
+  function attendPopup(amount) {
+    try {
+      if (document.getElementById('dsbAttendPop')) return;
+      _ensureAttendCss();
+      var face = (window.BOM_GUIDE && window.BOM_GUIDE.face) || 'bom_cheer.png';
+      var wrap = document.createElement('div');
+      wrap.id = 'dsbAttendPop'; wrap.className = 'dsbatt-ov';
+      wrap.innerHTML =
+        '<div class="dsbatt-box" role="dialog" aria-live="polite">' +
+        '<img class="dsbatt-face" src="/img/' + escHtml(face) + '" alt="봄이" onerror="this.src=\'/img/bom_smile.png\'">' +
+        '<div class="dsbatt-t">오늘도 와주셨네요!</div>' +
+        '<div class="dsbatt-p">' + PETAL_SVG + ' 출석 꽃잎 <b>+' + amount + '</b></div>' +
+        '<div class="dsbatt-s">내일도 만나요. 자주 들를수록 꽃잎이 소복이 쌓인답니다.</div>' +
+        '<button type="button" class="dsbatt-btn">고마워요 🌸</button>' +
+        '</div>';
+      document.body.appendChild(wrap);
+      var closed = false;
+      function close() { if (closed) return; closed = true; wrap.style.opacity = '0'; setTimeout(function () { wrap.remove(); }, 280); }
+      wrap.querySelector('.dsbatt-btn').addEventListener('click', close);
+      wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+      setTimeout(close, 7000);   // 어르신이 놓쳐도 자동 정리
+    } catch (e) {}
+  }
+
+  // 오늘 첫 '활동'(머무름 + 조작 1회) 때 자동으로 출석 꽃잎 지급 + 봄이 팝업.
+  //   페이지를 그냥 훑기만 하면 안 주고(어뷰징 차단), 실제로 머물러 뭔가 눌렀을 때 인정.
+  function autoAttend() {
+    try { if (localStorage.getItem('dsbpt_attend_' + new Date().toISOString().slice(0, 10))) return; } catch (e) {}
+    var timeOk = false, interacted = false, done = false;
+    var evs = ['pointerdown', 'keydown', 'touchstart'];
+    function onI() { interacted = true; go(); }
+    function go() { if (done || !timeOk || !interacted) return; done = true; evs.forEach(function (e) { document.removeEventListener(e, onI, true); }); DasibomPoints.attend(); }
+    evs.forEach(function (e) { document.addEventListener(e, onI, true); });
+    setTimeout(function () { timeOk = true; go(); }, 6000);
+  }
+
   var DasibomPoints = {
     // 콘텐츠 이용 적립(하루 1회/콘텐츠). silent=true면 토스트 없이.
     earn: function (event, opt) {
@@ -129,6 +191,20 @@
           try { localStorage.setItem(lk, '1'); } catch (e) {}   // 오늘은 더 안 부름(지급/이미받음 무관)
           var d = r && r.data;
           if (d && d.ok && d.awarded && !opt.silent) { toast(POINT_ICON + ' ' + POINT_NAME + ' +' + d.awarded); refreshBadges(); }
+        }).catch(function () {});
+      });
+    },
+    // 출석(하루 첫 활동) — 서버가 하루 1회 판정(awardPoints attend). 지급되면 봄이 팝업.
+    attend: function () {
+      var day = new Date().toISOString().slice(0, 10);
+      var lk = 'dsbpt_attend_' + day;
+      try { if (localStorage.getItem(lk)) return; } catch (e) {}
+      whenReady(function () {
+        var f = fn('awardPoints'); if (!f) return;
+        f({ event: 'attend' }).then(function (r) {
+          try { localStorage.setItem(lk, '1'); } catch (e) {}   // 지급/이미받음 무관 오늘은 더 안 부름
+          var d = r && r.data;
+          if (d && d.ok && d.awarded) { attendPopup(d.awarded); refreshBadges(); }
         }).catch(function () {});
       });
     },
@@ -428,6 +504,7 @@
     handleReferral();
     // 공유 토큰 선발급 — 모든 콘텐츠의 공유 버튼이 클릭 순간 동기로 ?ref=를 붙일 수 있게
     DasibomPoints.refLink(function () {});
+    autoAttend();   // 오늘 첫 활동 → 출석 꽃잎 + 봄이 팝업(어느 콘텐츠에서든)
     mountMasterPetalTool();
     // 결제 서버 예열(2026-07-21): 꽃잎 소비가 있는 페이지는 입장 즉시 spendPoints를 깨워둔다 —
     // 콜드 2.3초 → 실제 구매 시점엔 웜 0.1초. 실측 근거로 도입.

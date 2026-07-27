@@ -328,19 +328,20 @@ export default function App() {
     return () => clearInterval(t);
   }, []);
   const spendBusyRef = useRef(false);   // ★결제 연타 잠금 — 중복 결제 방지(2026-07-21)
+  const [spending, setSpending] = useState(false);   // 구입 처리 중 화면 블로킹 인디케이터(2026-07-27 Macho)
   const spendPetal = useCallback((item: string, cb: (ok: boolean) => void) => {
     const P = dsb();
     if (!P) { showToast('연결 대기', '잠시 후 다시 시도해 주세요', '🌸'); cb(false); return; }
     if (spendBusyRef.current) { showToast('한 박자만요', '방금 요청을 처리하고 있어요', '⏳'); cb(false); return; }
-    spendBusyRef.current = true;
+    spendBusyRef.current = true; setSpending(true);
     // 즉각 반응(2026-07-23 전수점검): 서버 확인이 3초쯤 걸릴 수 있어 그동안 '무반응'처럼 보이던 문제 — 누르는 순간 안내
     showToast('꽃잎 세는 중', '금방 확인해 드릴게요', '🌸');
     let settled = false;
-    const safety = setTimeout(() => { if (!settled) { settled = true; spendBusyRef.current = false; showToast('연결이 늦어요', '조금 뒤 다시 시도해 주세요', '🌸'); cb(false); } }, 12000);
+    const safety = setTimeout(() => { if (!settled) { settled = true; spendBusyRef.current = false; setSpending(false); showToast('연결이 늦어요', '조금 뒤 다시 시도해 주세요', '🌸'); cb(false); } }, 12000);
     P.spend(item, (err: any, d: any) => {
       if (settled) return;
       settled = true; clearTimeout(safety);
-      spendBusyRef.current = false;
+      spendBusyRef.current = false; setSpending(false);
       if (err || !d || !d.ok) {
         if (d && d.balance != null) setPetals(d.balance);
         showToast('꽃잎이 모자라요', '다른 콘텐츠를 즐기고 친구에게 공유하면 꽃잎이 모여요 🌸', '🌸');
@@ -1155,6 +1156,17 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#eaf2f8] text-slate-800 flex flex-col p-1 sm:p-2 md:p-3 gap-1 sm:gap-2 tracking-tight font-sans font-medium pb-[78px]">
       
+      {/* 구입 처리 중 화면 블로킹 — 콜백 오기 전 다른 버튼 눌러 생기던 버그 방지(2026-07-27 Macho) */}
+      {spending && (
+        <div className="fixed inset-0 z-[130] flex flex-col items-center justify-center bg-black/35 backdrop-blur-[2px]" style={{ pointerEvents: 'auto' }} aria-live="polite">
+          <div className="bg-white rounded-3xl px-8 py-7 shadow-2xl flex flex-col items-center gap-3 max-w-[280px] mx-6">
+            <div className="w-12 h-12 rounded-full border-4 border-sky-200 border-t-sky-500 animate-spin"></div>
+            <div className="text-[17px] font-black text-sky-700">구입 처리 중이에요</div>
+            <div className="text-[14px] text-slate-500 font-semibold text-center leading-relaxed">잠깐만 기다려 주세요.<br />다른 건 그다음에 눌러요 🐠</div>
+          </div>
+        </div>
+      )}
+
       {/* 구입 축하 연출 — 봄이 등장(2026-07-24) */}
       <BuyCele cele={cele} onClose={() => setCele(null)} />
 

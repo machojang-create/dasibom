@@ -270,22 +270,23 @@ export default function App() {
   // ★결제 잠금: 서버 응답(1~3초) 전의 연타를 전부 무시 — 중복 결제 방지(2026-07-21 버그 수정)
   const [cele, setCele] = useState<Cele | null>(null);   // 구입 축하 연출(2026-07-24)
   const spendBusyRef = useRef(false);
+  const [spending, setSpending] = useState(false);   // 구입 처리 중 화면 블로킹 인디케이터(2026-07-27 Macho)
   // celeName: 상점 구매(씨앗·화분·자리)면 봄이 축하 카드를 띄운다. 물·영양제는 전용 연출이 있어 안 띄움.
   const guardedSpend = (item: string, cb: (err: any, d: any) => void, celeName?: string) => {
     if (spendBusyRef.current) return false;
     const P = dsb(); if (!P) return false;
-    spendBusyRef.current = true;
+    spendBusyRef.current = true; setSpending(true);
     // 즉각 반응(2026-07-23): 서버 확인 몇 초 사이가 '무반응'처럼 보이지 않게 — 누르는 순간 말을 건다
     plantSay('꽃잎 세어 보꾸마, 한 숨만 기다리 주라...');
     lastUserSpeakRef.current = Date.now();
     let settled = false;
     const safety = setTimeout(() => {   // 서버 무응답 시 잠금이 영원히 안 풀리던 구멍(2026-07-22)
-      if (!settled) { settled = true; spendBusyRef.current = false; cb({ code: 'timeout' }, null); }
+      if (!settled) { settled = true; spendBusyRef.current = false; setSpending(false); cb({ code: 'timeout' }, null); }
     }, 12000);
     P.spend(item, (err: any, d: any) => {
       if (settled) return;
       settled = true; clearTimeout(safety);
-      spendBusyRef.current = false;
+      spendBusyRef.current = false; setSpending(false);
       // 구입 축하 연출(2026-07-24) — 봄이 등장·차감액(서버 d.spent)·다음 안내
       if (!err && d && d.ok && celeName) {
         const info = plantBuyInfo(item, item === 'seed' ? celeName : undefined, item.indexOf('pot') === 0 ? celeName : undefined);
@@ -992,6 +993,15 @@ export default function App() {
         ))}
       </div>
 
+      {spending && (
+        <div className="fixed inset-0 z-[120] flex flex-col items-center justify-center bg-black/35 backdrop-blur-[2px]" style={{ pointerEvents: 'auto' }} aria-live="polite">
+          <div className="bg-white rounded-3xl px-8 py-7 shadow-2xl flex flex-col items-center gap-3 max-w-[280px] mx-6">
+            <div className="w-12 h-12 rounded-full border-4 border-green-200 border-t-green-500 animate-spin"></div>
+            <div className="text-[17px] font-black text-[#2f6b52]">구입 처리 중이에요</div>
+            <div className="text-[14px] text-gray-500 font-semibold text-center leading-relaxed">잠깐만 기다려 주세요.<br />다른 건 그다음에 눌러요 🌱</div>
+          </div>
+        </div>
+      )}
       <BuyCele cele={cele} onClose={() => setCele(null)} />
       <Shop isOpen={isShopOpen} onClose={() => setIsShopOpen(false)} onBuySeed={buySeed} money={money} isSlotFull={currentPlant !== null} />
       <EncyclopediaView isOpen={isEncyclopediaOpen} onClose={() => setIsEncyclopediaOpen(false)} entries={encyclopedia} badges={badges} memorials={memorials} />
