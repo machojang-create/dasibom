@@ -2576,14 +2576,55 @@
       if(!_w.img) _w.img = '/img/wisdom/w_' + _i + '.jpg';
       renderWisdom(_w);
     }
-    // Firebase에 오늘 날짜로 등록된 커스텀 명언이 있으면 덮어쓰기
+    // 2026-07-27(Macho): 일일명언을 사전제작 365 풀로 전환 → AI 덮어쓰기(RTDB wisdoms/) 제거.
+    //   더는 API를 호출하지 않는다. 풀 한 바퀴(365일) 소진 30일 전, 마스터에게만 재생산 알람.
+    checkWisdomRefillAlarm();
+  }
+
+  /* ── 명언 풀 재생산 알람(마스터 전용) ──
+     사전제작 365개가 1년에 한 바퀴 돈다(getDayIndex mod 365). 다음 바퀴가 30일 남으면
+     오너(Macho)에게만 홈에서 알림 — "새 365개를 준비하세요". 일반 사용자에겐 안 뜸.
+     하루 1회만(그날 닫으면 다음날 다시). API 호출 없음. */
+  function checkWisdomRefillAlarm() {
     try {
-      var d=new Date();
-      var todayKey=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-      firebase.database().ref('wisdoms/'+todayKey).once('value')
-        .then(function(snap){ if(snap.val()) renderWisdom(snap.val()); })
-        .catch(function(){});
-    } catch(e) {}
+      var pool = window.WISDOM_POOL; if (!pool || !pool.length) return;
+      var d = new Date(), start = new Date(2026, 0, 1);
+      var cyclePos = ((Math.floor((d - start) / 86400000) % pool.length) + pool.length) % pool.length; // 0..len-1
+      var daysLeft = pool.length - cyclePos; // 이번 바퀴 남은 일수
+      if (daysLeft > 30) return; // 30일 초과 남으면 조용
+      var day = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+      if (localStorage.getItem('wisdom_refill_dismiss_' + day)) return; // 오늘 이미 닫음
+      if (typeof firebase === 'undefined' || !firebase.auth) return;
+      firebase.auth().onAuthStateChanged(function (u) {
+        if (!u) return;
+        var email = (u.email || '');
+        if (['machojang@gmail.com', 'machojang@naver.com'].indexOf(email) >= 0) { showWisdomRefillAlarm(daysLeft, day); return; }
+        try {
+          firebase.firestore && firebase.firestore().collection('admin_roles').doc(u.uid).get().then(function (r) {
+            var v = r.exists ? r.data() : null;
+            if (v && v.status === 'approved' && (v.role === 'master' || v.role === 'owner')) showWisdomRefillAlarm(daysLeft, day);
+          }).catch(function(){});
+        } catch (e) {}
+      });
+    } catch (e) {}
+  }
+  function showWisdomRefillAlarm(daysLeft, day) {
+    if (document.getElementById('wisdomRefillAlarm')) return;
+    var box = document.createElement('div');
+    box.id = 'wisdomRefillAlarm';
+    box.style.cssText = 'position:fixed;left:12px;right:12px;bottom:16px;max-width:520px;margin:0 auto;z-index:99992;' +
+      'background:#2b2016;color:#f6ead2;border:1px solid #6b5636;border-radius:16px;padding:14px 16px;' +
+      "box-shadow:0 14px 34px -12px rgba(0,0,0,.55);font-family:'Pretendard','Malgun Gothic',sans-serif;font-size:14px;line-height:1.55";
+    box.innerHTML =
+      '<div style="font-weight:900;font-size:15px;margin-bottom:4px">📖 오늘의 지혜 · 재생산 알림 (관리자)</div>' +
+      '<div>사전제작 명언 365개가 <b style="color:#ffd98a">' + daysLeft + '일 뒤</b> 한 바퀴를 다 돕니다. ' +
+      '새 365개를 준비할 시점이에요. <br>봄이(클로드)에게 <b>“명언 365개 새로 만들어 교체”</b>라고 요청하세요.</div>' +
+      '<div style="text-align:right;margin-top:8px"><button type="button" style="border:none;background:#6b5636;color:#fff;font-weight:800;padding:8px 16px;border-radius:50px;cursor:pointer">오늘은 닫기</button></div>';
+    box.querySelector('button').addEventListener('click', function () {
+      try { localStorage.setItem('wisdom_refill_dismiss_' + day, '1'); } catch (e) {}
+      box.remove();
+    });
+    document.body.appendChild(box);
   }
 
   /* ── 공유 포인트 (일 최대 3회 × 20P) ── */

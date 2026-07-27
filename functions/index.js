@@ -1689,15 +1689,17 @@ async function _saveWisdom(wisdom) {
   return rtdbRef.key;
 }
 
-// ── 매일 오전 6시 (KST) 자동 생성 ──────────────────────────────────────────
+// ── 일일명언: 사전 제작 365개 풀(wisdom_pool.js)로 전환(2026-07-27 Macho) ──────
+//   매일 AI 생성을 중단(비용 0). 표시는 클라이언트가 wisdom_pool.js에서 날짜 스케줄로 뽑음.
+//   풀 소진(1년 한 바퀴) 30일 전, 홈에서 마스터에게 재생산 알람이 뜬다.
+//   ※ 크론은 no-op으로 남겨둠(스케줄만 유지, AI 호출 안 함) — 되돌릴 땐 아래 본문 복원.
 exports.generateDailyWisdom = functions
   .region('asia-northeast3')
   .pubsub.schedule('0 21 * * *') // 21:00 UTC = 06:00 KST
   .timeZone('Asia/Seoul')
   .onRun(async () => {
-    const wisdom = await _generateOneWisdom();
-    const key = await _saveWisdom(wisdom);
-    console.log('[generateDailyWisdom] 저장 완료:', wisdom.author, '/ key:', key);
+    console.log('[generateDailyWisdom] 사전제작 365 풀 사용 — AI 생성 비활성(no-op).');
+    return null;
   });
 
 // ── 관리자 수동 즉시 생성 (admin.html 버튼) ──────────────────────────────────
