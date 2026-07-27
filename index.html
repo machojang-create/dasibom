@@ -336,6 +336,7 @@
   body:not(.dark) .card-9{background:#FFE3E3}
   body:not(.dark) .card-10{background:#ECE6F6}
   body:not(.dark) .card-11{background:#DFF0E2} /* 시니어 직업 상담소(대기) — 카드 주석 풀면 사용됨 */
+  body:not(.dark) .card-12{background:#F4E7D6} /* 온기 — 추억의 소리 */
   body:not(.dark) .card:hover{box-shadow:0 20px 34px -18px rgba(120,100,75,.32),0 46px 76px -34px rgba(110,100,80,.46)}
   .card .top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
   .card .idx{font-family:ui-monospace,Menlo,monospace;font-size:12px;letter-spacing:0.16em;color:var(--muted);text-transform:uppercase}
@@ -376,6 +377,7 @@
   .card-8 .visual{background:linear-gradient(135deg,#A8DCC9,#6FBFA5);}
   .card-9 .visual{background:linear-gradient(135deg,#FF9AA2,#E63946);}
   .card-10 .visual{background:linear-gradient(135deg,#B39DDB,#7E57C2);}
+  .card-12 .visual{background:linear-gradient(135deg,#5A3E56,#B67A4C);}
   .card .visual::after{
     content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
     background:linear-gradient(180deg,transparent 58%,rgba(70,55,40,0.18) 100%);
@@ -1895,6 +1897,23 @@
         <div class="visual">
           <img src="/img/cards/card-jobs.svg" alt="가방과 새싹" loading="lazy">
           <div class="ph">내 일자리 찾기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+
+      <!-- 온기 — 파일럿 앱 편입(2026-07-27, 추억의 소리 사운드스케이프 13종) -->
+      <a class="card card-12" href="/ongi" data-reveal="">
+        <div>
+          <div class="top">
+            <span class="idx">ONGI</span>
+            <span class="tag">잠 못 드는 밤</span>
+          </div>
+          <h3 class="title">추억의<br>소리, 온기</h3>
+          <p class="desc">간이역 난로, 아궁이 장작불, 처마 밑 풍경 소리… 마음이 사르르 풀리는 열세 가지 추억의 소리로 오늘 밤 포근히 쉬어가세요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-ongi.svg" alt="따뜻한 등불과 번지는 소리" loading="lazy">
+          <div class="ph">추억의 소리 들으러 가기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>

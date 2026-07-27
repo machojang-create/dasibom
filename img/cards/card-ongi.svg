@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="obg" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#2E2447"/><stop offset="0.55" stop-color="#5A3E56"/><stop offset="1" stop-color="#B67A4C"/>
+    </linearGradient>
+    <radialGradient id="oglow" cx="0.62" cy="0.6" r="0.5">
+      <stop offset="0" stop-color="#FFE1A8" stop-opacity="0.9"/><stop offset="0.5" stop-color="#FFB964" stop-opacity="0.35"/><stop offset="1" stop-color="#FFB964" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="omoon" cx="0.35" cy="0.3" r="0.8"><stop offset="0" stop-color="#FFF8E0"/><stop offset="1" stop-color="#F2D98A"/></radialGradient>
+  </defs>
+  <rect width="800" height="450" fill="url(#obg)"/>
+  <!-- 먼 산 실루엣 -->
+  <path d="M0 330 Q 150 260 320 312 Q 470 356 620 300 Q 720 264 800 300 L800 450 L0 450 Z" fill="#241C3A" opacity="0.45"/>
+  <!-- 소리 물결(온기가 퍼지는 결) -->
+  <g fill="none" stroke="#FFE1A8" stroke-linecap="round">
+    <path d="M 500 300 m -150 0 a 150 150 0 0 1 300 0" opacity="0.10" stroke-width="6"/>
+    <path d="M 500 300 m -110 0 a 110 110 0 0 1 220 0" opacity="0.16" stroke-width="6"/>
+    <path d="M 500 300 m -72 0 a 72 72 0 0 1 144 0" opacity="0.24" stroke-width="6"/>
+  </g>
+  <!-- 등불 온기 -->
+  <ellipse cx="500" cy="300" rx="230" ry="150" fill="url(#oglow)"/>
+  <circle cx="500" cy="300" r="30" fill="#FFDFA0"/>
+  <circle cx="500" cy="300" r="17" fill="#FFF3D2"/>
+  <!-- 초승달 -->
+  <path d="M 250 150 Q 196 108 250 66 Q 176 78 158 152 Q 176 226 250 234 Q 208 214 250 150 Z" fill="url(#omoon)"/>
+  <!-- 별 -->
+  <path d="M 360 90 L 363.4 98.6 L 372 102 L 363.4 105.4 L 360 114 L 356.6 105.4 L 348 102 L 356.6 98.6 Z" fill="#fff" opacity="0.85"/>
+  <path d="M 620 120 L 622.8 127.2 L 630 130 L 622.8 132.8 L 620 140 L 617.2 132.8 L 610 130 L 617.2 127.2 Z" fill="#fff" opacity="0.7"/>
+  <path d="M 150 250 L 152.5 256.5 L 159 259 L 152.5 261.5 L 150 268 L 147.5 261.5 L 141 259 L 147.5 256.5 Z" fill="#fff" opacity="0.6"/>
+</svg>
