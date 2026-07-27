@@ -18,6 +18,21 @@
   <body>
     <div id="root"></div>
 
+    <!-- 다시봄 공용: 봄이 가이드 + 글씨크기 조절(모든 파일럿 공통) -->
+    <script>window.BOM_GUIDE={
+      key:'ongi', face:'bom_calm.png', name:'추억의 소리, 온기',
+      welcome:'{호칭}, 여기는 추억의 소리로 마음을 쉬어가는 곳이에요. 아궁이 장작 타는 소리, 처마 밑 풍경 소리… 눈 감고 가만히 들어보세요 🌙',
+      action:'듣고 싶은 소리를 고른 뒤 가운데 동그란 버튼을 누르면 재생돼요.',
+      tour:[
+        '아궁이·간이역·산속 빗소리처럼 열세 가지 추억의 소리가 있어요. 마음에 드는 걸 골라보세요.',
+        '잠들기 전이라면 타이머를 맞춰두세요. 시간이 되면 소리가 스르륵 잦아든답니다.',
+        '맨 아래로 내리면 방명록이 있어요. 어떤 소리가 좋았는지 한 줄 남겨보세요.'
+      ]
+    };</script>
+    <script src="/bom_voice.js?v=12"></script>
+    <script src="/dasibom-bomguide.js?v=2"></script>
+    <script src="/dasibom-fontsize.js"></script>
+
     <!-- 온기 방명록 — 공용 댓글 폼(사람들의 반응). #root 아래 body 스크롤로 닿음 -->
     <section id="ongiGuestbook" style="position:relative;z-index:20;background:#14110d;border-top:1px solid rgba(255,255,255,.08);padding:34px 0 130px;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif">
       <h2 style="text-align:center;color:#f0e6d2;font-size:19px;font-weight:800;margin:0 0 4px">오늘 밤, 마음 한 줄</h2>
