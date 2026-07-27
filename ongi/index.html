@@ -9,6 +9,22 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- 온기 방명록 — 공용 댓글 폼(사람들의 반응). #root 아래 body 스크롤로 닿음 -->
+    <section id="ongiGuestbook" style="position:relative;z-index:20;background:#14110d;border-top:1px solid rgba(255,255,255,.08);padding:34px 0 130px;font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif">
+      <h2 style="text-align:center;color:#f0e6d2;font-size:19px;font-weight:800;margin:0 0 4px">오늘 밤, 마음 한 줄</h2>
+      <p style="text-align:center;color:#9a8f7c;font-size:14px;margin:0 0 18px">어떤 소리에 마음이 포근해지셨나요? 한마디 남겨주세요.</p>
+      <div id="dsbCmtMount" style="max-width:720px;margin:0 auto;padding:0 16px"></div>
+    </section>
+    <script>
+    (function(){
+      var scope="ongi:main";
+      function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"이 소리, 어떠셨어요?"); }
+      if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
+      // comments.js는 다시봄 루트에서 서빙(vite 번들 대상에서 제외하려 동적 삽입)
+      var s=document.createElement("script"); s.src="/comments.js?v=8"; s.defer=true; document.body.appendChild(s);
+    })();
+    </script>
   </body>
 </html>
 
