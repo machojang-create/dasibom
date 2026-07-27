@@ -397,13 +397,8 @@ export default function App() {
         const rev: GuppyInstance[] = sv.guppies.map((g: any) => {
           const h0 = typeof g.hunger === 'number' ? g.hunger : 50;
           const newHunger = Math.max(0, h0 - offHours * 6 * offRate);
-          let starveH = g.starveH || 0;
-          let sick = !!g.isSick;
-          if (newHunger <= 0.5 && offHours > 0) {
-            const hoursToZero = Math.max(0, h0 / (6 * offRate));
-            starveH += Math.max(0, offHours - hoursToZero);
-            if (starveH >= 12 && !sick) { sick = true; newlySick++; }
-          }
+          let starveH = 0;              // 아픔 기능 제거(2026-07-27 Macho) — 굶주림 누적·발병 없음
+          let sick = false;            // 복귀 시 기존 아픈 개체도 정상으로
           return {
             id: g.id, data: g.data, level: g.level || 1, xp: g.xp || 0,
             hunger: newHunger, starveH,
@@ -684,26 +679,15 @@ export default function App() {
         const hungerDecayRate = decorationsRef.current.includes('log') ? 0.9 : 1;   // 🪵 통나무 쉼터: 배고픔 10% 천천히
         // 허기 밸런스(2026-07-22 Macho 확정): 실제 시간당 6(10분당 1) — 8시간 숙면 -48, 16시간 외출 -96.
         hunger = Math.max(0, Math.min(100, hunger - ((dt / 3600) * 6 * hungerDecayRate)));
-        // 굶주림 페널티: 허기 0으로 12시간 넘으면 병듦(죽음은 없다 — 크릴로 치료되는 쇠약)
-        let starveH = (g as any).starveH || 0;
-        if (hunger <= 0.5) {
-          starveH += dt / 3600;
-          if (starveH >= 12 && !isSick) isSick = true;
-        } else if (hunger > 30) { starveH = 0; }
-        (g as any).starveH = starveH;
-
-        if (hunger < 20 && Math.random() < 0.0005) isSick = true;
-        if (isSick) {
-           expression = '슬픔';
-           vx *= 0.5;
-           vy *= 0.5;
-        } else {
-           if (Math.random() < 0.001) behavior = behavior === 'swim' ? 'rest' : 'swim';
-           if (behavior === 'rest') {
-             vx *= 0.95;
-             vy *= 0.95;
-             // previously it was sinking here, removed to fix guppy sinking issue
-           }
+        // 아픔(isSick) 기능 제거(2026-07-27 Macho): 하루 방치→아픔→반토막 속도→먹이 못잡음→일반먹이론 치료불가 데드락.
+        // 이제 배고픔만 유지. 아픔은 발병 안 하고, 이미 아픈 개체도 즉시 정상으로.
+        isSick = false;
+        (g as any).starveH = 0;
+        if (Math.random() < 0.001) behavior = behavior === 'swim' ? 'rest' : 'swim';
+        if (behavior === 'rest') {
+          vx *= 0.95;
+          vy *= 0.95;
+          // previously it was sinking here, removed to fix guppy sinking issue
         }
         
         // Passive XP: 1 XP per minute
@@ -927,15 +911,11 @@ export default function App() {
           hiddenAtRef.current = 0;
           if (hrs > 0.05) {   // 3분 이상 비웠을 때만
             const offRate = decorationsRef.current.includes('log') ? 0.9 : 1;
-            let sickToast = false;
             guppiesRef.current = guppiesRef.current.map(g => {
               const nh = Math.max(0, g.hunger - hrs * 6 * offRate);
-              let sh = (g as any).starveH || 0; let sk = g.isSick;
-              if (nh <= 0.5) { const h2z = Math.max(0, g.hunger / (6 * offRate)); sh += Math.max(0, hrs - h2z); if (sh >= 12 && !sk) { sk = true; sickToast = true; } }
-              return { ...g, hunger: nh, starveH: sh, isSick: sk } as any;
+              return { ...g, hunger: nh, starveH: 0, isSick: false } as any;   // 아픔 제거(2026-07-27 Macho) — 배고픔만
             });
             setGuppiesState(guppiesRef.current);
-            if (sickToast) setTimeout(() => showToast('오래 굶어 병이 났어요', '크릴새우를 먹이면 기운을 차려요 🤒', '🦐'), 800);
           }
         }
         lastTimeRef.current = undefined;   // 복귀 시 dt 폭주 방지
