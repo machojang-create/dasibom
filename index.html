@@ -57,10 +57,10 @@
     --ink:#1F2A1A;
     --ink-2:#2D3A2A;
     --muted:#6B6B5C;
-    --sage:#5C7A4A;
-    --sage-deep:#3F5A30;
-    --gold:#C9A961;
-    --gold-soft:#E0C988;
+    --sage:#6E8060;        /* B 통일(2026-07-28): 채도 낮춘 세이지 */
+    --sage-deep:#4C6140;   /* 텍스트 대비 유지하며 톤다운 */
+    --gold:#BCA678;        /* 골드→차분한 토프골드 */
+    --gold-soft:#D6C7A4;
     --line:rgba(45,58,42,0.14);
     --shadow:0 30px 80px -40px rgba(45,58,42,0.35);
     --r-lg:28px;
@@ -1754,6 +1754,8 @@ body.dark .mk-star{background:rgba(40,36,30,.9);color:#c9b98e}
 .mk-star:hover{transform:scale(1.08)}
 .mk-sec .cards{gap:20px}
 @media(max-width:560px){.mk-fav-row{grid-template-columns:repeat(2,1fr);gap:10px}.mk-nav{top:56px}.mk-favs{padding:18px 18px}}
+/* B 통일(2026-07-28): 밝은 청록 CTA를 차분한 세이지로 */
+.wcc-send,#dsbInstallBtn,.bcp-chat-send{background:linear-gradient(145deg,#8FA877,#5E7A4C) !important;box-shadow:0 10px 22px -12px rgba(80,100,60,.5) !important}
 </style>
 
 <section class="contents svc-section" id="contents">
