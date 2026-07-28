@@ -52,14 +52,14 @@
       '.dbc-input:focus{border-color:#0e9d7d}'+
       '.dbc-send{padding:0 20px;border:none;border-radius:14px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap}'+
       '.dbc-send:disabled{opacity:.45;cursor:default}'+
-      '.dbc-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:9px 4px 0;font-size:12px;color:#8AA294}'+
+      '.dbc-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:9px 4px 0;font-size:12px;color:#5E7268}'+
       '.dbc-byte{white-space:nowrap}.dbc-hint{word-break:keep-all;text-align:right}'+
       '.dbc-byte.over{color:#e2574c;font-weight:700}'+
       '.dbc-list{margin-top:16px;display:flex;flex-direction:column;gap:9px}'+
       '.dbc-item{background:#F3F8F4;border-radius:14px;padding:11px 15px;font-size:15px;color:#2C3A30;line-height:1.6;display:flex;justify-content:space-between;align-items:center;gap:10px}'+
       '.dbc-item .dbc-txt{word-break:break-all}'+
-      '.dbc-item .dbc-time{font-size:11px;color:#9DB0A2;flex-shrink:0;white-space:nowrap}'+
-      '.dbc-empty{color:#9DB0A2;font-size:14px;text-align:center;padding:18px}'+
+      '.dbc-item .dbc-time{font-size:11px;color:#63786C;flex-shrink:0;white-space:nowrap}'+
+      '.dbc-empty{color:#63786C;font-size:14px;text-align:center;padding:18px}'+
       // 하단 고정 '글씨/다크 바'(a11y.js .dsb-a11y, dasibom-fontsize.js .dsb-fs)와 겹침 방지
       // — 댓글창이 화면(또는 스크롤 영역)의 맨 끝 콘텐츠일 때만 여백을 준다. 2026-07-28 Macho 지적
       '.dbc-comments{scroll-margin-bottom:110px}'+

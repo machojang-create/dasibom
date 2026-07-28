@@ -162,6 +162,18 @@
     var ft = document.querySelector('footer');
     if (ft && ft.parentNode) ft.parentNode.insertBefore(bar, ft);
     else document.body.appendChild(bar);
+    // 안내 문구 대비 확보(2026-07-28 Macho 지적) — 밝은 바탕에선 더 진하게, 어두운 바탕(자서전 등)에선
+    // 밝은 톤으로. 한 색으로는 두 바탕 모두에서 읽기 편한 대비가 나오지 않는다.
+    try {
+      var L = 1, e2 = bar;                       // 공유바 바로 뒤에 실제로 칠해진 바탕을 찾는다
+      while (e2) {
+        var bgc = getComputedStyle(e2).backgroundColor || '';
+        var m = bgc.match(/[\d.]+/g);
+        if (m && !(m.length === 4 && +m[3] < 0.5)) { L = (0.2126 * +m[0] + 0.7152 * +m[1] + 0.0722 * +m[2]) / 255; break; }
+        e2 = e2.parentElement;
+      }
+      bar.querySelector('.dsb-sb-title').style.color = (L < 0.35) ? '#E3C79E' : '#7a5b3a';
+    } catch (e) {}
     ensureKakao(function () {});   // 미리 로드(클릭 순간 팝업 차단 방지)
     function urlNow() { return withRef(opt.url || (location.origin + location.pathname)); }
     function textNow() { return (opt.text || document.title || '다시봄') + '\n다시봄에서 같이 봐요!'; }

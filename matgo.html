@@ -229,9 +229,11 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 <script>window.BOM_TUT={
   key:'matgo', face:'bom_cheer.png', name:'봄이와 맞고',
   welcome:'{호칭}, 저랑 화투 한 판 어떠세요? 점수 계산은 제가 다 해드릴 테니, 패만 편하게 내시면 돼요 🎴',
-  action:'‘맞고 한 판 치기’를 눌러 저랑 시작해봐요.',
+  // 2026-07-28 수정: 시작화면 개편(07-24) 뒤로도 없어진 버튼 이름('맞고 한 판 치기')을 안내하고 있었고,
+  //   가리키는 곳도 빈 모달 상자(#mmBtns)라 스포트라이트가 아무것도 못 비췄다.
+  action:'‘시작하기’를 눌러 저랑 시작해봐요.',
   tour:[
-    {text:'‘맞고 한 판 치기’를 누르면 저랑 바로 시작할 수 있어요.', sel:'#mmBtns'},
+    {text:'‘▶ 시작하기’를 누르면 저랑 바로 한 판 시작할 수 있어요.', sel:'#mmStartBtn'},
     '어려운 점수 계산은 봄이가 다 해드려요.',
     '한 판씩 이기면 포인트가 쌓이고 레벨도 올라가요!'
   ]
@@ -337,7 +339,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
     <div class="mm-title" style="font-size:22px">🎴 봄이와 맞고 한 판</div>
     <div class="mm-body" id="startGreet" style="font-size:15px;line-height:1.6;margin:6px 0 12px">어서 오세요! 오늘도 저랑 화투 한 판 치실까요?</div>
     <div id="startStats" style="display:flex;gap:8px;justify-content:center;margin-bottom:16px;flex-wrap:wrap"></div>
-    <button onclick="startFromScreen()" style="width:100%;padding:16px 0;border:0;border-radius:16px;background:#3F5A30;color:#fff;font-weight:900;font-size:18px;cursor:pointer;font-family:inherit;box-shadow:0 6px 0 #2c3f21">▶ 시작하기</button>
+    <button id="mmStartBtn" onclick="startFromScreen()" style="width:100%;padding:16px 0;border:0;border-radius:16px;background:#3F5A30;color:#fff;font-weight:900;font-size:18px;cursor:pointer;font-family:inherit;box-shadow:0 6px 0 #2c3f21">▶ 시작하기</button>
     <div style="display:flex;gap:8px;margin-top:10px">
       <button onclick="openShop()" style="flex:1;padding:11px 0;border:2px solid #d8cdb5;border-radius:14px;background:#fff;color:#6b5d3e;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit">🛍️ 화투 상점</button>
       <button onclick="location.href='/'" style="flex:1;padding:11px 0;border:2px solid #d8cdb5;border-radius:14px;background:#fff;color:#6b5d3e;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit">← 다른 놀거리</button>

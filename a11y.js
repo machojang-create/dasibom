@@ -66,7 +66,11 @@
       /* 네이티브 다크(index)에서 바 톤 맞춤 */
       'body.dark .dsb-a11y{background:rgba(30,34,30,.95);border-color:#3a403a}',
       'body.dark .dsb-a11y button{color:#cfc8b8}',
-      'body.dark .dsb-a11y button.on{background:#0e9d7d;color:#fff}'
+      'body.dark .dsb-a11y button.on{background:#0e9d7d;color:#fff}',
+      /* 글씨를 키우면 바까지 같이 커져(zoom) 화면 폭을 다 차지하고, 왼쪽 '맨 위로'·소리 버튼과
+         부딪히던 문제 — 글씨 조절 바 자신은 항상 같은 크기로 둔다. (2026-07-28 Macho 지적) */
+      'body.ts-2 .dsb-a11y{zoom:0.8696}',
+      'body.ts-3 .dsb-a11y{zoom:0.7692}'
     ];
     // 페이지 전체 확대(줌) — 모든 글자·요소가 실제로 커짐.
     // --ts는 !important로 1 고정: 페이지에 남은 구버전 부분확대 CSS(calc(...*var(--ts)))와의 이중 확대 차단.
@@ -123,10 +127,45 @@
       setDark(!on);
     });
 
+    /* ── 자체 스크롤 영역 하단 여백 예약 (2026-07-28 Macho 지적) ──
+       body의 padding-bottom은 '페이지 스크롤'에만 걸린다. 서재 리더·건강 상세 패널·오락실 로비처럼
+       스스로 스크롤하는 영역은 마지막 카드나 버튼이 이 바에 가려 아예 누를 수 없었다. */
+    function reserveScrollAreas() {
+      try {
+        var br = bar.getBoundingClientRect();
+        var need = Math.ceil(window.innerHeight - br.top) + 12;
+        var z = tsNative ? 1 : (document.body.classList.contains('ts-3') ? 1.3
+              : document.body.classList.contains('ts-2') ? 1.15 : 1);
+        var pad = Math.ceil(need / z);
+        var els = document.querySelectorAll('div,section,main,article,ul,ol');
+        for (var i = 0; i < els.length; i++) {
+          var el = els[i];
+          if (el === bar || bar.contains(el) || el.contains(bar)) continue;
+          var cs = getComputedStyle(el);
+          if (cs.overflowY !== 'auto' && cs.overflowY !== 'scroll') continue;
+          var r = el.getBoundingClientRect();
+          if (r.height < 160 || r.bottom < br.top + 8) continue;     // 바까지 닿지 않으면 둘 필요 없음
+          if (el.scrollHeight <= el.clientHeight + 4) continue;       // 진짜 스크롤되는 곳만
+          if (el.getAttribute('data-dsb-pad') === String(pad)) continue;
+          if (!el.hasAttribute('data-dsb-pad')) el.setAttribute('data-dsb-pad0', cs.paddingBottom);
+          var base = parseFloat(el.getAttribute('data-dsb-pad0')) || 0;
+          if (base >= pad) continue;
+          el.setAttribute('data-dsb-pad', String(pad));
+          el.style.paddingBottom = pad + 'px';
+        }
+      } catch (e) {}
+    }
+
     /* ── 저장값 적용 ── */
     var ts = '1', dk = false;
     try { ts = localStorage.getItem(TS_KEY) || '1'; dk = localStorage.getItem(DARK_KEY) === '1'; } catch (e) {}
     setTs(ts); setDark(dk);
+
+    reserveScrollAreas();
+    setTimeout(reserveScrollAreas, 1500);        // 나중에 그려지는 패널까지
+    window.addEventListener('load', reserveScrollAreas);
+    window.addEventListener('resize', reserveScrollAreas);
+    bar.addEventListener('click', function () { setTimeout(reserveScrollAreas, 60); });
 
     /* ── 돌봄 키오스크 안내 배너 — 센터 공용 태블릿에서 대화 마치고 본 사이트 구경할 때 1회 안내 ──
        carechat.html이 전환 시 sessionStorage에 dasibom_kiosk_browse를 심어두면, 그 태블릿의

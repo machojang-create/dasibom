@@ -33,8 +33,8 @@
 <style>
 :root{--ts:1;
   --cream:#FDFBF7;--surface:#F9F6F0;--chip:#F3F0E9;--border:#E6E2D3;
-  --ink:#4A3F35;--ink2:#6D5D4E;--muted:#B5B0A1;
-  --sage:#7D8F69;--sage-d:#6c7d58;--coral:#E69A8D;--coral-bg:#FBE9E4;--amber-bg:#FAF3E0;}
+  --ink:#4A3F35;--ink2:#6D5D4E;--muted:#74705F;/* 2026-07-28: #B5B0A1은 흰 바탕에서 대비 2.1로 어르신이 읽기 힘들어 어둡게 */
+  --sage:#667650;--sage-d:#586845;/* 2026-07-28: 대비 3.5→4.9 */--coral:#E69A8D;--coral-bg:#FBE9E4;--amber-bg:#FAF3E0;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{width:100%;overflow-x:hidden}
 body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh}
@@ -58,6 +58,9 @@ button{font-family:inherit;cursor:pointer}
 /* ★버그수정: 공용 글씨크기·다크모드 위젯(dsb-a11y, z:99990)이 하단 고정 내비를 덮어
    소통방·내정보 탭이 안 눌리던 문제 → 위젯을 내비 위로 올림(이 페이지에만 하단 내비가 있음) */
 .dsb-a11y{bottom:82px !important}
+/* 글씨를 키우면 하단 내비도 함께 커져(zoom) 82px로는 부족해 위젯이 내비를 다시 덮었다 (2026-07-28) */
+body.ts-2 .dsb-a11y{bottom:92px !important}
+body.ts-3 .dsb-a11y{bottom:102px !important}
 .panel{display:none;animation:fade .3s ease}
 .panel.on{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -70,7 +73,7 @@ button{font-family:inherit;cursor:pointer}
 .sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .sec-h h2{font-size:calc(20px * var(--ts));font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px}
 .sec-h h2 .dot{color:var(--coral);font-size:calc(14px * var(--ts))}
-.sec-h .more{font-size:calc(15px * var(--ts));color:var(--muted);background:none;border:none;font-weight:700}
+.sec-h .more{font-size:calc(15px * var(--ts));color:var(--muted);background:none;border:none;font-weight:700;min-height:44px;padding:0 6px}/* 2026-07-28: 터치 영역 44px 확보 */
 
 /* AI 맞춤 찾기 카드 */
 .aicard{background:var(--surface);border:1px solid var(--border);border-radius:28px;padding:22px;box-shadow:0 3px 14px rgba(120,90,50,.05)}
