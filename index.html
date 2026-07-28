@@ -1710,7 +1710,7 @@
 <style id="mkHomeCss">
 /* 홈 콘텐츠 개편 — B(고급·차분): 채도 낮춘 팔레트 + 여백↑ + 부드러운 그림자 (2026-07-28) */
 #contents .wrap{max-width:1120px}
-.mk-favs{background:#FAF6EE;border:1px solid #EAE2D3;border-radius:24px;padding:24px 26px;margin:0 auto 8px;box-shadow:0 20px 44px -30px rgba(80,64,36,.35)}
+.mk-favs{background:#FAF6EE;border:1px solid #EAE2D3;border-radius:20px;padding:15px 18px;margin:0 auto 4px;box-shadow:0 20px 44px -30px rgba(80,64,36,.35)}
 body.dark .mk-favs{background:#211d17;border-color:#332e25;box-shadow:none}
 .mk-favs-h{font-family:"Nanum Myeongjo",serif;font-size:20px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:10px;flex-wrap:wrap;letter-spacing:.01em}
 .mk-favs-hint{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.01em}
@@ -1721,7 +1721,7 @@ body.dark .mk-favguide{background:#2a2419;border-color:#3d3627}
 body.dark .mk-favguide .g-txt{color:#cdbfa6}
 .mk-favguide .g-txt b{color:#9a7b45;font-weight:800}
 .mk-favguide .g-x{margin-left:auto;flex:none;background:none;border:none;color:#b0a184;font-size:16px;cursor:pointer;padding:4px 8px;align-self:flex-start}
-.mk-fav-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px;padding:16px 0 2px}
+.mk-fav-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:10px 0 2px}
 .mk-fav-tile{background:#fff;border:1px solid #ECE4D6;border-radius:18px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:13px;box-shadow:0 10px 22px -18px rgba(80,64,36,.4);position:relative;text-decoration:none;transition:transform .18s,box-shadow .18s}
 body.dark .mk-fav-tile{background:#282219;border-color:#393227}
 .mk-fav-tile:hover{transform:translateY(-2px);box-shadow:0 16px 28px -18px rgba(80,64,36,.5)}
@@ -1734,14 +1734,14 @@ body.dark .mk-fav-tile{background:#282219;border-color:#393227}
 body.dark .mk-recent-chip{background:#282219;border-color:#393227}
 .mk-recent-chip img{width:32px;height:32px;border-radius:50%;object-fit:cover}
 .mk-recent-chip span{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap}
-.mk-nav{position:sticky;top:64px;z-index:20;margin:22px auto 6px;background:var(--paper,#F7F3EA);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mk-nav{position:sticky;top:60px;z-index:20;margin:8px auto 2px;background:var(--paper,#F7F3EA);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 body.dark .mk-nav{background:#15130f}
-.mk-nav-in{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:13px 4px}
+.mk-nav-in{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:9px 4px}
 .mk-navlink{text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.01em;padding:10px 19px;border-radius:50px;white-space:nowrap;color:var(--nc);background:color-mix(in srgb,var(--nc) 10%, transparent);transition:background .18s,color .18s}
 .mk-navlink:hover{background:color-mix(in srgb,var(--nc) 18%, transparent)}
 .mk-navlink.on{color:#fff;background:var(--nc);box-shadow:0 8px 18px -10px color-mix(in srgb,var(--nc) 60%, transparent)}
-.mk-sec{margin:10px auto 2px;scroll-margin-top:132px}
-.mk-sec-h{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:12px;margin:30px 0 18px;padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--sc) 32%,transparent)}
+.mk-sec{margin:0 auto;padding:0;scroll-margin-top:118px}
+.mk-sec-h{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:11px;margin:14px 0 11px;padding-bottom:9px;border-bottom:1px solid color-mix(in srgb,var(--sc) 32%,transparent)}
 .mk-sec-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:19px;background:color-mix(in srgb,var(--sc) 13%,#fff);border:1px solid color-mix(in srgb,var(--sc) 26%,transparent)}
 body.dark .mk-sec-ic{background:color-mix(in srgb,var(--sc) 20%,#242420)}
 .mk-sec-n{font-size:13px;font-weight:700;color:color-mix(in srgb,var(--sc) 82%, #333);background:color-mix(in srgb,var(--sc) 15%, transparent);border-radius:50px;padding:3px 12px}
@@ -1752,7 +1752,7 @@ body.dark .mk-sec-ic{background:color-mix(in srgb,var(--sc) 20%,#242420)}
 body.dark .mk-star{background:rgba(40,36,30,.9);color:#c9b98e}
 .mk-star.on{color:#C79A3C;background:#F7F0DF}
 .mk-star:hover{transform:scale(1.08)}
-.mk-sec .cards{gap:20px}
+.mk-sec .cards{gap:14px}
 @media(max-width:560px){.mk-fav-row{grid-template-columns:repeat(2,1fr);gap:10px}.mk-nav{top:56px}.mk-favs{padding:18px 18px}}
 /* B 통일(2026-07-28): 밝은 청록 CTA를 차분한 세이지로 */
 .wcc-send,#dsbInstallBtn,.bcp-chat-send{background:linear-gradient(145deg,#8FA877,#5E7A4C) !important;box-shadow:0 10px 22px -12px rgba(80,100,60,.5) !important}
