@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }catch(e){}
 });
 </script>
-<script src="/comments.js?v=6" defer></script>
+<script src="/comments.js?v=7" defer></script>
 <script src="/reactions.js?v=2" defer></script>
 <script src="/dasibom-header.js"></script>
 </head>
@@ -707,10 +707,10 @@ document.addEventListener('DOMContentLoaded', function(){
       var start = new Date(2025,0,1).getTime();
       var scope = 'nostalgia:' + (((Math.floor((Date.now()-start)/86400000))%300+300)%300);
       if(window.DasibomComments){
-        DasibomComments.mount(cmtWrap, scope, '이 추억 어떠셨나요? 한 마디 남겨보세요');
+        DasibomComments.mount(cmtWrap, scope, '이 추억에 한마디');
       } else {
         document.addEventListener('dasibom-comments-ready', function(){
-          DasibomComments.mount(cmtWrap, scope, '이 추억 어떠셨나요? 한 마디 남겨보세요');
+          DasibomComments.mount(cmtWrap, scope, '이 추억에 한마디');
         }, {once:true});
       }
     })();
