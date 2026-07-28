@@ -1708,52 +1708,52 @@
 
 <!-- CONTENTS -->
 <style id="mkHomeCss">
-/* 홈 콘텐츠 개편(2026-07-28): ⭐자주 보는 것 + 색칩 카테고리 + 봄이 안내 */
+/* 홈 콘텐츠 개편 — B(고급·차분): 채도 낮춘 팔레트 + 여백↑ + 부드러운 그림자 (2026-07-28) */
 #contents .wrap{max-width:1120px}
-.mk-favs{background:linear-gradient(120deg,#FFF7E6,#FBF1DC);border:1px solid #ECDFC2;border-radius:22px;padding:16px 20px;margin:0 auto 6px;box-shadow:0 14px 32px -22px rgba(150,110,30,.4)}
-body.dark .mk-favs{background:linear-gradient(120deg,#2a2318,#241f16);border-color:#3a3125}
-.mk-favs-h{font-family:"Nanum Myeongjo",serif;font-size:20px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.mk-favs-hint{font-size:13px;color:var(--muted);font-weight:600}
-.mk-favguide{display:flex;align-items:center;gap:12px;background:#FFF3D9;border:1px solid #F0DEA8;border-radius:16px;padding:11px 14px;margin:12px 0 2px;box-shadow:0 8px 18px -13px rgba(150,110,30,.45)}
-body.dark .mk-favguide{background:#33291a;border-color:#4a3d24}
-.mk-favguide img{width:46px;height:46px;border-radius:50%;flex:none;background:#fff;box-shadow:0 0 0 2px #F0DEA8;object-fit:cover}
-.mk-favguide .g-txt{font-size:14.5px;font-weight:700;color:#6b4e1f;line-height:1.55}
-body.dark .mk-favguide .g-txt{color:#e8d3a0}
-.mk-favguide .g-txt b{color:#C9962F}
-.mk-favguide .g-x{margin-left:auto;flex:none;background:none;border:none;color:#b79a5e;font-size:17px;cursor:pointer;padding:4px 8px;align-self:flex-start}
-.mk-fav-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(158px,1fr));gap:10px;padding:12px 0 2px}
-.mk-fav-tile{background:#fff;border:1px solid #E8DDC6;border-radius:16px;padding:12px;cursor:pointer;display:flex;align-items:center;gap:11px;box-shadow:0 6px 14px -10px rgba(120,85,30,.35);position:relative;text-decoration:none}
-body.dark .mk-fav-tile{background:#2b2620;border-color:#3f362a}
-.mk-fav-tile img{width:48px;height:48px;flex:none;object-fit:cover;border-radius:12px}
-.mk-fav-tile .t{font-size:15px;font-weight:800;color:var(--ink);line-height:1.25;word-break:keep-all}
-.mk-fav-tile .rec{position:absolute;top:-8px;right:8px;background:#C9962F;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:50px}
-.mk-recent-h{font-size:13px;font-weight:800;color:var(--muted);margin:12px 0 6px}
-.mk-recent-row{display:flex;gap:8px;flex-wrap:wrap}
-.mk-recent-chip{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid #E8DDC6;border-radius:50px;padding:6px 14px 6px 6px;cursor:pointer;text-decoration:none;box-shadow:0 4px 10px -8px rgba(120,85,30,.35)}
-body.dark .mk-recent-chip{background:#2b2620;border-color:#3f362a}
+.mk-favs{background:#FAF6EE;border:1px solid #EAE2D3;border-radius:24px;padding:24px 26px;margin:0 auto 8px;box-shadow:0 20px 44px -30px rgba(80,64,36,.35)}
+body.dark .mk-favs{background:#211d17;border-color:#332e25;box-shadow:none}
+.mk-favs-h{font-family:"Nanum Myeongjo",serif;font-size:20px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:10px;flex-wrap:wrap;letter-spacing:.01em}
+.mk-favs-hint{font-size:12.5px;color:var(--muted);font-weight:600;letter-spacing:.01em}
+.mk-favguide{display:flex;align-items:center;gap:13px;background:#F4EEE1;border:1px solid #E6DcC8;border-radius:16px;padding:13px 16px;margin:14px 0 2px;box-shadow:none}
+body.dark .mk-favguide{background:#2a2419;border-color:#3d3627}
+.mk-favguide img{width:44px;height:44px;border-radius:50%;flex:none;background:#fff;box-shadow:0 0 0 1px #E6DcC8;object-fit:cover}
+.mk-favguide .g-txt{font-size:14.5px;font-weight:600;color:#6c5f49;line-height:1.6}
+body.dark .mk-favguide .g-txt{color:#cdbfa6}
+.mk-favguide .g-txt b{color:#9a7b45;font-weight:800}
+.mk-favguide .g-x{margin-left:auto;flex:none;background:none;border:none;color:#b0a184;font-size:16px;cursor:pointer;padding:4px 8px;align-self:flex-start}
+.mk-fav-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px;padding:16px 0 2px}
+.mk-fav-tile{background:#fff;border:1px solid #ECE4D6;border-radius:18px;padding:14px;cursor:pointer;display:flex;align-items:center;gap:13px;box-shadow:0 10px 22px -18px rgba(80,64,36,.4);position:relative;text-decoration:none;transition:transform .18s,box-shadow .18s}
+body.dark .mk-fav-tile{background:#282219;border-color:#393227}
+.mk-fav-tile:hover{transform:translateY(-2px);box-shadow:0 16px 28px -18px rgba(80,64,36,.5)}
+.mk-fav-tile img{width:50px;height:50px;flex:none;object-fit:cover;border-radius:13px}
+.mk-fav-tile .t{font-size:15px;font-weight:800;color:var(--ink);line-height:1.3;word-break:keep-all}
+.mk-fav-tile .rec{position:absolute;top:-8px;right:10px;background:#A8875A;color:#fff;font-size:10px;font-weight:700;letter-spacing:.03em;padding:3px 9px;border-radius:50px}
+.mk-recent-h{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.02em;margin:16px 0 8px}
+.mk-recent-row{display:flex;gap:9px;flex-wrap:wrap}
+.mk-recent-chip{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid #ECE4D6;border-radius:50px;padding:6px 15px 6px 6px;cursor:pointer;text-decoration:none;box-shadow:0 6px 14px -12px rgba(80,64,36,.4)}
+body.dark .mk-recent-chip{background:#282219;border-color:#393227}
 .mk-recent-chip img{width:32px;height:32px;border-radius:50%;object-fit:cover}
-.mk-recent-chip span{font-size:14px;font-weight:800;color:var(--ink);white-space:nowrap}
-.mk-nav{position:sticky;top:64px;z-index:20;margin:16px auto 4px;background:var(--paper,#F7F3EA);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mk-recent-chip span{font-size:14px;font-weight:700;color:var(--ink);white-space:nowrap}
+.mk-nav{position:sticky;top:64px;z-index:20;margin:22px auto 6px;background:var(--paper,#F7F3EA);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 body.dark .mk-nav{background:#15130f}
-.mk-nav-in{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:11px 4px}
-.mk-navlink{text-decoration:none;font-size:15px;font-weight:800;padding:10px 18px;border-radius:50px;white-space:nowrap;color:var(--nc);background:color-mix(in srgb,var(--nc) 13%, transparent);transition:background .15s,color .15s}
-.mk-navlink:hover{background:color-mix(in srgb,var(--nc) 22%, transparent)}
-.mk-navlink.on{color:#fff;background:var(--nc);box-shadow:0 7px 16px -7px color-mix(in srgb,var(--nc) 70%, transparent)}
-.mk-sec{margin:6px auto 2px;scroll-margin-top:132px}
-.mk-sec-h{font-family:"Nanum Myeongjo",serif;font-size:22px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:11px;margin:22px 0 14px;padding-bottom:9px;border-bottom:2px solid color-mix(in srgb,var(--sc) 40%,transparent)}
-.mk-sec-ic{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--sc) 16%,#fff);border:1px solid color-mix(in srgb,var(--sc) 32%,transparent)}
-body.dark .mk-sec-ic{background:color-mix(in srgb,var(--sc) 22%,#242420)}
-.mk-sec-n{font-size:14px;font-weight:800;color:#fff;background:var(--sc);border-radius:50px;padding:2px 11px}
-/* 별표 오버레이 + 태그 겹침 방지 */
+.mk-nav-in{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:13px 4px}
+.mk-navlink{text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.01em;padding:10px 19px;border-radius:50px;white-space:nowrap;color:var(--nc);background:color-mix(in srgb,var(--nc) 10%, transparent);transition:background .18s,color .18s}
+.mk-navlink:hover{background:color-mix(in srgb,var(--nc) 18%, transparent)}
+.mk-navlink.on{color:#fff;background:var(--nc);box-shadow:0 8px 18px -10px color-mix(in srgb,var(--nc) 60%, transparent)}
+.mk-sec{margin:10px auto 2px;scroll-margin-top:132px}
+.mk-sec-h{font-family:"Nanum Myeongjo",serif;font-size:21px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:12px;margin:30px 0 18px;padding-bottom:11px;border-bottom:1px solid color-mix(in srgb,var(--sc) 32%,transparent)}
+.mk-sec-ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-size:19px;background:color-mix(in srgb,var(--sc) 13%,#fff);border:1px solid color-mix(in srgb,var(--sc) 26%,transparent)}
+body.dark .mk-sec-ic{background:color-mix(in srgb,var(--sc) 20%,#242420)}
+.mk-sec-n{font-size:13px;font-weight:700;color:color-mix(in srgb,var(--sc) 82%, #333);background:color-mix(in srgb,var(--sc) 15%, transparent);border-radius:50px;padding:3px 12px}
 .card{position:relative}
-/* 카드가 새 섹션으로 옮겨져 reveal 옵저버가 안 걸리는 문제 → 항상 보이게(연출 대신 가독성 우선) */
 .mk-sec .card[data-reveal]{opacity:1 !important;transform:none !important;filter:none !important}
 .card .top{padding-right:30px}
-.mk-star{position:absolute;top:12px;right:12px;z-index:6;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.9);box-shadow:0 4px 12px -4px rgba(0,0,0,.28);cursor:pointer;font-size:20px;line-height:1;color:#c9a83f;display:grid;place-items:center;padding:0}
-body.dark .mk-star{background:rgba(40,36,30,.85);color:#e6c04d}
-.mk-star.on{color:#F2B01E;background:#FFF6DB}
+.mk-star{position:absolute;top:13px;right:13px;z-index:6;width:40px;height:40px;border-radius:50%;border:none;background:rgba(255,255,255,.92);box-shadow:0 6px 16px -8px rgba(80,64,36,.3);cursor:pointer;font-size:20px;line-height:1;color:#b3a17a;display:grid;place-items:center;padding:0;transition:transform .15s}
+body.dark .mk-star{background:rgba(40,36,30,.9);color:#c9b98e}
+.mk-star.on{color:#C79A3C;background:#F7F0DF}
 .mk-star:hover{transform:scale(1.08)}
-@media(max-width:560px){.mk-fav-row{grid-template-columns:repeat(2,1fr)}.mk-nav{top:56px}}
+.mk-sec .cards{gap:20px}
+@media(max-width:560px){.mk-fav-row{grid-template-columns:repeat(2,1fr);gap:10px}.mk-nav{top:56px}.mk-favs{padding:18px 18px}}
 </style>
 
 <section class="contents svc-section" id="contents">
@@ -1767,8 +1767,8 @@ body.dark .mk-star{background:rgba(40,36,30,.85);color:#e6c04d}
     </div>
     
     <section class="mk-favs" id="mkFavs"><div class="mk-favs-h">⭐ 내가 자주 보는 것 <span class="mk-favs-hint" id="mkFavHint"></span></div><div class="mk-favguide" id="mkFavGuide" style="display:none"><img src="/img/bom_fab.png" alt="봄이"><div class="g-txt">저예요, <b>봄이</b>! 자주 보시는 건 카드의 <b>☆ 별표</b>를 살짝 눌러 여기 <b>‘자주 보는 것’</b>에 올려두세요. 다음엔 한 번에 찾으실 수 있어요 🌸</div><button class="g-x" onclick="dsbDismissFavGuide()" aria-label="닫기" type="button">✕</button></div><div class="mk-fav-row" id="mkFavRow"></div><div id="mkRecent" style="display:none"><div class="mk-recent-h">🕘 방금 본 것</div><div class="mk-recent-row" id="mkRecentRow"></div></div></section>
-    <nav class="mk-nav" aria-label="카테고리"><div class="mk-nav-in"><a class="mk-navlink" href="#sec-memory" data-sec="memory" style="--nc:#C67A3A">추억·기록</a><a class="mk-navlink" href="#sec-play" data-sec="play" style="--nc:#5B8A48">놀이·두뇌</a><a class="mk-navlink" href="#sec-mind" data-sec="mind" style="--nc:#8A6FA8">마음·쉼</a><a class="mk-navlink" href="#sec-life" data-sec="life" style="--nc:#3E7C8C">생활·소통</a></div></nav>
-    <section class="mk-sec" id="sec-memory" style="--sc:#C67A3A"><h2 class="mk-sec-h"><span class="mk-sec-ic">🕰</span>추억·기록<span class="mk-sec-n">2</span></h2><div class="cards"><a class="card card-1" data-key="memoir" data-cat="memory" href="/memoir" data-reveal=""><button class="mk-star" data-key="memoir" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <nav class="mk-nav" aria-label="카테고리"><div class="mk-nav-in"><a class="mk-navlink" href="#sec-memory" data-sec="memory" style="--nc:#A8875A">추억·기록</a><a class="mk-navlink" href="#sec-play" data-sec="play" style="--nc:#7C9A6D">놀이·두뇌</a><a class="mk-navlink" href="#sec-mind" data-sec="mind" style="--nc:#93859F">마음·쉼</a><a class="mk-navlink" href="#sec-life" data-sec="life" style="--nc:#5F8794">생활·소통</a></div></nav>
+    <section class="mk-sec" id="sec-memory" style="--sc:#A8875A"><h2 class="mk-sec-h"><span class="mk-sec-ic">🕰</span>추억·기록<span class="mk-sec-n">2</span></h2><div class="cards"><a class="card card-1" data-key="memoir" data-cat="memory" href="/memoir" data-reveal=""><button class="mk-star" data-key="memoir" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">RECORD</span>
@@ -1799,7 +1799,7 @@ body.dark .mk-star{background:rgba(40,36,30,.85);color:#e6c04d}
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a></div></section>
-    <section class="mk-sec" id="sec-play" style="--sc:#5B8A48"><h2 class="mk-sec-h"><span class="mk-sec-ic">🎴</span>놀이·두뇌<span class="mk-sec-n">3</span></h2><div class="cards"><a class="card card-4" data-key="arcade" data-cat="play" href="/arcade" data-reveal=""><button class="mk-star" data-key="arcade" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <section class="mk-sec" id="sec-play" style="--sc:#7C9A6D"><h2 class="mk-sec-h"><span class="mk-sec-ic">🎴</span>놀이·두뇌<span class="mk-sec-n">3</span></h2><div class="cards"><a class="card card-4" data-key="arcade" data-cat="play" href="/arcade" data-reveal=""><button class="mk-star" data-key="arcade" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">PLAY</span>
@@ -1844,7 +1844,7 @@ body.dark .mk-star{background:rgba(40,36,30,.85);color:#e6c04d}
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a></div></section>
-    <section class="mk-sec" id="sec-mind" style="--sc:#8A6FA8"><h2 class="mk-sec-h"><span class="mk-sec-ic">🍃</span>마음·쉼<span class="mk-sec-n">5</span></h2><div class="cards"><a class="card card-6" data-key="dream" data-cat="mind" href="/dream" data-reveal=""><button class="mk-star" data-key="dream" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <section class="mk-sec" id="sec-mind" style="--sc:#93859F"><h2 class="mk-sec-h"><span class="mk-sec-ic">🍃</span>마음·쉼<span class="mk-sec-n">5</span></h2><div class="cards"><a class="card card-6" data-key="dream" data-cat="mind" href="/dream" data-reveal=""><button class="mk-star" data-key="dream" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">DREAM</span>
@@ -1919,7 +1919,7 @@ body.dark .mk-star{background:rgba(40,36,30,.85);color:#e6c04d}
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a></div></section>
-    <section class="mk-sec" id="sec-life" style="--sc:#3E7C8C"><h2 class="mk-sec-h"><span class="mk-sec-ic">💬</span>생활·소통<span class="mk-sec-n">4</span></h2><div class="cards"><a class="card card-2" data-key="health" data-cat="life" href="/health" data-reveal=""><button class="mk-star" data-key="health" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <section class="mk-sec" id="sec-life" style="--sc:#5F8794"><h2 class="mk-sec-h"><span class="mk-sec-ic">💬</span>생활·소통<span class="mk-sec-n">4</span></h2><div class="cards"><a class="card card-2" data-key="health" data-cat="life" href="/health" data-reveal=""><button class="mk-star" data-key="health" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">NOURISH</span>
@@ -4251,7 +4251,7 @@ body.dark #dsbSoundInvite .si-text{color:#e8d9c2}
 <script>
 /* 홈 즐겨찾기·자주 보는 것·최근·봄이 안내 (2026-07-28 Macho 반영). 콘텐츠 소비는 API 0. */
 (function(){
-  var CARD_DATA={"memoir": {"title": "나의 추억, 너의 기억", "svg": "/img/cards/card-memoir.svg", "color": "#C67A3A"}, "health": {"title": "건강 돋보기", "svg": "/img/cards/card-health.svg", "color": "#3E7C8C"}, "trendy": {"title": "말동무 사전", "svg": "/img/cards/card-trendy.svg", "color": "#3E7C8C"}, "arcade": {"title": "추억의 오락실", "svg": "/img/cards/card-arcade.svg", "color": "#5B8A48"}, "matgo": {"title": "봄이와 맞고", "svg": "/img/cards/card-matgo.svg", "color": "#5B8A48"}, "dream": {"title": "봄이의 꿈 풀이", "svg": "/img/cards/card-dream.svg", "color": "#8A6FA8"}, "plant": {"title": "수다쟁이 화분", "svg": "/img/cards/card-plant.svg", "color": "#8A6FA8"}, "guppy": {"title": "우리집 구피 어항", "svg": "/img/cards/card-guppy.svg", "color": "#8A6FA8"}, "gag": {"title": "오늘의 아재퀴즈", "svg": "/img/cards/card-gag.svg", "color": "#5B8A48"}, "maeum": {"title": "마음결 성향 백서", "svg": "/img/cards/card-maeum.svg", "color": "#8A6FA8"}, "debate": {"title": "대환장 토론장", "svg": "/img/cards/card-debate.svg", "color": "#3E7C8C"}, "maeumlab": {"title": "마음 실험실", "svg": "/img/cards/card-maeumlab.svg", "color": "#8A6FA8"}, "jobs": {"title": "시니어 직업 상담소", "svg": "/img/cards/card-jobs.svg", "color": "#3E7C8C"}, "ongi": {"title": "추억의 소리, 온기", "svg": "/img/cards/card-ongi.svg", "color": "#C67A3A"}};
+  var CARD_DATA={"memoir": {"title": "나의 추억, 너의 기억", "svg": "/img/cards/card-memoir.svg", "color": "#A8875A"}, "health": {"title": "건강 돋보기", "svg": "/img/cards/card-health.svg", "color": "#5F8794"}, "trendy": {"title": "말동무 사전", "svg": "/img/cards/card-trendy.svg", "color": "#5F8794"}, "arcade": {"title": "추억의 오락실", "svg": "/img/cards/card-arcade.svg", "color": "#7C9A6D"}, "matgo": {"title": "봄이와 맞고", "svg": "/img/cards/card-matgo.svg", "color": "#7C9A6D"}, "dream": {"title": "봄이의 꿈 풀이", "svg": "/img/cards/card-dream.svg", "color": "#93859F"}, "plant": {"title": "수다쟁이 화분", "svg": "/img/cards/card-plant.svg", "color": "#93859F"}, "guppy": {"title": "우리집 구피 어항", "svg": "/img/cards/card-guppy.svg", "color": "#93859F"}, "gag": {"title": "오늘의 아재퀴즈", "svg": "/img/cards/card-gag.svg", "color": "#7C9A6D"}, "maeum": {"title": "마음결 성향 백서", "svg": "/img/cards/card-maeum.svg", "color": "#93859F"}, "debate": {"title": "대환장 토론장", "svg": "/img/cards/card-debate.svg", "color": "#5F8794"}, "maeumlab": {"title": "마음 실험실", "svg": "/img/cards/card-maeumlab.svg", "color": "#93859F"}, "jobs": {"title": "시니어 직업 상담소", "svg": "/img/cards/card-jobs.svg", "color": "#5F8794"}, "ongi": {"title": "추억의 소리, 온기", "svg": "/img/cards/card-ongi.svg", "color": "#A8875A"}};
   var _DEF=["matgo","plant","memoir","ongi"];
   function _ls(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
   function _sv(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
