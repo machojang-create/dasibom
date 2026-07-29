@@ -15,7 +15,7 @@
 <meta name="twitter:description" content="영양제·약 성분을 큰 글씨로 쉽게. 함께 드셔도 되는지 봄이가 짚어드려요.">
 <meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
 <title>건강 돋보기 — 다시봄</title>
-<script src="/a11y.js?v=7" defer></script>
+<script src="/a11y.js?v=8" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
@@ -39,11 +39,11 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif
 header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdrop-filter:blur(10px);border-bottom:1px solid rgba(12,124,98,.12);padding:13px 18px;display:flex;align-items:center;justify-content:space-between}
 .back{border:1.5px solid rgba(12,124,98,.25);color:#0C7C62;background:none;font-size:14px;font-weight:700;padding:7px 15px;border-radius:50px;cursor:pointer;text-decoration:none}
 .sec-tabs{display:flex;gap:0;background:#fff;border-bottom:1.5px solid #E0EDE8;position:sticky;top:57px;z-index:90}
-.sec-tab{flex:1;padding:13px 0;font-size:13px;font-weight:700;color:#7A9A88;border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s}
+.sec-tab{flex:1;padding:13px 0;font-size:13px;font-weight:700;color:#4E6E5D;border:none;background:none;cursor:pointer;border-bottom:2.5px solid transparent;transition:color .15s,border-color .15s}
 .sec-tab.active{color:#0C7C62;border-bottom-color:#0C7C62}
 .sec{display:none;padding-top:18px}
 .sec.active{display:block}
-.section-title{font-size:12px;font-weight:800;color:#7A9A88;letter-spacing:1.2px;margin-bottom:14px}
+.section-title{font-size:12px;font-weight:800;color:#4E6E5D;letter-spacing:1.2px;margin-bottom:14px}
 .notice-box{background:#EBF7F2;border:1px solid #BFE5D6;border-radius:14px;padding:13px 16px;font-size:13.5px;color:#1E5A47;line-height:1.7;margin-bottom:20px}
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1F2A1A;color:#F5F8F0;padding:11px 24px;font-size:13.5px;z-index:9999;white-space:nowrap;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none}
 .toast.show{opacity:1}
@@ -61,7 +61,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .ing-card:active{border-color:#0C7C62;box-shadow:0 0 0 3px rgba(12,124,98,.1)}
 .ing-icon{font-size:26px;margin-bottom:8px}
 .ing-name{font-size:15px;font-weight:800;color:#143D2E;margin-bottom:4px}
-.ing-cat{font-size:11px;font-weight:700;color:#7A9A88;background:#EBF7F2;padding:2px 9px;border-radius:50px;display:inline-block;margin-bottom:6px}
+.ing-cat{font-size:11px;font-weight:700;color:#4E6E5D;background:#EBF7F2;padding:2px 9px;border-radius:50px;display:inline-block;margin-bottom:6px}
 .ing-eff{font-size:12.5px;color:#3E5548;line-height:1.6;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 /* 모달 */
@@ -73,9 +73,9 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .modal-name{font-size:22px;font-weight:800;color:#143D2E;margin-bottom:4px;text-align:center}
 .modal-cat-badge{display:inline-block;background:#EBF7F2;color:#0C7C62;font-size:12px;font-weight:800;padding:3px 12px;border-radius:50px;margin-bottom:14px}
 .modal-eff{font-size:15px;color:#2A3A30;line-height:1.8;margin-bottom:20px}
-.modal-tip-lbl{font-size:11px;font-weight:800;color:#7A9A88;letter-spacing:1px;margin-bottom:10px}
+.modal-tip-lbl{font-size:11px;font-weight:800;color:#4E6E5D;letter-spacing:1px;margin-bottom:10px}
 .modal-tip{background:#fff;border:1.5px solid #E0EDE8;border-radius:14px;padding:14px 16px;font-size:14px;color:#1F2A1A;line-height:1.7;margin-bottom:18px}
-.modal-disclaimer{font-size:12.5px;color:#7A9A88;line-height:1.7;margin-bottom:14px;border-top:1px solid #E0EDE8;padding-top:14px}
+.modal-disclaimer{font-size:12.5px;color:#4E6E5D;line-height:1.7;margin-bottom:14px;border-top:1px solid #E0EDE8;padding-top:14px}
 .btn-coupang{display:block;width:100%;padding:15px 0;border:none;border-radius:50px;background:linear-gradient(135deg,#FF6B3D,#FF8A5B);color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:10px;text-align:center}
 .btn-shop-link{display:block;width:100%;padding:13px 0;border:1.5px solid #0C7C62;border-radius:50px;background:#fff;color:#0C7C62;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none}
 .modal-close-btn{position:absolute;top:20px;right:20px;width:36px;height:36px;border-radius:50%;border:1.5px solid #CFE5DB;background:#fff;font-size:16px;color:#4A6A58;cursor:pointer;display:flex;align-items:center;justify-content:center}
@@ -84,7 +84,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .sub-tabs{display:flex;gap:10px;margin:16px 0 18px;align-items:stretch}
 .sub-tab{flex:1;min-height:90px;padding:14px 12px;border-radius:18px;border:2px solid #E0EDE8;background:#fff;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
 .sub-tab .stab-icon{font-size:26px;line-height:1}
-.sub-tab .stab-label{font-size:13.5px;font-weight:800;color:#7A9A88}
+.sub-tab .stab-label{font-size:13.5px;font-weight:800;color:#4E6E5D}
 .sub-tab .stab-selected{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;margin-top:2px;min-height:0}
 .stab-tag{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:50px;white-space:nowrap}
 .sub-tab.drug-active{border-color:#EF9A9A;background:#FFF5F5}
@@ -134,7 +134,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .myinfo-label{font-size:13px;font-weight:800;color:#143D2E;margin-bottom:10px}
 .myinfo-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:28px}
 .myinfo-tag{display:flex;align-items:center;gap:5px;background:#EBF7F2;border:1px solid #BFE5D6;border-radius:50px;padding:5px 12px;font-size:13px;font-weight:700;color:#0C7C62}
-.myinfo-tag button{background:none;border:none;cursor:pointer;font-size:14px;color:#7A9A88;padding:0;line-height:1}
+.myinfo-tag button{background:none;border:none;cursor:pointer;font-size:14px;color:#4E6E5D;padding:0;line-height:1}
 .myinfo-add-row{display:flex;gap:8px}
 .myinfo-add-row select{flex:1;padding:10px 12px;border:1.5px solid #CFE5DB;border-radius:12px;font-size:14px;color:#1F2A1A;background:#fff;font-family:inherit;outline:none}
 .myinfo-add-row select:focus{border-color:#0C7C62}
@@ -142,7 +142,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .alarm-item{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:#fff;border:1.5px solid #E0EDE8;border-radius:14px;margin-bottom:10px}
 .alarm-name{font-size:14.5px;font-weight:800;color:#143D2E}
 .alarm-time{font-size:13px;color:#56705F;margin-top:3px}
-.alarm-del{background:none;border:1px solid #CFE5DB;border-radius:50px;padding:5px 12px;font-size:12.5px;color:#7A9A88;cursor:pointer}
+.alarm-del{background:none;border:1px solid #CFE5DB;border-radius:50px;padding:5px 12px;font-size:12.5px;color:#4E6E5D;cursor:pointer}
 .alarm-form{background:#fff;border:1.5px solid #E0EDE8;border-radius:18px;padding:16px;margin-bottom:14px}
 .alarm-form label{display:block;font-size:13px;font-weight:800;color:#143D2E;margin-bottom:6px}
 .alarm-form select,.alarm-form input[type=time]{width:100%;padding:11px 14px;border:1.5px solid #CFE5DB;border-radius:12px;font-size:15px;color:#1F2A1A;background:#fff;font-family:inherit;outline:none;margin-bottom:12px}
@@ -158,7 +158,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .shop-name{font-size:14px;font-weight:800;color:#143D2E;margin-bottom:4px}
 .shop-desc{font-size:12px;color:#56705F;line-height:1.5;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .shop-btn{display:block;width:100%;padding:9px 0;border:none;border-radius:50px;background:#0C7C62;color:#fff;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;text-align:center}
-.shop-disclaimer{font-size:11.5px;color:#7A9A88;text-align:center;margin-top:14px;line-height:1.6}
+.shop-disclaimer{font-size:11.5px;color:#4E6E5D;text-align:center;margin-top:14px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -238,7 +238,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
         <button class="btn-alarm-add" onclick="addAlarm()">알람 설정하기</button>
       </div>
       <div id="alarmList"></div>
-      <p style="font-size:12px;color:#7A9A88;line-height:1.6;margin-top:8px">브라우저가 열려 있는 동안 알려드려요. 처음엔 '알림 허용'을 눌러주세요 🔔</p>
+      <p style="font-size:12px;color:#4E6E5D;line-height:1.6;margin-top:8px">브라우저가 열려 있는 동안 알려드려요. 처음엔 '알림 허용'을 눌러주세요 🔔</p>
     </div>
     <div style="margin-top:22px">
       <div class="section-title">📋 최근 확인 이력</div>
@@ -572,7 +572,7 @@ function filterIng(q){
     return (_activeCat==='전체'||i.cat===_activeCat)&&(!q||i.n.toLowerCase().indexOf(q)>=0||i.eff.toLowerCase().indexOf(q)>=0);
   });
   var el=document.getElementById('ingGrid');
-  if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#7A9A88;padding:32px;font-size:14px">검색 결과가 없습니다</div>';return;}
+  if(!list.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#4E6E5D;padding:32px;font-size:14px">검색 결과가 없습니다</div>';return;}
   el.innerHTML=list.map(function(i){
     return '<div class="ing-card" onclick="openModal(\''+i.id+'\')"><div class="ing-icon">'+i.e+'</div><div class="ing-name">'+i.n+'</div><span class="ing-cat">'+i.cat+'</span><div class="ing-eff">'+i.eff+'</div></div>';
   }).join('');
@@ -621,7 +621,7 @@ function setCheckCat(cat,btn){
 function renderIngChips(){
   var list=_checkCat==='전체'?INGS:INGS.filter(function(i){return i.cat===_checkCat;});
   if(_checkSearch){list=list.filter(function(i){return i.n.indexOf(_checkSearch)>=0;});}
-  if(!list.length){document.getElementById('ingChips').innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 4px">검색 결과가 없어요</div>';return;}
+  if(!list.length){document.getElementById('ingChips').innerHTML='<div style="color:#4E6E5D;font-size:13.5px;padding:10px 4px">검색 결과가 없어요</div>';return;}
   document.getElementById('ingChips').innerHTML=list.map(function(i){
     var sel=!!_selIngs[i.id];
     return '<button class="chip-btn'+(sel?' sel-ing':'')+'" id="cp_i_'+i.id+'" onclick="toggleChip(\'i\',\''+i.id+'\')">'+i.e+' '+i.n+'</button>';
@@ -690,7 +690,7 @@ function runCheck(){
   ];
 
   // 단계별 로딩 표시
-  el.innerHTML='<div class="checking-box"><div style="text-align:center;margin-bottom:14px"><img src="/img/bom_think.png" alt="봄이" style="width:56px"><div style="font-size:13.5px;color:#7A9A88;margin-top:4px">봄이가 꼼꼼히 살펴보고 있어요</div></div>'+steps.map(function(s,i){
+  el.innerHTML='<div class="checking-box"><div style="text-align:center;margin-bottom:14px"><img src="/img/bom_think.png" alt="봄이" style="width:56px"><div style="font-size:13.5px;color:#4E6E5D;margin-top:4px">봄이가 꼼꼼히 살펴보고 있어요</div></div>'+steps.map(function(s,i){
     return '<div class="checking-step" id="cstep'+i+'"><span class="cs-icon">'+s.icon+'</span><span style="flex:1">'+s.text+'</span><div class="cs-spin"></div></div>';
   }).join('')+'</div>';
   el.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -788,7 +788,7 @@ function saveCheckHistory(sd,si,hitCount,worst){
 function renderHistory(){
   var el=document.getElementById('historyList');
   if(!el)return;
-  if(!MY.history.length){el.innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 0">아직 확인한 이력이 없어요</div>';return;}
+  if(!MY.history.length){el.innerHTML='<div style="color:#4E6E5D;font-size:13.5px;padding:10px 0">아직 확인한 이력이 없어요</div>';return;}
   el.innerHTML=MY.history.map(function(h){
     var d=new Date(h.date);
     var dateStr=(d.getMonth()+1)+'월 '+d.getDate()+'일';
@@ -840,7 +840,7 @@ function updateAlarmTarget(){
 }
 function renderAlarmList(){
   var el=document.getElementById('alarmList');
-  if(!MY.alarms.length){el.innerHTML='<div style="color:#7A9A88;font-size:13.5px;padding:10px 0">아직 등록된 알람이 없어요</div>';return;}
+  if(!MY.alarms.length){el.innerHTML='<div style="color:#4E6E5D;font-size:13.5px;padding:10px 0">아직 등록된 알람이 없어요</div>';return;}
   el.innerHTML=MY.alarms.map(function(a,i){
     return '<div class="alarm-item"><div><div class="alarm-name">'+a.label+'</div><div class="alarm-time">⏰ 매일 '+a.time+'</div></div><button class="alarm-del" onclick="removeAlarm('+i+')">삭제</button></div>';
   }).join('');
@@ -865,7 +865,7 @@ function tickAlarms(){
   var now=new Date();
   var hhmm=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
   MY.alarms.forEach(function(a){
-    if(a.time===hhmm){var key='af_'+a.target+'_'+hhmm+'_'+now.toDateString();if(!sessionStorage.getItem(key)){sessionStorage.setItem(key,'1');new Notification('💊 복용 시간이에요!',{body:a.label+' 드실 시간입니다.',icon:'/icon-192.png'});}}
+    if(a.time===hhmm){var key='af_'+a.target+'_'+hhmm+'_'+now.toDateString();if(!sessionStorage.getItem(key)){sessionStorage.setItem(key,'1');new Notification('💊 복용 시간이에요!',{body:a.label+' 드실 시간입니다.',icon:'/img/icon-192.png'});}}
   });
 }
 setInterval(tickAlarms,30000);
@@ -905,6 +905,6 @@ function popToast(msg){var el=document.getElementById('toast');el.textContent=ms
   if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
 })();
 </script>
-<script src="/comments.js?v=8" defer></script>
+<script src="/comments.js?v=9" defer></script>
 </body>
 </html>

@@ -42,10 +42,12 @@
       ['연락처', BIZ.전화], ['전자우편', BIZ.이메일], ['개인정보 보호책임자', BIZ.개인정보책임자],
       ['호스팅 제공', BIZ.호스팅]
     ];
-    var h = '<table class="biz-tbl" style="width:100%;border-collapse:collapse;font-size:14px;margin:8px 0">';
+    // 글씨를 키우면 항목명(예: 통신판매업 신고번호)이 줄바꿈을 못 해 표가 화면 밖으로 나가던 문제
+    // — 고정 레이아웃 + 어절 단위 줄바꿈으로 항상 폭 안에 들어오게 한다. (2026-07-28 Macho 지적)
+    var h = '<table class="biz-tbl" style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px;margin:8px 0">';
     rows.forEach(function (r) {
-      h += '<tr><th style="border:1px solid #CFE5DB;background:#E9F6F0;color:#0C5C49;padding:8px 11px;text-align:left;width:38%;white-space:nowrap">' +
-        esc(r[0]) + '</th><td style="border:1px solid #CFE5DB;background:#fff;padding:8px 11px">' + esc(r[1]) + '</td></tr>';
+      h += '<tr><th style="border:1px solid #CFE5DB;background:#E9F6F0;color:#0C5C49;padding:8px 11px;text-align:left;width:38%;word-break:keep-all">' +
+        esc(r[0]) + '</th><td style="border:1px solid #CFE5DB;background:#fff;padding:8px 11px;overflow-wrap:anywhere">' + esc(r[1]) + '</td></tr>';
     });
     return h + '</table>';
   }

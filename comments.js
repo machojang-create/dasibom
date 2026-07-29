@@ -13,27 +13,65 @@
   function clean(t){ var s=t.replace(/\s/g,'').toLowerCase(); return !BAD.some(function(w){return s.indexOf(w)>=0;}); }
   function timeAgo(ms){ if(!ms) return ''; var s=Math.floor((Date.now()-ms)/1000); if(s<60)return '방금'; if(s<3600)return Math.floor(s/60)+'분 전'; if(s<86400)return Math.floor(s/3600)+'시간 전'; return Math.floor(s/86400)+'일 전'; }
 
+  // 댓글창 아래로 스크롤해서 더 볼 수 있는 여백이 얼마나 남았는지(px).
+  // 이 여백이 부족하면 하단 고정 글씨바(a11y .dsb-a11y / .dsb-fs)가 댓글창을 덮는다. (2026-07-28)
+  var TAIL_NEED = 96;
+  function scrollBox(el){
+    for (var p = el.parentElement; p; p = p.parentElement) {
+      var oy = getComputedStyle(p).overflowY;
+      if (oy === 'auto' || oy === 'scroll') return p;
+    }
+    return null;
+  }
+  function tailGap(el){
+    var r = el.getBoundingClientRect(), sc = scrollBox(el);
+    if (sc) {                                   // 서재 리더처럼 자체 스크롤 영역 안에 있을 때
+      var sr = sc.getBoundingClientRect();
+      return (sc.scrollHeight - sc.scrollTop) - (r.bottom - sr.top);
+    }
+    var docBottom = document.documentElement.scrollHeight - (window.scrollY || window.pageYOffset || 0);
+    return docBottom - r.bottom;                // 페이지 자체를 스크롤할 때
+  }
+  function markTail(box){
+    try {
+      box.classList.remove('dbc-tail');         // 먼저 빼고 원래 여백으로 다시 잰다
+      if (tailGap(box) < TAIL_NEED) box.classList.add('dbc-tail');
+    } catch(e){}
+  }
+
   function injectCSS(){
     if (document.getElementById('dbc-style')) return;
     var st = document.createElement('style'); st.id = 'dbc-style';
     st.textContent = ''+
       '.dbc-comments{margin-top:18px;background:#fff;border-radius:22px;padding:22px 24px;box-shadow:0 10px 34px -20px rgba(0,0,0,.2)}'+
-      '.dbc-head{font-size:16px;font-weight:800;color:#143D2E;margin-bottom:14px;display:flex;align-items:center;gap:9px}'+
+      // 제목이 '한마/디'처럼 낱글자로 끊기지 않게(한국어 어절 단위 줄바꿈)
+      '.dbc-head{font-size:16px;font-weight:800;color:#143D2E;margin-bottom:14px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;word-break:keep-all}'+
       '.dbc-cnt{font-size:12.5px;font-weight:700;color:#0C7C62;background:rgba(12,124,98,.1);padding:2px 11px;border-radius:50px}'+
       '.dbc-form{display:flex;gap:8px}'+
       '.dbc-input{flex:1;min-width:0;padding:14px 16px;border:1.5px solid #DCE6DF;border-radius:14px;font-size:16px;font-family:inherit;outline:none;background:#FAFDFB;color:#1F2A1A}'+
       '.dbc-input:focus{border-color:#0e9d7d}'+
       '.dbc-send{padding:0 20px;border:none;border-radius:14px;background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;white-space:nowrap}'+
       '.dbc-send:disabled{opacity:.45;cursor:default}'+
-      '.dbc-meta{display:flex;justify-content:space-between;align-items:center;margin:9px 4px 0;font-size:12px;color:#8AA294}'+
+      '.dbc-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:9px 4px 0;font-size:12px;color:#5E7268}'+
+      '.dbc-byte{white-space:nowrap}.dbc-hint{word-break:keep-all;text-align:right}'+
       '.dbc-byte.over{color:#e2574c;font-weight:700}'+
       '.dbc-list{margin-top:16px;display:flex;flex-direction:column;gap:9px;max-height:440px;overflow-y:auto}'+
       '.dbc-more{align-self:center;margin-top:4px;padding:9px 20px;border:1.5px solid #cfe0d5;border-radius:50px;background:#F3F8F4;color:#2f6b52;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}'+
       '.dbc-more:active{opacity:.6}'+
       '.dbc-item{background:#F3F8F4;border-radius:14px;padding:11px 15px;font-size:15px;color:#2C3A30;line-height:1.6;display:flex;justify-content:space-between;align-items:center;gap:10px}'+
       '.dbc-item .dbc-txt{word-break:break-all}'+
-      '.dbc-item .dbc-time{font-size:11px;color:#9DB0A2;flex-shrink:0;white-space:nowrap}'+
-      '.dbc-empty{color:#9DB0A2;font-size:14px;text-align:center;padding:18px}'+
+      '.dbc-item .dbc-time{font-size:11px;color:#63786C;flex-shrink:0;white-space:nowrap}'+
+      '.dbc-empty{color:#63786C;font-size:14px;text-align:center;padding:18px}'+
+      // 하단 고정 '글씨/다크 바'(a11y.js .dsb-a11y, dasibom-fontsize.js .dsb-fs)와 겹침 방지
+      // — 댓글창이 화면(또는 스크롤 영역)의 맨 끝 콘텐츠일 때만 여백을 준다. 2026-07-28 Macho 지적
+      '.dbc-comments{scroll-margin-bottom:110px}'+
+      '.dbc-comments.dbc-tail{margin-bottom:104px}'+
+      // 글씨를 키우면 입력칸이 '짧은 한미…'처럼 뭉개지던 문제 — 글씨 크게(ts-2/3)이거나
+      // 화면이 좁으면 입력칸과 버튼을 세로로 쌓는다. (미디어쿼리는 zoom을 못 보므로 ts 클래스도 함께 본다)
+      '@media (max-width:360px){.dbc-comments{padding:18px 16px}.dbc-form{flex-direction:column}'+
+      '.dbc-send{padding:14px 20px}}'+
+      'body.ts-2 .dbc-form,body.ts-3 .dbc-form{flex-direction:column}'+
+      'body.ts-2 .dbc-send,body.ts-3 .dbc-send{padding:14px 20px}'+
       'body.dark .dbc-comments{background:#262E26}'+
       'body.dark .dbc-head{color:#EFE6D0}'+
       'body.dark .dbc-input{background:#1d241d;border-color:#3a463c;color:#e9e2d2}'+
@@ -87,6 +125,11 @@
         if(u){ write(u.uid); } else { firebase.auth().signInAnonymously().then(function(r){ write(r.user.uid); }).catch(function(){ sendBtn.disabled=false; alert('잠시 후 다시 시도해 주세요'); }); }
       });
     }
+    // 뒤 콘텐츠가 나중에 붙는 페이지(SPA·비동기 렌더)가 있어 한 박자 뒤에 다시 판정한다
+    markTail(box);
+    setTimeout(function(){ markTail(box); }, 1200);
+    window.addEventListener('load', function(){ markTail(box); });
+
     sendBtn.addEventListener('click', submit);
     input.addEventListener('keydown', function(e){ if(e.key==='Enter'&&!sendBtn.disabled) submit(); });
 

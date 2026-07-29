@@ -14,11 +14,17 @@
   }
   var css =
     'body.ts-2{zoom:1.15}body.ts-3{zoom:1.3}' +
+    /* 글씨 바가 페이지 맨 끝 버튼(공유·카카오톡)을 덮던 문제 — 본문 하단 여백을 확보한다.
+       (a11y.js와 같은 규칙. 2026-07-28 Macho 지적) */
+    'body{padding-bottom:84px}' +
+    /* 글씨를 키우면 바까지 커져 화면을 가리던 문제 — 조절 바 자신은 항상 같은 크기로 */
+    'body.ts-2 .dsb-fs{zoom:0.8696}body.ts-3 .dsb-fs{zoom:0.7692}' +
     '.dsb-fs{position:fixed;right:12px;bottom:16px;z-index:99990;display:flex;align-items:center;gap:1px;' +
     'background:#fff;border:1px solid #E6DECF;border-radius:50px;padding:5px 7px;box-shadow:0 6px 18px -8px rgba(80,54,24,.45);' +
     "font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif}" +
     '.dsb-fs .lbl{font-size:11px;color:#9a8f82;padding:0 4px 0 2px;user-select:none}' +
-    '.dsb-fs button{border:none;background:transparent;cursor:pointer;color:#6b5a48;padding:2px 8px;border-radius:50px;line-height:1;font-weight:800;font-family:inherit}' +
+    /* 손가락으로 누르기 좋게 — 어르신 기준 최소 44px (기존 29x17은 너무 작았다) */
+    '.dsb-fs button{border:none;background:transparent;cursor:pointer;color:#6b5a48;padding:0 6px;min-width:44px;height:44px;border-radius:50px;line-height:1;font-weight:800;font-family:inherit}' +
     '.dsb-fs button.on{background:#7D5A50;color:#fff}' +
     '.dsb-fs .f1{font-size:13px}.dsb-fs .f2{font-size:17px}.dsb-fs .f3{font-size:21px}' +
     'body.dark .dsb-fs,html.dark .dsb-fs{background:#2a2320;border-color:#3d332a}' +

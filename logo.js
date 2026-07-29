@@ -18,7 +18,7 @@
 
   var TEXT = '<div style="display:flex;flex-direction:column;gap:0px;line-height:1">'
     +'<span style="font-family:\'Nanum Myeongjo\',serif;font-size:17px;font-weight:800;color:#1F2A1A;line-height:1.15">다시봄</span>'
-    +'<span style="font-size:9px;letter-spacing:2px;color:#8AAA7A;font-weight:700">DASIBOM</span>'
+    +'<span style="font-size:10px;letter-spacing:2px;color:#57764A;font-weight:700">DASIBOM</span>'
     +'</div>';
 
   var INNER = SVG + TEXT;

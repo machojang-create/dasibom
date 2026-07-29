@@ -45,7 +45,7 @@
       function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"이 소리, 어떠셨어요?"); }
       if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
       // comments.js는 다시봄 루트에서 서빙(vite 번들 대상에서 제외하려 동적 삽입)
-      var s=document.createElement("script"); s.src="/comments.js?v=8"; s.defer=true; document.body.appendChild(s);
+      var s=document.createElement("script"); s.src="/comments.js?v=9"; s.defer=true; document.body.appendChild(s);
     })();
     </script>
   </body>

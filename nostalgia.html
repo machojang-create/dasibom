@@ -335,7 +335,7 @@ body{
 /* ═══ EMPTY / LOADING ═══ */
 .state-box{
   text-align:center;padding:80px 20px;
-  color:#A8C898;
+  color:#5B7A4B;
 }
 .state-box .s-icon{font-size:56px;margin-bottom:16px;display:block}
 .state-box p{font-size:16px;line-height:1.7}
@@ -407,7 +407,7 @@ body{
   margin-bottom:10px;line-height:1.5;
 }
 .tomorrow-footer .tf-sub{
-  font-size:14px;color:#A8C898;line-height:1.8;
+  font-size:14px;color:#5B7A4B;line-height:1.8;
   max-width:320px;margin:0 auto;
 }
 .tomorrow-footer .tf-date{
@@ -490,7 +490,7 @@ body{
 .nsq-res.show{display:block}
 .nsq-res b{color:#8A6200}
 </style>
-<script src="/a11y.js?v=7" defer></script>
+<script src="/a11y.js?v=8" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
@@ -524,7 +524,7 @@ document.addEventListener('DOMContentLoaded', function(){
   }catch(e){}
 });
 </script>
-<script src="/comments.js?v=8" defer></script>
+<script src="/comments.js?v=9" defer></script>
 <script src="/reactions.js?v=2" defer></script>
 <script src="/dasibom-header.js"></script>
 </head>
@@ -707,10 +707,10 @@ document.addEventListener('DOMContentLoaded', function(){
       var start = new Date(2025,0,1).getTime();
       var scope = 'nostalgia:' + (((Math.floor((Date.now()-start)/86400000))%300+300)%300);
       if(window.DasibomComments){
-        DasibomComments.mount(cmtWrap, scope, '이 추억 어떠셨나요? 한 마디 남겨보세요');
+        DasibomComments.mount(cmtWrap, scope, '이 추억에 한마디');
       } else {
         document.addEventListener('dasibom-comments-ready', function(){
-          DasibomComments.mount(cmtWrap, scope, '이 추억 어떠셨나요? 한 마디 남겨보세요');
+          DasibomComments.mount(cmtWrap, scope, '이 추억에 한마디');
         }, {once:true});
       }
     })();
