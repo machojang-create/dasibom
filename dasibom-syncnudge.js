@@ -42,6 +42,8 @@
       'width:min(92vw,420px);background:#143D2E;color:#FFF6E9;border-radius:18px;padding:14px 16px;' +
       'box-shadow:0 14px 40px -10px rgba(0,0,0,.5);font-family:inherit;transition:transform .45s cubic-bezier(.2,1.1,.4,1);' +
       'display:flex;align-items:center;gap:12px}' +
+      /* 글씨 아주 크게(ts-2/3)면 배너가 같이 커져 ✕·로그인 버튼이 화면 밖으로 밀림 → 배너 크기 고정 (2026-07-28 모바일 전수점검) */
+      'body.ts-2 #dsbSyncNudge{zoom:0.8696}body.ts-3 #dsbSyncNudge{zoom:0.7692}' +
       '#dsbSyncNudge.on{transform:translateX(-50%) translateY(0)}' +
       '#dsbSyncNudge .sn-emoji{font-size:30px;flex-shrink:0}' +
       '#dsbSyncNudge .sn-body{flex:1;min-width:0}' +

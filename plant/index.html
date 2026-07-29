@@ -30,6 +30,9 @@
     <style>/* 하단 물주기·영양제 버튼 위로 공용 위젯 리프트(우측 스택) */
       .dsb-fs{bottom:146px !important}
       .bg2-wrap{bottom:200px !important}
+      /* 글씨 아주 크게(ts-2/3)면 좌우 하단 슬롯 이동버튼과 글씨바가 겹침 → 글씨바를 화살표 위로 올림 (2026-07-28 모바일 전수점검) */
+      body.ts-2 .dsb-fs{bottom:250px !important}
+      body.ts-3 .dsb-fs{bottom:280px !important}
     </style>
     <!-- 봄이 버튼 가이드(2026-07-23 대량 추가): 처음 누르는 버튼마다 봄이가 한 번 설명해준다 -->
     <script>window.BOM_GUIDES={

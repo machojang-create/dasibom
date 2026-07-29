@@ -1754,6 +1754,9 @@ body.dark .mk-star{background:rgba(40,36,30,.9);color:#c9b98e}
 .mk-star:hover{transform:scale(1.08)}
 .mk-sec .cards{gap:14px}
 @media(max-width:560px){.mk-fav-row{grid-template-columns:repeat(2,1fr);gap:10px}.mk-nav{top:56px}.mk-favs{padding:15px}.mk-sec{padding:4px 10px 12px}}
+/* 글씨 아주 크게(ts-2/3)일 때 즐겨찾기 타일이 2열이면 화면 밖으로 넘침 → 1열로 (2026-07-28 모바일 전수점검) */
+body.ts-2 .mk-fav-row,body.ts-3 .mk-fav-row{grid-template-columns:1fr}
+footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
 /* B 통일(2026-07-28): 밝은 청록 CTA를 차분한 세이지로 */
 .wcc-send,#dsbInstallBtn,.bcp-chat-send{background:linear-gradient(145deg,#8FA877,#5E7A4C) !important;box-shadow:0 10px 22px -12px rgba(80,100,60,.5) !important}
 </style>
