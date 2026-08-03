@@ -22,7 +22,7 @@
     '.bg2-face{width:54px;height:54px;flex:none;border-radius:50%;background:#fff;object-fit:cover;object-position:center top;box-shadow:0 6px 16px -6px rgba(0,0,0,.4);border:2px solid #fff;cursor:pointer}' +
     '.bg2-bubble{position:relative;background:#fff;border:1px solid #DCEFE6;border-radius:18px 18px 6px 18px;box-shadow:0 16px 40px -18px rgba(0,0,0,.45);padding:15px 16px 14px;flex:1;min-width:0}' +
     '.bg2-bubble::before{content:"봄이";position:absolute;top:-9px;left:14px;font-size:10.5px;font-weight:800;color:#fff;background:#0E9C7D;padding:2px 8px;border-radius:50px}' +
-    '.bg2-x{position:absolute;top:8px;right:10px;width:24px;height:24px;border:none;background:transparent;color:#9aa8a0;font-size:18px;line-height:1;cursor:pointer}' +
+    '.bg2-x{position:absolute;top:2px;right:4px;width:48px;height:48px;border:none;background:transparent;color:#9aa8a0;font-size:18px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}' +
     '.bg2-title{font-size:13px;font-weight:800;color:#0B7E64;margin:2px 26px 6px 0}' +
     '.bg2-text{font-size:15px;line-height:1.72;color:#33402E;word-break:keep-all}' +
     '.bg2-action{font-size:13.5px;line-height:1.6;color:#0B7E64;background:#EDF8F3;border-radius:10px;padding:9px 11px;margin-top:10px;font-weight:600;word-break:keep-all}' +

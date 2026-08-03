@@ -37,7 +37,8 @@
     'animation:btPop .32s cubic-bezier(.2,.9,.3,1.15)}' +
     '@keyframes btPop{from{opacity:0;transform:translateY(12px) scale(.94)}to{opacity:1;transform:none}}' +
     '.bt-bubble::before{content:"봄이";position:absolute;top:-9px;left:14px;font-size:10.5px;font-weight:800;letter-spacing:.03em;color:#fff;background:#0E9C7D;padding:2px 8px;border-radius:50px}' +
-    '.bt-x{position:absolute;top:8px;right:10px;width:24px;height:24px;border:none;background:transparent;color:#9aa8a0;font-size:18px;line-height:1;cursor:pointer;padding:0}' +
+    // ★터치 규격(2026-08-04 FGT ③): 24×24는 손이 떨리는 분에게 너무 작다 → 48×48. 보이는 크기는 그대로, 누를 면적만 확대.
+    '.bt-x{position:absolute;top:2px;right:4px;width:48px;height:48px;border:none;background:transparent;color:#9aa8a0;font-size:18px;line-height:1;cursor:pointer;padding:0;display:grid;place-items:center}' +
     '.bt-title{font-size:13px;font-weight:800;color:#0B7E64;margin:2px 26px 6px 0;line-height:1.3}' +
     '.bt-text{font-size:calc(15px * var(--ts,1));line-height:1.72;color:#33402E;word-break:keep-all}' +
     '.bt-action{font-size:calc(13.5px * var(--ts,1));line-height:1.6;color:#0B7E64;background:#EDF8F3;border-radius:10px;padding:9px 11px;margin-top:10px;font-weight:600}' +

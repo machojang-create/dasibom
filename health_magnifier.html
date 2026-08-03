@@ -22,7 +22,7 @@
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
-<script src="/bom_tutorial.js?v=7" defer></script>
+<script src="/bom_tutorial.js?v=8" defer></script>
 <script>window.BOM_TUT={
   key:'health', face:'bom_think.png', name:'건강돋보기',
   welcome:'{호칭}, 여기서는 드시는 영양제나 약의 성분을 큰 글씨로 쉽게 살펴봐요. 무엇에 좋은지, 같이 드셔도 괜찮은지 제가 곁에서 알려드릴게요.',
@@ -55,7 +55,7 @@ header{position:sticky;top:0;z-index:100;background:rgba(246,251,249,.96);backdr
 .search-bar{display:flex;gap:8px;margin-bottom:16px}
 .search-bar input{flex:1;padding:12px 16px;border:1.5px solid #CFE5DB;border-radius:50px;font-size:15px;outline:none;background:#fff;font-family:inherit}
 .search-bar input:focus{border-color:#0C7C62}
-.cat-scroll{display:flex;gap:7px;overflow-x:auto;padding-bottom:10px;margin-bottom:14px;scrollbar-width:none}
+.cat-scroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;margin-bottom:14px;scrollbar-width:none}
 /* ★글씨를 키우면 칩이 화면 밖으로 밀려 '눈/뇌' 같은 항목을 못 찾는다(2026-07-30 모바일 전수).
    시니어는 가로 스크롤을 잘 모르므로, 크게 볼 때는 줄바꿈으로 전부 보이게 한다. */
 body.ts-2 .cat-scroll,body.ts-3 .cat-scroll{flex-wrap:wrap;overflow-x:visible}
@@ -139,7 +139,7 @@ body.ts-2 .cat-btn,body.ts-3 .cat-btn{flex-shrink:1}
 /* 내 정보 */
 .myinfo-card{background:#fff;border:1.5px solid #E0EDE8;border-radius:20px;padding:18px;margin-bottom:14px}
 .myinfo-label{font-size:13px;font-weight:800;color:#143D2E;margin-bottom:10px}
-.myinfo-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px;min-height:28px}
+.myinfo-tags{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;min-height:28px}
 .myinfo-tag{display:flex;align-items:center;gap:5px;background:#EBF7F2;border:1px solid #BFE5D6;border-radius:50px;padding:5px 12px;font-size:13px;font-weight:700;color:#0C7C62}
 .myinfo-tag button{background:none;border:none;cursor:pointer;font-size:14px;color:#4E6E5D;padding:0;line-height:1}
 .myinfo-add-row{display:flex;gap:8px}

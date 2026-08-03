@@ -238,7 +238,8 @@
             box-shadow: 0 20px 50px rgba(31,42,26,0.35);
         }
         .rk-close {
-            position: absolute; top: 14px; right: 14px; width: 32px; height: 32px;
+            /* ★터치 규격(2026-08-04 FGT ③): 32 → 44 */
+            position: absolute; top: 10px; right: 10px; width: 44px; height: 44px;
             border-radius: 50%; border: 1.5px solid var(--cream-2); background: #fff;
             font-size: 15px; color: var(--muted); cursor: pointer;
         }
@@ -1958,7 +1959,7 @@
 <script src="/dasibom-bgm.js?v=1"></script><!-- 공용 배경음(전역 스위치 하나) -->
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
-<script src="/bom_tutorial.js?v=7" defer></script>
+<script src="/bom_tutorial.js?v=8" defer></script>
 <script>window.BOM_TUT={
   key:'arcade', face:'bom_cheer.png', name:'추억의 오락실',
   welcome:'{호칭}, 여기는 마음 편히 즐기는 오락실이에요. 시간 제한도, 점수 부담도 없으니 그냥 재미있게 놀다 가세요 🕹️',
