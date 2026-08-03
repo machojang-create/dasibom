@@ -8,7 +8,8 @@
     "status": "node run.mjs --status",
     "draft": "node run.mjs --no-publish",
     "post": "node run.mjs",
-    "post:now": "node run.mjs --now"
+    "post:now": "node run.mjs --now",
+    "expand": "node expand_queue.mjs --auto"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.0",

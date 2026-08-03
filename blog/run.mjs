@@ -29,12 +29,22 @@ const config = loadConfig();
 
 if (has('status')) {
   const queue = loadQueue();
-  console.table(queueStats(config, queue));
+  const stats = queueStats(config, queue);
+  console.table(stats);
+
   const total = queue.topics.length;
   const done = queue.topics.filter((t) => t.status === 'published').length;
   const left = queue.topics.filter((t) => t.status === 'pending' && !t.manual).length;
   const weeks = (left / config.schedule.posts_per_week).toFixed(1);
   console.log(`\n전체 ${total}편 / 발행 ${done}편 / 자동 발행 가능 ${left}편 (약 ${weeks}주치)`);
+
+  const thin = stats.filter((r) => r.상태);
+  if (thin.length) {
+    console.log('\n보충이 필요한 카테고리:');
+    for (const r of thin) console.log(`  ${r.카테고리} — ${r.주치}주치 (${r.상태})`);
+    console.log('\n  node expand_queue.mjs --auto        # 8주 미만인 카테고리를 알아서 채웁니다');
+    console.log(`  node expand_queue.mjs --category ${config.categories.find((c) => c.name === thin[0].카테고리)?.key} --count 12`);
+  }
   process.exit(0);
 }
 

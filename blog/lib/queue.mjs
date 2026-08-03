@@ -93,16 +93,23 @@ export function ensureOutDir(sub) {
 }
 
 export function queueStats(config, queue) {
-  const rows = config.categories.map((cat) => {
+  return config.categories.map((cat) => {
     const all = queue.topics.filter((t) => t.category === cat.key);
+    const pending = all.filter((t) => t.status === 'pending' && !t.manual).length;
+    const manual = all.filter((t) => t.status === 'pending' && t.manual).length;
+
+    // 이 카테고리가 목표 비중만큼 소비된다고 볼 때 몇 주치인가
+    const perWeek = config.schedule.posts_per_week * (cat.weight / 100);
+    const weeks = cat.manual_only || perWeek === 0 ? null : pending / perWeek;
+
     return {
-      category: cat.name,
-      key: cat.key,
-      target: `${cat.weight}%`,
-      pending: all.filter((t) => t.status === 'pending').length,
-      drafted: all.filter((t) => t.status === 'drafted').length,
-      published: all.filter((t) => t.status === 'published').length,
+      카테고리: cat.name,
+      비중: `${cat.weight}%`,
+      남음: manual ? `${pending} (+수동 ${manual})` : pending,
+      초안: all.filter((t) => t.status === 'drafted').length,
+      발행: all.filter((t) => t.status === 'published').length,
+      주치: weeks === null ? '수동' : weeks.toFixed(1),
+      상태: weeks === null ? '' : weeks < 4 ? '보충 필요' : weeks < 8 ? '주의' : '',
     };
   });
-  return rows;
 }

@@ -48,6 +48,19 @@ if (topic.manual) {
 const category = getCategory(config, topic.category);
 const w = config.writing;
 
+// CTA 결정: 주제에 cta_key 가 있으면 그것을, 없으면 카테고리 기본값을.
+// (같은 카테고리라도 글의 성격에 따라 목적지가 달라야 할 때가 있습니다.
+//  예: 원예 글은 수다쟁이 화분, 강아지 글은 자서전 쪽이 자연스럽습니다.)
+let cta = category.cta;
+if (topic.cta_key) {
+  const app = config.app_map[topic.cta_key];
+  if (!app) {
+    console.error(`알 수 없는 cta_key: ${topic.cta_key} (config.json 의 app_map 확인)`);
+    process.exit(1);
+  }
+  cta = { label: app.cta_label ?? app.name, url: app.url };
+}
+
 const SYSTEM = `당신은 시니어 돌봄 서비스 '다시봄라이프'의 블로그 편집자입니다.
 네이버 블로그에 올릴 글을 씁니다.
 
@@ -73,7 +86,7 @@ ${w.forbidden_phrases.join(', ')}
 
 # CTA
 ${w.cta_rule}
-이 글의 CTA는 이것 하나뿐입니다: "${category.cta.label}" → ${category.cta.url}
+이 글의 CTA는 이것 하나뿐입니다: "${cta.label}" → ${cta.url}
 본문 마지막 문단에서 자연스럽게 한 번만 언급합니다. 링크 주소는 본문에 쓰지 말고, cta 필드로만 반환하세요.
 "클릭하세요", "지금 바로" 같은 광고 문구는 쓰지 않습니다.
 
@@ -154,7 +167,7 @@ const post = {
   body: draft.body,
   summary: draft.summary,
   tags: [...new Set([...draft.tags, ...config.naver.tag_common])],
-  cta: category.cta,
+  cta,
   generated_at: new Date().toISOString(),
   usage: response.usage,
 };
