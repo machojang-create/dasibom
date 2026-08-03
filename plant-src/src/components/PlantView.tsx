@@ -359,7 +359,9 @@ export default function PlantView({ plant, onInteract, onRename, timeOfDay, care
                 maxLength={10}
               />
             ) : (
-              <h3 className="font-bold text-lg md:text-xl text-gray-900 drop-shadow-sm">{plant.customName || plant.type.name}</h3>
+              // ★flex-1+min-w-0+truncate: 글씨를 키우면 이름이 길어져 '이름 고치기' 버튼이 화면 밖으로 밀렸다.
+              //   vw 단위는 body zoom을 반영하지 않아 더 넘쳤다 → 남는 만큼만 쓰고 넘치면 …으로(2026-07-30 모바일 전수)
+              <h3 className="font-bold text-lg md:text-xl text-gray-900 drop-shadow-sm truncate flex-1 min-w-0">{plant.customName || plant.type.name}</h3>
             )}
             {plant.stage === 'old' && (
               <span className="bg-yellow-400 text-yellow-900 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">

@@ -38,7 +38,9 @@
 .animate-twinkle { animation: starTwinkle 2.6s ease-in-out infinite; }
 @keyframes starTwinkle { 0%,100% { opacity: .25; } 50% { opacity: .95; } }
 .animate-birdfly { animation: birdFly 38s linear infinite; }
-@keyframes birdFly { 0% { transform: translateX(-8vw) translateY(0); } 50% { transform: translateX(52vw) translateY(-3vh); } 100% { transform: translateX(112vw) translateY(1vh); } }
+/* 🕊 비둘기 이모지는 왼쪽을 본다 — 오른쪽으로 날리면 뒤로 나는 새가 됨(2026-08-01 전수점검).
+   새는 오른쪽→왼쪽으로 난다(보는 방향과 일치). */
+@keyframes birdFly { 0% { transform: translateX(112vw) translateY(0); } 50% { transform: translateX(52vw) translateY(-3vh); } 100% { transform: translateX(-8vw) translateY(1vh); } }
 .animate-clouddrift { animation: cloudDrift 55s linear infinite; }
 @keyframes cloudDrift { 0% { left: -45%; } 100% { left: 110%; } }
 .animate-lightning { opacity: 0; animation: lightningFlash 7s infinite; }
@@ -55,7 +57,9 @@
 @keyframes waterFall { 0% { transform: translateY(0) scale(.6); opacity: 0; } 12% { opacity: .95; } 100% { transform: translateY(150px) scale(1); opacity: 0; } }
 @keyframes waterSplash { 0% { transform: translateX(-50%) scale(.3); opacity: .9; } 100% { transform: translateX(-50%) scale(1.5); opacity: 0; } }
 /* 💧💉 돌봄 연출 강화(2026-07-23 Macho) — 물뿌리개 기울기·물방울 낙하·착지 물결·주사기·반짝 */
-@keyframes canTilt { 0% { transform: rotate(0deg); opacity: 0; } 12% { opacity: 1; } 22% { transform: rotate(-42deg); } 70% { transform: rotate(-42deg); opacity: 1; } 100% { transform: rotate(-8deg); opacity: 0; } }
+/* 물뿌리개는 화면 왼쪽에서 화분(오른쪽) 쪽으로 기울어야 한다.
+   -42deg는 바깥(왼쪽)으로 부어 물줄기와 반대로 보였음(2026-08-01 Macho 지적) → +42deg */
+@keyframes canTilt { 0% { transform: rotate(0deg); opacity: 0; } 12% { opacity: 1; } 22% { transform: rotate(42deg); } 70% { transform: rotate(42deg); opacity: 1; } 100% { transform: rotate(8deg); opacity: 0; } }
 @keyframes dropFall { 0% { transform: translateY(0) scaleY(.7); opacity: 0; } 12% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translateY(130px) scaleY(1.2); opacity: 0; } }
 @keyframes splashRing { 0% { transform: scale(.3); opacity: .9; } 100% { transform: scale(1.6); opacity: 0; } }
 @keyframes syringePoke { 0% { transform: translateY(-14px) rotate(8deg); opacity: 0; } 18% { opacity: 1; } 34% { transform: translateY(8px) rotate(8deg); } 46% { transform: translateY(2px) rotate(8deg); } 62% { transform: translateY(8px) rotate(8deg); } 100% { transform: translateY(-6px) rotate(8deg); opacity: 0; } }

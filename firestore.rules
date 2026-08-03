@@ -289,6 +289,45 @@ service cloud.firestore {
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }
+    // 트로트 연대기 채널링용 '그 해 10대 가수' 토론(2026-07-31) — 다시봄 계정(카카오·네이버·익명)으로 작성.
+    // 스키마가 debate_comments(side 필수)와 달라 분리. scope 예: 'trot:1985'
+    match /top_singer_talks/{tid} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 300
+        && request.resource.data.scope is string
+        && request.resource.data.scope.size() <= 40
+        && request.resource.data.nick is string
+        && request.resource.data.nick.size() <= 30;
+      allow update: if false;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 말씀 한 그루 기도(2026-08-01) — 다시봄 로그인(닉네임 보유)으로 작성, 아멘은 자기 uid 키 1개만 추가 가능
+    match /bible_prayers/{pid} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 200
+        && request.resource.data.nick is string
+        && request.resource.data.nick.size() > 0
+        && request.resource.data.nick.size() <= 30
+        && request.resource.data.amens is map
+        && request.resource.data.amens.size() == 0;
+      allow update: if request.auth != null
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['amens'])
+        && request.resource.data.amens.diff(resource.data.amens).addedKeys().hasOnly([request.auth.uid])
+        && request.resource.data.amens.diff(resource.data.amens).removedKeys().size() == 0;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
     // 파일럿 공용 참여 통계(2026-07-23) — '오늘 함께한 이웃 N명' 류. count는 증가 전용, 유형 필드는 자유(민감정보 아님)
     match /pilot_stats/{docId} {
       allow read: if true;
@@ -531,6 +570,31 @@ service cloud.firestore {
         && request.resource.data.score >= 0 && request.resource.data.score <= 999999
         && request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 10
         && request.resource.data.weekNum is number;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 봄이 맞고 주간 승수 랭킹 — 공개 조회(2026-07-31 신설). 코인 무관, 이긴 판 수만.
+    match /matgo_ranks/{sid} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.wins is number
+        && request.resource.data.wins >= 0 && request.resource.data.wins <= 100000
+        && request.resource.data.weekNum is number
+        && request.resource.data.name is string && request.resource.data.name.size() <= 10;
+      allow delete: if request.auth != null
+        && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
+    }
+
+    // 뇌건강(game.html) 이웃 랭킹 — 공개 조회용(users는 본인 문서만 읽혀 목록조회 불가 → 별도 공개 컬렉션, 2026-07-31 봇 발견 버그 수정)
+    match /brain_ranks/{uid} {
+      allow read: if true;
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.data.score is number
+        && request.resource.data.score >= 0 && request.resource.data.score <= 100000
+        && request.resource.data.name is string && request.resource.data.name.size() <= 20;
       allow delete: if request.auth != null
         && request.auth.token.email in ['machojang@gmail.com', 'machojang@naver.com'];
     }

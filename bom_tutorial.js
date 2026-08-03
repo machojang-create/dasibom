@@ -200,11 +200,42 @@
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
 
+  /* ★"화면에 봄이는 하나"(2026-07-30 Macho: "봄이 챗봇과 가이드가 2개, 맞고는 아이콘 3개")
+     ① 봄이 챗봇이 있는 페이지(홈)에서는 챗봇이 가이드 역할까지 한다 → 튜토리얼 봄이는 아예 안 띄운다.
+     ② 팝업(시작 오버레이·로그인·상점 등)이 떠 있으면 그 위에 또 봄이가 겹치지 않게, 닫힌 뒤에 등장한다. */
+  function hasChatBom() {
+    return !!(document.getElementById('bomChat') || document.querySelector('.bomchat-fab') || window.bomChatToggle);
+  }
+  function popupOpen() {
+    // ★.dsb-bompop.on = 팝업에 걸쳐 나온 '브랜딩 봄이'. 이게 떠 있으면 이미 봄이가 화면에 있는 것이므로
+    //   튜토리얼 봄이는 절대 겹치지 않는다(2026-07-30 오락실에서 2개 겹침 실측).
+    return !!document.querySelector('.dsb-bompop.on, .mm-overlay.on, .lm-bg.open, #loginModalBg.open, .modal-bg.on, [class*="overlay"].on');
+  }
+  function whenNoPopup(fn, tries) {
+    tries = tries || 0;
+    if (!popupOpen()) { fn(); return; }
+    if (tries > 120) return;                 // 최대 60초까지 기다리다 포기(조용히)
+    setTimeout(function () { whenNoPopup(fn, tries + 1); }, 500);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var g = cfg(); if (!g || !g.key) return;
+    if (hasChatBom()) return;                // ①홈 등 챗봇이 있는 곳 — 봄이는 챗봇 하나로
     ensure();
     if (seen(g.key)) { collapse(); }                 // 이미 본 콘텐츠 → 작은 도우미만
-    else { prefetch((g.name ? g.name + '. ' : '') + g.welcome); setTimeout(function () { openWelcome(true); }, 900); } // 환영 대사 미리 받고 인사
+    else {
+      prefetch((g.name ? g.name + '. ' : '') + g.welcome);
+      setTimeout(function () { whenNoPopup(function () { openWelcome(true); }); }, 900);   // ②팝업 닫힌 뒤 인사
+    }
+    /* 말풍선이 떠 있는 동안 팝업이 새로 열리면(게임 결과·상점 등) 봄이가 둘이 되므로 조용히 접는다.
+       접힌 뒤엔 작은 봄이 버튼만 남아, 필요할 때 눌러 다시 보실 수 있다. */
+    setInterval(function () {
+      try {
+        if (!root || !root.classList.contains('on')) return;
+        if (bubbleEl && bubbleEl.style.display === 'none') return;      // 이미 접힘
+        if (popupOpen()) { stopVoice(); collapse(); }
+      } catch (e) {}
+    }, 700);
   });
 
   // 외부에서 강제로 다시 열기(디버그/설정용)

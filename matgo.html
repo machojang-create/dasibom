@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -36,16 +36,26 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .h-exit{border:1.5px solid rgba(63,90,48,.3);color:var(--sage-deep);background:#fff;font-size:13px;font-weight:700;padding:8px 14px;border-radius:50px;cursor:pointer;text-decoration:none;font-family:inherit;min-height:44px;display:inline-flex;align-items:center}
 
 /* ── 카드 ── */
-.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=5');background-size:400% 1200%;background-color:#c1272d;border:1.5px solid #c1272d;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
-/* 스프라이트를 딸 때 붉은 테두리 바깥으로 흰/분홍 여백이 딸려오는 걸 안쪽 붉은 링으로 덮어 깔끔한 붉은 외곽을 만든다(2026-07-25 Macho). 뒷면·보너스패는 제외. */
-.card:not(.back):not(.bcard){box-shadow:inset 0 0 0 1px #c1272d, 0 2px 5px rgba(0,0,0,.22)}
+/* ★스프라이트(allcard.png)에 이미 카드마다 빨간 테두리가 그려져 있어, CSS 테두리를 또 얹으면 '2겹'이 된다
+   (2026-08-01 Macho 지적: "3,4자 테두리 2겹, 애초부터 잘못 잘랐어"). → CSS 테두리·안쪽선 제거하고 스프라이트 원본 테두리만 사용.
+   뒷면·보너스패·선택표시는 스프라이트가 아니므로 각자 명시 테두리를 갖는다. */
+.card{width:var(--cw);height:var(--ch);border-radius:6px;background-image:url('/img/hwatu/allcard.png?v=5');background-size:400% 1200%;background-color:#c1272d;border:0;box-shadow:0 2px 5px rgba(0,0,0,.22);flex-shrink:0;position:relative}
 .card.hand{width:var(--hw);height:var(--hh);cursor:pointer;transition:transform .14s}
-.card.hand.sel{transform:translateY(-14px);border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-soft),0 8px 14px rgba(0,0,0,.3)}
-.card.back{background-image:var(--cardback,repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px));background-size:cover;background-position:center;border-color:#5A2020}
+.card.hand.sel{transform:translateY(-14px);border:2px solid var(--gold);box-shadow:0 0 0 3px var(--gold-soft),0 8px 14px rgba(0,0,0,.3)}
+.card.back{background-image:var(--cardback,repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px));background-size:cover;background-position:center;border:1.5px solid #5A2020}
 /* 보너스패: 스프라이트 대신 커스텀 얼굴(봄이/로고)+피 라벨 (손패·바닥·획득·더미공개 공통) */
 .bcard{background-image:none !important;overflow:hidden;display:flex;flex-direction:column}
-.bcard2{background:linear-gradient(160deg,#FFF0F5,#FFD7E6);border-color:#F4A9C4}
-.bcard3{background:linear-gradient(160deg,#FFF9E8,#FFE7AE);border-color:#EAC96A}
+/* ★보너스패도 다른 화투패와 같은 빨간 테두리(2026-07-30 Macho: "흰 테두리 패가 잔존").
+   연분홍(#F4A9C4)·연금색 테두리가 빨간 패들 사이에서 '흰 테두리'처럼 도드라졌다.
+   앞면의 파스텔 색은 그대로 둬 보너스패임은 여전히 한눈에 구분된다. */
+/* 보너스 카드(쌍피·3피)는 일반 빨강패와 구분되게 금색 테두리(2026-08-01 Macho) */
+.bcard2{background:linear-gradient(160deg,#FFF0F5,#FFD7E6);border:2px solid #D9A520;box-shadow:inset 0 0 0 1px #D9A520,0 2px 5px rgba(0,0,0,.22)}
+.bcard3{background:linear-gradient(160deg,#FFF9E8,#FFE7AE);border:2px solid #D9A520;box-shadow:inset 0 0 0 1px #D9A520,0 2px 5px rgba(0,0,0,.22)}
+/* 고=레드 / 스톱=블루 모달 버튼(2026-08-01 Macho) */
+.mm-btn.gs-go{background:linear-gradient(to bottom,#E24A4A,#C13030) !important;color:#fff !important;box-shadow:0 4px 0 #8A2020 !important}
+.mm-btn.gs-go:active{box-shadow:0 0 0 #8A2020 !important;transform:translateY(4px)}
+.mm-btn.gs-stop{background:linear-gradient(to bottom,#3E93E3,#2A6FC0) !important;color:#fff !important;box-shadow:0 4px 0 #1E4F8A !important}
+.mm-btn.gs-stop:active{box-shadow:0 0 0 #1E4F8A !important;transform:translateY(4px)}
 .bcard .bcard-logo{display:flex;align-items:center;justify-content:center;flex:1;padding-top:8%}
 .bcard .bcard-pi{text-align:center;font-weight:900;font-size:11px;color:#7A4B00;background:rgba(255,255,255,.7);border-radius:0 0 5px 5px;padding:1px 0;letter-spacing:-.02em}
 .bcard2 .bcard-pi{color:#B03060}
@@ -100,9 +110,14 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .rv-inner.flipped{transform:rotateY(180deg)}
 .rv-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:8px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
 .rv-back{background:repeating-linear-gradient(45deg,#7A3030 0 8px,#8A3A3A 8px 16px);border:1.5px solid #5A2020}
-.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=5');background-size:400% 1200%;background-color:#fff;border:1.5px solid #B8B0A0}
+/* ★뒤집기 연출 카드도 일반 화투패와 같은 빨간 테두리(2026-07-30 Macho: "흰 테두리 화투패가 잔존"). */
+.rv-front{transform:rotateY(180deg);background-image:url('/img/hwatu/allcard.png?v=5');background-size:400% 1200%;background-color:#c1272d;border:0;box-shadow:none}
 /* 내리치기: 착지 카드 펀치 + 판 전체 흔들림 */
 .card.slam{animation:slamIn .22s ease-out}
+/* 맞았다! 링 — 뒤집은 패가 바닥 짝에 내리쳐진 자리에서 번진다(2026-07-30) */
+.hit-ring{position:fixed;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;border:3px solid #FFD54F;
+  box-shadow:0 0 12px rgba(255,213,79,.85);pointer-events:none;z-index:420;animation:hitRing .5s ease-out forwards}
+@keyframes hitRing{0%{transform:scale(.5);opacity:.95}100%{transform:scale(5.6);opacity:0}}
 @keyframes slamIn{0%{transform:scale(1.5)}55%{transform:scale(.94)}100%{transform:scale(1)}}
 .board.bshake{animation:bshake .18s ease-out}
 @keyframes bshake{25%{transform:translateY(1.5px)}55%{transform:translateY(-1px)}100%{transform:translateY(0)}}
@@ -153,9 +168,11 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .mm-body .big{font-size:34px;display:block;margin:6px 0}
 .mm-btn{display:block;width:100%;min-height:50px;border:none;border-radius:14px;background:var(--sage);color:#fff;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px}
 .mm-btn.sub{background:#fff;border:1.5px solid var(--cream-2);color:var(--muted)}
-.mm-score-table{width:100%;font-size:14px;margin:10px 0;border-collapse:collapse}
-.mm-score-table td{padding:5px 8px;border-bottom:1px solid var(--cream-2);text-align:left}
-.mm-score-table td:last-child{text-align:right;font-weight:800;color:var(--sage-deep)}
+.mm-score-table{width:100%;font-size:13.5px;margin:8px 0;border-collapse:collapse;table-layout:fixed}
+.mm-score-table td{padding:5px 6px;border-bottom:1px solid var(--cream-2);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mm-score-table td:nth-child(2),.mm-score-table td:nth-child(4){text-align:right;font-weight:800;color:var(--sage-deep)}
+.mm-score-table td:nth-child(3){border-left:1px solid var(--cream-2);padding-left:12px}   /* 두 칸 사이 구분선 */
+.mm-score-table tr.mm-final td{border-bottom:none;border-top:2px solid var(--gold-soft);padding-top:8px;font-size:15px}
 .evt-banner{position:fixed;top:42%;left:50%;transform:translate(-50%,-50%);z-index:400;background:rgba(31,42,26,.88);color:#FBF8F0;font-family:'Nanum Myeongjo',serif;font-size:34px;font-weight:800;padding:18px 44px;border-radius:20px;border:2px solid var(--gold);display:none;letter-spacing:4px;white-space:nowrap}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--cream);padding:12px 24px;font-size:14px;z-index:500;border-radius:50px;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 /* 말투 선택 */
@@ -222,10 +239,12 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
   .bom-bubble{min-width:130px;max-width:180px;font-size:12px;padding:7px 10px}
 }
 </style>
-<script src="/a11y.js?v=8" defer></script>
+<script src="/a11y.js?v=9" defer></script>
+<script src="/dasibom-bgm.js?v=1"></script><!-- 공용 배경음(전역 스위치 하나) -->
+
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
-<script src="/bom_tutorial.js?v=5" defer></script>
+<script src="/bom_tutorial.js?v=7" defer></script>
 <script>window.BOM_TUT={
   key:'matgo', face:'bom_cheer.png', name:'봄이와 맞고',
   welcome:'{호칭}, 저랑 화투 한 판 어떠세요? 점수 계산은 제가 다 해드릴 테니, 패만 편하게 내시면 돼요 🎴',
@@ -246,10 +265,13 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 <header data-dasibom-header data-title="🎴 봄이와 맞고" data-accent="#3F5A30">
   <span style="display:flex;gap:8px;align-items:center" data-dbh-keep>
     <span class="coin-pill" id="coinPill" onclick="openShop()" title="내 코인 · 눌러서 상점">🪙 <b id="coinNum">0</b></span>
+    <button class="h-exit" id="rankBtn" onclick="openMatgoRank()" aria-label="이번주 맞고 랭킹">🏆</button>
     <button class="h-exit" id="shopBtn" onclick="openShop()" aria-label="화투 상점">🛍️</button>
-    <button class="h-exit dimmed" id="toneBtn" onclick="tonePrep()" aria-label="봄이 말투(준비 중)" style="opacity:.4">🗣️</button>
-    <button class="h-exit" id="bgmBtn" onclick="toggleBgm()" aria-label="배경음악">🎵</button>
-    <button class="h-exit" id="sndBtn" onclick="toggleSnd()" aria-label="효과음">🔊</button>
+    <!-- ★안 쓰는 상단 아이콘 숨김(2026-07-30 Macho): 말투(페르소나 미정식화)·배경음(홈 좌하단 전역 스위치로 통합)·
+         효과음(토글 불필요). DOM은 남겨 두어 JS 참조(bgmBtn/sndBtn textContent 등)는 안 깨지게 display:none 처리. -->
+    <button class="h-exit dimmed" id="toneBtn" onclick="tonePrep()" aria-label="봄이 말투(준비 중)" style="display:none">🗣️</button>
+    <button class="h-exit" id="bgmBtn" onclick="toggleBgm()" aria-label="배경음악" style="display:none">🎵</button>
+    <button class="h-exit" id="sndBtn" onclick="toggleSnd()" aria-label="효과음" style="display:none">🔊</button>
   </span>
 </header>
 
@@ -301,6 +323,17 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
     <div class="mm-title">어느 패를 가져올까요?</div>
     <div class="mm-body">바닥에 같은 달 패가 두 장 있어요.<br>가져오고 싶은 패를 눌러주세요.</div>
     <div id="chCards" style="display:flex;gap:18px;justify-content:center;padding:6px 0 4px"></div>
+  </div>
+</div>
+<!-- 국진(9월 열끗) 획득 순간 선택창 — 2026-07-30 Macho: "구쌍피 획득 시 선택문이 없다".
+     기존엔 획득칸 옆 작은 토글만 있어 어르신이 존재를 몰랐다. 처음 획득한 판에서 한 번 물어보고,
+     이후엔 그 토글로 언제든 바꿀 수 있다. -->
+<div class="mm-overlay" id="kjOverlay">
+  <div class="mm-box">
+    <div class="mm-title">🃏 국진을 어떻게 쓸까요?</div>
+    <div class="mm-body">9월 국진은 <b>열끗</b>으로도, <b>쌍피(피 2장)</b>로도 쓸 수 있어요.<br>지금 고르셔도 되고, 나중에 언제든 바꿀 수 있어요!</div>
+    <button class="mm-btn" id="kjPickYeol">열끗으로 쓸게요</button>
+    <button class="mm-btn" id="kjPickPi" style="background:#C9A961;color:#3A2A00">쌍피로 쓸게요</button>
   </div>
 </div>
 
@@ -412,7 +445,16 @@ function shuffle(a){ for(var i=a.length-1;i>0;i--){ var j=Math.floor(rnd()*(i+1)
 /* 스프라이트 위치: 컬러 시트는 1월이 맨 위 (행 = month-1). 카드에 숫자 인쇄돼 있음 */
 function cardStyle(c){
   var row = c.month - 1;
-  var x = (c.col/3)*100, y = (row/11)*100;
+  var x = (c.col/3)*100;
+  // ★월4(흑싸리) 행만 스프라이트 높이가 짧고(~255px) 18px 아래로 밀려 있어, 균일격자로 자르면 윗 카드 테두리가
+  //   위에 딸려와 '2줄'이 된다(2026-08-01 Macho 실측). 이 행만 개별 크롭(세로 확대+위치 보정).
+  if(row===2){ return 'background-position:'+x+'% 18.66%;background-size:400% 1278%'; }   // 실측: 월3(벚꽃) 카드 578~841px(263px). 균일격자는 월2 아래테두리를 위에 딸려와 2겹
+  if(row===3){
+    // 월4(흑싸리) 세로 크롭 + col3만 원본이 오른쪽 테두리를 끝에 바짝 잘라 얇음 → 크롭을 오른쪽으로 좁혀 왼쪽 두꺼운 테두리를 깎아 좌우 균등
+    if(c.col===3){ return 'background-position:100% 27.66%;background-size:414% 1302%'; }
+    return 'background-position:'+x+'% 27.66%;background-size:400% 1302%';   // 실측: 카드 858~1116px(258px), 위·아래 테두리 균등
+  }
+  var y = (row/11)*100;
   return 'background-position:'+x+'% '+y+'%';
 }
 // 보너스패 로고(다시봄 꽃) — 3피 카드 얼굴
@@ -506,8 +548,10 @@ var WINFX = [
   { id:'coins',    name:'황금 동전비', emoji:'🪙', chars:['🪙','💰','✨'] }
 ];
 function playWinFx(){
-  var id=STATS.equippedFx; if(!id||id==='none') return;
-  var f=WINFX.filter(function(x){return x.id===id;})[0]; if(!f||!f.chars) return;
+  // ★기본 승리 연출=꽃가루(무료·항상). 상점에서 산 이펙트를 장착하면 그걸로 덮어씀(2026-08-01 Macho)
+  var id=STATS.equippedFx;
+  var f=(!id||id==='none') ? {chars:['🌸','🎉','✨','🌺','🎊','🌷']} : WINFX.filter(function(x){return x.id===id;})[0];
+  if(!f||!f.chars) return;
   var layer=document.createElement('div'); layer.className='winfx';
   for(var i=0;i<30;i++){
     var s=document.createElement('span');
@@ -816,26 +860,20 @@ statsFB().then(function(uid){
   }).catch(function(){});
 });
 
-/* ── 배경음악 — 맞고 전용 국악풍 BGM (달콤한 장단) ── */
-var bgmAudio=new Audio('/audio/matgo_bgm.mp3');
-bgmAudio.loop=true; bgmAudio.volume=0.3;
-var BGM_ON=false;
-try{ BGM_ON=localStorage.getItem('matgo_bgm')==='1'; }catch(e){}
-function toggleBgm(){
-  BGM_ON=!BGM_ON;
-  try{ localStorage.setItem('matgo_bgm',BGM_ON?'1':'0'); }catch(e){}
-  document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
-  if(BGM_ON) bgmAudio.play().catch(function(){});
-  else bgmAudio.pause();
-}
-// 이전에 켜뒀으면 첫 터치 때 자동 재개(브라우저 자동재생 제한 대응)
-document.addEventListener('click', function(){ if(BGM_ON&&bgmAudio.paused) bgmAudio.play().catch(function(){}); }, {once:false});
-// 앱을 벗어나면 배경음 정지
+/* ── 배경음악 — 공용 모듈(dasibom-bgm.js)에 위임(2026-07-30 Macho)
+   "배경음 on/off는 메인화면 좌측 하단 아이콘 하나로 전부 적용" → 여기선 그 전역 스위치를 따라간다.
+   맞고 화면의 🎵 버튼도 같은 전역 설정을 바꿀 뿐이라, 어디서 켜든 끄든 사이트 전체가 같이 움직인다. */
+function _bgmOn(){ return !!(window.DasibomBGM && DasibomBGM.isOn()); }
+function _bgmSyncBtn(){ var b=document.getElementById('bgmBtn'); if(b) b.textContent=_bgmOn()?'🔇':'🎵'; }
+function toggleBgm(){ if(window.DasibomBGM) DasibomBGM.toggle(); _bgmSyncBtn(); }
+document.addEventListener('DOMContentLoaded', _bgmSyncBtn);
+// 앱을 벗어나면 배경음 정지(돌아오면 다시)
 document.addEventListener('visibilitychange', function(){
-  if(document.hidden) bgmAudio.pause();
-  else if(BGM_ON) bgmAudio.play().catch(function(){});
+  if(!window.DasibomBGM) return;
+  if(document.hidden) DasibomBGM.stop();
+  else if(_bgmOn()) DasibomBGM.play();
 });
-window.addEventListener('pagehide', function(){ bgmAudio.pause(); });
+window.addEventListener('pagehide', function(){ if(window.DasibomBGM) DasibomBGM.stop(); });
 
 /* ── 효과음 (Web Audio 합성 — 파일 없이 즉시 재생) ── */
 var AC=null, SND_ON=true;
@@ -890,6 +928,8 @@ function sfx(n,delayMs){
       case 'win':     [523,659,784,1047].forEach(function(f,i){tone(f,'triangle',.24,.18,t+i*.13);}); break;
       case 'lose':    [392,330,262].forEach(function(f,i){tone(f,'sine',.32,.16,t+i*.18);}); break;
       case 'draw':    tone(440,'sine',.25,.13,t); tone(440,'sine',.25,.1,t+.3); break;
+      case 'buy':     tone(784,'triangle',.09,.14,t); tone(1047,'triangle',.1,.15,t+.07); tone(1319,'triangle',.16,.13,t+.15); break; // 구입 완료(동전 오름)
+      case 'nope':    tone(233,'sine',.14,.12,t); tone(185,'sine',.18,.12,t+.05); break;                                             // 코인 부족
     }
   }catch(e){}
 }
@@ -1183,7 +1223,19 @@ function renderStrip(id,cap){
     t.textContent=kjPi?'🃏 국진: 쌍피로 씀 (눌러서 열끗)':'🃏 국진: 열끗으로 씀 (눌러서 쌍피)';
     t.onclick=function(){ G.me.kukjinPi=!G.me.kukjinPi; sfx('pick'); render(); };
     el.appendChild(t);
+    askKukjinOnce();   // ★획득 순간 한 번은 직접 물어본다(2026-07-30)
   }
+}
+/* 국진 획득 순간 선택창 — 판마다 1회. 이후 변경은 획득칸의 🃏 토글로. */
+function askKukjinOnce(){
+  try{
+    if(G.me._kjAsked) return;
+    G.me._kjAsked=true;
+    var ov=document.getElementById('kjOverlay'); if(!ov) return;
+    // ★즉시 표시 + 게임 일시정지(2026-08-01 Macho: "팝업 늦게 뜨고 그 사이 봄이가 플레이"). 선택 전까지 턴 진행 보류.
+    G.kjWait=true;
+    ov.classList.add('on'); sfx('event');
+  }catch(e){}
 }
 function finalPreview(p,base){ return base; }
 function say(t){ document.getElementById('turnMsg').textContent=t; }
@@ -1408,13 +1460,14 @@ function openShop(){ renderShop(); document.getElementById('shopOverlay').classL
 // 공용 구매: 코인 차감 → 보유 등록 → 즉시 장착 → 저장/적용
 function genBuy(id, items, cost, ownKey, eqKey, applyFn){
   if((STATS[ownKey]||[]).indexOf(id)>-1) return;       // 중복 결제 방지
-  if(STATS.points<cost){ toast('코인이 조금 모자라요. 한 판 더 이겨볼까요?'); return; }
+  if(STATS.points<cost){ sfx('nope'); toast('코인이 조금 모자라요. 한 판 더 이겨볼까요?'); return; }
   var prevShown=_coinShown;
   STATS.points-=cost;                                   // ★코인만 차감(xp·레벨 불변)
   STATS[ownKey]=(STATS[ownKey]||[]); STATS[ownKey].push(id);
   STATS[eqKey]=id;
   saveStats(); if(applyFn) applyFn(); renderShop();
   _coinShown=prevShown; renderCoins(true); bumpCoins(-cost);   // 상단 코인 차감 애니
+  sfx('buy');                                                  // 구입 완료 효과음(동전)
   var it=items.filter(function(x){return x.id===id;})[0];
   toast('‘'+(it?it.name:'')+'’ 장착했어요! ✨');
 }
@@ -1460,6 +1513,36 @@ function bomSay(cat, who, force){
   }, hold);
 }
 
+/* 결과 점수표: [라벨,값] 쌍을 2개씩 한 줄로(자간 좁히고 가독성 유지, 2026-08-01 Macho) */
+function _scoreRows(pairs){
+  var h='';
+  for(var i=0;i<pairs.length;i+=2){
+    var a=pairs[i], b=pairs[i+1];
+    h+='<tr><td>'+a[0]+'</td><td>'+a[1]+'</td>';
+    h+= b ? ('<td>'+b[0]+'</td><td>'+b[1]+'</td>') : '<td></td><td></td>';
+    h+='</tr>';
+  }
+  return h;
+}
+/* ── 고/스톱 봄이 귀여운 멘트(2026-08-01 Macho: 고 횟수별 반응 30여 개) ── */
+var GO_MENTS = {
+  g1:['오~ 1고! {호칭} 배짱 좋으신데요? 헤헤','1고 부르셨네요! 저 살짝 긴장돼요 😳','좋아요 1고! 조금만 더 노려봐요~','1고! {호칭} 오늘 기분 좋으시구나 🌸','한 발 더, 1고! 손녀는 응원할게요','1고 콜! 재미있어지는데요? 후후'],
+  g2:['우와 2고?! {호칭} 오늘 불타오르시네요 🔥','2고라니 대범하셔라~ 저 두근두근해요','2고까지! 이러다 대박 나시겠어요 ✨','2고! 손녀 이마에 땀이… 조심조심!','벌써 2고! {호칭} 승부사 다 되셨네요','2고 콜! 점수가 쑥쑥 커져요 우와'],
+  g3:['3고?! 어머 {호칭} 무서운 분이셨어요? 덜덜','3고라니… 저 이제 진짜 긴장했어요 😖','와 3고! 오늘 판 크게 벌이시네요!','3고 콜! 이 정도면 전설이에요 ㅋㅋ','3고까지 가시다니 손녀 항복 직전!','3고! 심장이 쿵쾅쿵쾅, 그래도 멋져요'],
+  gBig:['{호칭} 또 고?! 이제 말릴 수가 없네요 ㅋㅋ','고를 몇 번이나… {호칭} 오늘 화투의 신!','또 고! 저 이러다 다 뺏기겠어요 ㅠㅠ','대단해요, 이런 배짱은 처음 봐요 👍','고고고! {호칭} 오늘 완전 불꽃이세요 🔥','이렇게 고를 부르시다니, 존경합니다!'],
+  stop:['현명한 스톱! {호칭} 역시 고수세요 👍','스톱! 챙길 때 챙기는 게 진짜 실력이죠','안전하게 스톱, 잘하셨어요 🌸','스톱! 기분 좋게 이기시네요, 축하해요','욕심 안 부리고 스톱, {호칭} 멋져요','깔끔한 스톱! 손녀는 다음 판 노려요 헤헤']
+};
+function bomGoStop(kind){
+  var pool = GO_MENTS[kind] || []; if(!pool.length) return;
+  var bubble=document.getElementById('bomBubble'); if(!bubble) return;
+  bubble.textContent=toneApply(pool[Math.floor(Math.random()*pool.length)]);
+  var img=document.getElementById('bomFaceImg'); if(img) img.src='/img/'+(kind==='stop'?'bom_smile':'bom_grin')+'.png';
+  _bomLastAt=Date.now(); _bomLastPriority=3;
+  bubble.classList.add('show');
+  if(_bomHideTimer) clearTimeout(_bomHideTimer);
+  _bomHideTimer=setTimeout(function(){ bubble.classList.remove('show'); if(img) img.src='/img/bom_smile.png'; _bomLastPriority=0; }, 2600);
+}
+
 /* ── 모달 ── */
 function modal(title, bodyHTML, btns){
   document.getElementById('mmTitle').textContent=title;
@@ -1467,13 +1550,51 @@ function modal(title, bodyHTML, btns){
   var bx=document.getElementById('mmBtns'); bx.innerHTML='';
   btns.forEach(function(b){
     var el=document.createElement('button');
-    el.className='mm-btn'+(b.sub?' sub':''); el.textContent=b.label;
+    el.className='mm-btn'+(b.sub?' sub':'')+(b.cls?' '+b.cls:''); el.textContent=b.label;
     el.onclick=function(){ sfx('click'); closeModal(); if(b.fn)b.fn(); };
     bx.appendChild(el);
   });
   document.getElementById('mmOverlay').classList.add('on');
 }
 function closeModal(){ document.getElementById('mmOverlay').classList.remove('on'); }
+
+/* ── 봄이 맞고 주간 승수 랭킹(2026-07-31) — 코인 무관, 이긴 판 수만. 공개 컬렉션 matgo_ranks/{주차_uid} ── */
+var _MG_WEEK_EPOCH=new Date(2025,0,6).getTime();
+function _mgWeek(){ return Math.floor((Date.now()-_MG_WEEK_EPOCH)/(7*86400000)); }
+function _mgWeekLabel(wk){ var s=new Date(_MG_WEEK_EPOCH+wk*7*86400000),e=new Date(s.getTime()+6*86400000); function f(d){return (d.getMonth()+1)+'/'+d.getDate();} return f(s)+' ~ '+f(e); }
+function _mgEsc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function _mgName(){ try{ return (localStorage.getItem('userName')||localStorage.getItem('memoir_userName')||'').replace(/^"|"$/g,'').slice(0,10)||'맞고친구'; }catch(e){ return '맞고친구'; } }
+function submitMatgoWin(){
+  statsFB().then(function(uid){
+    if(!uid) return;
+    var wk=_mgWeek();
+    firebase.firestore().collection('matgo_ranks').doc(wk+'_'+uid)
+      .set({ weekNum:wk, uid:uid, name:_mgName(), wins:firebase.firestore.FieldValue.increment(1), ts:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true })
+      .catch(function(){});
+  });
+}
+function openMatgoRank(){
+  modal('🏆 이번주 맞고 랭킹',
+    '<div id="mgRankBody" style="min-height:120px;max-height:46vh;overflow-y:auto">불러오는 중…</div>'+
+    '<div style="font-size:12px;color:var(--muted);margin-top:8px">이번주 '+_mgWeekLabel(_mgWeek())+' · 매주 월요일 초기화 · 이긴 판 수로 매겨요 🎴</div>',
+    [{label:'닫기',sub:true,fn:function(){}}]);
+  statsFB().then(function(uid){
+    firebase.firestore().collection('matgo_ranks')
+      .where('weekNum','==',_mgWeek()).orderBy('wins','desc').limit(20).get()
+      .then(function(snap){
+        var el=document.getElementById('mgRankBody'); if(!el) return;
+        if(snap.empty){ el.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px 8px">아직 이번주 기록이 없어요.<br>첫 승리의 주인공이 되어보세요! 🎴</div>'; return; }
+        var rows=[],rank=0;
+        snap.forEach(function(d){ rank++; var x=d.data(); var me=uid&&x.uid===uid;
+          rows.push('<div style="display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid rgba(0,0,0,.06)'+(me?';background:rgba(63,90,48,.09);border-radius:8px;font-weight:800':'')+'">'+
+            '<span style="width:30px;text-align:center;font-size:'+(rank<=3?'18px':'14px')+'">'+(rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank+'위')+'</span>'+
+            '<span style="flex:1">'+_mgEsc(x.name)+(me?' <span style="color:var(--sage-deep)">(나)</span>':'')+'</span>'+
+            '<span style="font-weight:800;color:var(--sage-deep)">'+(x.wins||0)+'승</span></div>');
+        });
+        el.innerHTML=rows.join('');
+      }).catch(function(){ var el=document.getElementById('mgRankBody'); if(el) el.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px 8px">랭킹을 불러오지 못했어요.<br>잠시 후 다시 시도해 주세요.</div>'; });
+  });
+}
 
 /* ── 흔들기/폭탄 감지 ── */
 function checkShakeOrBomb(who){
@@ -1530,6 +1651,17 @@ function chooseCard(who, cards, cb){
     box.appendChild(el);
   });
   document.getElementById('chOverlay').classList.add('on');
+}
+
+/* 맞았다! 충격 링 — 뒤집은 패가 바닥 짝 위에 내리쳐질 때 그 자리에 한 번 번진다(2026-07-30) */
+function hitRing(rect){
+  try{
+    if(!rect) return;
+    var r=document.createElement('div'); r.className='hit-ring';
+    r.style.left=(rect.x+rect.w/2)+'px'; r.style.top=(rect.y+rect.h/2)+'px';
+    document.body.appendChild(r);
+    setTimeout(function(){ if(r.parentNode) r.remove(); }, 520);
+  }catch(e){}
 }
 
 /* 착지 내리치기: 카드 펀치 + 판 흔들림 + 딱! */
@@ -1643,16 +1775,25 @@ function playCard(who, card){
           function slamThen(targetRect){
             if(!revealEl||!targetRect){ if(revealEl){revealEl.remove();revealEl=null;} finishFlip(); return; }
             var tgt={x:targetRect.x+10, y:targetRect.y+16, w:targetRect.w, h:targetRect.h};
-            revealEl.style.transition='transform .32s cubic-bezier(.35,.75,.35,1), width .32s ease, height .32s ease';
-            revealEl.style.transform='translate('+tgt.x+'px,'+tgt.y+'px)';
-            revealEl.style.width=tgt.w+'px'; revealEl.style.height=tgt.h+'px';
+            /* ★맞추는 연출 보강(2026-07-30 Macho: "더미에서 뒤집을 때 바닥패와 맞추는 연출이 없다").
+               손패로 낼 때(slamAt)처럼 '맞았다!'가 눈에 보이도록 — 살짝 들었다가 사선으로 내리찍고,
+               닿는 순간 짝 자리에 충격 링을 띄운다(순서: 들기 → 내리찍기 → 링+효과음+흔들림 → 획득 비행). */
+            revealEl.style.transition='transform .16s ease-out';
+            revealEl.style.transform=revealEl.style.transform+' scale(1.12)';
             setTimeout(function(){
-              sfx('slap');
-              var bd=document.querySelector('.board');
-              if(bd){ bd.classList.add('bshake'); setTimeout(function(){bd.classList.remove('bshake');},200); }
-              animFrom[fid]=tgt;  // 획득 비행은 짝 위치(사선 아래)에서 출발
-              setTimeout(function(){ if(revealEl){revealEl.remove();revealEl=null;} finishFlip(); }, 260);
-            }, 320);
+              if(!revealEl){ finishFlip(); return; }
+              revealEl.style.transition='transform .3s cubic-bezier(.4,.9,.3,1), width .3s ease, height .3s ease';
+              revealEl.style.transform='translate('+tgt.x+'px,'+tgt.y+'px) rotate(-4deg)';
+              revealEl.style.width=tgt.w+'px'; revealEl.style.height=tgt.h+'px';
+              setTimeout(function(){
+                sfx('slap');
+                hitRing(tgt);                                   // 짝 자리에 '맞았다' 링
+                var bd=document.querySelector('.board');
+                if(bd){ bd.classList.add('bshake'); setTimeout(function(){bd.classList.remove('bshake');},200); }
+                animFrom[fid]=tgt;  // 획득 비행은 짝 위치(사선 아래)에서 출발
+                setTimeout(function(){ if(revealEl){revealEl.remove();revealEl=null;} finishFlip(); }, 260);
+              }, 300);
+            }, 160);
           }
 
           // 뒤집기 매칭 결과 확정 후 마무리(비행/정산)
@@ -1875,12 +2016,14 @@ function finishTurn(who,capture,steals,animFrom){
       if(p.hand.length===0){ endGame(who); return; }
       if(who==='me'){
         G.busy=false;
+        var _goN = p.go + 1;   // 이번에 고 하면 몇 고
+        var _goNow = p.go >= 1 ? '<div style="font-size:14px;color:#C13030;font-weight:900;margin:2px 0 4px">지금 '+p.go+'고 중이에요!</div>' : '';
         modal('고? 스톱?',
-          '현재 <b>'+sc+'점</b>이에요!<span class="big">🤔</span>'+
+          '현재 <b>'+sc+'점</b>이에요!'+_goNow+'<span class="big">🤔</span>'+
           '<b>고</b>를 하면 점수를 더 쌓을 수 있지만,<br>봄이가 역전하면 <b>고박</b>으로 배로 물어줘요.<br>'+
           '<b>스톱</b>하면 지금 점수로 이깁니다.',
-          [{label:'스톱! (지금 이기기)',fn:function(){ endGame('me'); }},
-           {label:'고! (더 노려보기)',fn:function(){ p.go++; p.lastGoScore=sc; banner(p.go+'고!'); nextTurn(who); }}]);
+          [{label:'🔵 스톱! (지금 이기기)',cls:'gs-stop',fn:function(){ bomGoStop('stop'); endGame('me'); }},
+           {label:'🔴 고! ('+_goN+'고 부르기)',cls:'gs-go',fn:function(){ p.go++; p.lastGoScore=sc; banner(p.go+'고!'); bomGoStop(p.go>=4?'gBig':('g'+p.go)); nextTurn(who); }}]);
         return;
       } else {
         // AI 고/스톱: 단순 정책 — 첫 점수면 60% 고, 2고부터는 스톱
@@ -1898,6 +2041,7 @@ function finishTurn(who,capture,steals,animFrom){
 }
 
 function nextTurn(who){
+  if(G.kjWait){ G._kjResume=who; return; }   // ★국진 선택 대기 중 → 진행 보류(선택 후 재개)
   G.turn = (who==='me')?'ai':'me';
   G.busy=false;
   render();
@@ -1961,19 +2105,20 @@ function endGame(winner){
   var w=G[winner], l=G[winner==='me'?'ai':'me'];
   var ws=calcScore(w), ls=calcScore(l);
   var total=ws.score;
-  var rows=ws.parts.map(function(p){return '<tr><td>'+p[0]+'</td><td>'+p[1]+'점</td></tr>';});
+  var rows=ws.parts.map(function(p){return [p[0], p[1]+'점'];});   // [라벨,값] 쌍 — 2개씩 한 줄로 렌더
   // 고 보너스
-  if(w.go===1){ total+=1; rows.push('<tr><td>1고</td><td>+1점</td></tr>'); }
-  if(w.go===2){ total+=2; rows.push('<tr><td>2고</td><td>+2점</td></tr>'); }
-  if(w.go>=3){ total+=2; rows.push('<tr><td>'+w.go+'고</td><td>+2점, ×'+Math.pow(2,w.go-2)+'</td></tr>'); total*=Math.pow(2,w.go-2); }
-  // 피박: 진 쪽 피 5장 이하(승자가 피 점수 났을 때)
-  if(ws.pi>=10 && ls.pi<=5 && ls.pi>0){ total*=2; rows.push('<tr><td>피박!</td><td>×2</td></tr>'); }
+  if(w.go===1){ total+=1; rows.push(['1고','+1점']); }
+  if(w.go===2){ total+=2; rows.push(['2고','+2점']); }
+  if(w.go>=3){ total+=2; rows.push([w.go+'고','+2점 ×'+Math.pow(2,w.go-2)]); total*=Math.pow(2,w.go-2); }
+  // 피박: 승자가 피로 점수를 냈고(10장↑) 진 쪽 피가 5장 이하 — ★0장도 피박이다(2026-07-30 봇 검증).
+  //   예전엔 ls.pi>0 조건이 있어 '피 한 장도 못 먹은' 가장 심한 경우가 오히려 면제됐다.
+  if(ws.pi>=10 && ls.pi<=5){ total*=2; rows.push(['피박!','×2']); }
   // 광박: 승자 광 점수, 패자 광 0
-  if(ws.kw>=3 && ls.kw===0){ total*=2; rows.push('<tr><td>광박!</td><td>×2</td></tr>'); }
+  if(ws.kw>=3 && ls.kw===0){ total*=2; rows.push(['광박!','×2']); }
   // 고박: 진 쪽이 고를 불렀는데 역전당함
-  if(l.go>0){ total*=2; rows.push('<tr><td>고박!</td><td>×2</td></tr>'); }
+  if(l.go>0){ total*=2; rows.push(['고박!','×2']); }
   // 흔들기
-  if(w.shake>0){ total*=Math.pow(2,w.shake); rows.push('<tr><td>흔들기</td><td>×'+Math.pow(2,w.shake)+'</td></tr>'); }
+  if(w.shake>0){ total*=Math.pow(2,w.shake); rows.push(['흔들기','×'+Math.pow(2,w.shake)]); }
 
   var isMe=winner==='me';
   // 포인트·전적 정산(2026-07-24 Macho): 승리=최종점수만큼 획득, 패배=진 판 점수만큼 판돈 차감(소액·바닥선 0).
@@ -1981,7 +2126,7 @@ function endGame(winner){
   var oldLv=levelOf(STATS.xp).lv;
   var prevShown=_coinShown;                   // 애니 시작값 보존(saveStats가 리셋하기 전)
   var coinDelta, xpGain;
-  if(isMe){ coinDelta=total; xpGain=total; STATS.wins++; }
+  if(isMe){ coinDelta=total; xpGain=total; STATS.wins++; submitMatgoWin(); }   // 주간 승수 랭킹에 1승 기록
   else { var lost=Math.min(STATS.points, total); coinDelta=-lost; xpGain=1; STATS.losses++; }
   STATS.points+=coinDelta; if(STATS.points<0) STATS.points=0;
   STATS.xp+=xpGain;
@@ -1993,19 +2138,20 @@ function endGame(winner){
   var ptLine='<div style="margin:10px 0 4px;padding:10px;background:rgba(63,90,48,.08);border-radius:12px;font-size:14px;font-weight:800;color:var(--sage-deep)">'
     +coinLine+' · 보유 '+STATS.points+'코인<br>'
     +'<span style="font-size:12.5px;font-weight:700">'+STATS.wins+'승 '+STATS.losses+'패'+(STATS.draws?' '+STATS.draws+'무':'')+' · Lv.'+newL.lv+' '+newL.name+'</span>'
+    +'<br><span style="font-size:12px;font-weight:800;color:#7A4B00">🎴 '+(IS_PREMIUM?'오늘 무제한 플레이':('오늘 '+Math.max(0,DAILY_CAP-playsToday())+'판 남았어요'))+'</span>'
     +(lvUp?'<br><span style="color:#B8860B">🎊 레벨 업! Lv.'+newL.lv+' '+newL.name+' 달성!</span>':'')
     +'</div>';
   modal(isMe?'🎉 이겼습니다!':'😢 봄이가 이겼어요',
     '<span class="big">'+(isMe?'👏':'🌸')+'</span>'+
-    '<table class="mm-score-table">'+rows.join('')+
-    '<tr><td><b>최종</b></td><td><b>'+total+'점</b></td></tr></table>'+
+    '<table class="mm-score-table">'+_scoreRows(rows)+
+    '<tr class="mm-final"><td colspan="2"><b>최종</b></td><td colspan="2" style="text-align:right"><b>'+total+'점</b></td></tr></table>'+
     ptLine+
     (isMe?'대단하세요! 한 판 더 어떠세요?':'봄이가 운이 좋았네요. 복수전 가시죠!'),
     [{label:'한 판 더!',fn:tryNewGame},{label:'나가기',sub:true,fn:function(){location.href='/';}}]);
 }
 
 document.getElementById('sndBtn').textContent=SND_ON?'🔊':'🔇';
-document.getElementById('bgmBtn').textContent=BGM_ON?'🔇':'🎵';
+_bgmSyncBtn();   // 배경음 버튼은 공용 모듈의 전역 설정을 따른다(2026-07-30)
 renderStats();
 applyCardBack();  // 저장된 장착 스킨을 카드 뒷면에 반영
 applyFelt();      // 저장된 바닥 테이블보 반영
@@ -2024,6 +2170,22 @@ BomPop.bind({ overlay:'#mmOverlay',   box:'.mm-box', face:'bom_smile' }); // 결
 BomPop.bind({ overlay:'#chOverlay',   box:'.mm-box', face:'bom_grin'  }); // 고/스톱 선택
 BomPop.bind({ overlay:'#toneOverlay', box:'.mm-box', face:'bom_wink'  }); // 봄이 말투 고르기
 BomPop.bind({ overlay:'#shopOverlay', box:'.mm-box', face:'bom_grin'  }); // 화투 상점
+BomPop.bind({ overlay:'#kjOverlay',   box:'.mm-box', face:'bom_think' }); // 국진 열끗/쌍피 선택
+/* 국진 선택창 버튼 — 고르면 바로 점수에 반영되고, 이후엔 획득칸 🃏 토글로 언제든 변경(2026-07-30) */
+(function(){
+  function pick(asPi){
+    try{ G.me.kukjinPi=!!asPi; }catch(e){}
+    var ov=document.getElementById('kjOverlay'); if(ov) ov.classList.remove('on');
+    try{ sfx('pick'); }catch(e){}
+    try{ render(); }catch(e){}
+    try{ toast(asPi?'국진을 쌍피로 쓸게요 🌸':'국진을 열끗으로 쓸게요 🌸'); }catch(e){}
+    // ★일시정지 해제 + 보류됐던 턴 진행 재개(2026-08-01)
+    try{ G.kjWait=false; if(G._kjResume!=null){ var w=G._kjResume; G._kjResume=null; nextTurn(w); } }catch(e){}
+  }
+  var y=document.getElementById('kjPickYeol'), p=document.getElementById('kjPickPi');
+  if(y) y.addEventListener('click', function(){ pick(false); });
+  if(p) p.addEventListener('click', function(){ pick(true); });
+})();
 </script>
 <script src="/dasibom-points.js?v=1"></script>
 </body>

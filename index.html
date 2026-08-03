@@ -377,6 +377,15 @@
     font-size:11.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sage-deep);
     background:rgba(92,122,74,0.1);padding:6px 12px;border-radius:999px;
   }
+  /* 자리는 잡아두되 아직 열지 않은 카드 — 흐리게 두고 누르면 안내만 띄운다.
+     아래 .mk-sec .card[data-reveal]가 opacity·filter를 !important로 되돌리므로 여기서도 !important. */
+  .mk-sec .card.is-soon[data-soon],
+  .card.is-soon[data-soon]{opacity:.45 !important;filter:grayscale(.7) !important}
+  .card.is-soon:hover{--lift:0}
+  .card.is-soon .tag{background:rgba(0,0,0,0.07);color:var(--muted)}
+  .card.is-soon .ph{opacity:.7}
+  .card.is-soon .arrow-cta{display:none}
+  .card.is-soon .mk-star{display:none}
   .card .title{font-family:"Nanum Myeongjo",serif;font-size:calc(34px * var(--ts,1));line-height:1.15;font-weight:800;letter-spacing:-0.01em;color:var(--ink);margin-bottom:14px}
   .card .desc{color:var(--ink-2);opacity:.78;font-size:calc(15.5px * var(--ts,1));line-height:1.7;max-width:32ch}
   .bom-today{margin-top:12px;font-size:14px;color:#0e9d7d;font-weight:600;line-height:1.6}
@@ -447,6 +456,27 @@
   .manifesto blockquote em{color:var(--gold-soft);font-style:italic}
   .manifesto .sig{display:flex;align-items:center;gap:16px;margin-top:26px;color:rgba(251,248,240,0.6);font-size:13.5px;letter-spacing:0.1em}
   .manifesto .sig .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  /* ★PC에서 오른쪽이 휑하던 것 보완(2026-07-30 Macho): 철학 문장 → 행동(자서전)으로 잇는 초대 패널.
+     '오늘의 지혜' 카드뉴스는 아래 별도 섹션에 있으므로 여기선 중복 없이 핵심 기능(자서전)을 살린다. */
+  .manifesto .wrap.mf-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+  .mf-invite{background:rgba(255,255,255,.06);border:1px solid rgba(201,169,97,.28);border-radius:26px;
+    padding:32px 30px;backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+    box-shadow:0 24px 60px -34px rgba(0,0,0,.6)}
+  .mf-invite .mf-bom{width:70px;height:70px;border-radius:50%;object-fit:cover;object-position:center top;
+    background:rgba(255,255,255,.9);border:2px solid rgba(201,169,97,.5);margin-bottom:6px}
+  .mf-invite .mf-eyebrow{font-size:12.5px;font-weight:800;letter-spacing:.14em;color:var(--gold-soft)}
+  .mf-invite .mf-title{font-family:"Nanum Myeongjo",serif;font-size:clamp(20px,2vw,26px);line-height:1.4;color:var(--paper);margin:2px 0 4px}
+  .mf-invite .mf-title b{color:var(--gold-soft)}
+  .mf-invite .mf-desc{font-size:14px;line-height:1.6;color:rgba(251,248,240,.62);word-break:keep-all;margin-bottom:16px}
+  .mf-invite .mf-btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(145deg,#D9BE7E,#C9A961);
+    color:#3A2E12;font-weight:900;font-size:15px;border:none;border-radius:50px;padding:13px 22px;text-decoration:none;
+    box-shadow:0 12px 26px -12px rgba(201,169,97,.6);transition:transform .14s}
+  .mf-invite .mf-btn:hover{transform:translateY(-2px)}
+  @media(max-width:900px){
+    .manifesto .wrap.mf-grid{grid-template-columns:1fr;gap:34px}
+    .mf-invite{padding:26px 22px;align-items:center;text-align:center}
+    .mf-invite .mf-desc{text-align:center}
+  }
 
   /* Journey */
   .journey{background:var(--paper)}
@@ -504,6 +534,13 @@
   .ft a{font-size:14.5px;color:var(--ink-2);opacity:.78}
   .ft a:hover{opacity:1;color:var(--sage-deep)}
   .ft .brand p{margin-top:18px;color:var(--muted);font-size:14px;max-width:30ch;line-height:1.7}
+  /* 콘텐츠 열을 홈과 동일한 4카테고리 2×2로 정리 (2026-08-02 Macho) */
+  .ft-contents{grid-column:span 2}
+  .ft-cats{display:grid;grid-template-columns:1fr 1fr;gap:20px 30px}
+  .ft-cat-t{display:block;font-size:12.5px;font-weight:800;margin-bottom:10px;letter-spacing:.01em}
+  .ft-cat ul{gap:9px}
+  @media(max-width:760px){.ft-contents{grid-column:span 2}.ft-cats{grid-template-columns:1fr 1fr;gap:16px 18px}}
+  @media(max-width:440px){.ft-cats{grid-template-columns:1fr}}
   .ft-bottom{
     margin-top:60px;padding-top:24px;border-top:1px solid var(--line);
     display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;
@@ -595,7 +632,13 @@
     transition:background .2s;
   }
   .nav-pts .np-num{font-size:14px;font-weight:800;font-family:"Nanum Myeongjo",serif}
-  @media(max-width:600px){.nav-pts{display:none}}
+  /* ★모바일에서도 보유 꽃잎이 보이게(2026-07-30 Macho: "모바일에서 보유 꽃잎을 볼 수가 없다").
+     예전엔 아예 display:none으로 숨겼다 — 자리를 아끼려면 '꽃잎' 글자만 접고 숫자는 남긴다. */
+  @media(max-width:600px){
+    .nav-pts{padding:4px 9px;font-size:0;gap:3px}          /* 'ㅤ꽃잎' 텍스트만 감춤 */
+    .nav-pts .np-num{font-size:13.5px}
+    .nav-pts svg,.nav-pts img{width:15px;height:15px}
+  }
 
   /* ── 지혜 카드뉴스 ── */
   .wisdom-outer{position:relative;z-index:1;padding-top:90px}
@@ -1183,11 +1226,13 @@
 #dasibom-onboarding .dob-guide-item small{ font-size:clamp(12.5px,3vw,13.5px); color:#7a8a7f; line-height:1.55; }
 </style>
 
-<script src="/a11y.js?v=8" defer></script>
+<script src="/a11y.js?v=9" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/questions_v3.js?v=6" defer></script><!-- 봄이의 오늘 질문 계산용 -->
+<script src="/dasibom-bomlife.js?v=3" defer></script><!-- 봄이 생활비서 엔진 — 기존 봄이 챗봇에 통합(별도 UI 없음). 저장 브리지는 하단 dasibom-points.js -->
+<script src="/dasibom-bgm.js?v=1" defer></script><!-- 공용 배경음: 콘텐츠별 음악 + 스위치는 홈 좌하단 하나 -->
 </head>
-<body data-dark-native>
+<body data-dark-native data-bgm-toggle><!-- data-bgm-toggle: 좌측 하단 배경음 스위치(전 콘텐츠 공통) -->
 <!-- ════════ 다시봄 신규 방문자 인트로 (v2) — 시작 ════════ -->
 <div id="dasibom-intro" aria-hidden="true">
   <div id="di-sunglow"></div>
@@ -1556,7 +1601,7 @@
       </div>
     </a>
     <ul>
-      <li><a href="#story">이야기</a></li>
+      <li><a href="#sec-memory">이야기</a></li><!-- 홈 개편 때 #story 섹션이 없어져 반응 없던 것 → 추억·기록 섹션으로(2026-07-30) -->
       <li><a href="#contents">콘텐츠</a></li>
       <li><a href="#manifesto">철학</a></li>
     </ul>
@@ -1773,7 +1818,7 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
     
     <section class="mk-favs" id="mkFavs"><div class="mk-favs-h">⭐ 내가 자주 보는 것 <span class="mk-favs-hint" id="mkFavHint"></span></div><div class="mk-favguide" id="mkFavGuide" style="display:none"><img src="/img/bom_fab.png" alt="봄이"><div class="g-txt">저예요, <b>봄이</b>! 자주 보시는 건 카드의 <b>☆ 별표</b>를 살짝 눌러 여기 <b>‘자주 보는 것’</b>에 올려두세요. 다음엔 한 번에 찾으실 수 있어요 🌸</div><button class="g-x" onclick="dsbDismissFavGuide()" aria-label="닫기" type="button">✕</button></div><div class="mk-fav-row" id="mkFavRow"></div><div id="mkRecent" style="display:none"><div class="mk-recent-h">🕘 방금 본 것</div><div class="mk-recent-row" id="mkRecentRow"></div></div></section>
     <nav class="mk-nav" aria-label="카테고리"><div class="mk-nav-in"><a class="mk-navlink" href="#sec-memory" data-sec="memory" style="--nc:#A8875A">추억·기록</a><a class="mk-navlink" href="#sec-play" data-sec="play" style="--nc:#7C9A6D">놀이·두뇌</a><a class="mk-navlink" href="#sec-mind" data-sec="mind" style="--nc:#93859F">마음·쉼</a><a class="mk-navlink" href="#sec-life" data-sec="life" style="--nc:#5F8794">생활·소통</a></div></nav>
-    <section class="mk-sec" id="sec-memory" style="--sc:#A8875A"><h2 class="mk-sec-h"><span class="mk-sec-ic">🕰</span>추억·기록<span class="mk-sec-n">2</span></h2><div class="cards"><a class="card card-1" data-key="memoir" data-cat="memory" href="/memoir" data-reveal=""><button class="mk-star" data-key="memoir" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <section class="mk-sec" id="sec-memory" style="--sc:#A8875A"><h2 class="mk-sec-h"><span class="mk-sec-ic">🕰</span>추억·기록<span class="mk-sec-n">3</span></h2><div class="cards"><a class="card card-1" data-key="memoir" data-cat="memory" href="/memoir" data-reveal=""><button class="mk-star" data-key="memoir" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">RECORD</span>
@@ -1803,8 +1848,23 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
           <div class="ph">추억의 소리 들으러 가기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+<a class="card card-3" data-key="trot" data-cat="memory" href="/trot" data-reveal=""><button class="mk-star" data-key="trot" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">TROT</span>
+            <span class="tag">그 시절 그 노래</span>
+          </div>
+          <h3 class="title">다시봄<br>트로트 연대기</h3>
+          <p class="desc">1970년부터 오늘까지, 우리 가슴속 트로트 가수와 명곡을 한자리에. 그 해의 10대 가수를 보며 그 시절 이야기도 나눠보세요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-trot.svg" alt="무대 조명 아래 마이크와 음표" loading="lazy">
+          <div class="ph">그 시절 노래 만나러 가기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
       </a></div></section>
-    <section class="mk-sec" id="sec-play" style="--sc:#7C9A6D"><h2 class="mk-sec-h"><span class="mk-sec-ic">🎴</span>놀이·두뇌<span class="mk-sec-n">3</span></h2><div class="cards"><a class="card card-4" data-key="arcade" data-cat="play" href="/arcade" data-reveal=""><button class="mk-star" data-key="arcade" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <section class="mk-sec" id="sec-play" style="--sc:#7C9A6D"><h2 class="mk-sec-h"><span class="mk-sec-ic">🎴</span>놀이·두뇌<span class="mk-sec-n">4</span></h2><div class="cards"><a class="card card-4" data-key="arcade" data-cat="play" href="/arcade" data-reveal=""><button class="mk-star" data-key="arcade" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">PLAY</span>
@@ -1848,8 +1908,23 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
           <div class="ph">오늘의 유머 보기</div>
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+<a class="card card-4" data-key="trivia" data-cat="play" href="/trivia" data-reveal=""><button class="mk-star" data-key="trivia" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">RANKING</span>
+            <span class="tag">재미로 보는 세상 순위</span>
+          </div>
+          <h3 class="title">시시콜콜<br>순위왕</h3>
+          <p class="desc">운석이 제일 많이 떨어진 나라는 어디게요? 1위를 맞히면 꽃잎이 와르르 — 매일 새 순위가 하나씩 열리는 두뇌 놀이터.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-trivia.svg" alt="시상대 위 물음표" loading="lazy">
+          <div class="ph">오늘의 순위 맞히러 가기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
       </a></div></section>
-    <section class="mk-sec" id="sec-mind" style="--sc:#93859F"><h2 class="mk-sec-h"><span class="mk-sec-ic">🍃</span>마음·쉼<span class="mk-sec-n">5</span></h2><div class="cards"><a class="card card-6" data-key="dream" data-cat="mind" href="/dream" data-reveal=""><button class="mk-star" data-key="dream" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+    <section class="mk-sec" id="sec-mind" style="--sc:#93859F"><h2 class="mk-sec-h"><span class="mk-sec-ic">🍃</span>마음·쉼<span class="mk-sec-n">6</span></h2><div class="cards"><a class="card card-6" data-key="dream" data-cat="mind" href="/dream" data-reveal=""><button class="mk-star" data-key="dream" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
             <span class="idx">DREAM</span>
@@ -1894,6 +1969,37 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
         </div>
         <span class="arrow-cta" aria-hidden="true">→</span>
       </a>
+<a class="card card-7 is-soon" data-key="yahwa" data-cat="mind" href="/yahwa" data-soon="1" aria-disabled="true" data-reveal=""><button class="mk-star" data-key="yahwa" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">RADIO THEATER</span>
+            <span class="tag">준비 중</span>
+          </div>
+          <h3 class="title">봄이의<br>라디오 극장</h3>
+          <p class="desc">성우의 목소리로 듣는 이야기 극장. 구중궁궐 야사부터 삼국지 영웅담, 잠 못 드는 밤의 괴담까지 — 봄이가 골라 들려드려요. 눈이 편한, 귀로 듣는 저녁이에요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-yahwa.svg" alt="라디오 앞에 둘러앉아 이야기를 듣는 저녁" loading="lazy">
+          <div class="ph">곧 문을 열어요</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a>
+<!-- 말씀 한 그루(bibletalk): 완성도 낮아 임시 숨김(2026-08-03 Macho, 고도화 후 재노출). 주석만 풀면 복구 -->
+<!-- <a class="card card-8" data-key="bible" data-cat="mind" href="/bibletalk" data-reveal=""><button class="mk-star" data-key="bible" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
+        <div>
+          <div class="top">
+            <span class="idx">FAITH</span>
+            <span class="tag">오늘도 한 구절이면 충분해요</span>
+          </div>
+          <h3 class="title">말씀<br>한 그루</h3>
+          <p class="desc">하루 한 구절 말씀과 명화, 성경 인물이 건네는 인사. 필사로 겨자씨 나무를 키우고, 이웃의 기도에 아멘을 전해요.</p>
+        </div>
+        <div class="visual">
+          <img src="/img/cards/card-bible.svg" alt="언덕 위 작은 나무와 펼친 책" loading="lazy">
+          <div class="ph">오늘의 말씀 만나러 가기</div>
+        </div>
+        <span class="arrow-cta" aria-hidden="true">→</span>
+      </a> -->
 <a class="card card-8" data-key="maeum" data-cat="mind" href="/maeum" data-reveal=""><button class="mk-star" data-key="maeum" type="button" aria-label="자주 보는 것에 담기" aria-pressed="false">☆</button>
         <div>
           <div class="top">
@@ -1999,14 +2105,23 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
 
 <!-- MANIFESTO -->
 <section class="manifesto" id="manifesto">
-  <div class="wrap">
-    <blockquote data-reveal="">
-      "나이 듦은 <em>잃는 일</em>이 아니라,<br>
-      자신을 더 깊이 <em>알아가는 일</em>입니다."
-    </blockquote>
-    <div class="sig" data-reveal="">
-      <span class="dot"></span>
-      <span>다시봄 / 브랜드 메니페스토</span>
+  <div class="wrap mf-grid">
+    <div class="mf-left">
+      <blockquote data-reveal="">
+        "나이 듦은 <em>잃는 일</em>이 아니라,<br>
+        자신을 더 깊이 <em>알아가는 일</em>입니다."
+      </blockquote>
+      <div class="sig" data-reveal="">
+        <span class="dot"></span>
+        <span>다시봄 / 브랜드 메니페스토</span>
+      </div>
+    </div>
+    <div class="mf-invite" data-reveal="">
+      <img class="mf-bom" src="/img/bom_smile.png" alt="봄이" onerror="this.style.display='none'">
+      <span class="mf-eyebrow">✍️ 나의 추억, 너의 기억</span>
+      <div class="mf-title">당신의 이야기도<br><b>한 권의 책</b>이 됩니다</div>
+      <p class="mf-desc">봄이가 다정하게 여쭤보는 질문에 답하다 보면, 흘러온 세월이 한 편의 자서전으로 엮여요. 오늘, 첫 장을 함께 열어볼까요?</p>
+      <a class="mf-btn" href="/memoir">나의 자서전 시작하기 →</a>
     </div>
   </div>
 </section>
@@ -2106,44 +2221,70 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
         </a>
         <p>시니어가 매일 머물고 싶은 디지털 공간 —<br>자서전·건강·추억·두뇌게임이 모인 시니어 케어 플랫폼.</p>
       </div>
-      <div>
+      <div class="ft-contents">
         <h5>콘텐츠</h5>
-        <ul>
-          <li><a href="/memoir">나의 자서전</a></li>
-          <li><a href="/health">건강돋보기</a></li>
-          <li><a href="/nostalgia">그때 그 시절</a></li>
-          <li><a href="/game">두뇌 운동</a></li>
-          <li><a href="/arcade">추억의 오락실</a></li>
-          <li><a href="/matgo">봄이와 맞고</a></li>
-          <li><a href="/trendy">말동무 사전</a></li>
-          <li><a href="/dream">봄이의 꿈 풀이</a></li>
-          <li><a href="/plant">수다쟁이 화분</a></li>
-          <li><a href="/guppy">우리집 구피 어항</a></li>
-          <li><a href="/maeum">마음결</a></li>
-          <li><a href="/gag">오늘의 아재퀴즈</a></li>
-          <li><a href="/debate">대환장 토론장</a></li>
-          <li><a href="/maeumlab">마음 실험실</a></li>
-          <li><a href="/ongi">추억의 소리, 온기</a></li>
-          <li><a href="/jobs">시니어 직업 상담소</a></li>
-          <!-- 공개 서재 — 콘텐츠 준비 후 재노출 예정(2026-07-10 Macho 지시로 임시 숨김) -->
-        </ul>
+        <div class="ft-cats">
+          <div class="ft-cat">
+            <span class="ft-cat-t" style="color:#A8875A">🕰 추억·기록</span>
+            <ul>
+              <li><a href="/memoir">나의 자서전</a></li>
+              <li><a href="/nostalgia">그때 그 시절</a></li>
+              <li><a href="/ongi">추억의 소리, 온기</a></li>
+              <li><a href="/trot">다시봄 트로트 연대기</a></li>
+            </ul>
+          </div>
+          <div class="ft-cat">
+            <span class="ft-cat-t" style="color:#7C9A6D">🎴 놀이·두뇌</span>
+            <ul>
+              <li><a href="/game">두뇌 운동</a></li>
+              <li><a href="/arcade">추억의 오락실</a></li>
+              <li><a href="/matgo">봄이와 맞고</a></li>
+              <li><a href="/gag">오늘의 아재퀴즈</a></li>
+          <li><a href="/trivia">시시콜콜 순위왕</a></li>
+            </ul>
+          </div>
+          <div class="ft-cat">
+            <span class="ft-cat-t" style="color:#93859F">🍃 마음·쉼</span>
+            <ul>
+              <li><a href="/dream">봄이의 꿈 풀이</a></li>
+              <li><a href="/plant">수다쟁이 화분</a></li>
+              <li><a href="/guppy">우리집 구피 어항</a></li>
+              <!-- 말씀 한 그루: 임시 숨김(2026-08-03 Macho, 고도화 후 재노출) <li><a href="/bibletalk">말씀 한 그루</a></li> -->
+              <li><a href="/maeum">마음결</a></li>
+              <li><a href="/maeumlab">마음 실험실</a></li>
+              <!-- 문을 열면 주석 해제: <li><a href="/yahwa">봄이의 라디오 극장</a></li> -->
+            </ul>
+          </div>
+          <div class="ft-cat">
+            <span class="ft-cat-t" style="color:#5F8794">💬 생활·소통</span>
+            <ul>
+              <li><a href="/health">건강돋보기</a></li>
+              <li><a href="/trendy">말동무 사전</a></li>
+              <li><a href="/debate">대환장 토론장</a></li>
+              <li><a href="/jobs">시니어 직업 상담소</a></li>
+            </ul>
+          </div>
+        </div>
+        <!-- 공개 서재 — 콘텐츠 준비 후 재노출 예정(2026-07-10 Macho 지시로 임시 숨김) -->
       </div>
-      <div>
-        <h5>다시봄</h5>
-        <ul>
-          <li><a href="#manifesto">브랜드 철학</a></li>
-          <li><a href="/terms">이용약관</a></li>
-          <li><a href="/privacy">개인정보처리방침</a></li>
-          <li><a href="mailto:hello@dasibomlife.com">제휴 문의</a></li>
-        </ul>
-      </div>
-      <div>
-        <h5>연락</h5>
-        <ul>
-          <li><a href="mailto:hello@dasibomlife.com">hello@dasibomlife.com</a></li>
-          <li style="color:var(--muted);font-size:12px;margin-top:8px">베타 서비스 운영 중</li>
-          <li style="color:var(--muted);font-size:12px">© 2026 다시봄라이프</li>
-        </ul>
+      <div class="ft-meta">
+        <div>
+          <h5>다시봄</h5>
+          <ul>
+            <li><a href="#manifesto">브랜드 철학</a></li>
+            <li><a href="/terms">이용약관</a></li>
+            <li><a href="/privacy">개인정보처리방침</a></li>
+            <li><a href="mailto:hello@dasibomlife.com">제휴 문의</a></li>
+          </ul>
+        </div>
+        <div style="margin-top:26px">
+          <h5>연락</h5>
+          <ul>
+            <li><a href="mailto:hello@dasibomlife.com">hello@dasibomlife.com</a></li>
+            <li style="color:var(--muted);font-size:12px;margin-top:8px">베타 서비스 운영 중</li>
+            <li style="color:var(--muted);font-size:12px">© 2026 다시봄라이프</li>
+          </ul>
+        </div>
       </div>
     </div>
     <div class="ft-bottom">
@@ -2156,6 +2297,8 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
 <script src="/dasibom-bizinfo.js?v=1"></script>
 <script src="/dasibom-share.js?v=1"></script>
 <script src="/dasibom-points.js?v=1"></script>
+<script src="/dasibom-promobanner.js?v=1" defer></script><!-- 봄이의 추천 배너(자체 콘텐츠 광고) — 섹션 사이 자동 삽입 -->
+
 <script>
   // 출석 꽃잎은 dasibom-points.js의 autoAttend가 '오늘 첫 활동' 때 봄이 팝업으로 지급(어느 콘텐츠에서든).
   // 여기선 꽃잎 잔액·초대 카드만 렌더. ?ref= 공유 유입도 dasibom-points.js가 자동 처리.
@@ -2338,7 +2481,7 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
         </div>
       </div>
       <div class="nav-pts" id="nav-pts-badge" title="보유 꽃잎">
-        ${(window.DasibomPoints&&DasibomPoints.iconSvg)||'🌸'} <span class="np-num" id="nav-pts-num">${pts.toLocaleString()}</span> 꽃잎
+        ${(window.DasibomPoints&&DasibomPoints.iconSvg)||'🌸'} <span class="np-num" id="nav-pts-num" data-dsbpt-badge>${pts.toLocaleString()}</span> 꽃잎
       </div>
       <a class="cta" href="/memoir">내 자서전</a>
       <button class="nav-logout" onclick="logout()">로그아웃</button>
@@ -2361,8 +2504,20 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
   }
 
   function renderLoggedOut() {
+    /* ★비로그인(익명) 어르신도 출석·활동으로 꽃잎을 모은다 — 예전엔 로그인해야만 잔액이 보여서
+       "내 꽃잎이 어디 있지?"가 됐다(2026-07-30 Macho: "모바일에서 보유 꽃잎을 볼 수가 없다").
+       data-dsbpt-badge를 달아두면 dasibom-points.js가 잔액을 채우고 이후 변동도 자동 갱신한다. */
+    const pts = parseInt(localStorage.getItem('dsb_petal_cache') || '0');
     document.getElementById('nav-auth').innerHTML =
-      `<a class="cta" href="#" onclick="openLogin(event)">로그인</a>`;
+      `<div class="nav-pts" id="nav-pts-badge" title="보유 꽃잎">
+         ${(window.DasibomPoints&&DasibomPoints.iconSvg)||'🌸'} <span class="np-num" id="nav-pts-num" data-dsbpt-badge>${pts.toLocaleString()}</span> 꽃잎
+       </div>
+       <a class="cta" href="#" onclick="openLogin(event)">로그인</a>`;
+    try { if (window.DasibomPoints && DasibomPoints.balance) DasibomPoints.balance(function(b){
+      if (b == null) return;
+      localStorage.setItem('dsb_petal_cache', b);
+      const el = document.getElementById('nav-pts-num'); if (el) el.textContent = Number(b).toLocaleString();
+    }); } catch(e) {}
   }
 
   // 페이지 로드 즉시 localStorage로 먼저 판단 (Firebase 응답 전 깜빡임 방지)
@@ -2427,7 +2582,7 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
   })();
 })();
 </script>
-<script src="/fx.js?v=1"></script>
+<script src="/fx.js?v=2"></script>
 <script src="/bom_voice.js?v=12"></script>
 <script>
 // ════ 홈 배경음악 — 피아노 3곡 이어서 반복재생 (fx.js 사운드토글·dasibom_sound 키 공유) ════
@@ -3304,9 +3459,13 @@ body.dark .bom-guide-text{color:#c8bba4}
     letter:    { face:'bom_calm.png',   title:'💌 마음의 유언',  text:'사랑하는 사람에게 먼 훗날 전할 편지를 미리 적어둘 수 있어요. 천천히 마음을 담아보세요.' },
     guppy:     { face:'bom_grin.png',   title:'🐠 우리집 구피 어항', text:'구피를 기르고 새끼도 받는 거실 속 작은 바다예요. 먹이 주고 방생하면 조개가 모이고, 한정 구피·장식은 꽃잎으로 들여요.' },
     plant:     { face:'bom_smile.png',  title:'🪴 수다쟁이 화분', text:'구수한 사투리로 말 거는 반려 식물 친구를 키워요. 물은 공짜, 영양제·씨앗·화분은 꽃잎으로 사요.' },
-    trendy:    { face:'bom_grin.png',   title:'💬 말동무 사전', text:'1970년대부터 요즘 신조어까지 시대별 유행어를 모아뒀어요. 퀴즈도 풀고, 마음에 드는 말은 앨범에 담아보세요!' }
+    trendy:    { face:'bom_grin.png',   title:'💬 말동무 사전', text:'1970년대부터 요즘 신조어까지 시대별 유행어를 모아뒀어요. 퀴즈도 풀고, 마음에 드는 말은 앨범에 담아보세요!' },
+    trivia:    { face:'bom_grin.png',   title:'🏆 시시콜콜 순위왕', text:'운석이 제일 많이 떨어진 나라는 어디게요? 순위를 보기 전에 1위를 맞혀보세요. 맞히면 꽃잎을 드려요! 매일 새로운 순위가 하나씩 열린답니다 😄' },
+    trot:      { face:'bom_cheer.png',  title:'🎤 다시봄 트로트 연대기', text:'1970년부터 오늘까지 트로트 가수와 명곡을 한자리에 모았어요. 그리운 가수를 찾아보고, 그 해 10대 가수 이야기도 나눠보세요!' },
+    yahwa:     { face:'bom_calm.png',   title:'🎭 봄이의 라디오 극장', text:'성우가 들려주는 이야기 극장이에요. 조선 야사부터 삼국지 영웅담, 잠 못 드는 밤의 괴담까지 — 봄이가 골라 조곤조곤 읽어드려요. 눈 감고 귀로만 편하게 들으셔도 돼요.' },
+    bible:     { face:'bom_calm.png',   title:'🌱 말씀 한 그루', text:'하루 한 구절 말씀과 명화를 만나요. 필사하면 겨자씨 나무가 자라고, 출석하면 광야 순례길을 한 걸음씩 걸어요. 이웃의 기도엔 아멘 한 번이면 충분해요.' }
   };
-  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter', '/plant':'plant', '/guppy':'guppy', '/trendy':'trendy' };
+  var HREF_GUIDE = { '/memoir':'memoir', '/health':'health', '/nostalgia':'nostalgia', '/game':'game', '/arcade':'arcade', '/library':'library', '/letter':'letter', '/plant':'plant', '/guppy':'guppy', '/trendy':'trendy', '/yahwa':'yahwa', '/trot':'trot', '/bibletalk':'bible', '/trivia':'trivia' };
   var ov=document.getElementById('bomGuide');
   var faceEl=document.getElementById('bomGuideFace'), titleEl=document.getElementById('bomGuideTitle'),
       textEl=document.getElementById('bomGuideText'), okBtn=document.getElementById('bomGuideOk');
@@ -3327,6 +3486,20 @@ body.dark .bom-guide-text{color:#c8bba4}
   }
   okBtn.addEventListener('click', function(){ closeGuide(true); });
   ov.addEventListener('click', function(e){ if(e.target===ov) closeGuide(false); });
+
+  // 아직 열지 않은 카드(data-soon)는 들어가지 못하게 막고 봄이가 안내만 한다.
+  // 문을 열 때는 index.html에서 is-soon 클래스와 data-soon 두 개만 지우면 된다.
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[data-soon]');
+    if(!a) return;
+    e.preventDefault();
+    faceEl.src='/img/bom_calm.png';
+    titleEl.textContent='🎭 봄이의 라디오 극장';
+    textEl.textContent='아직 문을 열지 않았어요. 밤에 듣는 옛이야기를 정성껏 준비하고 있으니, 조금만 기다려 주세요.';
+    _href=null;
+    ov.classList.add('on'); ov.setAttribute('aria-hidden','false');
+    if(window.BomVoice) BomVoice.say('아직 문을 열지 않았어요. 조금만 기다려 주세요.');
+  }, true);
   // ★2026-07-10 개편: '이동 전 홈 모달' 인터셉터 비활성화.
   //   봄이 콘텐츠 안내는 이제 각 콘텐츠 페이지 '도착 시' bom_tutorial.js(좌하단 봄이)가 담당 —
   //   여기서 또 모달을 띄우면 이중 안내가 되므로 홈 클릭은 그냥 바로 이동시킴.
@@ -3737,6 +3910,7 @@ body.dark .bom-guide-text{color:#c8bba4}
       var t=document.getElementById(tid); if(t) t.remove();
       var bb=document.getElementById('bcpBody'); if(!bb) return;
       bb.insertAdjacentHTML('beforeend',html); bb.scrollTop=bb.scrollHeight;
+      try{ if(window.DasibomFX) DasibomFX.bubble(); }catch(e){}   // 봄이가 먼저 말 걸 때 말풍선 효과음
     },1200);
   }
   /* ★봄이가 먼저 거는 말 — 1분마다 계속(예전엔 3개 하고 영영 멈췄음).
@@ -3929,8 +4103,9 @@ body.dark .bom-guide-text{color:#c8bba4}
     var div=document.createElement('div'); div.className='bcp-user-msg'; div.textContent=text;
     var b=document.getElementById('bcpBody'); if(!b) return;
     b.appendChild(div); b.scrollTop=b.scrollHeight;
+    try{ if(window.DasibomFX) DasibomFX.send(); }catch(e){}   // 전송 효과음
   }
-  function bomAppendBot(text){ bomAppendHTML(bomMsgRow(esc(text),bomFaceFor(text))); }
+  function bomAppendBot(text){ bomAppendHTML(bomMsgRow(esc(text),bomFaceFor(text))); try{ if(window.DasibomFX) DasibomFX.bubble(); }catch(e){} }   // 봄이 말풍선 효과음
   // 홈 챗봇 잡담을 기기 로컬에만 기록(서버 전송·개인정보 저장 없음).
   // 자서전 작성 시 관련 회상이 있으면 봄이가 "이 이야기 담아볼까요?"로 되살려줌.
   /* ── 봄이 기억 ──
@@ -3975,7 +4150,12 @@ body.dark .bom-guide-text{color:#c8bba4}
     inp.value=''; btn.disabled=true;
     if(!_bomChatStarted){ bomAppendHTML('<div class="bcp-divider"></div>'); _bomChatStarted=true; }
     bomAppendUser(msg);
-    if(_bomIsRisky(msg)){
+    /* ★위험어 필터는 'AI에게 조언을 시키는 것'을 막는 장치다(의료·법률·정치·금융).
+       그런데 '병원·약·보험·카드'가 목록에 있어 생활비서의 핵심(병원 일정·복약·보험료·카드값)까지
+       전부 차단됐다(2026-07-30 봇 검증). → 여기서 바로 막지 말고, 생활비서(DB)가 처리하면 통과시키고
+       AI로 넘어갈 때만 필터를 건다. 일정 기록은 조언이 아니라 '내 정보 저장'이라 안전. */
+    var _risky=_bomIsRisky(msg);
+    if(_risky && !(window.BomLife && window.BomLife.ask)){
       bomAppendBot(BOM_RISKY_REPLY);
       btn.disabled=false;
       return;
@@ -3986,25 +4166,61 @@ body.dark .bom-guide-text{color:#c8bba4}
     bomAppendHTML('<div class="bcp-typing-row" id="bcpTyping"><img class="bcp-mini-face" src="/img/'+typingFace+'.png" alt="봄이" onerror="this.style.visibility=\'hidden\'"><span class="bcp-typing">봄이가 생각하고 있어요…</span></div>');
     document.getElementById('bcpBody').scrollTop=document.getElementById('bcpBody').scrollHeight;
     _bomTurns.push({ role:'user', text:msg });
-    _bomEnsureAuth().then(function(){
-      var fn=firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
-      // ★대화 맥락 전달 — 예전엔 한 마디만 보내서 봄이가 방금 한 말도 기억 못 했음.
-      //   최근 6턴만(길면 비용·지연↑). 장기 기억은 서버가 bom_memory에서 붙임.
-      // 호칭도 함께 — 서버가 모르면 "우리 할머니(할아버지)께"처럼 얼버무린다(실제 사고).
-      // ★성별이 확실할 때만 보냄. 애매하면 안 보내고 서버가 '어르신'으로 고정.
-      var _hon=''; try{ var h=localStorage.getItem('dasibom_honorific')||'';
-        if(h==='할머니'||h==='할아버지') _hon=h; }catch(e){}
-      return fn({ message: msg, history: _bomTurns.slice(-7, -1), honorific: _hon });
-    }).then(function(res){
-      var t=document.getElementById('bcpTyping'); if(t) t.remove();
-      var reply=(res.data&&res.data.text)||'';
-      bomAppendBot(reply);
-      _bomTurns.push({ role:'bom', text:reply });
-      _bomSyncMemory();
-    }).catch(function(){
-      var t=document.getElementById('bcpTyping'); if(t) t.remove();
-      bomAppendBot('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱');
-    }).finally(function(){ btn.disabled=false; });
+    // ★봄이 생활비서 통합(2026-07-30 Macho: "결국 봄이가 하는 건데 왜 분리해"):
+    //   일정·생일·공과금·약은 무료(규칙+DB)로 여기서 답하고, 모르는(열린) 질문만 AI(chatBom)로.
+    //   별도 비서 UI 없이 '봄이 하나'로 통합.
+    function _runChatBom(){
+      // 생활비서가 못 받은 말이 AI로 갈 때만 위험어 차단(의료·법률·정치 조언 방지)
+      if(_risky){ var _t=document.getElementById('bcpTyping'); if(_t) _t.remove(); bomAppendBot(BOM_RISKY_REPLY); btn.disabled=false; return; }
+      _bomEnsureAuth().then(function(){
+        var fn=firebase.app().functions('asia-northeast3').httpsCallable('chatBom');
+        // ★대화 맥락 전달 — 최근 6턴만. 장기 기억은 서버가 bom_memory에서 붙임.
+        // ★성별이 확실할 때만 호칭 보냄. 애매하면 서버가 '어르신'으로 고정.
+        var _hon=''; try{ var h=localStorage.getItem('dasibom_honorific')||'';
+          if(h==='할머니'||h==='할아버지') _hon=h; }catch(e){}
+        return fn({ message: msg, history: _bomTurns.slice(-7, -1), honorific: _hon });
+      }).then(function(res){
+        var t=document.getElementById('bcpTyping'); if(t) t.remove();
+        var reply=(res.data&&res.data.text)||'';
+        bomAppendBot(reply);
+        _bomTurns.push({ role:'bom', text:reply });
+        _bomSyncMemory();
+      }).catch(function(){
+        var t=document.getElementById('bcpTyping'); if(t) t.remove();
+        bomAppendBot('앗, 지금은 답하기 어려워요. 잠시 후 다시 말 걸어주세요 🌱');
+      }).finally(function(){ btn.disabled=false; });
+    }
+    if(window.BomLife && window.BomLife.ask){
+      var _blfDone=false;
+      var _blfGuard=setTimeout(function(){ if(!_blfDone){ _blfDone=true; try{console.warn('[BomLife] 응답 지연 → AI 폴백');}catch(e){} _runChatBom(); } }, 6000);
+      try {
+        window.BomLife.ask(msg, function(r){
+          if(_blfDone) return; _blfDone=true; clearTimeout(_blfGuard);
+          try{ console.log('[BomLife]', msg, '→', r && r.kind, r && r.intent); }catch(e){}
+          if(!r || r.kind==='ai' || !r.text){ _runChatBom(); return; }   // 모르는 것 → AI 폴백
+          var t=document.getElementById('bcpTyping'); if(t) t.remove();
+          bomAppendBot(r.text);
+          _bomTurns.push({ role:'bom', text:r.text });
+          if(r.kind==='confirm' && r.capture) _bomLifeConfirm(r.capture);
+          btn.disabled=false;
+        });
+      } catch(e){ if(!_blfDone){ _blfDone=true; clearTimeout(_blfGuard); try{console.error('[BomLife] 오류',e);}catch(_){} _runChatBom(); } }
+    } else { _runChatBom(); }
+  }
+  // 생활비서 캡처 확인("기억해둘까요?") — 챗 안에 네/아니요 버튼
+  function _bomLifeConfirm(capture){
+    var body=document.getElementById('bcpBody'); if(!body) return;
+    var id='blfc'+Date.now();
+    body.insertAdjacentHTML('beforeend','<div id="'+id+'" style="display:flex;gap:8px;padding:2px 14px 10px">'
+      +'<button class="blf-yes" style="flex:1;border:none;border-radius:12px;padding:11px;font-weight:800;background:#5E7A4C;color:#fff;cursor:pointer;font-family:inherit;font-size:14px">네, 기억할게요</button>'
+      +'<button class="blf-no" style="flex:1;border:none;border-radius:12px;padding:11px;font-weight:800;background:#EDE7DA;color:#6b5a48;cursor:pointer;font-family:inherit;font-size:14px">아니요</button></div>');
+    body.scrollTop=body.scrollHeight;
+    var row=document.getElementById(id);
+    row.querySelector('.blf-yes').addEventListener('click',function(){
+      row.remove();
+      window.BomLife.saveFact(capture,function(err){ bomAppendBot(err?'앗, 제가 받아적다 그만 놓쳤어요 😢 조금 뒤에 한 번만 더 말씀해 주시겠어요?':'네! 제 마음에 콕 새겨뒀어요 🌸 그날이 오면 제가 제일 먼저 알려드릴게요!'); });
+    });
+    row.querySelector('.blf-no').addEventListener('click',function(){ row.remove(); bomAppendBot('네, 그럼 이건 그냥 흘려보낼게요 😊 언제든 마음 바뀌시면 편하게 말씀만 해주세요!'); });
   }
   /* ── 말로 하기(음성 입력) — 타이핑이 힘든 어르신용 ──
      자서전·케어챗과 같은 브라우저 음성인식(webkitSpeechRecognition).

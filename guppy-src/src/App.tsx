@@ -9,7 +9,7 @@ import { Droplets, Fish, RefreshCw, LayoutGrid, Coins, Store, X, Sun, Moon, Maxi
 import Petal from './components/Petal';
 import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import { TANK_SKINS, LIGHT_PRESETS } from './tankSkins';
-import { mountButtonSfx } from './lib/sfx';
+import { mountButtonSfx, coinSfx, nopeSfx } from './lib/sfx';
 import FoodBit from './components/FoodBit';
 import BuyCele, { Cele } from './components/BuyCele';
 import { buyInfo } from './buyInfo';
@@ -265,7 +265,7 @@ export default function App() {
   const [soundOn, setSoundOn] = useState(false);
   useEffect(() => {
     mountButtonSfx();   // 🔘 말랑 버튼음 — 모든 버튼 공통
-    autoResumeBgm('/audio/guppy_bgm.mp3', 'guppy_bgm', () => setSoundOn(true));   // '작은 수조 산책' 이어 재생
+    autoResumeBgm('/audio/guppy_bgm.mp3', 'dasibom_bgm', () => setSoundOn(true));   // '작은 수조 산책' 이어 재생
   }, []);
   const [lightingMode, setLightingMode] = useState<string>('day');   // LIGHT_PRESETS 키(2026-07-22 6종 개편)
   const [lightStrength, setLightStrength] = useState<number>(40);    // 조명 강도 10~70%
@@ -325,7 +325,11 @@ export default function App() {
       if (P) { clearInterval(t); P.balance((b: number | null) => { if (b != null) setPetals(b); }); }
       else if (++tries > 60) clearInterval(t);
     }, 200);
-    return () => clearInterval(t);
+    // ★잔액 재동기화(2026-07-29 Macho): 다른 콘텐츠에서 꽃잎을 벌고 돌아오면 표시가 스테일해지는 문제 — 다시 보일 때 재조회
+    const resync = () => { if (document.visibilityState === 'visible') { const P = dsb(); if (P) P.balance((b: number | null) => { if (b != null) setPetals(b); }); } };
+    document.addEventListener('visibilitychange', resync);
+    window.addEventListener('focus', resync);
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', resync); window.removeEventListener('focus', resync); };
   }, []);
   const spendBusyRef = useRef(false);   // ★결제 연타 잠금 — 중복 결제 방지(2026-07-21)
   const [spending, setSpending] = useState(false);   // 구입 처리 중 화면 블로킹 인디케이터(2026-07-27 Macho)
@@ -341,9 +345,13 @@ export default function App() {
     P.spend(item, (err: any, d: any) => {
       if (settled) return;
       settled = true; clearTimeout(safety);
-      spendBusyRef.current = false; setSpending(false);
+      setSpending(false);
+      // ★연타/오터치 흡수(2026-07-29 Macho: "구입 연타·다른 액션 가능"): 잠금을 즉시 풀면
+      //   서버가 빠를 때 시니어 더블탭이 통과해 이중 결제됐다. 결제 후 650ms 쿨다운으로 오터치를 흡수.
+      setTimeout(() => { spendBusyRef.current = false; }, 650);
       if (err || !d || !d.ok) {
         if (d && d.balance != null) setPetals(d.balance);
+        nopeSfx();
         showToast('꽃잎이 모자라요', '다른 콘텐츠를 즐기고 친구에게 공유하면 꽃잎이 모여요 🌸', '🌸');
         cb(false); return;
       }
@@ -355,6 +363,7 @@ export default function App() {
       const info = buyInfo(item);
       setToastMessage(null);   // '꽃잎 세는 중' 토스트 지우고 축하 연출로
       setCele({ key: Date.now(), icon: info.icon, name: info.name, spent, balance: d.balance, tip: info.tip });
+      coinSfx();
       setPetals(d.balance); cb(true);
     });
   }, []);
@@ -1255,7 +1264,7 @@ export default function App() {
                 {/* Right: 물소리 온오프(외부 상시 노출, 2026-07-25 Macho) + 어항 설정 */}
                 <div className="flex gap-2 pointer-events-auto shrink-0">
                   <button
-                    onClick={() => setSoundOn(toggleBgm('/audio/guppy_bgm.mp3', 'guppy_bgm'))}
+                    onClick={() => setSoundOn(toggleBgm('/audio/guppy_bgm.mp3', 'dasibom_bgm'))}
                     className={`w-11 h-11 flex items-center justify-center backdrop-blur-md rounded-full text-white shadow-lg border border-white/30 transition-colors text-xl ${soundOn ? 'bg-teal-500/70' : 'bg-black/20 hover:bg-black/30'}`}
                     aria-label={soundOn ? '물소리 끄기' : '물소리 켜기'} title="물소리(보글보글) 켜고 끄기"
                   >{soundOn ? '🔊' : '🔇'}</button>
@@ -1294,7 +1303,7 @@ export default function App() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500">🔊 물소리</span>
-                  <button onClick={() => setSoundOn(toggleBgm('/audio/guppy_bgm.mp3', 'guppy_bgm'))}
+                  <button onClick={() => setSoundOn(toggleBgm('/audio/guppy_bgm.mp3', 'dasibom_bgm'))}
                     className={`px-3 py-2 rounded-lg text-[13px] ${soundOn ? 'bg-teal-100 text-teal-700' : 'bg-slate-100 text-slate-400'}`}>
                     {soundOn ? '보글보글~' : '꺼져 있어요'}
                   </button>

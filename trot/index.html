@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>다시봄 트로트 연대기</title>
+    <script>
+      // 다시봄라이프 안에서 열렸을 때만 봄이 가이드(공용 모듈)를 불러온다.
+      // 랩스(everlinklabs)에는 그 파일이 없어 조용히 건너뛴다.
+      (function () {
+        if (!/dasibomlife\.com|mylife-650f0/.test(location.hostname)) return;
+        window.BOM_TUT = {
+          key: 'trot',
+          face: 'bom_cheer.png',
+          name: '다시봄 트로트 연대기',
+          welcome: '{호칭}, 여기는 1970년부터 오늘까지 트로트 가수와 명곡을 모아둔 연대기예요. 그리운 그 시절 노래를 다시 만나보세요 🎤',
+          action: '위 연도 단추를 하나 눌러보세요. 그 해의 가수와 명곡이 좍 펼쳐져요!',
+          tour: [
+            '가수 사진을 누르면 일생과 대표곡이 나오고, 30초 미리듣기도 할 수 있어요.',
+            '마음에 드는 가수는 하트(♥)를 눌러 보관함에 모아두세요. 위 보관함 단추로 언제든 찾아가요.',
+            '트로트 퀴즈는 하루 세 판! 정답을 맞히면 꽃잎도 드려요 😄'
+          ]
+        };
+        ['/bom_voice.js?v=12', '/bom_tutorial.js?v=7', '/dasibom-points.js?v=1'].forEach(function (src) {
+          var sc = document.createElement('script'); sc.src = src; sc.defer = true;
+          document.head.appendChild(sc);
+        });
+      })();
+
+      // 로그인 상태 브리지: 다시봄 메인앱은 이름을 memoir_userName(JSON)+memoir_socialProvider에 저장하는데,
+      // 트로트 React 앱은 prefix 없는 localStorage 'userName'을 읽는다. 로그인 상태면 미러링해 CTA 대신 입력창이 뜨게 한다.
+      (function () {
+        try {
+          var rawName = localStorage.getItem('memoir_userName');
+          var sp = localStorage.getItem('memoir_socialProvider');
+          var name = '';
+          if (rawName) { try { name = String(JSON.parse(rawName) || '').trim(); } catch (e) { name = String(rawName || '').trim(); } }
+          // 모든 로그인(카카오/네이버/구글)은 memoir_socialProvider+memoir_userName을 함께 저장한다.
+          if (sp) { localStorage.setItem('userName', name || '회원'); }   // 로그인 상태 — 이름 없으면 메인앱과 동일하게 '회원'
+          else if (name) { localStorage.setItem('userName', name); }
+          else { localStorage.removeItem('userName'); }                   // 로그아웃 — 잔여 미러 제거(로그인처럼 보이는 것 방지)
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      /* 첫 로딩 연출 — 자료가 준비될 때까지 회전 인디케이터를 보여준다(기다리는 중임이 보이게) */
+      #boot-loader {
+        position: fixed; inset: 0; z-index: 9999;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: #F8F6F2; transition: opacity .5s ease;
+        font-family: system-ui, -apple-system, "Malgun Gothic", sans-serif;
+      }
+      #boot-loader .ring { position: relative; width: 78px; height: 78px; }
+      #boot-loader .ring i {
+        position: absolute; inset: 0; border-radius: 50%;
+        border: 5px solid rgba(128, 0, 32, .12);
+      }
+      #boot-loader .ring i.spin {
+        border-color: transparent; border-top-color: #800020;
+        animation: bl-spin 1s linear infinite;
+      }
+      #boot-loader .ring i.spin2 {
+        inset: 14px; border-width: 4px;
+        border-color: transparent; border-bottom-color: #D4AF37;
+        animation: bl-spin 1.7s linear infinite reverse;
+      }
+      #boot-loader .t { margin-top: 22px; font-weight: 900; font-size: 20px; color: #800020; letter-spacing: -.02em; }
+      #boot-loader .s { margin-top: 7px; font-size: 13px; font-weight: 700; color: #9b8f86; }
+      @keyframes bl-spin { to { transform: rotate(360deg); } }
+    </style>
+    <script type="module" crossorigin src="/trot/assets/index-p_Pv8sh9.js"></script>
+    <link rel="stylesheet" crossorigin href="/trot/assets/index-BKYMZbVK.css">
+  </head>
+  <body>
+    <div id="boot-loader">
+      <div class="ring"><i></i><i class="spin"></i><i class="spin2"></i></div>
+      <p class="t">다시봄 트로트 연대기</p>
+      <p class="s">그 시절 노래를 불러오는 중입니다…</p>
+    </div>
+    <div id="root"></div>
+    <script>
+      // 화면이 그려지면 걷어낸다. 혹시 실패해도 8초 뒤엔 반드시 사라진다.
+      (function () {
+        function hide() {
+          var el = document.getElementById('boot-loader');
+          if (!el || el.dataset.done) return;
+          el.dataset.done = '1';
+          el.style.opacity = '0';
+          setTimeout(function () { el.remove(); }, 500);
+        }
+        var timer = setInterval(function () {
+          var root = document.getElementById('root');
+          if (root && root.children.length) { clearInterval(timer); hide(); }
+        }, 120);
+        setTimeout(function () { clearInterval(timer); hide(); }, 8000);
+      })();
+    </script>
+  </body>
+</html>

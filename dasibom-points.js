@@ -81,7 +81,9 @@
       '80%{transform:translateX(-50%) translateY(1px) scale(.98)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}}' +
       '@keyframes dsbptPetal{0%{opacity:0;transform:translate(0,0) scale(.5) rotate(0)}' +
       '18%{opacity:1}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(1.15) rotate(var(--pr))}}' +
-      '@media (prefers-reduced-motion:reduce){.dsbpt-toast{animation:none !important}.dsbpt-petal{display:none}}';
+      '@keyframes dsbptBump{0%{transform:scale(1)}32%{transform:scale(1.26)}62%{transform:scale(.96)}100%{transform:scale(1)}}' +
+      '[data-dsbpt-badge].dsbpt-bumped{display:inline-block;animation:dsbptBump .5s ease;color:#0e9d7d}' +
+      '@media (prefers-reduced-motion:reduce){.dsbpt-toast{animation:none !important}.dsbpt-petal{display:none}[data-dsbpt-badge].dsbpt-bumped{animation:none}}';
     document.head.appendChild(s);
   }
   function toast(msg) {
@@ -138,10 +140,19 @@
       '.dsbatt-btn{display:block;width:100%;border:none;border-radius:50px;padding:15px;cursor:pointer;' +
       "font-family:inherit;font-weight:900;font-size:17px;color:#241B06;background:linear-gradient(145deg,#F2B8CE,#E58AAE)}" +
       '.dsbatt-btn:active{transform:scale(.99)}' +
+      '.dsbatt-x{position:absolute;top:6px;right:6px;border:none;background:transparent;cursor:pointer;' +
+      'font-size:26px;line-height:1;color:#A6977A;padding:12px;font-family:inherit}' + /* 터치 영역 50px — 어르신 손가락(2차 평가단 지적) */
+      '.dsbatt-box{position:relative}' +
       '@media (prefers-reduced-motion:reduce){.dsbatt-box{animation:none}}';
     document.head.appendChild(s);
   }
-  function attendPopup(amount) {
+  /* ★출석은 '눌러서 받는다'(2026-07-30 Macho 지적) ─────────────────────────
+     예전: 6초 머무름+조작을 기다렸다가 사용자가 아무것도 안 눌러도 자동 지급 → 팝업이 늦게 뜨고,
+           그 전에 나가면 출석 자체가 안 됐다. 게다가 7초 뒤 자동으로 닫혀 받기도 전에 사라졌다.
+     지금: 들어오면 바로 봄이가 나와 [출석하고 꽃잎 받기] 버튼을 내민다. 눌러야 지급되고,
+           받기 전에는 자동으로 닫히지 않는다(어르신이 놓칠 일 없음). 하루 1회는 서버가 최종 판정. */
+  function attendPopup(opts) {
+    opts = opts || {};
     try {
       if (document.getElementById('dsbAttendPop')) return;
       _ensureAttendCss();
@@ -150,31 +161,85 @@
       wrap.id = 'dsbAttendPop'; wrap.className = 'dsbatt-ov';
       wrap.innerHTML =
         '<div class="dsbatt-box" role="dialog" aria-live="polite">' +
+        // ★닫기 X(2026-08-01 100명 평가단 지적: "닫는 법을 몰라 겁난다") — 받지 않고도 닫을 수 있게
+        '<button type="button" class="dsbatt-x" id="dsbattX" aria-label="닫기">✕</button>' +
         '<img class="dsbatt-face" src="/img/' + escHtml(face) + '" alt="봄이" onerror="this.src=\'/img/bom_smile.png\'">' +
         '<div class="dsbatt-t">오늘도 와주셨네요!</div>' +
-        '<div class="dsbatt-p">' + PETAL_SVG + ' 출석 꽃잎 <b>+' + amount + '</b></div>' +
-        '<div class="dsbatt-s">내일도 만나요. 자주 들를수록 꽃잎이 소복이 쌓인답니다.</div>' +
-        '<button type="button" class="dsbatt-btn">고마워요 🌸</button>' +
+        '<div class="dsbatt-p" id="dsbattMsg">' + PETAL_SVG + ' 출석 꽃잎을 챙겨드릴게요</div>' +
+        '<div class="dsbatt-s" id="dsbattSub">아래 버튼을 눌러 오늘의 꽃잎을 받아가세요 🌸</div>' +
+        '<button type="button" class="dsbatt-btn" id="dsbattGet">출석하고 꽃잎 받기</button>' +
         '</div>';
       document.body.appendChild(wrap);
-      var closed = false;
+      var closed = false, got = false;
       function close() { if (closed) return; closed = true; wrap.style.opacity = '0'; setTimeout(function () { wrap.remove(); }, 280); }
-      wrap.querySelector('.dsbatt-btn').addEventListener('click', close);
+      var btn = wrap.querySelector('#dsbattGet');
+      var xBtn = wrap.querySelector('#dsbattX');
+      if (xBtn) xBtn.addEventListener('click', close);
+      // ★속도 개선(2026-07-31 Macho: "지급이 5초라 느려"): 팝업이 뜨자마자 뒤에서 미리 받아둔다.
+      //   서버 함수 콜드스타트(2~4초)를 '어르신이 팝업 읽는 몇 초'에 숨긴다. 표시는 버튼을 눌러야 —
+      //   직접 '챙기는' 손맛은 유지(자동 닫힘 없음). 대개 누를 때쯤엔 이미 받아둬서 즉시 뜬다.
+      var pf = { done: false, amount: 0, err: null, inflight: false, waiter: null };
+      function startGrant() {
+        if (pf.inflight || pf.done) return;
+        pf.inflight = true;
+        _grantAttend(function (err, amount) {
+          pf.inflight = false; pf.done = true; pf.amount = amount; pf.err = err;
+          if (pf.waiter) { var w = pf.waiter; pf.waiter = null; w(); }
+        });
+      }
+      startGrant();                                          // 팝업 등장 즉시 프리페치
+      function reveal() {
+        var msg = wrap.querySelector('#dsbattMsg'), sub = wrap.querySelector('#dsbattSub');
+        if (pf.amount > 0) {
+          got = true; btn.disabled = false;
+          msg.innerHTML = PETAL_SVG + ' 출석 꽃잎 <b>+' + pf.amount + '</b>';
+          sub.textContent = '내일도 만나요. 자주 들를수록 꽃잎이 소복이 쌓인답니다.';
+          btn.textContent = '고마워요 🌸';
+          refreshBadges();                                   // 배지 숫자 롤업 연출
+          setTimeout(close, 1600);  // 3.2s→1.6s: 받은 뒤 오래 떠 있어 멈춘 줄 안다는 지적(3차 채점단)
+        } else if (!pf.err) {
+          got = true; btn.disabled = false;
+          msg.innerHTML = PETAL_SVG + ' 오늘 출석은 이미 하셨어요';
+          sub.textContent = '내일 다시 오시면 새 꽃잎을 드릴게요 🌸';
+          btn.textContent = '알겠어요';
+          setTimeout(close, 1600);  // 3.2s→1.6s: 받은 뒤 오래 떠 있어 멈춘 줄 안다는 지적(3차 채점단)
+        } else {
+          msg.innerHTML = PETAL_SVG + ' 잠시 후 다시 시도해 주세요';
+          sub.textContent = '연결이 잠깐 느렸나 봐요. 다시 한 번 눌러주세요.';
+          btn.textContent = '다시 받기'; btn.disabled = false; got = false;
+          pf.done = false; pf.err = null;                    // 다음 클릭에서 재시도
+        }
+      }
+      btn.addEventListener('click', function () {
+        if (got) { close(); return; }                        // 이미 받았으면 닫기
+        if (pf.done) { reveal(); return; }                   // 미리 받아둠 → 즉시 표시(빠름)
+        btn.disabled = true; btn.textContent = '꽃잎 담는 중… 🌸';
+        pf.waiter = reveal; startGrant();                    // 진행 중이면 대기, 실패했으면 재시도
+      });
       wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
-      setTimeout(close, 7000);   // 어르신이 놓쳐도 자동 정리
+      // ※받기 전에는 자동으로 닫지 않는다 — 놓쳐서 출석을 못 하는 일이 없도록.
     } catch (e) {}
   }
 
-  // 오늘 첫 '활동'(머무름 + 조작 1회) 때 자동으로 출석 꽃잎 지급 + 봄이 팝업.
-  //   페이지를 그냥 훑기만 하면 안 주고(어뷰징 차단), 실제로 머물러 뭔가 눌렀을 때 인정.
+  // 실제 지급(서버가 하루 1회 판정) — cb(err, awarded)
+  function _grantAttend(cb) {
+    var day = new Date().toISOString().slice(0, 10);
+    var lk = 'dsbpt_attend_' + day;
+    whenReady(function () {
+      var f = fn('awardPoints');
+      if (!f) { cb(new Error('unavailable'), 0); return; }
+      f({ event: 'attend' }).then(function (r) {
+        try { localStorage.setItem(lk, '1'); } catch (e) {}
+        var d = r && r.data;
+        cb(null, (d && d.ok && d.awarded) ? d.awarded : 0);
+      }).catch(function (e) { cb(e || new Error('fail'), 0); });
+    });
+  }
+
+  // 오늘 아직 출석 전이면 들어오자마자 봄이가 출석 팝업을 내민다(지급은 버튼을 눌러야).
   function autoAttend() {
     try { if (localStorage.getItem('dsbpt_attend_' + new Date().toISOString().slice(0, 10))) return; } catch (e) {}
-    var timeOk = false, interacted = false, done = false;
-    var evs = ['pointerdown', 'keydown', 'touchstart'];
-    function onI() { interacted = true; go(); }
-    function go() { if (done || !timeOk || !interacted) return; done = true; evs.forEach(function (e) { document.removeEventListener(e, onI, true); }); DasibomPoints.attend(); }
-    evs.forEach(function (e) { document.addEventListener(e, onI, true); });
-    setTimeout(function () { timeOk = true; go(); }, 6000);
+    setTimeout(function () { attendPopup(); }, 1200);   // 화면이 자리 잡은 직후 바로
   }
 
   var DasibomPoints = {
@@ -194,19 +259,11 @@
         }).catch(function () {});
       });
     },
-    // 출석(하루 첫 활동) — 서버가 하루 1회 판정(awardPoints attend). 지급되면 봄이 팝업.
+    // 출석 — 봄이가 '받기' 버튼을 내밀고, 누르면 그때 지급(2026-07-30 Macho: "버튼을 눌러야 지급").
+    //   하루 1회 판정은 서버(awardPoints attend)가 최종적으로 한다.
     attend: function () {
-      var day = new Date().toISOString().slice(0, 10);
-      var lk = 'dsbpt_attend_' + day;
-      try { if (localStorage.getItem(lk)) return; } catch (e) {}
-      whenReady(function () {
-        var f = fn('awardPoints'); if (!f) return;
-        f({ event: 'attend' }).then(function (r) {
-          try { localStorage.setItem(lk, '1'); } catch (e) {}   // 지급/이미받음 무관 오늘은 더 안 부름
-          var d = r && r.data;
-          if (d && d.ok && d.awarded) { attendPopup(d.awarded); refreshBadges(); }
-        }).catch(function () {});
-      });
+      try { if (localStorage.getItem('dsbpt_attend_' + new Date().toISOString().slice(0, 10))) return; } catch (e) {}
+      attendPopup();
     },
     // 콘텐츠 '실제 이용' 적립 — 페이지 열기만으론 안 주고, 일정 시간 머무름 + 조작 1회 후 지급.
     //   React 파일럿 등 내부를 몰라도 붙는 범용 방식(탭만 훑는 어뷰징 차단).
@@ -392,10 +449,43 @@
     });
   }
 
+  // 배지 숫자 롤업 연출 — '내 꽃잎이 올라가는' 보상감(2026-07-31 Macho).
+  //   증가할 때만 카운트업, 첫 표시·감소·reduced-motion은 즉시(산만함 방지). 소리는 전역 토글 준수.
+  function _countUp(el, from, to) {
+    _ensureToastCss();
+    if (el._dsbptRaf) cancelAnimationFrame(el._dsbptRaf);   // 직전 롤업 취소(연속 획득 겹침 방지)
+    var dur = 700, t0 = 0;
+    try { if (window.DasibomFX && DasibomFX.reward) DasibomFX.reward(); } catch (e) {}
+    el.classList.remove('dsbpt-bumped');
+    function step(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min(1, (ts - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);                  // easeOutCubic
+      el.textContent = Math.round(from + (to - from) * e).toLocaleString();
+      if (p < 1) { el._dsbptRaf = requestAnimationFrame(step); }
+      else { el._dsbptRaf = 0; el.textContent = to.toLocaleString(); void el.offsetWidth; el.classList.add('dsbpt-bumped'); }
+    }
+    el._dsbptRaf = requestAnimationFrame(step);
+  }
   // 화면의 모든 잔액 배지 갱신
   function fillBadges(n) {
+    var to = Number(n) || 0;
+    var reduce = false;
+    try { reduce = window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches; } catch (e) {}
     var els = document.querySelectorAll('[data-dsbpt-badge]');
-    for (var i = 0; i < els.length; i++) els[i].textContent = Number(n).toLocaleString();
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      var from = Number(String(el.textContent).replace(/[^0-9.\-]/g, '')) || 0;
+      var inited = el.hasAttribute('data-dsbpt-init');
+      // 처음 표시거나·감소·변화없음·과대점프(오류)·모션최소화 → 즉시. 실제 '증가'일 때만 롤업.
+      if (!inited || reduce || to <= from || (to - from) > 100000) {
+        if (el._dsbptRaf) { cancelAnimationFrame(el._dsbptRaf); el._dsbptRaf = 0; }   // 진행 중 롤업 있으면 중단
+        el.textContent = to.toLocaleString();
+      } else {
+        _countUp(el, from, to);
+      }
+      el.setAttribute('data-dsbpt-init', '1');
+    }
   }
   function refreshBadges() { DasibomPoints.balance(function (b) { if (b != null) fillBadges(b); }); }
 
@@ -447,6 +537,7 @@
   }
 
   window.DasibomPoints = DasibomPoints;
+  DasibomPoints._fill = fillBadges;   // QA용: 잔액 배지 갱신/롤업 직접 구동
 
   // ── 마스터 전용 꽃잎 에디터(2026-07-21 Macho) — 운영자 이메일 로그인 시에만 보이는 테스트 버튼 ──
   //   지급은 전부 서버(adminGrantPoints, points_admin 기록). 일반 사용자에겐 렌더 자체가 안 됨.

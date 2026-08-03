@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -111,48 +111,69 @@
         @media (max-width: 600px) { body.in-game .dsb-a11y { bottom: 84px !important; } }
 
         /* Lobby */
-        #lobby { justify-content: center; gap: 12px; padding: 16px; text-align: center; background-image: radial-gradient(circle at center, var(--paper), var(--cream)); overflow-y: auto; }
+        /* ★justify-content:center는 콘텐츠가 화면보다 길 때 위쪽이 잘려 스크롤로도 못 올라간다(랭킹 배너 추가 후 발생).
+           위 정렬로 바꿔 맨 위 카드가 안 잘리게. 상단 [홈으로]·[🏆] 버튼과 안 겹치게 위 여백 확보. (2026-08-02 Macho) */
+        #lobby { justify-content: flex-start; gap: 12px; padding: 62px 16px 16px; text-align: center; background-image: radial-gradient(circle at center, var(--paper), var(--cream)); overflow-y: auto; }
         /* 마지막 줄(🎵)이 공용 글씨바에 가려 눌리지 않던 문제 — 바 높이만큼 자리를 비워둔다.
            (가운데 정렬 컨테이너라 padding 대신 마지막 요소의 margin으로 확보) */
         #lobby #bgm-toggle-lobby { margin-bottom: 76px; }
         .title { font-size: 2.2rem; color: var(--sage-deep); margin-bottom: 6px; word-break: keep-all; letter-spacing: 1px; text-shadow: 1px 2px 0 rgba(255,255,255,0.6); }
+        /* 프리미엄 글래스 카드(2026-08-01 리디자인) — 밝은 카드 + 게임별 은은한 그라데이션 헤더 */
         .game-btn {
-            background: var(--btn-grad); border: 3px solid var(--btn-border); border-radius: 16px;
-            padding: 0 0 10px; font-size: 1.4rem; color: var(--btn-text);
-            cursor: pointer; box-shadow: 0 5px 0 var(--sage-deep), 0 10px 14px rgba(63,90,48,0.2); width: 100%; max-width: 280px;
-            transition: transform 0.1s, box-shadow 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+            background: linear-gradient(180deg, #FFFFFF, #F5F4EC);
+            border: 1px solid rgba(63,90,48,0.10); border-radius: 22px;
+            padding: 0 0 14px; font-size: 1.4rem; color: var(--sage-deep);
+            cursor: pointer; width: 100%; max-width: 280px;
+            box-shadow: 0 12px 28px rgba(63,90,48,0.15), 0 3px 8px rgba(63,90,48,0.10), inset 0 1px 0 rgba(255,255,255,0.9);
+            transition: transform 0.12s ease, box-shadow 0.12s ease; text-shadow: none;
             display: flex; flex-direction: column; align-items: stretch; overflow: hidden;
             flex-shrink: 0;
         }
-        .game-btn:active { transform: translateY(5px); box-shadow: 0 0 0 var(--sage-deep), 0 4px 8px rgba(63,90,48,0.2); }
+        .game-btn:active { transform: translateY(2px) scale(0.992); box-shadow: 0 6px 16px rgba(63,90,48,0.16), inset 0 1px 0 rgba(255,255,255,0.9); }
+        /* 헤더(썸네일) — 게임별 그라데이션 + 상단 광택 sheen */
         .game-thumb {
-            display: flex; align-items: center; justify-content: center; gap: 4px;
-            width: 100%; height: 56px; padding: 6px 12px 2px;
-            background: rgba(255,255,255,0.4); box-sizing: content-box;
-            font-size: 2.1rem; line-height: 1;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            height: 88px; padding: 0 12px; box-sizing: border-box;
+            position: relative; overflow: hidden; font-size: 2.1rem; line-height: 1;
         }
-        .game-btn-body { display: block; padding: 3px 14px 0; }
+        .game-thumb::before { content: ''; position: absolute; inset: 0;
+            background: radial-gradient(130% 90% at 50% -30%, rgba(255,255,255,0.55), rgba(255,255,255,0) 62%); pointer-events: none; }
+        .game-thumb::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 14px;
+            background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.6)); pointer-events: none; }
+        .g-blast  .game-thumb { background: linear-gradient(135deg, #EE8E6B, #F2B978); }
+        .g-match3 .game-thumb { background: linear-gradient(135deg, #56A79C, #86C078); }
+        .g-bubble .game-thumb { background: linear-gradient(135deg, #8E7CC3, #CE8CB4); }
+        /* 광택 프리미엄 칩 — 게임 모양대로 사각/원, 유리알 질감 */
+        .a-chip { width: 34px; height: 34px; display: inline-block; position: relative;
+            box-shadow: inset 2px 3px 4px rgba(255,255,255,0.55), inset -3px -4px 6px rgba(0,0,0,0.24), 0 5px 9px rgba(0,0,0,0.22); }
+        .a-chip::after { content: ''; position: absolute; top: 13%; left: 16%; width: 42%; height: 32%;
+            background: radial-gradient(closest-side, rgba(255,255,255,0.85), rgba(255,255,255,0)); }
+        .a-chip.sq { border-radius: 10px; }
+        .a-chip.ci { border-radius: 50%; }
+        .a-chip.ci::after { top: 15%; left: 18%; }
+        .game-btn-body { display: block; padding: 10px 14px 0; }
         .game-desc {
             font-size: 0.85rem;
             font-weight: 700;
             display: block;
             margin-top: 3px;
-            opacity: 0.9;
+            color: var(--muted);
+            /* ★글씨를 키우면 설명이 버튼 밖으로 잘려 무슨 게임인지 못 읽는다(2026-07-30 모바일 전수).
+               한 줄 고집하지 말고 어절 단위로 줄바꿈해 전부 보이게. */
+            white-space: normal;
+            word-break: keep-all;
+            line-height: 1.35;
         }
         .lobby-high-score {
             font-size: 0.8rem;
             font-weight: bold;
             color: var(--sage-deep);
             display: block;
-            margin-top: 8px;
-            background: rgba(255,255,255,0.55);
+            margin-top: 10px;
+            background: rgba(63,90,48,0.07);
             border-radius: 12px;
             padding: 6px 0;
         }
-
-        #lobby .game-btn:nth-of-type(1) { background: var(--btn-grad); }
-        #lobby .game-btn:nth-of-type(2) { background: var(--btn-grad); }
-        #lobby .game-btn:nth-of-type(3) { background: var(--btn-grad); }
 
         .arcade-exit {
             position: absolute; top: 16px; left: 16px; z-index: 5;
@@ -166,6 +187,42 @@
             border: 1.5px solid rgba(63,90,48,0.25); border-radius: 50%;
             width: 42px; height: 42px; font-size: 20px; cursor: pointer;
             display: flex; align-items: center; justify-content: center;
+        }
+
+        /* 로비 랭킹전 배너 — 경쟁 유도(2026-08-01) */
+        .rank-banner {
+            width: 100%; max-width: 280px; margin: 2px auto 8px; cursor: pointer;
+            background: linear-gradient(135deg, #F6DE95, #C9A961);
+            color: #4A3B12; border: none; border-radius: 16px; padding: 12px 16px 11px;
+            box-shadow: 0 5px 0 #A67C2E, 0 10px 16px rgba(150,110,40,0.25);
+            text-align: center; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0;
+            animation: rbPulse 2.8s ease-in-out infinite;
+        }
+        .rank-banner:active { transform: translateY(3px); box-shadow: 0 2px 0 #A67C2E, 0 5px 10px rgba(150,110,40,0.25); }
+        @keyframes rbPulse { 0%,100%{ box-shadow:0 5px 0 #A67C2E,0 10px 16px rgba(150,110,40,0.25);} 50%{ box-shadow:0 5px 0 #A67C2E,0 12px 22px rgba(201,169,97,0.5);} }
+        .rank-banner::after {
+            content: ''; position: absolute; top: 0; left: -60%; width: 45%; height: 100%;
+            background: linear-gradient(100deg, transparent, rgba(255,255,255,0.6), transparent);
+            transform: skewX(-18deg); animation: rbShine 3.6s ease-in-out infinite;
+        }
+        @keyframes rbShine { 0%{ left:-60%; } 55%,100%{ left:135%; } }
+        .rank-banner-title { font-size: 1.18rem; font-weight: 800; letter-spacing: 0.3px; }
+        .rank-banner-sub { font-size: 0.9rem; font-weight: 600; margin-top: 3px; line-height: 1.45; }
+        .rank-banner-sub b { color: #7A1F12; }
+        .rank-banner-cta {
+            font-size: 0.84rem; font-weight: 800; margin-top: 4px; color: #5A2A00;
+            background: rgba(255,255,255,0.55); border-radius: 10px; padding: 3px 12px;
+        }
+        .card-leader {
+            display: inline-block; margin-top: 4px; font-size: 0.86rem; font-weight: 800;
+            color: #6A4E12; background: #F6DE95; border: 1px solid #D8B75E;
+            border-radius: 9px; padding: 2px 10px;
+        }
+        .card-leader b { color: #7A1F12; }
+        @media (prefers-reduced-motion: reduce) {
+            .rank-banner { animation: none; }
+            .rank-banner::after { display: none; }
         }
 
         /* 랭킹 / 명예의 전당 / 닉네임 모달 */
@@ -270,13 +327,8 @@
         .color-3 { background-color: var(--color-3); border-color: var(--border-3); }
         .color-4 { background-color: var(--color-4); border-color: var(--border-4); }
 
-        /* 색맹·색약 어르신도 구분할 수 있게 색깔마다 모양 기호를 함께 표시 */
-        .item.color-0::before { content: '♥'; }
-        .item.color-1::before { content: '★'; }
-        .item.color-2::before { content: '♣'; }
-        .item.color-3::before { content: '♦'; }
-        .item.color-4::before { content: '▲'; }
-        .item::before { color: rgba(0,0,0,0.35); line-height: 1; z-index: 1; }
+        /* 블록 아이콘(♥★♣♦▲) 제거 — 색만 남김(2026-07-31 Macho). 광택·베벨은 유지해 깔끔한 컬러 블록. */
+        .item::before { content: none; display: none; }
 
         /* Game Footer */
         .game-footer {
@@ -533,17 +585,22 @@
         <a href="/?home=1" class="arcade-exit" onclick="stopBgm()">← 홈으로</a>
         <button class="ranking-fab" onclick="openRanking()" aria-label="랭킹 보기">🏆</button>
         <h1 class="title">추억의 오락실</h1>
-        <button class="game-btn" onclick="startGame('blast')">
-            <span class="game-thumb">🍓🍋🍏🍇</span>
-            <span class="game-btn-body">블라스트<br><span class="game-desc">같은 색 블럭 누르기</span><br><span id="lobby-high-blast" class="lobby-high-score">최고 점수: 0</span></span>
+        <div class="rank-banner" role="button" tabindex="0" onclick="openRanking()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openRanking();}" aria-label="이번주 랭킹 순위표 보기">
+            <span class="rank-banner-title">🏆 이번주 랭킹전</span>
+            <span class="rank-banner-sub" id="rankBannerSub">이번주 1위에 도전해 보세요</span>
+            <span class="rank-banner-cta">전체 순위표 보기 →</span>
+        </div>
+        <button class="game-btn g-blast" onclick="startGame('blast')">
+            <span class="game-thumb"><i class="a-chip sq" style="background:var(--color-0)"></i><i class="a-chip sq" style="background:var(--color-1)"></i><i class="a-chip sq" style="background:var(--color-2)"></i><i class="a-chip sq" style="background:var(--color-3)"></i></span>
+            <span class="game-btn-body">블라스트<br><span class="game-desc">같은 색 블럭 누르기</span><br><span id="lobby-high-blast" class="lobby-high-score">최고 점수: 0</span><br><span id="lobby-leader-blast" class="card-leader">🥇 이번주 1위 확인 중…</span></span>
         </button>
-        <button class="game-btn" onclick="startGame('match3')">
-            <span class="game-thumb">🍒↔️🍑</span>
-            <span class="game-btn-body">3매치<br><span class="game-desc">자리 바꿔서 3개 맞추기</span><br><span id="lobby-high-match3" class="lobby-high-score">최고 점수: 0</span></span>
+        <button class="game-btn g-match3" onclick="startGame('match3')">
+            <span class="game-thumb"><i class="a-chip sq" style="background:var(--color-4)"></i><i class="a-chip sq" style="background:var(--color-2)"></i><i class="a-chip sq" style="background:var(--color-2)"></i><i class="a-chip sq" style="background:var(--color-0)"></i></span>
+            <span class="game-btn-body">3매치<br><span class="game-desc">자리 바꿔서 3개 맞추기</span><br><span id="lobby-high-match3" class="lobby-high-score">최고 점수: 0</span><br><span id="lobby-leader-match3" class="card-leader">🥇 이번주 1위 확인 중…</span></span>
         </button>
-        <button class="game-btn" onclick="startGame('bubble')">
-            <span class="game-thumb">🔫🫧🎈</span>
-            <span class="game-btn-body">버블슈터<br><span class="game-desc">방울 쏘아올려 맞추기</span><br><span id="lobby-high-bubble" class="lobby-high-score">최고 점수: 0</span></span>
+        <button class="game-btn g-bubble" onclick="startGame('bubble')">
+            <span class="game-thumb"><i class="a-chip ci" style="background:var(--color-3)"></i><i class="a-chip ci" style="background:var(--color-0)"></i><i class="a-chip ci" style="background:var(--color-4)"></i><i class="a-chip ci" style="background:var(--color-2)"></i></span>
+            <span class="game-btn-body">버블슈터<br><span class="game-desc">방울 쏘아올려 맞추기</span><br><span id="lobby-high-bubble" class="lobby-high-score">최고 점수: 0</span><br><span id="lobby-leader-bubble" class="card-leader">🥇 이번주 1위 확인 중…</span></span>
         </button>
         <button class="bgm-btn" id="bgm-toggle-lobby" onclick="toggleBgm()">
             <span id="bgm-icon-lobby">🎵</span>
@@ -622,44 +679,32 @@
         // Sound Synthesis
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // BGM (mp3 파일 루프 재생)
-        const bgmAudio = new Audio('/audio/arcade_bgm.mp3');
-        bgmAudio.loop = true;
-        bgmAudio.volume = 0.35;
-        let bgmEnabled = false;
+        /* BGM — 공용 모듈(dasibom-bgm.js)에 위임(2026-07-30 Macho)
+           "배경음 on/off는 메인 좌측 하단 아이콘 하나로 전부 적용" → 오락실도 같은 전역 스위치를 따른다. */
+        function bgmIsOn(){ return !!(window.DasibomBGM && DasibomBGM.isOn()); }
 
-        function startBgm() {
-            bgmAudio.play().catch(err => console.error('BGM 재생 실패:', err));
-        }
+        function startBgm() { if (window.DasibomBGM) DasibomBGM.play(); }
+        function stopBgm()  { if (window.DasibomBGM) DasibomBGM.stop(); }
 
-        function stopBgm() {
-            bgmAudio.pause();
-        }
-
-        // 앱을 벗어나면(다른 탭으로 전환/백그라운드/페이지 이탈) 배경음도 함께 끔
+        // 앱을 벗어나면(다른 탭/백그라운드/이탈) 배경음도 함께 끔
         document.addEventListener('visibilitychange', function(){
-            if(document.hidden) bgmAudio.pause();
-            else if(bgmEnabled) bgmAudio.play().catch(function(){});
+            if(document.hidden) stopBgm();
+            else if(bgmIsOn()) startBgm();
         });
-        window.addEventListener('pagehide', function(){ bgmAudio.pause(); });
-        window.addEventListener('beforeunload', function(){ bgmAudio.pause(); });
+        window.addEventListener('pagehide', function(){ stopBgm(); });
+        window.addEventListener('beforeunload', function(){ stopBgm(); });
 
         function toggleBgm() {
             if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
-            bgmEnabled = !bgmEnabled;
-            if (bgmEnabled) {
-                startBgm();
-            } else {
-                stopBgm();
-            }
+            if (window.DasibomBGM) DasibomBGM.toggle();
             updateBgmButtons();
             playSound('click');
         }
 
         function updateBgmButtons() {
-            const icon = bgmEnabled ? '🔇' : '🎵';
+            const icon = bgmIsOn() ? '🔇' : '🎵';
 
             const iconLobby = document.getElementById('bgm-icon-lobby');
             if (iconLobby) iconLobby.innerText = icon;
@@ -1660,6 +1705,47 @@
             document.getElementById('lobby-high-blast').innerText = `최고 점수: ${getHighScore('blast')}`;
             document.getElementById('lobby-high-match3').innerText = `최고 점수: ${getHighScore('match3')}`;
             document.getElementById('lobby-high-bubble').innerText = `최고 점수: ${getHighScore('bubble')}`;
+            loadLobbyLeaders();
+        }
+
+        /* 로비 각 게임 '이번주 1위' 실데이터 노출(경쟁 유도) — 게임당 1건, 60초 스로틀로 조회 최소화 */
+        var _leadersAt = 0, _leadersBusy = false;
+        function loadLobbyLeaders(force) {
+            var now = Date.now();
+            if (_leadersBusy) return;
+            if (!force && _leadersAt && (now - _leadersAt) < 60000) return;  // 60초 내 재조회 생략(비용)
+            _leadersBusy = true;
+            initFB().then(function () {
+                var wk = weekNumOf();
+                return Promise.all(['blast', 'match3', 'bubble'].map(function (g) {
+                    return _db.collection('arcade_scores')
+                        .where('weekNum', '==', wk).where('game', '==', g)
+                        .orderBy('score', 'desc').limit(1).get()
+                        .then(function (snap) { return { g: g, doc: snap.empty ? null : snap.docs[0].data() }; })
+                        .catch(function () { return { g: g, doc: null, err: 1 }; });
+                }));
+            }).then(function (res) {
+                _leadersAt = Date.now();
+                res.forEach(function (r) {
+                    var el = document.getElementById('lobby-leader-' + r.g);
+                    if (!el) return;
+                    if (r.err) { el.textContent = '🥇 이번주 1위 --'; return; }
+                    if (r.doc) {
+                        var mine = getHighScore(r.g);
+                        if (mine > 0 && mine >= r.doc.score) el.innerHTML = '👑 지금 내가 1위! <b>' + r.doc.score + '점</b>';
+                        else el.innerHTML = '🥇 이번주 1위 <b>' + r.doc.score + '점</b> · 도전!';
+                    } else {
+                        el.textContent = '🥇 아직 1위 없음 — 첫 주인공 도전!';
+                    }
+                });
+                var sub = document.getElementById('rankBannerSub');
+                if (sub) {
+                    var any = res.some(function (r) { return r.doc; });
+                    sub.innerHTML = any
+                        ? '<b>내 이름</b>도 순위표에 올려보세요'
+                        : '첫 기록의 주인공이 되어 보세요';
+                }
+            }).catch(function () {}).then(function () { _leadersBusy = false; });
         }
 
         /* ══════════════════════════════════════════════════════════
@@ -1673,7 +1759,7 @@
             messagingSenderId:"512010655611",
             appId:"1:512010655611:web:32b153b836b23ae96a8fde"
         };
-        const GAME_LABELS = { blast:'💊 블라스트', match3:'🍒 3매치', bubble:'🔫 버블슈터' };
+        const GAME_LABELS = { blast:'블라스트', match3:'3매치', bubble:'버블슈터' };
         let _fbReady=false, _auth=null, _db=null, _uid=null;
         function initFB(){
             return new Promise(function(res){
@@ -1757,13 +1843,14 @@
                     var prev=snap.exists?(snap.data().score||0):0;
                     if(scoreVal<=prev){ if(statusEl) statusEl.textContent='이번주 내 최고 점수는 '+prev+'점이에요.'; return; }
                     return ref.set({ weekNum:wk, game:game, uid:uid, name:nick, score:scoreVal, ts:firebase.firestore.FieldValue.serverTimestamp() })
-                        .then(function(){ if(statusEl) statusEl.textContent='🏆 이번주 랭킹에 '+scoreVal+'점으로 등록했어요!'; });
+                        .then(function(){ if(statusEl) statusEl.textContent='🏆 이번주 랭킹에 '+scoreVal+'점으로 등록했어요!'; _leadersAt=0; });
                 });
             }).catch(function(e){ if(statusEl) statusEl.textContent='랭킹 등록에 실패했어요. 잠시 후 다시 시도해 주세요.'; });
         }
 
         /* ── 랭킹 모달 ── */
         var _rkGame='blast', _rkView='mine', _rkHof=false, _rkHofWeek=null;
+        var _rkSeq=0;   // 랭킹 로드 토큰 — 늦게 온 비동기 응답이 최신 뷰를 덮어쓰지 않게(2026-07-31 봇 발견)
         function openRanking(){
             document.getElementById('rkOverlay').classList.add('active');
             _rkHof=false;
@@ -1795,6 +1882,7 @@
             loadRanking();
         }
         function loadRanking(){
+            var mySeq=++_rkSeq;   // 이 로드의 토큰. 응답 도착 시 최신인지 확인.
             var listEl=document.getElementById('rkList');
             var weekLabelEl=document.getElementById('rkWeekLabel');
             var navEl=document.getElementById('rkWeekNav');
@@ -1807,8 +1895,8 @@
                     return _db.collection('arcade_scores')
                         .where('game','==',_rkGame).where('weekNum','<',weekNumOf())
                         .orderBy('weekNum','desc').orderBy('score','desc').limit(300).get();
-                }).then(function(snap){ renderHofChampions(snap, listEl); })
-                .catch(function(){ listEl.innerHTML='<div class="rk-empty">기록을 불러오지 못했어요.</div>'; });
+                }).then(function(snap){ if(mySeq!==_rkSeq) return; renderHofChampions(snap, listEl); })
+                .catch(function(){ if(mySeq!==_rkSeq) return; listEl.innerHTML='<div class="rk-empty">기록을 불러오지 못했어요.</div>'; });
                 return;
             }
 
@@ -1821,6 +1909,7 @@
                 initFB().then(ensureAuth).then(function(uid){
                     return _db.collection('arcade_scores').doc(weekNumOf()+'_'+_rkGame+'_'+uid).get();
                 }).then(function(snap){
+                    if(mySeq!==_rkSeq) return;   // 그 사이 다른 뷰로 바뀌었으면 덮어쓰지 않음
                     var mine=snap.exists?snap.data():null;
                     listEl.innerHTML =
                         '<div class="rk-item"><div class="rk-rank">📱</div><div class="rk-name">기기 최고 기록(현재)</div><div class="rk-score">'+getHighScore(_rkGame)+'점</div></div>'+
@@ -1834,8 +1923,8 @@
                 return _db.collection('arcade_scores')
                     .where('weekNum','==',weekNumOf()).where('game','==',_rkGame)
                     .orderBy('score','desc').limit(20).get();
-            }).then(function(snap){ renderRkList(snap, listEl); })
-            .catch(function(){ listEl.innerHTML='<div class="rk-empty">아직 랭킹이 없어요. 첫 기록의 주인공이 되어보세요!</div>'; });
+            }).then(function(snap){ if(mySeq!==_rkSeq) return; renderRkList(snap, listEl); })
+            .catch(function(){ if(mySeq!==_rkSeq) return; listEl.innerHTML='<div class="rk-empty">아직 랭킹이 없어요. 첫 기록의 주인공이 되어보세요!</div>'; });
         }
         function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
         // 주차별 1등만 뽑아 "역대 챔피언 명예의 전당"으로 렌더링 (문서는 weekNum desc, score desc로 이미 정렬돼 있음)
@@ -1865,10 +1954,11 @@
         updateBgmButtons();
         updateLobbyHighScores();
     </script>
-<script src="/a11y.js?v=8" defer></script>
+<script src="/a11y.js?v=9" defer></script>
+<script src="/dasibom-bgm.js?v=1"></script><!-- 공용 배경음(전역 스위치 하나) -->
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
-<script src="/bom_tutorial.js?v=5" defer></script>
+<script src="/bom_tutorial.js?v=7" defer></script>
 <script>window.BOM_TUT={
   key:'arcade', face:'bom_cheer.png', name:'추억의 오락실',
   welcome:'{호칭}, 여기는 마음 편히 즐기는 오락실이에요. 시간 제한도, 점수 부담도 없으니 그냥 재미있게 놀다 가세요 🕹️',

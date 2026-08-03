@@ -54,21 +54,35 @@
       '.a11y-bar,.ts-bar,.font-ctrl,.hc-btn{display:none!important}',
       /* 글씨 바가 하단 콘텐츠·버튼을 가리지 않도록 본문 하단 여백 확보 (고정 footer는 페이지별 보정) */
       'body{padding-bottom:84px}',
-      /* 공용 바 */
-      '.dsb-a11y{position:fixed;bottom:16px;right:12px;z-index:99990;display:flex;align-items:center;gap:2px;',
-      ' background:rgba(255,255,255,.96);border:1px solid #ddd6c8;border-radius:50px;padding:5px 9px;',
-      ' box-shadow:0 3px 14px rgba(0,0,0,.16);font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif}',
-      '.dsb-a11y-lbl{font-size:11px;color:#8a7f72;padding:0 3px 0 2px;user-select:none}',
-      '.dsb-a11y button{border:none;background:transparent;color:#8a7f72;cursor:pointer;width:44px;height:44px;',
-      ' border-radius:50%;font-weight:800;line-height:1;padding:0;font-family:inherit}',
-      '.dsb-a11y .t1{font-size:13px}.dsb-a11y .t2{font-size:17px}.dsb-a11y .t3{font-size:21px}.dsb-a11y .dk{font-size:16px}',
-      '.dsb-a11y button.on{background:#0e9d7d;color:#fff}',
-      /* 네이티브 다크(index)에서 바 톤 맞춤 */
-      'body.dark .dsb-a11y{background:rgba(30,34,30,.95);border-color:#3a403a}',
-      'body.dark .dsb-a11y button{color:#cfc8b8}',
-      'body.dark .dsb-a11y button.on{background:#0e9d7d;color:#fff}',
-      /* 글씨를 키우면 바까지 같이 커져(zoom) 화면 폭을 다 차지하고, 왼쪽 '맨 위로'·소리 버튼과
-         부딪히던 문제 — 글씨 조절 바 자신은 항상 같은 크기로 둔다. (2026-07-28 Macho 지적) */
+      /* ★접이식 아이콘 개편(2026-07-28 Macho): 항상 펼쳐진 바 → 작은 '가' 아이콘 + 탭하면 팝업.
+         평소 footprint가 작아 하단 콘텐츠·버튼과 안 겹치고, 언제든 눌러 글씨/다크 조절. */
+      '.dsb-a11y{position:fixed;bottom:16px;right:12px;z-index:99990;font-family:"Apple SD Gothic Neo","Malgun Gothic",sans-serif}',
+      '.dsb-a11y .a-fab{position:relative;width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.98);',
+      ' border:1px solid #ddd6c8;box-shadow:0 6px 18px -8px rgba(0,0,0,.35);display:grid;place-items:center;cursor:pointer;',
+      ' color:#6b5a48;font-weight:900;font-size:22px;line-height:1;padding:0;font-family:inherit;transition:transform .12s}',
+      '.dsb-a11y .a-fab:active{transform:scale(.93)}',
+      '.dsb-a11y .a-fab .cur{position:absolute;right:-3px;bottom:-3px;background:#0e9d7d;color:#fff;font-size:9.5px;',
+      ' font-weight:800;padding:1px 5px;border-radius:50px;border:1.5px solid #fff;letter-spacing:-.02em}',
+      '.dsb-a11y .a-pop{position:absolute;right:0;bottom:60px;background:#fff;border:1px solid #ddd6c8;border-radius:18px;',
+      ' box-shadow:0 16px 40px -14px rgba(0,0,0,.4);padding:7px;min-width:190px;display:none;flex-direction:column;gap:3px}',
+      '.dsb-a11y.open .a-pop{display:flex;animation:aPopIn .22s cubic-bezier(.2,1,.4,1) both}',
+      '@keyframes aPopIn{from{opacity:0;transform:translateY(8px) scale(.96)}to{opacity:1;transform:none}}',
+      '.dsb-a11y .a-pop .ph{font-size:12px;font-weight:800;color:#a89a88;padding:4px 10px 2px}',
+      '.dsb-a11y .a-pop button{display:flex;align-items:center;gap:12px;min-height:50px;padding:8px 14px;border:none;',
+      ' background:transparent;border-radius:13px;cursor:pointer;color:#5b4a38;font-weight:800;font-family:inherit;text-align:left;width:100%}',
+      '.dsb-a11y .a-pop button:active{background:#F1EEE6}',
+      '.dsb-a11y .a-pop button.on{background:#0e9d7d;color:#fff}',
+      '.dsb-a11y .a-pop .ga{width:30px;text-align:center;font-weight:900}',
+      '.dsb-a11y .a-pop .t1{font-size:15px}.dsb-a11y .a-pop .t2{font-size:19px}.dsb-a11y .a-pop .t3{font-size:24px}',
+      '.dsb-a11y .a-pop .nm{font-size:16px}',
+      '.dsb-a11y .a-pop .dv{height:1px;background:#eee5d6;margin:4px 6px}',
+      '.dsb-a11y .a-pop .dk .ic{width:30px;text-align:center;font-size:18px}',
+      /* 네이티브 다크(index)에서 아이콘·팝업 톤 맞춤 */
+      'body.dark .dsb-a11y .a-fab{background:#2a2e2a;border-color:#3a403a;color:#cfc8b8}',
+      'body.dark .dsb-a11y .a-pop{background:#2a2e2a;border-color:#3a403a}',
+      'body.dark .dsb-a11y .a-pop button{color:#cfc8b8}',
+      'body.dark .dsb-a11y .a-pop .dv{background:#3a403a}',
+      /* 확대해도 아이콘·팝업은 크기 고정 */
       'body.ts-2 .dsb-a11y{zoom:0.8696}',
       'body.ts-3 .dsb-a11y{zoom:0.7692}'
     ];
@@ -84,18 +98,22 @@
     styleEl.textContent = css.join('\n');
     document.head.appendChild(styleEl);
 
-    /* ── 바 생성 ── */
+    /* ── 바 생성(접이식 아이콘 + 팝업) ── */
+    var LV = { '1': '보통', '2': '크게', '3': '아주 크게' };
     var bar = document.createElement('div');
     bar.className = 'dsb-a11y';
-    bar.setAttribute('role', 'group');
-    bar.setAttribute('aria-label', '글씨 크기·다크 모드');
     bar.innerHTML =
-      '<span class="dsb-a11y-lbl">글씨</span>' +
-      '<button type="button" class="t1" data-ts="1" aria-label="보통 글씨" title="보통">가</button>' +
-      '<button type="button" class="t2" data-ts="2" aria-label="크게" title="크게">가</button>' +
-      '<button type="button" class="t3" data-ts="3" aria-label="아주 크게" title="아주 크게">가</button>' +
-      '<button type="button" class="dk" aria-label="다크 모드" aria-pressed="false" title="다크 모드">🌙</button>';
+      '<button type="button" class="a-fab" aria-label="글씨 크기·다크 모드" aria-expanded="false">가<span class="cur"></span></button>' +
+      '<div class="a-pop" role="menu">' +
+      '<div class="ph">글씨 크기</div>' +
+      '<button type="button" data-ts="1" role="menuitem"><span class="ga t1">가</span><span class="nm">보통</span></button>' +
+      '<button type="button" data-ts="2" role="menuitem"><span class="ga t2">가</span><span class="nm">크게</span></button>' +
+      '<button type="button" data-ts="3" role="menuitem"><span class="ga t3">가</span><span class="nm">아주 크게</span></button>' +
+      '<div class="dv"></div>' +
+      '<button type="button" class="dk" role="menuitemcheckbox" aria-pressed="false"><span class="ic">🌙</span><span class="nm">어두운 화면</span></button>' +
+      '</div>';
     document.body.appendChild(bar);
+    var fab = bar.querySelector('.a-fab'), curEl = bar.querySelector('.cur');
 
     /* ── 글씨 크기 ── */
     function setTs(n) {
@@ -103,6 +121,7 @@
       document.body.classList.remove('ts-1', 'ts-2', 'ts-3');
       document.body.classList.add('ts-' + n);
       try { localStorage.setItem(TS_KEY, n); } catch (e) {}
+      curEl.textContent = LV[n] || '보통';
       bar.querySelectorAll('[data-ts]').forEach(function (b) {
         b.classList.toggle('on', b.getAttribute('data-ts') === n);
       });
@@ -118,14 +137,23 @@
       dk.setAttribute('aria-pressed', on ? 'true' : 'false');
     }
 
-    bar.querySelectorAll('[data-ts]').forEach(function (b) {
-      b.addEventListener('click', function () { setTs(this.getAttribute('data-ts')); });
+    /* ── 펼침/접힘 ── */
+    function open(o) { bar.classList.toggle('open', o); fab.setAttribute('aria-expanded', o ? 'true' : 'false'); }
+    fab.addEventListener('click', function (e) { e.stopPropagation(); open(!bar.classList.contains('open')); });
+    bar.querySelector('.a-pop').addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('button'); if (!b) return;
+      e.stopPropagation();
+      if (b.classList.contains('dk')) {                 // 다크 토글 — 팝업은 열어둔 채(연속 조절 가능)
+        var on = darkNative ? document.body.classList.contains('dark')
+                            : document.documentElement.classList.contains('dsb-dark');
+        setDark(!on);
+      } else if (b.hasAttribute('data-ts')) {           // 글씨 크기 — 고르면 접힘
+        setTs(b.getAttribute('data-ts'));
+        open(false);
+      }
+      setTimeout(reserveScrollAreas, 60);
     });
-    bar.querySelector('.dk').addEventListener('click', function () {
-      var on = darkNative ? document.body.classList.contains('dark')
-                          : document.documentElement.classList.contains('dsb-dark');
-      setDark(!on);
-    });
+    document.addEventListener('click', function () { open(false); });   // 바깥 탭 → 접기
 
     /* ── 자체 스크롤 영역 하단 여백 예약 (2026-07-28 Macho 지적) ──
        body의 padding-bottom은 '페이지 스크롤'에만 걸린다. 서재 리더·건강 상세 패널·오락실 로비처럼

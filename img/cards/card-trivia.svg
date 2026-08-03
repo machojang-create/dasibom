@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 260" role="img" aria-label="시상대 위 1·2·3위와 물음표">
+  <defs>
+    <linearGradient id="tv-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFF7E8"/><stop offset="1" stop-color="#F5E8D0"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="260" fill="url(#tv-sky)"/>
+  <circle cx="78" cy="52" r="26" fill="#F2D98A" opacity=".8"/>
+  <ellipse cx="200" cy="256" rx="230" ry="46" fill="#EADFC8"/>
+  <!-- 시상대 -->
+  <rect x="150" y="120" width="100" height="110" rx="8" fill="#D8A94E"/>
+  <rect x="52" y="156" width="100" height="74" rx="8" fill="#CBB894"/>
+  <rect x="248" y="176" width="100" height="54" rx="8" fill="#C9A98A"/>
+  <text x="200" y="188" font-size="42" font-weight="900" text-anchor="middle" fill="#FFFDF7" font-family="sans-serif">1</text>
+  <text x="102" y="204" font-size="30" font-weight="900" text-anchor="middle" fill="#FFFDF7" font-family="sans-serif">2</text>
+  <text x="298" y="216" font-size="26" font-weight="900" text-anchor="middle" fill="#FFFDF7" font-family="sans-serif">3</text>
+  <!-- 1위 자리의 큰 물음표(오늘의 1위는 누구?) -->
+  <text x="200" y="104" font-size="64" font-weight="900" text-anchor="middle" fill="#B4692E" font-family="serif">?</text>
+  <!-- 월계수 느낌 잎 -->
+  <g fill="#7C9A6D">
+    <ellipse cx="142" cy="96" rx="10" ry="4" transform="rotate(-38 142 96)"/>
+    <ellipse cx="132" cy="82" rx="10" ry="4" transform="rotate(-58 132 82)"/>
+    <ellipse cx="258" cy="96" rx="10" ry="4" transform="rotate(38 258 96)"/>
+    <ellipse cx="268" cy="82" rx="10" ry="4" transform="rotate(58 268 82)"/>
+  </g>
+  <!-- 반짝임 -->
+  <g fill="#E5B84B">
+    <circle cx="120" cy="132" r="4"/><circle cx="290" cy="140" r="3"/><circle cx="330" cy="90" r="4"/>
+  </g>
+</svg>

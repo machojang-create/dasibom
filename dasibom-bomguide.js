@@ -25,12 +25,15 @@
     '.bg2-x{position:absolute;top:8px;right:10px;width:24px;height:24px;border:none;background:transparent;color:#9aa8a0;font-size:18px;line-height:1;cursor:pointer}' +
     '.bg2-title{font-size:13px;font-weight:800;color:#0B7E64;margin:2px 26px 6px 0}' +
     '.bg2-text{font-size:15px;line-height:1.72;color:#33402E;word-break:keep-all}' +
-    '.bg2-action{font-size:13.5px;line-height:1.6;color:#0B7E64;background:#EDF8F3;border-radius:10px;padding:9px 11px;margin-top:10px;font-weight:600}' +
+    '.bg2-action{font-size:13.5px;line-height:1.6;color:#0B7E64;background:#EDF8F3;border-radius:10px;padding:9px 11px;margin-top:10px;font-weight:600;word-break:keep-all}' +
     '.bg2-dots{display:flex;gap:5px;margin-top:12px}.bg2-dot{width:6px;height:6px;border-radius:50%;background:#D6E5DD}.bg2-dot.on{background:#0E9C7D}' +
     '.bg2-btns{display:flex;gap:8px;margin-top:13px}' +
     '.bg2-btn{flex:1;padding:11px 10px;border-radius:50px;font-size:14px;font-weight:800;cursor:pointer;border:none;line-height:1.2;white-space:nowrap;font-family:inherit}' +
     '.bg2-primary{background:linear-gradient(145deg,#13d3a6,#0e9d7d);color:#fff}.bg2-ghost{background:#F1F4F0;color:#5c6b5a;border:1px solid #E2E9E0}' +
-    '.bg2-spot{position:fixed;z-index:9399;border:3px solid #13d3a6;border-radius:14px;box-shadow:0 0 0 4000px rgba(20,40,30,.28);pointer-events:none;display:none}.bg2-spot.on{display:block}';
+    '.bg2-spot{position:fixed;z-index:9399;border:3px solid #13d3a6;border-radius:14px;box-shadow:0 0 0 4000px rgba(20,40,30,.28);pointer-events:none;display:none}.bg2-spot.on{display:block}' +
+    /* 글씨 아주 크게(ts-2/3)면 말풍선이 같이 커져 화분·어항의 하단 탭(도감·화분·씨앗)을 덮음 → 말풍선은 크기 고정
+       (본문 자체 글씨는 15px로 이미 시니어 가독. 2026-07-28 화분 겹침 점검) */
+    'body.ts-2 .bg2-wrap{zoom:0.8696}body.ts-3 .bg2-wrap{zoom:0.7692}';
 
   var root, faceEl, bubbleEl, titleEl, textEl, actionEl, dotsEl, primaryBtn, ghostBtn, xBtn, spotEl, _idx = -1;
 

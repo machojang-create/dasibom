@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -186,9 +186,14 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
 .pv-chapter-sep{text-align:center;margin:36px 0 28px;color:var(--orange);font-size:14px;letter-spacing:10px;opacity:.35}
 /* ── 인쇄 전용 ── */
 @media print{
+  /* ★판형 = A5 책 크기 (2026-08-03 Macho). 지정이 없으면 브라우저 기본 A4로 저장돼
+     PKG_CONFIG.pages 표기의 절반 페이지로 나온다. A5여야 자서전답고 표기와 맞는다.
+     ★판형을 바꾸면 PKG_CONFIG.pages와 아래 상품카드 문구도 함께 고칠 것. */
+  @page{ size:A5; margin:12mm; }
   /* 화면 요소 숨기기 */
   .pv-back,.pv-badge,.cta,#pvCta,
   #s-intro,#s-package,#s-dash,#s-q,#s-title,#s-gen,
+  #pvShare,.sh-cta,#pvBetaEnd,.dsb-bompop,.dsb-bomtoggle,.mm-overlay,
   .lm-bg,.modal-bg,.toast{display:none!important}
   /* 미리보기 화면만 표시 */
   #s-preview{display:block!important;min-height:auto}
@@ -212,8 +217,30 @@ body{font-family:'Apple SD Gothic Neo','Malgun Gothic','Georgia',sans-serif;back
   .pv-story-lbl{color:#C8784A!important;font-size:10pt!important;border-bottom:1px solid #e0cdb8!important}
   .pv-chapter-sep{color:#C8784A!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
   .pv-chapter-first .pv-p:first-child::first-letter{color:#C8784A!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
-  body,html{background:#fff!important}
+  body,html{background:#f5ecda!important;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .pv-body,.pv-head{position:relative;z-index:2}
 }
+/* ── PDF 종이 스킨 · 페이지 프레임 · 워터마크 (인쇄/PDF 저장 시) ── */
+.pdf-frame,.pdf-wm{display:none}
+@media print{
+  .pdf-frame{display:block;position:fixed;top:7mm;left:7mm;right:7mm;bottom:7mm;
+    border:1.5px solid #b8935a;border-radius:2px;
+    box-shadow:inset 0 0 0 3px #fbf4e4, inset 0 0 0 4px #d8bd88;
+    z-index:0;pointer-events:none;
+    print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  body.wm-on .pdf-wm{display:flex;position:fixed;inset:0;z-index:0;pointer-events:none;
+    align-items:center;justify-content:center}
+  .pdf-wm span{transform:rotate(-30deg);text-align:center;line-height:1.4;
+    font-size:38pt;font-weight:800;color:rgba(150,110,70,.10);letter-spacing:3px;white-space:nowrap;
+    print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .pdf-wm span small{display:block;font-size:13pt;font-weight:600;letter-spacing:2px}
+}
+/* PDF 버튼(화면 전용) */
+.pv-pdf-wrap{text-align:center;border-bottom:1px dashed #e2d8c6;padding-bottom:18px;margin-bottom:8px}
+.pv-pdf-btn{display:inline-block;padding:16px 32px;border:none;border-radius:50px;
+  background:linear-gradient(145deg,#C8784A,#A85A2E);color:#fff;font-size:16px;font-weight:800;
+  cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(168,90,46,.28)}
+.pv-pdf-note{font-size:12.5px;color:#9a8f80;margin:9px 0 2px;line-height:1.6}
 /* 결제 합계 표시 */
 .pkg-total-bar{
   background:var(--ink);color:var(--cream);border-radius:14px;
@@ -359,6 +386,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .title-sub{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:13px;color:var(--sepia);margin-bottom:28px;line-height:1.7;font-weight:300}
 .title-input{width:100%;padding:16px;background:var(--cream);border:2px solid var(--sepiaP);font-family:'Georgia','Batang',serif;font-size:16px;color:var(--ink);outline:none;box-sizing:border-box;margin-bottom:24px;text-align:center}
 .title-input:focus{border-color:var(--orange)}
+.title-ex{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:calc(13.5px * var(--ts,1));color:#6B5436;background:rgba(201,169,97,.10);border-left:3px solid var(--gold,#C9A961);border-radius:8px;padding:10px 12px;margin:-12px 0 22px;line-height:1.6}
 .title-suggest-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--sepia);letter-spacing:2px;margin-bottom:14px;opacity:.7}
 .title-suggest-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
 .title-suggest-card{padding:16px 20px;border:1px solid var(--sepiaP);background:var(--cream);cursor:pointer;transition:all .2s;text-align:center}
@@ -464,6 +492,9 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .pv-body{padding:36px 28px 0}
 .pv-chapter{margin-bottom:32px}
 .pv-story-lbl{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:11px;color:var(--orange);margin-bottom:14px;opacity:.8;font-weight:600;border-bottom:1px solid var(--sepiaP);padding-bottom:8px}
+/* 개인화된 장 제목(2026-07-30): 작은 테마 태그 + 그 사람만의 큰 제목 */
+.pv-story-lbl .pv-story-tag{display:block;font-size:11px;letter-spacing:.06em;opacity:.7;font-weight:700}
+.pv-story-lbl .pv-story-title{display:block;font-family:'Nanum Myeongjo',serif;font-size:20px;line-height:1.35;color:var(--ink);opacity:1;margin-top:3px;font-weight:800;letter-spacing:-.01em}
 .pv-p{font-size:calc(15px * var(--ts,1));line-height:2.3;color:var(--inkL);font-family:'Georgia','Batang',serif}
 
 .cta{margin:32px 24px;background:linear-gradient(180deg,#1a0e06,#0a0805);padding:36px 24px;text-align:center;border-radius:8px}
@@ -508,7 +539,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .lm-teaser-text::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,var(--warm))}
 .lm-teaser-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia);margin-top:10px;opacity:.7}
 </style>
-<script src="/a11y.js?v=8" defer></script>
+<script src="/a11y.js?v=9" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 </head>
@@ -568,7 +599,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
         </div>
         <div class="pkg-info">
           <div class="pkg-info-item">질문 <span>15</span>가지</div>
-          <div class="pkg-info-item">예상 분량 <span>5</span>페이지 맛보기</div>
+          <div class="pkg-info-item">예상 분량 <span>10</span>페이지 안팎 맛보기</div>
         </div>
         <div class="pkg-slogan">가볍게 시작해보는 나의 첫 자서전.</div>
         <div class="pkg-feat">어린 시절 · 청년 시절 핵심만 · 앱에서 미리보기</div>
@@ -581,9 +612,9 @@ body.hc .ts-bar{border-color:#000;background:#fff}
         </div>
         <div class="pkg-info">
           <div class="pkg-info-item">질문 <span>45</span>가지</div>
-          <div class="pkg-info-item">예상 분량 <span>35~45</span>페이지</div>
+          <div class="pkg-info-item">예상 분량 <span>30~45</span>페이지</div>
         </div>
-        <div class="pkg-slogan">35~45페이지 분량의 깊이 있는 디지털 자서전.</div>
+        <div class="pkg-slogan">30~45페이지 분량의 깊이 있는 디지털 자서전.</div>
         <div class="pkg-feat">음성 녹음 · 표지 사진 · 전자책 · 인쇄본 추가 선택 가능</div>
       </div>
 
@@ -594,9 +625,9 @@ body.hc .ts-bar{border-color:#000;background:#fff}
         </div>
         <div class="pkg-info">
           <div class="pkg-info-item">질문 <span>75</span>가지</div>
-          <div class="pkg-info-item">예상 분량 <span>65~80</span>페이지</div>
+          <div class="pkg-info-item">예상 분량 <span>60~80</span>페이지</div>
         </div>
-        <div class="pkg-slogan">65~80페이지, 인생을 통째로 담는 자서전 전집.</div>
+        <div class="pkg-slogan">60~80페이지, 인생을 통째로 담는 자서전 전집.</div>
         <div class="pkg-feat pkg-feat-gold">AI 최고 품질 · 음성 녹음 · 표지 사진 · 전자책 · 인쇄본 추가 선택 가능</div>
       </div>
 
@@ -621,7 +652,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
         </button>
       </div>
       <span class="print-set-none" id="printSetNone">인쇄 없이 전자책으로 보기</span>
-      <div class="print-warn" id="printBasicWarn">※ 나의 자서전(35~45페이지)은 책 두께가 얇아 책등(세로면)에 제목이 들어가지 않을 수 있습니다.</div>
+      <div class="print-warn" id="printBasicWarn">※ 나의 자서전(30~45페이지)은 책 두께가 얇아 책등(세로면)에 제목이 들어가지 않을 수 있습니다.</div>
       <div class="print-total-price" id="printTotalPrice"></div>
     </div>
 
@@ -847,8 +878,10 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       </div>
       <input type="file" id="coverFileInput" accept="image/*" style="display:none">
     </div>
-    <input class="title-input" id="titleInput" type="text" placeholder="제목을 직접 입력해주세요">
-    <div class="title-suggest-lbl">AI가 추천하는 제목</div>
+    <input class="title-input" id="titleInput" type="text" placeholder="예) 순창에서 서울까지">
+    <!-- 빈 칸 공포 줄이기 — 답변 입력칸엔 예시를 다 넣었는데 제일 어려운 '제목'만 없었다(2026-08-03) -->
+    <div class="title-ex">💡 살던 곳, 하던 일, 자주 부르던 노래… 무엇이든 제목이 됩니다.<br>아래 추천을 눌러 고쳐 쓰셔도 좋아요.</div>
+    <div class="title-suggest-lbl">봄이가 추천하는 제목</div>
     <div id="titleSuggestWrap">
       <div class="title-loading">🪶 당신의 이야기를 읽고 제목을 만들고 있습니다...</div>
     </div>
@@ -894,7 +927,14 @@ body.hc .ts-bar{border-color:#000;background:#fff}
     <div class="pv-orn">❧</div>
   </div>
   <div class="pv-body" id="pvBody"></div>
+  <!-- PDF 저장 시에만 보이는 종이 프레임/워터마크(무료본만 워터마크) -->
+  <div class="pdf-frame" aria-hidden="true"></div>
+  <div class="pdf-wm" aria-hidden="true"><span>다시봄<small>dasibomlife.com</small></span></div>
   <div id="pvShare" style="display:none;text-align:center;padding:18px 20px">
+    <div class="pv-pdf-wrap">
+      <button id="btnPdf" class="pv-pdf-btn">📄 PDF로 간직하기</button>
+      <div class="pv-pdf-note">종이책처럼 예쁜 PDF로 저장해, 인쇄하거나 가족에게 보내드리세요.</div>
+    </div>
     <button id="btnMakeShare" style="padding:14px 22px;border:none;border-radius:50px;background:#0e9d7d;color:#fff;font-size:15px;font-weight:700;cursor:pointer">🔗 공유 링크 만들기 (3일간 유효)</button>
     <div id="shareResult" style="display:none;margin-top:12px">
       <input id="shareUrl" readonly style="width:100%;max-width:440px;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:13px;box-sizing:border-box" onclick="this.select()">
@@ -937,6 +977,8 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       <div class="bom-bubble"><div class="q-txt">더 들려주실 이야기가 있으신가요?</div></div>
     </div>
     <div class="cta-s">더 깊은 이야기로 자서전을 채워드릴게요</div>
+    <!-- 무료 천장에 막혀 못 담은 봄이 대화 — 전환 동기(BETA_MODE면 pvCta째로 숨겨짐) -->
+    <div class="cta-s" id="pvChatLeft" style="display:none"></div>
     <div class="prod-cards" id="prodCards"></div>
     <button class="btn-pkg" id="btnBuy">더 써볼게요</button>
   </div>
@@ -1035,18 +1077,29 @@ function initFirebase(){
     //   firebase.INTERNAL 미정의로 .functions()가 등록 안 됨(봄이 음성/AI생성 깨짐). 하나씩 순서대로 로드.
     (function loadNext(i){
       if(i >= scripts.length){
-        firebase.initializeApp({
-          apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
-          authDomain:"mylife-650f0.firebaseapp.com",
-          projectId:"mylife-650f0",
-          storageBucket:"mylife-650f0.firebasestorage.app",
-          messagingSenderId:"512010655611",
-          appId:"1:512010655611:web:32b153b836b23ae96a8fde"
-        });
-        _auth      = firebase.auth();
-        _db        = firebase.firestore();
-        _functions = firebase.app().functions('asia-northeast3'); // 서울 리전
-        _fbReady   = true;
+        /* ★절대 멈추지 않게(2026-07-30 봇 검증): 예전엔 initializeApp이 예외를 던지면
+           이 Promise가 영원히 resolve되지 않아 `await initFirebase()`가 걸려버렸고,
+           제목 생성·자서전 엮기가 "준비 중..."에서 통째로 멈췄다. 또 다른 공용 스크립트가
+           이미 앱을 초기화해 둔 경우엔 중복 초기화로 "No Firebase App" 오류가 났다.
+           → 이미 있으면 재사용하고, 무슨 일이 있어도 resolve한다(호출부는 각자 폴백 보유). */
+        try{
+          if(window.firebase && firebase.initializeApp){
+            if(!firebase.apps || !firebase.apps.length){
+              firebase.initializeApp({
+                apiKey:"AIzaSyAZAhBAsrKcXnznnx8_0oF2gyYC0WbvoP0",
+                authDomain:"mylife-650f0.firebaseapp.com",
+                projectId:"mylife-650f0",
+                storageBucket:"mylife-650f0.firebasestorage.app",
+                messagingSenderId:"512010655611",
+                appId:"1:512010655611:web:32b153b836b23ae96a8fde"
+              });
+            }
+            _auth      = firebase.auth();
+            _db        = firebase.firestore();
+            _functions = firebase.app().functions('asia-northeast3'); // 서울 리전
+            _fbReady   = true;
+          }
+        }catch(e){ try{ console.warn('[memoir] firebase 준비 실패 — 폴백으로 진행', e); }catch(_){} }
         resolve();
         return;
       }
@@ -1419,10 +1472,16 @@ async function saveGeneratedToFirestore(title, preview){
   try{
     if(!_authReady || !_auth || !_auth.currentUser || !isSocialUser()) return;
     var uid = _auth.currentUser.uid;
-    await _db.collection('memoirs').doc(uid).set({
+    var doc = {
       bookTitle:  title,
       generatedAt:firebase.firestore.FieldValue.serverTimestamp()
-    },{merge:true});
+    };
+    /* ★자서전 본문도 서버에 저장(2026-07-30 Macho: 완성본이 기기 바꾸면 사라지던 문제).
+       예전엔 제목만 올려서, 브라우저 정리·기기 교체 시 완성한 책 본문이 통째로 유실되고 제목만 남았다.
+       본문은 4천자 안팎(~10KB)이라 Firestore 문서 한도(1MB)에 여유롭다. 불러오기는 이미 data.preview를 읽는다. */
+    if(preview && preview.chapters){ doc.preview = preview; }
+    if(typeof APP!=='undefined' && APP.sharedChapters){ doc.sharedChapters = APP.sharedChapters; }
+    await _db.collection('memoirs').doc(uid).set(doc,{merge:true});
   }catch(e){ console.warn('생성 저장 실패:', e.message); }
 }
 
@@ -1541,15 +1600,17 @@ var QS=[ /* 폴백용 구 데이터 — 정상 시 questions_v3.js + buildQuesti
 
 // 미리보기 CTA 업셀 — 패키지 BM(PKG_CONFIG)과 일치. (구식 낱개 PDF/인쇄/영상 배열 폐기 2026-06)
 var PRODUCTS=[
-  {id:"basic",  icon:"📖",name:"나의 자서전",   desc:"45가지 질문 · 35~45페이지 전자책",  price:"49,000원", badge:null},
-  {id:"premium",icon:"📚",name:"나의 인생 전집", desc:"75가지 질문 · 65~80페이지 전자책", price:"129,000원",badge:"추천"}
+  {id:"basic",  icon:"📖",name:"나의 자서전",   desc:"45가지 질문 · 30~45페이지 전자책",  price:"49,000원", badge:null},
+  {id:"premium",icon:"📚",name:"나의 인생 전집", desc:"75가지 질문 · 60~80페이지 전자책", price:"129,000원",badge:"추천"}
 ];
 
 // 패키지 설정 (model 필드는 참고용 — 실제 사용 모델은 서버 functions/index.js가 pkg로 최종 결정)
 var PKG_CONFIG={
-  free:   {name:"무료 체험",q:15, pages:"5페이지 맛보기",paraPerQ:1, price:0,     model:'claude-haiku-4-5'},
-  basic:  {name:"나의 자서전",   q:45, pages:"35~45페이지",paraPerQ:2, price:49000, listPrice:98000,  model:'claude-opus-4-8'},
-  premium:{name:"나의 인생 전집", q:75, pages:"65~80페이지",paraPerQ:3, price:129000, listPrice:258000, model:'claude-opus-4-8'}
+  // ★pages = A5 책 판형(148×210mm) 실측 기준(2026-08-03). 인쇄 CSS @page{size:A5}와 한 세트다.
+  //   판형을 바꾸면 이 표기도 같이 고쳐야 한다(A4로 저장하면 페이지가 절반으로 줄어 표기와 어긋난다).
+  free:   {name:"무료 체험",q:15, pages:"10페이지 안팎 맛보기",paraPerQ:1, price:0,     model:'claude-haiku-4-5'},
+  basic:  {name:"나의 자서전",   q:45, pages:"30~45페이지",paraPerQ:2, price:49000, listPrice:98000,  model:'claude-opus-4-8'},
+  premium:{name:"나의 인생 전집", q:75, pages:"60~80페이지",paraPerQ:4, price:129000, listPrice:258000, model:'claude-opus-4-8'}
 };
 
 // ── localStorage ──
@@ -1565,6 +1626,7 @@ var APP={
   answers: LS.load('answers',{}),
   preview: LS.load('preview',null),
   bookTitle:LS.load('bookTitle',''),
+  chatLeft: LS.load('chatLeft',0),   // 무료 천장에 막혀 못 담은 봄이 대화 수
   printSet:null, coverPhoto:LS.load('coverPhoto',null),
   qDates:  LS.load('qDates',{}),   // {질문index:'YYYY-MM-DD'} 처음 답변/패스한 날 (하루 캡·일차 계산용)
   qPrivate:LS.load('qPrivate',{}),  // {질문index: true=나만보기 / false=공개} (민감질문)
@@ -1579,6 +1641,7 @@ function saveState(){
   LS.save('qDates',APP.qDates||{});
   LS.save('qPrivate',APP.qPrivate||{});
   LS.save('bookTitle',APP.bookTitle);
+  LS.save('chatLeft',APP.chatLeft||0);
   if(APP.preview) LS.save('preview',APP.preview);
   if(APP.coverPhoto) LS.save('coverPhoto',APP.coverPhoto);
   // Firestore 백그라운드 저장 (실패해도 로컬엔 저장됨)
@@ -2076,6 +2139,19 @@ var PASS_COUNTS = true;  // [조정] '건너뛰기(패스)'도 하루 한도에 
 var DONE_TITLE  = '오늘은 여기까지예요';                                  // [조정] 완료 화면 제목
 var DONE_MSG    = '오늘의 이야기 ' + DAILY_CAP + '가지, 잘 들었어요.<br>봄이가 내일 새 질문으로 다시 올게요 🌸'; // [조정] 완료 화면 문구
 
+// ─────────────────────────────────────────────────────────────
+// ★무료 자서전 분량 천장 (2026-08-03 Macho) — 유료화 방어선.
+//   챗봇 대화를 오래 나눈 사람의 무료본이 계속 두꺼워지면 유료로 넘어갈 이유가 사라진다.
+//   실측(5장 기준): 3,000자≈6p / 4,000~5,000자≈7p / 6,000~10,000자≈11p.
+//   ※인쇄 CSS가 .pv-chapter{page-break-inside:avoid}라 페이지는 '장 수'가 주로 결정하고 글자는 계단식으로 는다.
+// ─────────────────────────────────────────────────────────────
+var FREE_MAX_CHARS   = 4000; // [조정] 무료본 본문 총 글자 천장(≈7페이지)
+var FREE_PARA_CAP    = 4;    // [조정] 무료 장당 문단 상한
+var BASIC_PARA_CAP   = 7;    // [조정] 나의 자서전 장당 문단 상한
+var PREMIUM_PARA_CAP = 9;    // [조정] 나의 인생 전집 장당 문단 상한(2026-08-03 Macho: 전집을 더 두껍게)
+var FREE_CHAT_PER_CH = 1;    // [조정] 무료: 장당 반영할 봄이 대화 수(맛보기)
+var PAID_CHAT_PER_CH = 6;    // [조정] 유료: 장당 반영할 봄이 대화 수
+
 function _todayStr(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
 function isFreeTier(){ return (APP.pkg||'free')==='free'; }                         // 무료 등급인가
 function consumedToday(){ var t=_todayStr(),m=APP.qDates||{},n=0; for(var k in m){ if(m[k]===t) n++; } return n; } // 오늘 진행한 질문 수
@@ -2263,24 +2339,63 @@ async function goTitleScreen(){
     titleSuggestions=suggestions;
     renderTitleSuggestions();
   }catch(e){
-    // 폴백 제목
-    titleSuggestions=[
-      {title:"한 사람의 이야기",desc:"당신의 삶 전체를 담은 제목"},
-      {title:"그래도 살아온 날들",desc:"고비를 넘어온 모든 날들에"},
-      {title:"기억 속에 남겨두고 싶은 것들",desc:"사라지지 않길 바라는 소중한 순간들"},
-      {title:"내가 살아온 이유",desc:"삶을 버티게 해준 모든 것들에 대해"}
-    ];
+    titleSuggestions=fallbackTitles();
     renderTitleSuggestions();
   }
 }
 
+/* ★AI 제목 생성이 실패했을 때의 대비책(2026-08-03 Macho).
+   예전엔 고정 4개를 그대로 내보내서, 실패한 사람들끼리 전부 같은 제목의 자서전을 갖게 됐다.
+   이제 답변 내용을 씨앗으로 12개 중 4개를 골라 사람마다 다른 조합이 나온다. */
+function fallbackTitles(){
+  var POOL=[
+    {title:"그래도 살아온 날들",        desc:"고비를 넘어온 모든 날들에"},
+    {title:"기억 속에 남겨두고 싶은 것들", desc:"사라지지 않길 바라는 순간들"},
+    {title:"내가 걸어온 길",           desc:"돌아보니 다 길이었던 시간"},
+    {title:"두 손으로 지은 세월",       desc:"손끝으로 살아낸 날들의 기록"},
+    {title:"아직 못다 한 이야기",       desc:"이제야 꺼내놓는 마음속 이야기"},
+    {title:"나를 지나간 사람들",        desc:"내 삶에 머물다 간 얼굴들에게"},
+    {title:"그 시절의 나에게",          desc:"먼 길을 돌아와 건네는 인사"},
+    {title:"버티고 견디고 사랑하고",     desc:"평범해서 더 귀했던 한평생"},
+    {title:"내 인생의 모든 계절",       desc:"봄부터 겨울까지 지나온 자리"},
+    {title:"이만하면 잘 살았다",        desc:"스스로에게 건네는 한마디"},
+    {title:"오래된 사진첩처럼",         desc:"한 장씩 넘겨보는 나의 시간"},
+    {title:"평생 품고 온 것들",         desc:"끝내 놓지 않았던 마음들"}
+  ];
+  var src=''; for(var k in APP.answers){ src+=String(APP.answers[k]||''); }
+  var h=0; for(var i=0;i<src.length;i++){ h=(h*31+src.charCodeAt(i))>>>0; }
+  // 답변을 씨앗으로 12개를 통째로 섞은 뒤 앞 4개 — '일정 간격으로 뽑기'는 조합이 3가지뿐이라 안 된다.
+  var arr=POOL.slice(), seed=h||1;
+  for(var m=arr.length-1;m>0;m--){
+    seed=(seed*1103515245+12345)>>>0;
+    var t=seed%(m+1), tmp=arr[m]; arr[m]=arr[t]; arr[t]=tmp;
+  }
+  return arr.slice(0,4);
+}
+
 async function genTitleSuggestions(){
   await initFirebase();
-  var answers=Object.keys(APP.answers).slice(0,5).map(function(i){
-    return {q:QS[i].q, a:APP.answers[i]};
-  });
+  var keys=Object.keys(APP.answers).map(Number).sort(function(a,b){return a-b;})
+    .filter(function(i){ return QS[i] && String(APP.answers[i]||'').trim(); });
+  /* ★제목 재료는 '생애 전체'에서 골고루 뽑는다(2026-08-03 Macho).
+     예전엔 앞 5개만 보냈는데 앞 문항은 전부 유년기라, 75문항 전집도 어린 시절만 보고
+     인생 전체를 요약하는 제목을 짓고 있었다. */
+  var PICK=8, picked=[];
+  if(keys.length<=PICK){ picked=keys.slice(); }
+  else{
+    for(var _p=0; _p<PICK; _p++){
+      var k=keys[Math.round(_p*(keys.length-1)/(PICK-1))];
+      if(picked.indexOf(k)<0) picked.push(k);
+    }
+  }
+  var answers=picked.map(function(i){ return {q:QS[i].q, a:APP.answers[i]}; });
+  // ★장별로 답변을 묶어 전달 → 개인화된 장 제목까지 한 번에 받는다(2026-07-30)
+  var byChap={};
+  keys.forEach(function(i){ var ch=QS[i].ch; (byChap[ch]=byChap[ch]||[]).push({q:QS[i].q, a:APP.answers[i]}); });
+  var chapters=Object.keys(byChap).map(function(ch){ return {ch:+ch, name:(STORIES[ch]?STORIES[ch].name:''), qa:byChap[ch].slice(0,3)}; });
   var fn=firebase.app().functions('asia-northeast3').httpsCallable('generateTitles');
-  var result=await fn({answers:answers});
+  var result=await fn({answers:answers, chapters:chapters});
+  APP.chapterTitles = (result.data && result.data.chapterTitles) || {};   // {ch: '개인화 제목'}
   return result.data.titles;
 }
 
@@ -2296,9 +2411,18 @@ function renderTitleSuggestions(){
       el('titleInput').value=titleSuggestions[Number(this.dataset.idx)].title;
     });
   });
+  /* ★첫 제목을 미리 골라둔다(2026-07-30): 아무것도 선택하지 않은 채 '이 제목으로 만들기'를 누르면
+     토스트만 뜨고 막혀서, 어르신은 왜 안 되는지 모른 채 멈춘다. 마음에 안 들면 다른 카드를 누르거나
+     직접 고쳐 쓰시면 된다. */
+  var first=wrap.querySelector('.title-suggest-card');
+  if(first && !el('titleInput').value.trim()){
+    first.classList.add('selected');
+    el('titleInput').value=titleSuggestions[0].title;
+  }
 }
 
-// ── 방법 B: 답변 하나하나 확장 생성 ──
+// ── B안: 장(ch)별로 답변을 묶어 하나의 흐르는 회고로 엮는다(2026-08-03 Macho).
+//    질문은 드러내지 않고, 여러 기억을 강물처럼 이어 한 장으로. 1인칭 고정은 서버 지침에서 강제. ──
 async function startGen(title){
   APP.bookTitle=title; saveState();
   saveGeneratedToFirestore(title, null);
@@ -2308,52 +2432,193 @@ async function startGen(title){
     .map(Number).sort(function(a,b){return a-b;})
     .filter(function(i){return i<APP.maxQ;});
 
-  var total=activeAnswers.length;
-  var generated=[];
   var paraPerQ=PKG_CONFIG[APP.pkg].paraPerQ;
 
-  for(var idx=0;idx<activeAnswers.length;idx++){
-    var i=activeAnswers[idx];
-    var pct=Math.round((idx/total)*100);
-    el('genProgressFill').style.width=pct+'%';
-    el('genProgressTxt').textContent=(idx+1)+' / '+total+' 번째 이야기 쓰는 중...';
+  // 장별로 답변 그룹핑(문항 순서 보존) — 나만보기(priv) 표시 유지
+  var byCh={}, chOrder=[];
+  activeAnswers.forEach(function(i){
+    var ch=QS[i].ch;
+    if(!byCh[ch]){ byCh[ch]=[]; chOrder.push(ch); }
+    byCh[ch].push({ q:QS[i].q, a:APP.answers[i], priv:!!(APP.qPrivate&&APP.qPrivate[i]), cat:QS[i].cat });
+  });
+  chOrder.sort(function(a,b){return a-b;});
 
-    try{
-      var para=await expandAnswer(QS[i].q, APP.answers[i], STORIES[QS[i].ch].name, paraPerQ);
-      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:para, private:!!(APP.qPrivate&&APP.qPrivate[i])});
-    }catch(e){
-      generated.push({ch:QS[i].ch, storyName:STORIES[QS[i].ch].name, question:QS[i].q, text:APP.answers[i], private:!!(APP.qPrivate&&APP.qPrivate[i])});
+  // ★봄이 챗봇 대화 재료(snippets) 최신본 로드 후 장별 배정(2026-08-03 Macho: 챗봇 대화도 자서전에 반영)
+  try{
+    await initFirebase();
+    var _uid=firebase.auth().currentUser && firebase.auth().currentUser.uid;
+    if(_uid && _db){ var _sd=await _db.collection('bom_memory').doc(_uid).get(); if(_sd.exists){ _srvSnips=(_sd.data().snippets||[]).filter(function(t){return typeof t==='string';}); } }
+  }catch(e){}
+  var byChChat=assignChatToChapters(chOrder, byCh);
+
+  // ★무료 천장 적용: 장당 문단·챗봇재료·글자수를 등급별로 제한(유료화 방어선)
+  var free=isFreeTier();
+  var chatCap=free?FREE_CHAT_PER_CH:PAID_CHAT_PER_CH;
+  var paraCap=free?FREE_PARA_CAP:(APP.pkg==='premium'?PREMIUM_PARA_CAP:BASIC_PARA_CAP);
+  var chMaxChars=free?Math.floor(FREE_MAX_CHARS/Math.max(1,chOrder.length)):0; // 0=제한없음
+  // 천장 때문에 못 담은 봄이 대화 수 — 미리보기 업셀 문구에 사용
+  var _usedChat=0, _allChat=0;
+  chOrder.forEach(function(c){ var n=(byChChat[c]||[]).length; _allChat+=n; _usedChat+=Math.min(n,chatCap); });
+  APP.chatLeft=Math.max(0,_allChat-_usedChat);
+
+  /* ★책 전체의 사실 카드(2026-08-03 Macho) — 장은 각각 따로 생성돼서 다른 장의 사실을 모른다.
+     전집 실측에서 '비밀·고백' 장이 3년 전 떠난 아내를 살아 있는 사람처럼 써버렸다.
+     생성 전 한 번만 뽑아 모든 장에 함께 넘긴다. 실패해도 책은 그대로 나온다(정확도만 조금 떨어짐). */
+  /* ★★사실 카드는 두 벌 만든다(2026-08-03) — 한 벌로 쓰면 '나만 보기'가 샌다.
+     사실 카드는 답변 전체에서 뽑히므로, 비공개 답변에서 나온 사실("생계 위해 헌혈")이
+     카드에 실려 공유본 장 생성까지 흘러들어간다. 공유본에는 공개 답변만으로 만든 카드를 쓴다. */
+  var privIdx=activeAnswers.filter(function(i){ return APP.qPrivate && APP.qPrivate[i]; });
+  var hasPriv=privIdx.length>0;
+  APP.bookFacts=''; var sharedFacts='';
+  try{
+    el('genProgressTxt').textContent='이야기를 처음부터 다시 읽는 중...';
+    var _fnF=firebase.app().functions('asia-northeast3').httpsCallable('extractBookFacts');
+    var _mk=function(list){ return list.map(function(i){ return {q:QS[i].q, a:APP.answers[i]}; }); };
+    var _fr=await _fnF({answers:_mk(activeAnswers)});
+    APP.bookFacts=(_fr.data && _fr.data.facts) || '';
+    if(hasPriv){
+      var _pub=activeAnswers.filter(function(i){ return !(APP.qPrivate && APP.qPrivate[i]); });
+      if(_pub.length){ var _sr=await _fnF({answers:_mk(_pub)}); sharedFacts=(_sr.data && _sr.data.facts) || ''; }
+    }else{
+      sharedFacts=APP.bookFacts;   // 비공개가 없으면 같은 카드 — 추가 호출 없음
+    }
+  }catch(e){}
+
+  var total=chOrder.length;
+  var genFull=[], genShared=[];
+
+  for(var idx=0; idx<chOrder.length; idx++){
+    var ch=chOrder[idx];
+    var group=byCh[ch];
+    var name=(STORIES[ch]?STORIES[ch].name:'이야기');
+    el('genProgressFill').style.width=Math.round((idx/total)*100)+'%';
+    el('genProgressTxt').textContent=(idx+1)+' / '+total+' 번째 장을 엮는 중...';
+
+    // 답변 + 이 장에 배정된 봄이 대화 재료를 함께 엮음(등급별 상한: 무료 맛보기 / 유료 충분히)
+    var chat=(byChChat[ch]||[]).slice(0,chatCap).map(function(t){return {q:'(봄이와 나눈 이야기)', a:t};});
+    var fullQa=group.map(function(g){return {q:g.q,a:g.a};}).concat(chat);
+    var sharedQa=group.filter(function(g){return !g.priv;}).map(function(g){return {q:g.q,a:g.a};}).concat(chat);
+    // 장 문단 수: 답변 수 + 패키지 밀도(free1/basic2/premium3) + 챗봇재료 있으면 +1, 등급 상한까지
+    var paraF=Math.max(3, Math.min(paraCap, group.length + paraPerQ + (chat.length?1:0)));
+
+    var fullText;
+    try{ fullText=await weaveChapter(fullQa, name, paraF, chMaxChars, APP.bookFacts); }
+    catch(e){ fullText=fullQa.map(function(x){return x.a;}).join('\n\n'); }
+    genFull.push({ch:ch, storyName:name, text:fullText});
+
+    /* 공유본(나만보기 제외). ★비공개가 하나라도 있으면 이 장에 비공개 답변이 없더라도 다시 엮는다 —
+       완성본은 비공개까지 반영된 사실 카드로 썼기 때문에 그대로 재사용하면 그 경로로 샌다. */
+    if(sharedQa.length===0){ /* 장 전체가 나만보기 → 공유본 제외 */ }
+    else if(!hasPriv){ genShared.push({ch:ch, storyName:name, text:fullText}); }
+    else{
+      var st, paraS=Math.max(3, Math.min(paraCap, sharedQa.length + paraPerQ + (chat.length?1:0)));
+      try{ st=await weaveChapter(sharedQa, name, paraS, chMaxChars, sharedFacts); }
+      catch(e){ st=sharedQa.map(function(x){return x.a;}).join('\n\n'); }
+      genShared.push({ch:ch, storyName:name, text:st});
     }
   }
 
   el('genProgressFill').style.width='100%';
   el('genProgressTxt').textContent='완성되었습니다!';
 
-  APP.preview={title:title, chapters:groupByChapter(generated)};
-  APP.sharedChapters=groupByChapter(generated.filter(function(g){return !g.private;})); // 공유본(나만보기 제외)
+  APP.preview={title:title, chapters:groupByChapter(genFull)};
+  APP.sharedChapters=groupByChapter(genShared);  // 공유본(나만보기 제외)
   saveState();
+  saveGeneratedToFirestore(title, APP.preview);   // ★본문까지 서버에 백업(기기 바꿔도·정리해도 안 사라지게, 2026-07-30)
   // 무료 자서전은 완료시점에 바로 보여주지 않고 → 익일 오전 10시 서프라이즈로 전달(D)
   setTimeout(isFreeTier()? scheduleSurprise : showPreview, 800);
 }
 
-async function expandAnswer(question, answer, chapterName, paraCount){
+// 장 하나를 여러 답변으로 엮어 생성(B안). generateSection의 qaList 모드 사용.
+async function weaveChapter(qaList, chapterName, paraCount, maxChars, facts){
   await initFirebase();
   var fn=firebase.app().functions('asia-northeast3').httpsCallable('generateSection');
-  var result=await fn({question:question, answer:answer, chapterName:chapterName, paraCount:paraCount, pkg:APP.pkg});
+  var payload={qaList:qaList, chapterName:chapterName, paraCount:paraCount, pkg:APP.pkg};
+  if(maxChars) payload.maxChars=maxChars;   // 무료 천장(장당 글자수) — 서버가 프롬프트·토큰에 반영
+  if(facts) payload.facts=facts;            // 사실 카드 — 완성본은 전체, 공유본은 공개 답변만(누출 차단)
+  var result=await fn(payload);
   return result.data.text;
 }
 
+// 봄이 챗봇 대화 재료(snippets) 풀 = 서버(_srvSnips) + 로컬(memoir_chatlog)
+function _chatPool(){
+  var pool=(_srvSnips||[]).slice();
+  try{ (JSON.parse(localStorage.getItem('memoir_chatlog')||'[]')||[]).forEach(function(item){
+    var t=String((item&&item.t)||item||''); if(t && pool.indexOf(t)<0) pool.push(t);
+  }); }catch(e){}
+  return pool.filter(function(t){ return typeof t==='string' && t.trim().length>=6; });
+}
+// 각 챗봇 재료를 키워드가 가장 많이 겹치는 장(ch)에 배정. 어디에도 안 걸리면 첫 장. 답변에 이미 담긴 건 제외.
+function assignChatToChapters(chOrder, byCh){
+  var out={}; chOrder.forEach(function(ch){ out[ch]=[]; });
+  var pool=_chatPool(); if(!pool.length) return out;
+  // 장 키워드 = 그 장 질문 키워드 + 답변에서 뽑은 명사성 단어(snippet 내용과 매칭되도록)
+  var chKw={};
+  chOrder.forEach(function(ch){
+    var kws=[];
+    byCh[ch].forEach(function(g){
+      kws=kws.concat(_qKeywords({cat:g.cat,gist:g.q,h:g.q}));
+      kws=kws.concat((String(g.a||'').match(/[가-힣]{2,}/g)||[]).slice(0,12));
+    });
+    chKw[ch]=kws;
+  });
+  pool.forEach(function(t){
+    var head=t.slice(0,18), dup=false;
+    chOrder.forEach(function(ch){ byCh[ch].forEach(function(g){ var a=String(g.a||''); if(a && (a.indexOf(head)>-1 || t.indexOf(a.slice(0,18))>-1)) dup=true; }); });
+    if(dup) return;
+    // 조사 때문에 어긋나지 않도록 양쪽을 어근 3글자로 정규화해 매칭(국밥집에서≈국밥집)
+    var tStems=(t.match(/[가-힣]{2,}/g)||[]).map(function(w){return w.slice(0,3);});
+    var bestCh=chOrder[0], best=-1;
+    chOrder.forEach(function(ch){ var sc=0; chKw[ch].forEach(function(k){ if(tStems.indexOf(k.slice(0,3))>-1) sc++; }); if(sc>best){ best=sc; bestCh=ch; } });
+    out[bestCh].push(t);
+  });
+  return out;
+}
+
+// 장별 1개 텍스트 → 렌더용 구조. 엮은 본문을 문단(\n\n)으로 쪼개 texts 배열로.
 function groupByChapter(items){
   var result={};
+  var ct=APP.chapterTitles||{};
   items.forEach(function(item){
-    var key=item.ch;
-    if(!result[key]) result[key]={storyName:item.storyName,texts:[]};
-    result[key].texts.push(item.text);
+    var paras=String(item.text||'').split(/\n\s*\n/).map(function(s){return s.trim();}).filter(Boolean);
+    // storyName=크게 뜰 제목(개인화 우선). baseName=작은 테마 태그(뿌리/가족/…)
+    result[item.ch]={ storyName:(ct[item.ch]||item.storyName), baseName:item.storyName, texts:(paras.length?paras:[String(item.text||'')]) };
   });
   return result;
 }
 
+/* ★챕터 테마 태그 변주(2026-07-31 Macho: "챕터 구성 자체를 더 다양화").
+   무료 15문항이 고정 카테고리로 묶여 모든 책이 '뿌리→가족→…' 똑같아 보였다.
+   장 '제목'은 이미 개인화됐고, 여기선 작은 '테마 태그'까지 책마다 다른 변주로 바꿔 구조의 획일감을 없앤다.
+   같은 책 안에서는 시드가 일관돼 늘 같은 변주가 나온다(제목 기반). */
+var CHAP_VARIANTS = {
+  '뿌리': ['뿌리', '태어난 자리', '첫 시작', '어린 날의 뜰', '삶의 첫 장'],
+  '가족': ['가족', '우리 식구', '곁의 사람들', '한 핏줄', '집이라는 울타리'],
+  '청춘·사랑·우정': ['청춘', '젊은 날', '사랑과 인연', '뜨겁던 시절', '설레던 나날'],
+  '일·삶': ['일과 삶', '생업의 길', '땀 흘린 날들', '밥벌이의 세월', '손끝의 세월'],
+  '지금·유산': ['지금, 그리고', '남기는 이야기', '오늘과 내일', '물려줄 것들', '못다 한 말']
+};
+function chapTagVariant(name, seedStr){
+  var arr = CHAP_VARIANTS[name];
+  if(!arr) return name;
+  var h=0, s=String(seedStr||'');
+  for(var i=0;i<s.length;i++){ h=(h*31 + s.charCodeAt(i))>>>0; }
+  return arr[h % arr.length];
+}
+
 // ── 미리보기 ──
+// PDF로 저장 — 무료본은 워터마크, 유료 전자책은 깨끗하게. 파일명은 책 제목으로.
+function downloadPdf(){
+  var free = (APP.pkg||'free')==='free';
+  document.body.classList.toggle('wm-on', free);
+  var _t=document.title;
+  try{ document.title = (APP.preview&&APP.preview.title) ? APP.preview.title : '나의 자서전'; }catch(e){}
+  setTimeout(function(){ try{ window.print(); }catch(e){} setTimeout(function(){ document.title=_t; }, 400); }, 90);
+}
+if(!window.__pdfAfterPrint){
+  window.__pdfAfterPrint=1;
+  window.addEventListener('afterprint',function(){ document.body.classList.remove('wm-on'); });
+}
 function showPreview(shared){
   var p=APP.preview;
   el('pvTitle').textContent=p.title||'나의 이야기';
@@ -2421,7 +2686,17 @@ function showPreview(shared){
 
     var lbl=document.createElement('div');
     lbl.className='pv-story-lbl';
-    lbl.textContent=(STORIES[ci]?STORIES[ci].badge:'🌸')+' · '+chData.storyName;
+    // 작은 테마 태그(뿌리/가족/…) + 개인화된 장 제목. 개인화가 없으면(구버전 포함) 테마명만.
+    var themeName=(STORIES[ci]?STORIES[ci].name:'');
+    var baseName=chData.baseName||themeName;
+    baseName=chapTagVariant(baseName, (p.title||'')+ci);   // ★책마다 테마 태그도 변주(구조 획일감 완화, 2026-07-31)
+    var baseTag=(STORIES[ci]?STORIES[ci].badge:'🌸')+' '+baseName;
+    var personal=(chData.storyName && chData.storyName!==baseName && chData.storyName!==themeName) ? chData.storyName : '';
+    if(personal){
+      lbl.innerHTML='<span class="pv-story-tag">'+baseTag+'</span><span class="pv-story-title">'+personal.replace(/[<>]/g,'')+'</span>';
+    } else {
+      lbl.textContent=baseTag;
+    }
     div.appendChild(lbl);
 
     // 무료든 유료든 직접 들려준 이야기는 전부 그대로 보여준다(잠금·블러 없음). 더 쓸지는 완성 후 봄이가 따로 묻는다.
@@ -2436,6 +2711,13 @@ function showPreview(shared){
   // BETA_MODE: 결제 체계가 없으므로 유료 유도 대신 따뜻한 마무리 인사(pvBetaEnd)로 대체.
   el('pvCta').style.display = (shared || !isFree || BETA_MODE) ? 'none' : 'block';
   var _be=el('pvBetaEnd'); if(_be) _be.style.display = (!shared && isFree && BETA_MODE) ? 'block' : 'none';
+  // 무료 천장에 막혀 못 담은 봄이 대화가 있으면 알려줌(전환 동기). pvCta 안이라 베타 중엔 함께 숨겨짐.
+  var _cl=el('pvChatLeft');
+  if(_cl){
+    var n=APP.chatLeft||0;
+    _cl.style.display = (!shared && isFree && n>0) ? 'block' : 'none';
+    _cl.innerHTML = n>0 ? ('봄이와 나눈 이야기 <b>'+n+'가지</b>가 아직 책에 못 담겼어요 🌱') : '';
+  }
   var _shareBox=el('pvShare'); if(_shareBox) _shareBox.style.display = shared ? 'none' : '';
   var _pb=el('btnPublishLib'); if(_pb) _pb.textContent = APP.libPublished ? '📗 서재 공개 ON — 누르면 내려요' : '📕 서재 공개 OFF — 누르면 공개돼요';
   if(_pb){ _pb.style.background = APP.libPublished ? '#0e9d7d' : '#fff'; _pb.style.color = APP.libPublished ? '#fff' : '#0e9d7d'; }
@@ -2703,6 +2985,7 @@ document.addEventListener('DOMContentLoaded',function(){
   if(el('spHome')) el('spHome').addEventListener('click',function(){ location.href='/index.html'; });
   el('qpPrivate').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=true; el('qpPrivate').classList.add('on'); el('qpPublic').classList.remove('on'); saveState(); });
   el('qpPublic').addEventListener('click',function(){ APP.qPrivate=APP.qPrivate||{}; APP.qPrivate[APP.curQ]=false; el('qpPublic').classList.add('on'); el('qpPrivate').classList.remove('on'); saveState(); });
+  if(el('btnPdf')) el('btnPdf').addEventListener('click',downloadPdf);
   el('btnMakeShare').addEventListener('click',makeShareLink);
   el('btnCopyShare').addEventListener('click',copyShare);
   if(el('btnPublishLib')) el('btnPublishLib').addEventListener('click',toggleLibraryPublish);
@@ -2852,5 +3135,6 @@ document.addEventListener('DOMContentLoaded',function(){
   }, 500);
 })();
 </script>
+<script src="/fx.js?v=2"></script>
 </body>
 </html>

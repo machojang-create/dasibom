@@ -15,6 +15,20 @@
 
     <!-- 앱은 사랑방 공유 병합(아래 스크립트)이 끝난 뒤 동적으로 부팅한다 -->
     <link rel="stylesheet" crossorigin href="/debate/assets/index-DE5lo76_.css">
+    <style>
+      /* ★글씨를 아주 크게 보시면 A/B 선택지 문구가 버튼 안에서 잘려 무슨 말인지 못 읽는다
+         (2026-07-30 모바일 전수). 앱 소스가 없어 여기서 바로잡는다 — 한 줄 고집을 풀고 어절 단위 줄바꿈. */
+      body.ts-2 button, body.ts-3 button,
+      body.ts-2 [role="button"], body.ts-3 [role="button"]{
+        white-space:normal !important; word-break:keep-all; overflow-wrap:anywhere; line-height:1.35;
+      }
+      body.ts-2 .truncate, body.ts-3 .truncate{ white-space:normal !important; overflow:visible !important; text-overflow:clip !important; }
+      /* 격자·버튼 안의 내용이 줄어들 수 있어야 잘리지 않는다(flex/grid 기본 min-width:auto 해제) */
+      body.ts-2 .grid, body.ts-3 .grid,
+      body.ts-2 .grid > *, body.ts-3 .grid > *,
+      body.ts-2 button, body.ts-3 button,
+      body.ts-2 button *, body.ts-3 button *{ min-width:0 !important; max-width:100% !important; }
+    </style>
   </head>
   <body>
     <div id="root"></div>

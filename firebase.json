@@ -219,6 +219,22 @@
         "destination": "/portfolio/index.html"
       },
       {
+        "source": "/yahwa",
+        "destination": "/yahwa/index.html"
+      },
+      {
+        "source": "/yahwa/**",
+        "destination": "/yahwa/index.html"
+      },
+      {
+        "source": "/trot",
+        "destination": "/trot/index.html"
+      },
+      {
+        "source": "/trot/**",
+        "destination": "/trot/index.html"
+      },
+      {
         "source": "/**",
         "destination": "/index.html"
       }

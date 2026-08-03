@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>시시콜콜 순위왕 — 세상의 온갖 순위 맞히기</title>
+    <script>
+      // 다시봄라이프 안에서 열렸을 때만 봄이 가이드(공용 모듈)를 부른다.
+      // 랩스(everlinklabs)에는 그 파일이 없어 조용히 건너뛴다.
+      (function () {
+        if (!/dasibomlife\.com|mylife-650f0/.test(location.hostname)) return;
+        window.BOM_TUT = {
+          key: 'trivia',
+          face: 'bom_grin.png',
+          name: '시시콜콜 순위왕',
+          welcome: '{호칭}, 여기는 세상의 온갖 시시콜콜한 순위를 모아둔 곳이에요. 순위를 보기 전에 1위를 맞혀보세요 🏆',
+          action: '아래 순위 하나를 골라 [도전]을 눌러보세요. 열 개 중 1위를 맞히면 꽃잎을 드려요!',
+          tour: [
+            '맨 위 [오늘 새로 공개된 랭킹]은 꽃잎이 두 배예요. 매일 자정에 새 순위가 하나씩 열린답니다.',
+            '「그 시절/추억」 칸에는 국민학교 소풍, 월급봉투, 버스 안내양 같은 우리 시절 이야기가 가득해요.',
+            '자신 있으면 예언자 모드! 1위뿐 아니라 정확한 등수까지 맞히면 점수를 왕창 드려요 😄'
+          ]
+        };
+        ['/bom_voice.js?v=12', '/bom_tutorial.js?v=7'].forEach(function (src) {
+          var sc = document.createElement('script'); sc.src = src; sc.defer = true;
+          document.head.appendChild(sc);
+        });
+      })();
+    </script>
+    <script type="module" crossorigin src="/trivia/assets/index-B7HEXXWA.js"></script>
+    <link rel="stylesheet" crossorigin href="/trivia/assets/index-sh2jNa47.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>

@@ -40,6 +40,38 @@ export function plipSfx() {
   } catch (e) {}
 }
 
+export function coinSfx() {
+  /* 구입 완료 — 따뜻하게 올라가는 세 음(동전) */
+  try {
+    const c = ac(), t = c.currentTime;
+    [[784, 0], [1046.5, 0.07], [1318.5, 0.15]].forEach(([f, d]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'triangle'; o.frequency.setValueAtTime(f as number, t + (d as number));
+      g.gain.setValueAtTime(0.0001, t + (d as number));
+      g.gain.exponentialRampToValueAtTime(0.12, t + (d as number) + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + (d as number) + 0.16);
+      o.connect(g); g.connect(c.destination);
+      o.start(t + (d as number)); o.stop(t + (d as number) + 0.2);
+    });
+  } catch (e) {}
+}
+
+export function nopeSfx() {
+  /* 꽃잎 부족 — 낮고 부드러운 두 음 */
+  try {
+    const c = ac(), t = c.currentTime;
+    [[233.08, 0], [185, 0.05]].forEach(([f, d]) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = 'sine'; o.frequency.setValueAtTime(f as number, t + (d as number));
+      g.gain.setValueAtTime(0.0001, t + (d as number));
+      g.gain.exponentialRampToValueAtTime(0.1, t + (d as number) + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + (d as number) + 0.18);
+      o.connect(g); g.connect(c.destination);
+      o.start(t + (d as number)); o.stop(t + (d as number) + 0.22);
+    });
+  } catch (e) {}
+}
+
 let mounted = false;
 export function mountButtonSfx() {
   if (mounted) return; mounted = true;

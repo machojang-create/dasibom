@@ -17,7 +17,7 @@ import GraduationModal from './components/GraduationModal';
 import AnimatedNumber from './components/AnimatedNumber';
 import { DIALOGUES } from './data/dialogues';
 import { SPAM_DIALOGUES } from './data/dialogues_spam';
-import { mountButtonSfx, plipSfx, boingSfx } from './lib/sfx';
+import { mountButtonSfx, plipSfx, boingSfx, coinSfx, nopeSfx } from './lib/sfx';
 import { toggleBgm, autoResumeBgm } from './lib/bgm';
 import Petal from './components/Petal';
 import BuyCele, { Cele } from './components/BuyCele';
@@ -84,7 +84,12 @@ export default function App() {
       if (P) { clearInterval(t); P.balance((b: number | null) => { if (b != null) setMoney(b); }); }
       else if (++tries > 60) clearInterval(t);
     }, 200);
-    return () => clearInterval(t);
+    // ★잔액 재동기화(2026-07-29 Macho): 다른 콘텐츠에서 꽃잎을 벌고 돌아오면 표시가 스테일해
+    //   버튼이 '부족해요'로 보이던 문제 — 앱이 다시 보일 때 서버 잔액을 다시 읽는다.
+    const resync = () => { if (document.visibilityState === 'visible') { const P = dsb(); if (P) P.balance((b: number | null) => { if (b != null) setMoney(b); }); } };
+    document.addEventListener('visibilitychange', resync);
+    window.addEventListener('focus', resync);
+    return () => { clearInterval(t); document.removeEventListener('visibilitychange', resync); window.removeEventListener('focus', resync); };
   }, []);
   const [isShopOpen, setIsShopOpen] = useState(false);
   const [isEncyclopediaOpen, setIsEncyclopediaOpen] = useState(false);
@@ -125,7 +130,7 @@ export default function App() {
   }, [careFx.key, careFx.kind]);
 
   // 배경음: '작은 농장 오후'(2026-07-22 Macho 음원) — 켜둔 채 재방문 시 첫 터치에 이어 재생
-  useEffect(() => { autoResumeBgm('/audio/plant_bgm.mp3', 'plant_bgm', () => setIsAudioPlaying(true)); }, []);
+  useEffect(() => { autoResumeBgm('/audio/plant_bgm.mp3', 'dasibom_bgm', () => setIsAudioPlaying(true)); }, []);
 
   useEffect(() => {
     localStorage.setItem('plant_slots', JSON.stringify(slots));
@@ -275,9 +280,9 @@ export default function App() {
   const guardedSpend = (item: string, cb: (err: any, d: any) => void, celeName?: string) => {
     if (spendBusyRef.current) return false;
     const P = dsb(); if (!P) return false;
-    spendBusyRef.current = true; setSpending(true);
-    // 즉각 반응(2026-07-23): 서버 확인 몇 초 사이가 '무반응'처럼 보이지 않게 — 누르는 순간 말을 건다
-    plantSay('꽃잎 세어 보꾸마, 한 숨만 기다리 주라...');
+    // ★차단 오버레이('구입 처리 중') 제거(2026-08-01 Macho: "물·영양제 애니가 가려짐"): 물·영양제·구입은
+    //   누르는 즉시 연출·성장이 반영(낙관적 적용)되고 결제는 백그라운드 정산·실패 시 롤백된다. 이중결제는 아래 busy잠금이 막는다.
+    spendBusyRef.current = true;
     lastUserSpeakRef.current = Date.now();
     let settled = false;
     const safety = setTimeout(() => {   // 서버 무응답 시 잠금이 영원히 안 풀리던 구멍(2026-07-22)
@@ -286,7 +291,11 @@ export default function App() {
     P.spend(item, (err: any, d: any) => {
       if (settled) return;
       settled = true; clearTimeout(safety);
-      spendBusyRef.current = false; setSpending(false);
+      setSpending(false);
+      // ★연타/오터치 흡수(2026-07-29 Macho: "구입 연타·다른 액션 가능"): 잠금을 즉시 풀면
+      //   서버가 빠를 때(~200ms) 시니어 더블탭이 통과해 이중 결제됐다. 결제 후 650ms 쿨다운을 둬
+      //   오터치는 흡수하고, 한 박자 뒤 의도적 재구매는 그대로 허용한다.
+      setTimeout(() => { spendBusyRef.current = false; }, 650);
       // 구입 축하 연출(2026-07-24) — 봄이 등장·차감액(서버 d.spent)·다음 안내
       if (!err && d && d.ok && celeName) {
         const info = plantBuyInfo(item, item === 'seed' ? celeName : undefined, item.indexOf('pot') === 0 ? celeName : undefined);
@@ -302,8 +311,8 @@ export default function App() {
     const idx = unlockedSlots;                  // 첫 번째 잠긴 자리
     if (idx >= slots.length || !SLOT_UNLOCK_PRICE[idx]) return;
     const firedSlot = guardedSpend('plant_slot' + (idx + 1), (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
-      setMoney(d.balance);
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); nopeSfx(); plantSay(NO_PETAL_MSG_FN()); return; }
+      setMoney(d.balance); coinSfx();
       setUnlockedSlots(idx + 1);
     }, '자리');
     if (!firedSlot) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
@@ -313,9 +322,9 @@ export default function App() {
     if (currentPlant) { setIsShopOpen(false); plantSay('이 화분엔 이미 친구가 살고 있어요. 빈 화분에 심어주세요!'); lastUserSpeakRef.current = Date.now(); return; }
     const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
     const firedSeed = guardedSpend('seed', (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); plantSay(NO_PETAL_MSG_FN()); return; }
-      setMoney(d.balance);
-      const newPlant: UserPlant = { 
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); nopeSfx(); plantSay(NO_PETAL_MSG_FN()); return; }
+      setMoney(d.balance); coinSfx();
+      const newPlant: UserPlant = {
         id: Date.now().toString(), 
         type: plant, 
         stage: 'seed', 
@@ -339,8 +348,8 @@ export default function App() {
     }
     const slotIdx = currentSlotIndex;   // ★레이스 방지
     const firedPot = guardedSpend(potId, (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); plantSay(NO_PETAL_MSG_FN()); return; }
-      setMoney(d.balance);
+      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsPotShopOpen(false); nopeSfx(); plantSay(NO_PETAL_MSG_FN()); return; }
+      setMoney(d.balance); coinSfx();
       setSlots(prev => { const ns = [...prev]; ns[slotIdx] = { ...prev[slotIdx]!, potId }; return ns; });
       setIsPotShopOpen(false);
     }, (POT_TYPES.find(p => p.id === potId)?.name || '새 화분'));
@@ -470,12 +479,22 @@ export default function App() {
       // 하루 첫 잔 무료(정성=레벨업), 추가 물은 1잎(2026-07-22 Macho — 물도 재화 루프에)
       const today = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10) /*KST*/;
       if ((cur as any).lastWaterDay !== today) { applyEffect('water'); return; }
+      // ★순서 결정성(2026-07-29 Macho: "연출과 팝업 순서가 뒤죽박죽"): 성장 연출을 서버 콜백에 걸면
+      //   서버 지연에 따라 팝업이 연출을 덮거나 한참 뒤 나온다. → 결제 슬롯을 잡는 즉시(동기) 연출·성장을 내고
+      //   결제는 백그라운드 정산, 실패 시에만 스냅샷으로 되돌린다.
+      if (money < 1) { plantSay(NO_PETAL_MSG_FN()); lastUserSpeakRef.current = Date.now(); return; }
+      const wSnapIdx = currentSlotIndex;
+      const wSnap = slots[wSnapIdx] ? JSON.parse(JSON.stringify(slots[wSnapIdx])) : null;
       const fired = guardedSpend('plant_water', (err: any, d: any) => {
-        if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
-        setMoney(d.balance);
-        applyEffect('water');
+        if (err || !d || !d.ok) {
+          if (wSnap) setSlots(prev => { const n = [...prev]; n[wSnapIdx] = wSnap; return n; });   // 결제 실패 → 성장 롤백
+          if (d && d.balance != null) setMoney(d.balance);
+          plantSay(NO_PETAL_MSG_FN()); return;
+        }
+        setMoney(d.balance);   // 성장은 이미 반영, 잔액만 동기화
       });
-      if (!fired) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }   // 침묵 경로 제거
+      if (fired) applyEffect('water');                                                              // 즉시 연출·성장
+      else { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
       return;
     }
     {
@@ -487,13 +506,21 @@ export default function App() {
       }
     }
     if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
-    triggerCareFx('nutrient');   // ★탭 즉시 주사기·기운 연출(인증·결제 경합과 무관하게 늘 보이게, 2026-07-25 Macho)
+    // ★순서 결정성(2026-07-29 Macho): 성장 연출을 서버 콜백 밖으로 — 결제 슬롯을 잡는 즉시 연출·성장, 결제는 백그라운드.
+    const nutCost = type === 'premium_nut' ? 40 : 15;
+    if (money < nutCost) { plantSay(NO_PETAL_MSG_FN()); lastUserSpeakRef.current = Date.now(); return; }
+    const nSnapIdx = currentSlotIndex;
+    const nSnap = slots[nSnapIdx] ? JSON.parse(JSON.stringify(slots[nSnapIdx])) : null;
     const firedNut = guardedSpend(type, (err: any, d: any) => {
-      if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); plantSay(NO_PETAL_MSG_FN()); return; }
-      setMoney(d.balance);
-      applyEffect(type, true);   // 연출은 이미 냈으니 성장·차감만
+      if (err || !d || !d.ok) {
+        if (nSnap) setSlots(prev => { const n = [...prev]; n[nSnapIdx] = nSnap; return n; });   // 결제 실패 → 성장 롤백
+        if (d && d.balance != null) setMoney(d.balance);
+        plantSay(NO_PETAL_MSG_FN()); return;
+      }
+      setMoney(d.balance);   // 성장은 이미 반영, 잔액만 동기화
     });
-    if (!firedNut) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
+    if (firedNut) applyEffect(type);                                                            // 즉시 주사기 연출+성장(순서 고정)
+    else { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
   useEffect(() => {
@@ -748,7 +775,7 @@ export default function App() {
         </svg>
         {/* 가끔 지나가는 새 */}
         {timeOfDay !== 'night' && (
-          <div className="absolute top-[14%] left-0 text-[13px] text-slate-600/70 animate-birdfly pointer-events-none">〜🕊</div>
+          <div className="absolute top-[14%] left-0 text-[13px] text-slate-600/70 animate-birdfly pointer-events-none">🕊〜</div>
         )}
         {/* 화창한 날의 생기(2026-07-22): 흘러가는 구름·새 한 마리 더·나비 */}
         {(weather === 'sunny' || weather === 'clear') && timeOfDay !== 'night' && (
@@ -759,7 +786,7 @@ export default function App() {
             <div className="absolute top-[16%] w-[17%] h-[7%] pointer-events-none opacity-55" style={{ animation: 'cloudDrift 140s linear infinite', animationDelay: '-70s' }}>
               <div className="w-full h-full bg-white rounded-full blur-md" />
             </div>
-            <div className="absolute top-[22%] left-0 text-[11px] text-slate-600/60 pointer-events-none" style={{ animation: 'birdFly 55s linear infinite', animationDelay: '-22s' }}>〜🕊</div>
+            <div className="absolute top-[22%] left-0 text-[11px] text-slate-600/60 pointer-events-none" style={{ animation: 'birdFly 55s linear infinite', animationDelay: '-22s' }}>🕊〜</div>
             <div className="absolute bottom-[38%] text-[15px] pointer-events-none" style={{ animation: 'butterflyFly 26s ease-in-out infinite' }}>🦋</div>
           </>
         )}
@@ -863,7 +890,7 @@ export default function App() {
         {/* Right Menu */}
         <div className="absolute top-20 md:top-24 right-4 md:right-6 flex flex-col gap-3 pointer-events-auto items-end z-40">
           <button 
-            onClick={() => { const on = toggleBgm('/audio/plant_bgm.mp3', 'plant_bgm'); setIsAudioPlaying(on); plantSay(on ? '음악 틀었데이~ 물소리랑 참 잘 어울린다 🎵' : '음악은 잠깐 쉬어 가꼬. 조용한 것도 좋데이.'); lastUserSpeakRef.current = Date.now(); }} 
+            onClick={() => { const on = toggleBgm('/audio/plant_bgm.mp3', 'dasibom_bgm'); setIsAudioPlaying(on); plantSay(on ? '음악 틀었데이~ 물소리랑 참 잘 어울린다 🎵' : '음악은 잠깐 쉬어 가꼬. 조용한 것도 좋데이.'); lastUserSpeakRef.current = Date.now(); }} 
             className={`flex flex-col items-center justify-center w-14 h-14 ${isAudioPlaying ? 'bg-indigo-500 text-white' : 'bg-white/80 text-gray-400'} backdrop-blur-md rounded-2xl shadow-lg border-2 border-white hover:bg-opacity-100 transition-colors`}
           >
             {isAudioPlaying ? <Volume2 className="w-6 h-6 mb-0.5" /> : <VolumeX className="w-6 h-6 mb-0.5" />}
@@ -945,7 +972,9 @@ export default function App() {
         className="absolute inset-0 z-10 flex overflow-x-auto snap-x snap-mandatory no-scrollbar cursor-grab active:cursor-grabbing"
       >
         {slots.slice(0, Math.min(slots.length, unlockedSlots + 1)).map((slot, idx) => (
-          <div key={idx} className="w-screen h-full shrink-0 snap-center relative flex flex-col justify-center pt-44 pb-32 md:pt-48 md:pb-36">
+          // ★w-screen(100vw)은 body zoom을 반영하지 않아 '글씨 아주 크게'에서 화면보다 117px 넓어졌다
+          //   → 이름·버튼이 화면 밖으로 밀림. 부모 폭을 그대로 쓰는 w-full로 교체(2026-07-30 모바일 전수)
+          <div key={idx} className="w-full h-full shrink-0 snap-center relative flex flex-col justify-center pt-44 pb-32 md:pt-48 md:pb-36">
             <div className="w-full max-w-md mx-auto relative flex items-center justify-center">
               {idx >= unlockedSlots ? (
                 <div className="relative flex flex-col items-center justify-end h-64 mt-4 mb-2 z-30 -translate-y-[120px] md:-translate-y-[120px] pointer-events-auto">

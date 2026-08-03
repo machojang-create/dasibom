@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -393,7 +393,7 @@ body.shake{animation:bShake .35s}
 .mcard:active{transform:scale(.97)}
 .mcard.mdone{background:linear-gradient(135deg,#F1F8E9,#DCEDC8)}
 .mcard-icon{width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.mcard-info{flex:1}
+.mcard-info{flex:1;line-height:1.4;word-break:keep-all}
 .mcard-name{font-family:'Nanum Myeongjo',serif;font-size:16px;font-weight:800;color:#1F2A1A;margin-bottom:2px}
 .mcard-cat{font-size:13.5px;color:#456E35}
 .mcard-arrow{color:#C9A840;font-size:22px;flex-shrink:0}
@@ -460,12 +460,12 @@ body.shake{animation:bShake .35s}
 .shape-cell,.num-btn,.wc-tile,.wb-cell,.ms-cell,.pos-cell,.flip-back{background:#FFFBF4}
 .gnb{box-shadow:none}
 </style>
-<script src="/a11y.js?v=8" defer></script>
+<script src="/a11y.js?v=9" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/bom_voice.js?v=12" defer></script>
 <script src="/dasibom-bomcheer.js?v=1" defer></script>
-<script src="/bom_tutorial.js?v=5" defer></script>
+<script src="/bom_tutorial.js?v=7" defer></script>
 <script>window.BOM_TUT={
   key:'game', face:'bom_fab.png', name:'오늘의 뇌 건강',
   welcome:'{호칭}, 오늘도 머리 한번 깨워볼까요? 어렵지 않아요. 저랑 놀이하듯 편하게 하시면 돼요.',
@@ -738,54 +738,25 @@ const PATTERN_LEVELS = [
 ];
 
 // Classify: per-level config
-const CLASSIFY_LEVELS = [
-  {leftCat:'과일',leftIcon:'🍎',rightCat:'동물',rightIcon:'🐾',showEmoji:true,
-   items:[{w:'사과',e:'🍎',s:'L'},{w:'딸기',e:'🍓',s:'L'},{w:'포도',e:'🍇',s:'L'},{w:'수박',e:'🍉',s:'L'},{w:'복숭아',e:'🍑',s:'L'},
-          {w:'강아지',e:'🐶',s:'R'},{w:'고양이',e:'🐱',s:'R'},{w:'토끼',e:'🐰',s:'R'},{w:'호랑이',e:'🐯',s:'R'},{w:'곰',e:'🐻',s:'R'}]},
-  {leftCat:'채소',leftIcon:'🥕',rightCat:'탈것',rightIcon:'🚌',showEmoji:true,
-   items:[{w:'당근',e:'🥕',s:'L'},{w:'배추',e:'🥬',s:'L'},{w:'오이',e:'🥒',s:'L'},{w:'감자',e:'🥔',s:'L'},{w:'양파',e:'🧅',s:'L'},{w:'고추',e:'🌶️',s:'L'},
-          {w:'버스',e:'🚌',s:'R'},{w:'기차',e:'🚂',s:'R'},{w:'비행기',e:'✈️',s:'R'},{w:'배',e:'🚢',s:'R'},{w:'자동차',e:'🚗',s:'R'},{w:'지하철',e:'🚇',s:'R'}]},
-  {leftCat:'자연',leftIcon:'🌿',rightCat:'인공물',rightIcon:'🏗️',showEmoji:false,
-   items:[{w:'구름',e:'',s:'L'},{w:'바위',e:'',s:'L'},{w:'강',e:'',s:'L'},{w:'산',e:'',s:'L'},{w:'꽃',e:'',s:'L'},{w:'나무',e:'',s:'L'},{w:'바람',e:'',s:'L'},
-          {w:'다리',e:'',s:'R'},{w:'도로',e:'',s:'R'},{w:'건물',e:'',s:'R'},{w:'공장',e:'',s:'R'},{w:'터널',e:'',s:'R'},{w:'댐',e:'',s:'R'},{w:'항구',e:'',s:'R'}]},
-  {leftCat:'봄·여름',leftIcon:'🌸',rightCat:'가을·겨울',rightIcon:'❄️',showEmoji:false,
-   items:[{w:'벚꽃',e:'',s:'L'},{w:'수영',e:'',s:'L'},{w:'소풍',e:'',s:'L'},{w:'모기',e:'',s:'L'},{w:'장마',e:'',s:'L'},{w:'무더위',e:'',s:'L'},{w:'개나리',e:'',s:'L'},
-          {w:'단풍',e:'',s:'R'},{w:'눈사람',e:'',s:'R'},{w:'김장',e:'',s:'R'},{w:'군밤',e:'',s:'R'},{w:'스키',e:'',s:'R'},{w:'낙엽',e:'',s:'R'},{w:'핫초코',e:'',s:'R'}]},
-  {leftCat:'옛날',leftIcon:'📻',rightCat:'요즘',rightIcon:'📱',showEmoji:false,
-   items:[{w:'연탄',e:'',s:'L'},{w:'전화기',e:'',s:'L'},{w:'도시락',e:'',s:'L'},{w:'흑백TV',e:'',s:'L'},{w:'우물',e:'',s:'L'},{w:'뻥튀기',e:'',s:'L'},{w:'달구지',e:'',s:'L'},
-          {w:'스마트폰',e:'',s:'R'},{w:'배달앱',e:'',s:'R'},{w:'에어컨',e:'',s:'R'},{w:'인터넷',e:'',s:'R'},{w:'카드결제',e:'',s:'R'},{w:'유튜브',e:'',s:'R'},{w:'무인결제',e:'',s:'R'}]}
+let CLASSIFY_LEVELS = [   // 초기값(regenLevels가 판마다 덮어씀) — 전부 눈에 보이는 직접 분류(계절·시대 연상형 제거 2026-08-01)
+  {leftCat:'과일',leftIcon:'🍎',rightCat:'동물',rightIcon:'🐶',showEmoji:false,items:[{w:'사과',e:'',s:'L'},{w:'포도',e:'',s:'L'},{w:'딸기',e:'',s:'L'},{w:'수박',e:'',s:'L'},{w:'강아지',e:'',s:'R'},{w:'고양이',e:'',s:'R'},{w:'토끼',e:'',s:'R'},{w:'호랑이',e:'',s:'R'}]},
+  {leftCat:'채소',leftIcon:'🥕',rightCat:'탈것',rightIcon:'🚌',showEmoji:false,items:[{w:'당근',e:'',s:'L'},{w:'배추',e:'',s:'L'},{w:'감자',e:'',s:'L'},{w:'양파',e:'',s:'L'},{w:'버스',e:'',s:'R'},{w:'기차',e:'',s:'R'},{w:'택시',e:'',s:'R'},{w:'비행기',e:'',s:'R'}]},
+  {leftCat:'꽃',leftIcon:'🌸',rightCat:'악기',rightIcon:'🎸',showEmoji:false,items:[{w:'장미',e:'',s:'L'},{w:'튤립',e:'',s:'L'},{w:'국화',e:'',s:'L'},{w:'해바라기',e:'',s:'L'},{w:'기타',e:'',s:'R'},{w:'피아노',e:'',s:'R'},{w:'드럼',e:'',s:'R'},{w:'바이올린',e:'',s:'R'}]},
+  {leftCat:'새',leftIcon:'🐦',rightCat:'바다',rightIcon:'🐟',showEmoji:false,items:[{w:'참새',e:'',s:'L'},{w:'독수리',e:'',s:'L'},{w:'부엉이',e:'',s:'L'},{w:'오리',e:'',s:'L'},{w:'상어',e:'',s:'R'},{w:'문어',e:'',s:'R'},{w:'고래',e:'',s:'R'},{w:'돌고래',e:'',s:'R'}]},
+  {leftCat:'직업',leftIcon:'👔',rightCat:'나라',rightIcon:'🌍',showEmoji:false,items:[{w:'의사',e:'',s:'L'},{w:'경찰',e:'',s:'L'},{w:'요리사',e:'',s:'L'},{w:'농부',e:'',s:'L'},{w:'한국',e:'',s:'R'},{w:'일본',e:'',s:'R'},{w:'미국',e:'',s:'R'},{w:'프랑스',e:'',s:'R'}]}
 ];
 
 // Wordcombine: per-level config
-const WORDCOMBINE_LEVELS = [
-  {words:[
-    {emoji:'🍎',word:'사과',syl:['사','과']},
-    {emoji:'🌙',word:'달빛',syl:['달','빛']},
-  ], dist:[]},
-  {words:[
-    {emoji:'🌸',word:'꽃잎',syl:['꽃','잎']},
-    {emoji:'🌊',word:'파도',syl:['파','도']},
-    {emoji:'🎵',word:'노래',syl:['노','래']},
-  ], dist:['봄']},
-  {words:[
-    {emoji:'🌈',word:'무지개',syl:['무','지','개']},
-    {emoji:'🌤️',word:'하늘빛',syl:['하','늘','빛']},
-    {emoji:'🌿',word:'봄바람',syl:['봄','바','람']},
-  ], dist:['산']},
-  {words:[
-    {emoji:'🏡',word:'고향집',syl:['고','향','집']},
-    {emoji:'🌅',word:'노을빛',syl:['노','을','빛']},
-    {emoji:'🥾',word:'소풍길',syl:['소','풍','길']},
-  ], dist:['달','물']},
-  {words:[
-    {emoji:'🎂',word:'생일축하',syl:['생','일','축','하']},
-    {emoji:'🌻',word:'해바라기',syl:['해','바','라','기']},
-    {emoji:'🌺',word:'진달래꽃',syl:['진','달','래','꽃']},
-  ], dist:['봄','빛']}
+let WORDCOMBINE_LEVELS = [   // 초기값(regenLevels가 판마다 덮어씀) — 전부 이모지가 단어를 직접 나타냄
+  {words:[{emoji:'🍎',word:'사과',syl:['사','과']},{emoji:'🍇',word:'포도',syl:['포','도']}], dist:[]},
+  {words:[{emoji:'🐱',word:'고양이',syl:['고','양','이']},{emoji:'🐰',word:'토끼',syl:['토','끼']},{emoji:'🌷',word:'튤립',syl:['튤','립']}], dist:['달']},
+  {words:[{emoji:'🐶',word:'강아지',syl:['강','아','지']},{emoji:'🦊',word:'여우',syl:['여','우']},{emoji:'🚌',word:'버스',syl:['버','스']}], dist:['물']},
+  {words:[{emoji:'🐢',word:'거북이',syl:['거','북','이']},{emoji:'🎹',word:'피아노',syl:['피','아','노']},{emoji:'🍓',word:'딸기',syl:['딸','기']}], dist:['산','빛']},
+  {words:[{emoji:'🍍',word:'파인애플',syl:['파','인','애','플']},{emoji:'🥦',word:'브로콜리',syl:['브','로','콜','리']},{emoji:'🏍️',word:'오토바이',syl:['오','토','바','이']}], dist:['봄','새']}
 ];
 
 // Wordbingo: per-level config
-const WORDBINGO_LEVELS = [
+let WORDBINGO_LEVELS = [
   {cols:3, total:9,  count:3, category:'과일', catIcon:'🍎',
    targets:['사과','딸기','포도'],
    pool:['당근','기차','연필','의자','구름','책상'],
@@ -818,7 +789,7 @@ const REVERSE_LEVELS = [
 ];
 
 // Matchsame: per-level config
-const MATCHSAME_LEVELS = [
+let MATCHSAME_LEVELS = [
   {cols:3, total:9,  count:2, targetIcon:'🍎', pool:['🍊','🍋','🍇','🍓','🍌'],               inst:'사과를 모두 찾아요!'},
   {cols:4, total:12, count:3, targetIcon:'🐶', pool:['🐱','🐭','🐰','🐻','🐼'],               inst:'강아지를 모두 찾아요!'},
   {cols:4, total:16, count:3, targetIcon:'⭐', pool:['🌟','✨','💫','⚡','🌙','☀️'],           inst:'별을 모두 찾아요!'},
@@ -836,7 +807,7 @@ const POSITION_LEVELS = [
 ];
 
 // Card: per-level theme config — [조정 2026-06-24] 아이콘→사진 교체(10장) + 난이도 하향, 외우는 시간 늘림
-const CARD_LEVELS = [
+let CARD_LEVELS = [
   {theme:'과일', isPhoto:true, icons:['card-apple.jpg','card-orange.jpg'],                                                              count:4,  cols:2, preview:5},
   {theme:'사물', isPhoto:true, icons:['card-scissors.jpg','card-key.jpg','card-bulb.jpg'],                                              count:6,  cols:3, preview:6},
   {theme:'꽃',   isPhoto:true, icons:['card-cherryblossom.jpg','card-hibiscus.jpg','card-rose.jpg','card-tulip.jpg','card-daisy.jpg'],  count:8,  cols:4, preview:7},
@@ -852,6 +823,78 @@ const SHAPE_LEVELS = [
   {count:12, cols:4, kind:'svg_clock', mainHour:12, oddHour:3,                       inst:'다른 방향의 시계를 찾아 눌러주세요!'},
   {count:16, cols:4, kind:'text',      main:'눈', odd:'눔',                           inst:"'눔'을 찾아 눌러주세요!"}
 ];
+
+// ═══ 뇌게임 대용량 콘텐츠 (2026-08-01 Macho: 매번 새 문제·이모지↔단어 항상 일치·수백 조합) ═══
+//   카테고리 = [이모지,단어] 쌍 → 글자조합은 이 쌍에서 뽑아 이모지와 단어가 반드시 일치. 매 판 랜덤 = 무한 변주.
+var BG_CATS = {
+  과일:[['🍎','사과'],['🍊','귤'],['🍋','레몬'],['🍇','포도'],['🍓','딸기'],['🍌','바나나'],['🍉','수박'],['🍑','복숭아'],['🍒','체리'],['🥝','키위'],['🍍','파인애플'],['🥭','망고'],['🍈','참외'],['🫐','블루베리'],['🍐','배'],['🥥','코코넛']],
+  채소:[['🥕','당근'],['🥦','브로콜리'],['🌽','옥수수'],['🥔','감자'],['🧅','양파'],['🧄','마늘'],['🍆','가지'],['🥬','배추'],['🥒','오이'],['🌶️','고추'],['🍠','고구마'],['🥑','아보카도'],['🍄','버섯'],['🫑','피망']],
+  동물:[['🐶','강아지'],['🐱','고양이'],['🐰','토끼'],['🐻','곰'],['🐯','호랑이'],['🦁','사자'],['🐴','말'],['🐮','소'],['🐷','돼지'],['🐭','쥐'],['🦊','여우'],['🐨','코알라'],['🐼','판다'],['🐸','개구리'],['🐵','원숭이'],['🦒','기린'],['🐘','코끼리'],['🦓','얼룩말'],['🐢','거북이'],['🐊','악어'],['🦏','코뿔소'],['🐫','낙타'],['🦌','사슴'],['🐺','늑대']],
+  새:[['🐔','닭'],['🐤','병아리'],['🐦','참새'],['🦆','오리'],['🦉','부엉이'],['🦅','독수리'],['🐧','펭귄'],['🦜','앵무새'],['🦢','백조'],['🕊️','비둘기'],['🦃','칠면조'],['🦩','홍학'],['🦚','공작']],
+  바다:[['🐟','물고기'],['🐠','열대어'],['🐡','복어'],['🦈','상어'],['🐙','문어'],['🦑','오징어'],['🦐','새우'],['🦀','게'],['🐚','조개'],['🐳','고래'],['🦭','물개'],['🐬','돌고래']],
+  곤충:[['🐝','꿀벌'],['🦋','나비'],['🐛','애벌레'],['🐜','개미'],['🐞','무당벌레'],['🦗','메뚜기'],['🕷️','거미'],['🐌','달팽이'],['🦂','전갈']],
+  꽃:[['🌸','벚꽃'],['🌺','무궁화'],['🌹','장미'],['🌷','튤립'],['🌻','해바라기'],['🌼','국화'],['💐','꽃다발'],['🪷','연꽃'],['🌿','풀잎']],
+  음식:[['🍚','쌀밥'],['🍜','라면'],['🍞','식빵'],['🧀','치즈'],['🍗','닭다리'],['🍖','고기'],['🍤','새우튀김'],['🍣','초밥'],['🍙','주먹밥'],['🍔','햄버거'],['🍕','피자'],['🥟','만두'],['🍩','도넛'],['🍰','케이크'],['🍪','과자'],['🍫','초콜릿'],['🧁','컵케이크'],['🍦','아이스크림'],['🥞','팬케이크']],
+  탈것:[['🚗','자동차'],['🚕','택시'],['🚌','버스'],['🚑','구급차'],['🚒','소방차'],['🚚','트럭'],['🚜','트랙터'],['🏍️','오토바이'],['🚲','자전거'],['✈️','비행기'],['🚀','로켓'],['🚁','헬기'],['🚂','기차'],['🚢','여객선'],['⛵','돛단배'],['🚓','경찰차']],
+  사물:[['⌚','손목시계'],['📱','휴대폰'],['💻','노트북'],['☎️','전화기'],['📷','사진기'],['🔦','손전등'],['💡','전구'],['🔑','열쇠'],['🔒','자물쇠'],['✂️','가위'],['🔨','망치'],['🪑','의자'],['🛏️','침대'],['🧹','빗자루'],['🕯️','촛불'],['📚','책'],['✏️','연필'],['🎈','풍선'],['⏰','알람'],['🧸','곰인형'],['👓','안경'],['☂️','우산'],['🎁','선물'],['🔔','방울']],
+  악기:[['🎸','기타'],['🎹','피아노'],['🥁','드럼'],['🎺','트럼펫'],['🎻','바이올린'],['🎷','색소폰'],['🎤','마이크'],['🪗','아코디언']],
+  운동:[['⚽','축구공'],['🏀','농구공'],['⚾','야구공'],['🎾','테니스'],['🏐','배구공'],['🏓','탁구'],['🏸','배드민턴'],['🥊','권투'],['⛳','골프'],['🏊','수영'],['⛸️','스케이트'],['🎿','스키']],
+  자연:[['🌳','나무'],['🌲','소나무'],['🌴','야자수'],['🌵','선인장'],['🍀','클로버'],['🍁','단풍잎'],['🪨','바위'],['⛰️','산'],['🌊','파도'],['🔥','모닥불'],['⭐','별빛'],['🌙','달빛'],['☀️','햇님'],['🌈','무지개'],['❄️','눈송이'],['💧','물방울'],['🌾','벼이삭']]
+};
+// 이모지 없는 추상 단어(빙고·분류 전용, 글자조합 제외)
+var BG_WORDS = {
+  직업:['의사','간호사','선생님','경찰','소방관','요리사','농부','가수','화가','목수','미용사','우체부','판사','기자','과학자','약사','배우','군인','어부','목동'],
+  나라:['한국','일본','중국','미국','영국','프랑스','독일','이탈리아','러시아','인도','호주','캐나다','스페인','태국','베트남','브라질','이집트','그리스','스위스'],
+  색깔:['빨강','주황','노랑','초록','파랑','남색','보라','분홍','하양','검정','갈색','회색','하늘색','연두','자주','금색','은색','살구색'],
+  가전:['냉장고','세탁기','텔레비전','선풍기','에어컨','청소기','전자레인지','밥솥','다리미','드라이기','믹서기','토스터','전기장판','가습기'],
+  반찬:['김치','된장','간장','고추장','나물','장아찌','젓갈','깍두기','시래기','콩자반','계란찜','멸치볶음']
+};
+var BG_CATICON = {과일:'🍎',채소:'🥕',동물:'🐶',새:'🐦',바다:'🐟',곤충:'🐝',꽃:'🌸',음식:'🍚',탈것:'🚌',사물:'📷',악기:'🎸',운동:'⚽',자연:'🌳',직업:'👔',나라:'🌍',색깔:'🎨',가전:'📺',반찬:'🥢'};
+function _bgShuf(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function _bgPick(a,n){return _bgShuf(a).slice(0,n);}
+function _bgRandKey(o){var k=Object.keys(o);return k[Math.floor(Math.random()*k.length)];}
+function _catEmoji(c){return BG_CATS[c].map(function(x){return x[0];});}
+function _catWords(c){return BG_CATS[c]?BG_CATS[c].map(function(x){return x[1];}):BG_WORDS[c];}
+function _allWordCats(){return Object.keys(BG_CATS).concat(Object.keys(BG_WORDS));}
+// 글자조합 쌍(이모지↔단어 항상 일치) — 모든 이모지카테고리 쌍을 음절수로 필터
+function _pairsByLen(len){var out=[];Object.keys(BG_CATS).forEach(function(c){BG_CATS[c].forEach(function(p){if(p[1].length===len)out.push(p);});});return out;}
+function regenLevels(type){
+  if(type==='matchsame'){
+    var D=[{cols:3,total:9,count:2},{cols:4,total:12,count:3},{cols:4,total:16,count:3},{cols:5,total:20,count:4},{cols:5,total:25,count:5}];
+    MATCHSAME_LEVELS=D.map(function(d){
+      var cat=_bgRandKey(BG_CATS),set=_bgShuf(_catEmoji(cat)),target=set[0],pool=set.slice(1);
+      if(pool.length<3){var c2=_bgRandKey(BG_CATS);pool=pool.concat(_catEmoji(c2).filter(function(x){return x!==target;}));}
+      return {cols:d.cols,total:d.total,count:d.count,targetIcon:target,pool:pool,inst:'똑같은 그림을 모두 찾아요!'};
+    });
+  } else if(type==='wordbingo'){
+    var D=[{cols:3,total:9,count:3},{cols:4,total:12,count:4},{cols:4,total:12,count:4},{cols:4,total:16,count:5},{cols:5,total:20,count:6}];
+    WORDBINGO_LEVELS=D.map(function(d){
+      var cats=_allWordCats(),cat=cats[Math.floor(Math.random()*cats.length)],targets=_bgPick(_catWords(cat),d.count);
+      var others=cats.filter(function(k){return k!==cat;}),pool=[],guard=0;
+      while(pool.length<Math.max(6,d.total-d.count)&&guard++<300){var oc=others[Math.floor(Math.random()*others.length)],ws=_catWords(oc),w=ws[Math.floor(Math.random()*ws.length)];if(targets.indexOf(w)<0&&pool.indexOf(w)<0)pool.push(w);}
+      return {cols:d.cols,total:d.total,count:d.count,category:cat,catIcon:(BG_CATICON[cat]||'🔎'),targets:targets,pool:pool,inst:cat+' 낱말을 모두 찾아요!'};
+    });
+  } else if(type==='classify'){
+    var D=[10,10,12,12,14],cats=_allWordCats();
+    CLASSIFY_LEVELS=D.map(function(cnt){
+      var pair=_bgPick(cats,2),L=pair[0],R=pair[1],half=Math.ceil(cnt/2);
+      var items=_bgPick(_catWords(L),half).map(function(w){return {w:w,e:'',s:'L'};}).concat(_bgPick(_catWords(R),cnt-half).map(function(w){return {w:w,e:'',s:'R'};}));
+      return {leftCat:L,leftIcon:(BG_CATICON[L]||'⬅️'),rightCat:R,rightIcon:(BG_CATICON[R]||'➡️'),showEmoji:false,items:items};
+    });
+  } else if(type==='wordcombine'){
+    function mk(len,n){var src=_pairsByLen(len);if(src.length<n)src=_pairsByLen(2).concat(_pairsByLen(3));return _bgPick(src,n).map(function(p){return {emoji:p[0],word:p[1],syl:p[1].split('')};});}
+    var extra=['봄','물','산','달','빛','새','불','밤','꽃','별','강','들'];
+    function dd(n){return _bgPick(extra,n);}
+    WORDCOMBINE_LEVELS=[{words:mk(2,2),dist:[]},{words:mk(2,3),dist:dd(1)},{words:mk(3,3),dist:dd(1)},{words:mk(3,3),dist:dd(2)},{words:mk(4,3),dist:dd(2)}];
+  } else if(type==='card'){
+    var D=[{count:4,cols:2,preview:5},{count:6,cols:3,preview:6},{count:8,cols:4,preview:7},{count:8,cols:4,preview:8},{count:10,cols:5,preview:8}];
+    CARD_LEVELS=D.map(function(d){
+      var cat=_bgRandKey(BG_CATS),need=d.count/2,icons=_bgPick(_catEmoji(cat),need);
+      if(icons.length<need){var c2=_bgRandKey(BG_CATS);icons=icons.concat(_bgPick(_catEmoji(c2).filter(function(x){return icons.indexOf(x)<0;}),need-icons.length));}
+      return {theme:cat,isPhoto:false,isText:false,icons:icons,count:d.count,cols:d.cols,preview:d.preview};
+    });
+  }
+}
 
 // Number: per-level count + hide mode
 const NUMBER_LEVELS = [
@@ -995,6 +1038,7 @@ function goMainSite(){window.location.href='/?home=1';}
 // ── Game Flow ──
 function startGame(type){
   _game=type;_level=1;_tries=3;_errors=0;_totalTime=0;
+  try{ regenLevels(type); }catch(e){}   // ★매 판 이미지·단어를 큰 풀에서 새로 뽑음(무한 변주)
   _levelsPassed=0;_timeRemainingSum=0;
   showScreen('s-play');
   loadLevel();
@@ -2262,6 +2306,11 @@ async function awardPoints(gameId, tag, pts){
     _db.collection('users').doc(_uid)
       .set({totalPoints:firebase.firestore.FieldValue.increment(actual)},{merge:true})
       .catch(function(){});
+    // 공개 이웃 랭킹 미러(brain_ranks) — users는 목록조회 불가라 별도 공개 컬렉션에 누적(2026-07-31)
+    var _nm='이웃친구'; try{ _nm=(localStorage.getItem('userName')||localStorage.getItem('memoir_userName')||'이웃친구').replace(/^"|"$/g,'').slice(0,20)||'이웃친구'; }catch(e){}
+    _db.collection('brain_ranks').doc(_uid)
+      .set({name:_nm, score:firebase.firestore.FieldValue.increment(actual), ts:firebase.firestore.FieldValue.serverTimestamp()},{merge:true})
+      .catch(function(){});
   }
   return actual;
 }
@@ -2375,7 +2424,7 @@ async function renderRanking(){
     return;
   }
   try{
-    var snap=await _db.collection('users').orderBy('totalPoints','desc').limit(10).get();
+    var snap=await _db.collection('brain_ranks').orderBy('score','desc').limit(10).get();
     if(snap.empty){
       el.innerHTML='<div class="rank-placeholder">아직 기록이 없습니다.<br>첫 번째 랭커가 되어보세요! 🎉</div>';
       return;
@@ -2384,8 +2433,8 @@ async function renderRanking(){
     var html='';var rank=1;
     snap.forEach(function(doc){
       var d=doc.data();
-      if(!d.totalPoints||d.totalPoints<1)return;
-      var pts=d.totalPoints||0;
+      if(!d.score||d.score<1)return;
+      var pts=d.score||0;
       var name=d.name||'익명';
       var initial=name.charAt(0)||'?';
       var isMe=doc.id===_uid;
@@ -2425,16 +2474,6 @@ document.addEventListener('DOMContentLoaded',function(){
 </script>
 <script src="/dasibom-points.js?v=1"></script>
 <script>window.DasibomPoints&&DasibomPoints.earnOnEngage("brain");</script>
-
-<!-- 한 줄 공감(공용 폼) — 2026-07-23 전 콘텐츠 확산 -->
-<div id="dsbCmtMount" style="max-width:720px;margin:30px auto 130px;padding:0 16px"></div>
-<script>
-(function(){
-  var scope="game:"+Math.floor((new Date()-new Date(2025,0,1))/86400000);
-  function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"오늘의 두뇌 운동, 어떠셨나요"); }
-  if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
-})();
-</script>
-<script src="/comments.js?v=9" defer></script>
+<!-- 댓글(한 줄 공감) 제거: 시간 재는 게임 화면에 댓글은 부적합 + 첫 화면이 댓글로 보이는 문제 (2026-08-01 Macho) -->
 </body>
 </html>

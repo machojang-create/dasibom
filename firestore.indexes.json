@@ -35,6 +35,14 @@
       ]
     },
     {
+      "collectionGroup": "matgo_ranks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "weekNum", "order": "ASCENDING" },
+        { "fieldPath": "wins", "order": "DESCENDING" }
+      ]
+    },
+    {
       "collectionGroup": "comments",
       "queryScope": "COLLECTION",
       "fields": [

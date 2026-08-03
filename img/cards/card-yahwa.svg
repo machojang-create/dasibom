@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 450">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3A2A3C"/><stop offset="1" stop-color="#1D1620"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.74" cy="0.24" r="0.8">
+      <stop offset="0" stop-color="#F2D98A" stop-opacity="0.32"/><stop offset="1" stop-color="#F2D98A" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="moon" cx="0.35" cy="0.3" r="0.8">
+      <stop offset="0" stop-color="#FFF8E0"/><stop offset="1" stop-color="#EFD284"/>
+    </radialGradient>
+    <linearGradient id="lamp" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFE9A8"/><stop offset="1" stop-color="#E8A94A"/>
+    </linearGradient>
+    <radialGradient id="lampglow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FFD98A" stop-opacity="0.55"/><stop offset="1" stop-color="#FFD98A" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="800" height="450" fill="url(#bg)"/>
+  <rect width="800" height="450" fill="url(#glow)"/>
+
+  <!-- 보름달 -->
+  <circle cx="628" cy="112" r="58" fill="url(#moon)"/>
+  <circle cx="648" cy="98" r="10" fill="#E8CE7E" opacity="0.45"/>
+  <circle cx="612" cy="130" r="7" fill="#E8CE7E" opacity="0.35"/>
+
+  <!-- 별 -->
+  <circle cx="150" cy="70" r="3" fill="#FFF6D8" opacity="0.85"/>
+  <circle cx="250" cy="120" r="2.4" fill="#FFF6D8" opacity="0.6"/>
+  <circle cx="420" cy="62" r="2.8" fill="#FFF6D8" opacity="0.7"/>
+  <circle cx="520" cy="150" r="2" fill="#FFF6D8" opacity="0.5"/>
+
+  <!-- 먼 기와 능선 -->
+  <path d="M0 300 L120 262 L240 300 L360 258 L480 300 L600 266 L720 300 L800 274 L800 450 L0 450 Z"
+        fill="#150F18" opacity="0.85"/>
+
+  <!-- 사랑방 마루와 기와 처마 -->
+  <path d="M180 300 L400 236 L620 300 Z" fill="#241A28"/>
+  <rect x="214" y="300" width="372" height="112" fill="#2C2030"/>
+  <rect x="214" y="300" width="372" height="10" fill="#3A2B3E"/>
+
+  <!-- 창호지 문 — 따뜻한 등불 -->
+  <circle cx="400" cy="356" r="96" fill="url(#lampglow)"/>
+  <rect x="330" y="322" width="140" height="90" rx="6" fill="url(#lamp)"/>
+  <g stroke="#8A5F2A" stroke-width="3" opacity="0.6">
+    <line x1="400" y1="322" x2="400" y2="412"/>
+    <line x1="330" y1="352" x2="470" y2="352"/>
+    <line x1="330" y1="382" x2="470" y2="382"/>
+  </g>
+
+  <!-- 마루에 앉은 두 사람의 그림자 (이야기 나누는 밤) -->
+  <ellipse cx="368" cy="404" rx="17" ry="22" fill="#1A1220" opacity="0.75"/>
+  <circle cx="368" cy="376" r="11" fill="#1A1220" opacity="0.75"/>
+  <ellipse cx="432" cy="404" rx="17" ry="22" fill="#1A1220" opacity="0.75"/>
+  <circle cx="432" cy="376" r="11" fill="#1A1220" opacity="0.75"/>
+
+  <!-- 야화(夜話) 인장 -->
+  <rect x="52" y="330" width="86" height="86" rx="8" fill="none" stroke="#C25B5B" stroke-width="4" opacity="0.9"/>
+  <text x="95" y="366" font-size="34" font-weight="700" text-anchor="middle" fill="#C25B5B" opacity="0.95"
+        font-family="serif">夜</text>
+  <text x="95" y="404" font-size="34" font-weight="700" text-anchor="middle" fill="#C25B5B" opacity="0.95"
+        font-family="serif">話</text>
+</svg>

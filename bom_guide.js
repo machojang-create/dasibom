@@ -62,8 +62,17 @@
     var k = t.getAttribute('data-bomguide');
     if (!k || seen(k)) return;                       // 이미 본 것 → 원래 동작 그대로
     if (!(window.BOM_GUIDES || {})[k]) return;       // 가이드 텍스트 미정의 → 통과
-    e.preventDefault(); e.stopPropagation();
-    markSeen(k); open(k, t);
+    markSeen(k);
+    // ★첫 탭 유실 방지(2026-08-01 Macho: "물 줬는데 무반응"): 링크(이동)는 읽고 이동,
+    //   버튼(동작)은 첫 탭에 동작을 그대로 실행하면서 팁만 함께 띄운다(탭을 가로채지 않음).
+    var href = t.getAttribute('href');
+    var isNav = t.tagName === 'A' && href && href !== '#' && href.charAt(0) !== '#';
+    if (isNav) {
+      e.preventDefault(); e.stopPropagation();
+      open(k, t);          // '알겠어요'에서 이동
+    } else {
+      open(k, null);       // 동작은 이미 실행됨 — 팁만 표시(재실행 없음)
+    }
   }, true);
 
   window.BomGuide = { open: open, reset: function (k) { try { localStorage.removeItem('dasibom_tut_' + k); } catch (e) {} } };

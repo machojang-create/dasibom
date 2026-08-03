@@ -18,6 +18,8 @@ const ANTHROPIC_KEY =
 
 // 무료/기본 모델: claude-haiku-4-5 (저렴 + 빠름)
 const MODEL = 'claude-haiku-4-5-20251001';
+// 자서전을 Claude로 돌릴지 판정 — 실제 sk-ant 키가 있을 때만 true(플레이스홀더/빈값이면 Gemini 폴백, 무중단). 2026-07-31 Macho.
+function _claudeReady() { return !!ANTHROPIC_KEY && String(ANTHROPIC_KEY).startsWith('sk-ant'); }
 // 유료(자서전·전집) 본문 생성 모델: claude-opus-4-8 (고품질). 서버가 pkg로 결정.
 const MODEL_PAID = 'claude-opus-4-8';
 
@@ -53,6 +55,7 @@ function callGemini(model, payload) {
       }
     }, (res) => {
       let raw = '';
+      res.setEncoding('utf8');   // ★멀티바이트(한글) 청크 경계 깨짐 방지 — StringDecoder로 안전 디코딩(2026-08-03)
       res.on('data', chunk => raw += chunk);
       res.on('end', () => resolve({ status: res.statusCode, text: raw }));
     });
@@ -118,7 +121,8 @@ async function _globalAiGate() {
 
 async function aiText(opt) {
   await _globalAiGate();   // 전역 천장 먼저 확인
-  if (AI_PROVIDER === 'gemini') {
+  const provider = opt.provider || AI_PROVIDER;   // 호출별 제공자 override(자서전만 Claude 등)
+  if (provider === 'gemini') {
     const body = {
       contents: [{ parts: [{ text: opt.user }] }],
       generationConfig: { maxOutputTokens: opt.maxTokens || 800 }
@@ -172,6 +176,7 @@ function callAnthropic(payload) {
       }
     }, (res) => {
       let raw = '';
+      res.setEncoding('utf8');   // ★멀티바이트(한글) 청크 경계 깨짐 방지 — StringDecoder로 안전 디코딩(2026-08-03)
       res.on('data', chunk => raw += chunk);
       res.on('end', () => resolve({ status: res.statusCode, text: raw }));
     });
@@ -192,6 +197,7 @@ function postForm(hostname, path, data) {
       }
     }, (res) => {
       let raw = '';
+      res.setEncoding('utf8');   // ★멀티바이트(한글) 청크 경계 깨짐 방지 — StringDecoder로 안전 디코딩(2026-08-03)
       res.on('data', chunk => raw += chunk);
       res.on('end', () => resolve({ status: res.statusCode, text: raw }));
     });
@@ -209,6 +215,7 @@ function getJson(hostname, path, bearerToken) {
       { hostname, path, method: 'GET', headers },
       (res) => {
         let raw = '';
+        res.setEncoding('utf8');   // ★멀티바이트(한글) 청크 경계 깨짐 방지(2026-08-03)
         res.on('data', chunk => raw += chunk);
         res.on('end', () => resolve({ status: res.statusCode, text: raw }));
       }
@@ -440,13 +447,28 @@ exports.generateSection = functions
       throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
     }
 
-    const { question, answer, chapterName, paraCount, pkg } = data;
+    const { question, answer, chapterName, paraCount, pkg, qaList, maxChars, facts } = data;
+    // 책 전체에서 확인된 사실(extractBookFacts). 장별 독립 생성이라 이게 없으면 서로 모순된 서술이 나온다.
+    const factCard = String(facts || '').slice(0, 600).trim();
+    // ★무료 자서전 분량 천장(2026-08-03 Macho): 클라가 장당 글자수를 보내면 프롬프트·토큰 양쪽으로 지킨다.
+    //   유료화 방어선 — 챗봇 대화를 오래 나눈 사람의 무료본이 무한정 두꺼워지는 것을 막는다.
+    const capChars = (typeof maxChars === 'number' && maxChars > 200) ? Math.min(maxChars, 4000) : 0;
+    // ★B안 '테마 장' 모드(2026-08-03 Macho): qaList=[{q,a}...]가 오면 여러 기억을 하나의 흐르는 회고 한 장으로 엮는다.
+    /* ★>=2였을 때의 사고(2026-08-03): 문항이 1개뿐인 장(전집의 '몸·늙음', '비밀·고백' 등)은 장 모드로 인정받지
+       못해 서버가 question/answer 없다며 거부 → 클라가 폴백으로 '답변 원문'을 그대로 책에 실었다.
+       유료본 27장 중 2장이 생짜 답변이었다. qaList가 오면 1개여도 장으로 쓴다. */
+    const isChapter = Array.isArray(qaList) && qaList.filter(x => x && x.a).length >= 1;
+    const chapterSrc = isChapter ? qaList.map(x => String(x && x.a || '')).join('\n') : String(answer || '');
     // ★★ TODO(출시 전 필수): 결제 검증 미구현 → 결제 시스템 도입 전까지 Opus(MODEL_PAID) 봉인, 전원 Haiku.
     //    결제(PortOne) 붙으면: 서버에서 Firestore 결제기록 확인 후에만 MODEL_PAID 허용
     //    + 의심 요청(결제 없는 premium 등) 로깅. (절대 잊지 말 것 — release_blockers #1)
     //    원래 로직: (pkg === 'basic' || pkg === 'premium') ? MODEL_PAID : MODEL
-    const useModel = (AI_PROVIDER === 'gemini') ? G_MODEL : MODEL; // 결제검증 도입 후 PAID 분기 복원
-    if (!question || !answer) {
+    // 자서전 본문: 실제 Claude 키가 있으면 Haiku(품질), 없으면 Gemini 폴백(무중단). 2026-07-31 Macho.
+    //   (유료 Opus 분기는 결제검증 도입 후 복원 — release_blockers #1)
+    const _useClaude = _claudeReady();
+    const useProvider = _useClaude ? 'anthropic' : 'gemini';
+    const useModel = _useClaude ? MODEL : G_MODEL;
+    if (!isChapter && (!question || !answer)) {
       throw new functions.https.HttpsError('invalid-argument', '질문과 답변이 필요합니다.');
     }
 
@@ -477,41 +499,127 @@ exports.generateSection = functions
       throw new functions.https.HttpsError('resource-exhausted', '오늘 생성 한도를 초과했습니다. 내일 다시 이용해주세요.');
     }
 
-    // [윤문 지침] — Haiku에서도 고품질 수필이 나오도록 구체적으로 명령
+    /* [윤문 지침] — Haiku에서도 고품질 수필이 나오도록 구체적으로 명령.
+       ★2026-07-30 Macho 지적: 예전 프롬프트가 '첫 문장=감각적 장면 묘사'+'지금 돌이켜보면'+'통찰 여운'을
+         매번 강제해, 서로 다른 사람의 자서전도 전부 흙냄새·새벽안개로 시작하고 같은 관용구로 끝났다(22권 전수).
+       → 도입을 답변 '내용'에 맞춰 6가지로 회전시키고, 상투적 마무리 관용구를 금지한다. */
+    const OPENINGS = [
+      '이 이야기에 등장하는 사람의 모습·말투·표정 하나로 시작하라.',
+      '그때 실제로 벌어진 사건이나 행동 한 장면으로 곧장 시작하라.',
+      '그 순간의 마음·기분을 (막연한 감정어 말고) 구체적으로 드러내며 시작하라.',
+      '그 장소의 구체적인 모습으로 시작하라 — 단, 날씨·냄새 같은 뻔한 분위기 묘사는 피하라.',
+      '누군가 했던 말 한마디, 또는 스스로 되뇌던 말로 시작하라.',
+      '특정한 날짜·나이·시절을 딱 짚으며 시작하라 (예: "스물셋, 겨울이었다").'
+    ];
+    // 답변 내용으로 결정(같은 답변엔 늘 같은 스타일, 사람마다·문항마다 달라짐)
+    let _h = 0; const _s = String(question || '') + '|' + chapterSrc;
+    for (let _i = 0; _i < _s.length; _i++) { _h = (_h * 31 + _s.charCodeAt(_i)) >>> 0; }
+    const openingHint = OPENINGS[_h % OPENINGS.length];
+    /* ★끝맺음도 회전(2026-08-03 Macho: "시작과 끝, 모든 자서전이 절대 비슷해선 안 된다").
+       도입과 독립된 해시 비트로 6종을 돌려, 사람마다·편마다 마무리가 겹치지 않게. */
+    const CLOSINGS = [
+      '마지막 문장은 교훈 없이, 그 장면 속 사소한 사물이나 행동 하나로 담담히 닫아라.',
+      '마지막은 세월이 흐른 지금의 감각 하나(냄새·소리·손끝의 촉감)로 짧게 여운을 남겨라.',
+      '마지막은 그때는 몰랐던 것을 지금 딱 한 줄로 알아챈 듯 닫되, 설교하지 마라.',
+      '마지막은 그 시절의 사람에게 지금 건네고 싶은 말 한마디로 닫아라.',
+      '마지막은 답 없는 질문 하나를 남기고 조용히 멈춰라.',
+      '마지막은 그 뒤로 시간이 어떻게 흘렀는지 한 문장으로 훑고 끝내라.'
+    ];
+    const closingHint = CLOSINGS[Math.floor(_h / 7) % CLOSINGS.length];
+
     const systemPrompt =
-`당신은 30년 경력 시니어 자서전 대필 작가입니다.
+`당신은 30년 경력 시니어 자서전 대필 작가입니다. 지금 쓰는 것은 '이 한 사람만의' 이야기입니다.
 
 [반드시 지킬 출력 규칙]
 1. 오직 순수 산문만 출력. 제목·번호·마크다운·JSON 절대 금지.
 2. 문단 수: 정확히 ${paraCount}문단. 문단 사이 빈 줄 하나.
-3. 각 문단: 3~4문장. 짧은 단문(15자 내외)과 긴 문장(30~45자) 교차.
+3. 각 문단: 3~4문장. 짧은 단문(15자 내외)과 긴 문장(30~45자) 교차.${capChars ? `
+4. ★분량: 이 글 전체를 공백 포함 ${Math.round(capChars * 0.85)}~${capChars}자로 써라. 이 범위를 채우되 넘기지 마라.
+   재료가 많아도 늘려 쓰지 말고, 가장 마음이 가는 장면 위주로 추리고 나머지는 한두 줄로 짧게 스쳐라.
+   상한을 지키되 문장은 반드시 끝맺어라(중간에 끊지 마라).` : ''}
 
-[문체 필수 요소 — 문단당 최소 1개씩 반드시 포함]
-A. 첫 문단 첫 문장: 감각적 장면 묘사로 시작 (냄새·빛·소리·날씨 중 택1)
-   예) "된장찌개 냄새가 골목 끝까지 번지던 저녁이었다."
-B. 인물의 내면 감정을 구체적 신체 반응으로 표현
-   예) "가슴이 먹먹해지는 줄도 몰랐다" (O) / "슬펐다" (X)
-C. 과거 → 현재 시점 이동 문장 하나 ("지금 돌이켜보면...", "그 시절을 생각하면...")
-D. 마지막 문단 끝 문장: 삶의 통찰이 담긴 여운 있는 마무리
+${factCard ? `[이미 확인된 사실 — 책 전체에서 어긋나면 안 된다]
+${factCard}
+· 위 사실과 모순되는 서술을 절대 쓰지 마라. 특히 (별세)로 표시된 사람을 지금 살아 있는 것처럼,
+  대화하거나 웃거나 대답하는 장면으로 쓰지 마라. 그 사람 이야기는 회상으로만 써라.
+· 단, 위 사실을 억지로 끼워 넣지는 마라. 이번 장은 아래 재료가 중심이다.
+
+` : ''}[가장 중요 — 첫 문장은 이 답변에 '딱 맞게' 시작하라]
+· 이번 도입 방식: ${openingHint}
+· 금지: 날씨·흙냄새·갯내음·새벽 안개·햇살 같은 '분위기 묘사'로 시작하지 마라. 누구 이야기에나 붙는 상투적 도입이다.
+· 반드시 답변 속 '구체적 사실'(사람·장소·물건·행동·나이·시절)을 살려 쓰고, 없는 장면을 지어내 채우지 마라.
+
+[문체 — 문학작품 수준으로. 읽는 이가 자기 삶을 떠올리며 뭉클해지게 하라]
+· 인물의 감정은 추상어("슬펐다") 대신 구체적 신체·행동으로.
+· ★슬픔과 유머는 한 몸이다. 신파로 억지로 울리려 들지 말고, 인생을 관조하는 사람 특유의 잔잔한 해학·자조를 한 번쯤 슬쩍 흘려라 — 그게 오히려 더 뭉클하다.
+· ★눈물은 '슬펐다'는 말이 아니라, 아주 구체적인 장면 하나가 독자 자신의 기억을 건드릴 때 난다. 가난·어머니·첫 이별·자식·늙음 같은 누구나의 정서를, 오직 이 사람만의 디테일로 그려라.
+· '지금 돌이켜보면', '그 시절을 생각하면', '결국', '비로소' 같은 관용구를 습관적으로 붙이지 마라. 한 편에 한 번도 안 써도 좋다.
+· 이번 편 마무리 방식: ${closingHint} 억지 교훈·상투구로 끝내지 마라.
+· ★답변에 '없는' 장면·소품을 지어내 꾸미지 마라. 오직 이 사람이 실제로 말한 사실(장소·사람·사건)로만 쓴다.
+
+[진부한 상투 표현 금지 — 다른 자서전마다 똑같이 나와 개성을 죽인다. 절대 쓰지 마라]
+옹기종기 모여 앉아 / 굳은살 박인 손 / 투박한 손(길) / 퉁명스러운 음성 / 갓 지은 쌀밥·쌀밥 냄새 / 귓가에 선명 / 묵묵히 / 단단한 뿌리 / 따뜻한 온기 / 등잔 밑에서 / 첫 월급 봉투 / 세월의 흔적 / 인생의 뒤안길.
+→ 이런 상투구 대신, 이 답변 속 '그 사람만의 구체적 표현'을 찾아 써라.
 
 [금지 사항]
-- "어르신", "할머니/할아버지" 등 3인칭 호칭 사용 금지
-- 과도한 수식어 남발 ("너무나도 아름다운") 금지
-- 직역투 문장 금지`;
+- ★★반드시 '나'의 1인칭 시점으로만 써라(자서전=본인이 쓰는 자기 이야기). '그', '그는', '당신', '그 사람', '할애비는' 같은 3인칭·2인칭 서술 절대 금지. 답변이 누군가에게 말 거는 형식('~놈들아')이어도, 회고는 반드시 '나'의 목소리로 다시 쓴다.
+- ★'당신'으로 자기 자신을 부르지 마라. "당신은 이미 남기고 있었다", "당신도 그렇게 남을 테다" 같은 문장은
+  전부 틀렸다. 반드시 "나는 이미 남기고 있었다"로 써라. '당신'은 아내 등이 실제로 한 말을 따옴표로 옮길 때만 쓴다.
+- "어르신", "할머니/할아버지" 등 3인칭 호칭 금지
+- 과도한 수식어 남발("너무나도 아름다운") 금지
+- 직역투 문장 금지
+- ★실존 인물(가수·배우·정치인 등)의 노래 가사·곡 제목·대사·발언은 답변에 그대로 적혀 있지 않으면 절대 쓰지 마라.
+  자서전은 본인의 실제 기록이라 없는 사실이 실리면 안 된다. 답변에 "남진 노래를 흥얼거렸다"만 있으면
+  딱 그 수준으로만 써라 — 곡 제목도, 가사 한 줄도 지어내면 안 된다. 큰따옴표로 노래를 인용하지 마라.
+- 답변에 없는 지명·연도·병명·숫자를 지어내지 마라. 모르면 쓰지 말고 넘어가라.
+- 한 편 안에서 문장 어미를 섞지 마라. '~했다' 평서체로 끝까지 통일하고, '~했어'·'~했소' 같은 구어체로 흘리지 마라.${isChapter ? `
 
-    const userMsg =
-`[챕터]: ${chapterName}
-[질문]: ${question}
-[작성자 답변]: ${answer}`;
+[이번은 '테마 장' — 여러 기억을 하나로 엮어라]
+- 아래 [엮을 기억들]의 여러 조각을, 질문을 절대 드러내지 말고 하나의 흐르는 회고로 이어라. 문답·번호·목록·소제목 금지.
+- 시간이나 감정의 흐름으로 자연스럽게 연결하되 각 기억의 '구체적 사실'(장소·사람·사건)은 살려라. 억지로 이어붙인 티가 나지 않게, 강물처럼.
+- 정확히 ${paraCount}문단 안에서 여러 장면이 자연스럽게 흐르게 하라.` : ''}`;
 
-    const maxTok = Math.min(300 + paraCount * 220, 1000);
+    const userMsg = isChapter
+      ? `[장 주제]: ${chapterName}\n[엮을 기억들 — 질문은 드러내지 말고 회고로 녹여라]\n` + qaList.map((x, i) => `${i + 1}. ${String(x && x.a || '').trim()}`).join('\n')
+      : `[챕터]: ${chapterName}\n[질문]: ${question}\n[작성자 답변]: ${answer}`;
 
-    let text;
-    try {
-      text = await aiText({ tag: 'memoirSection', system: systemPrompt, user: userMsg, maxTokens: maxTok, model: useModel });
-    } catch (e) {
-      throw new functions.https.HttpsError('internal', '생성 오류: ' + e.message);
+    let maxTok = isChapter ? Math.min(400 + paraCount * 280, 2000) : Math.min(300 + paraCount * 220, 1000);
+    // 천장이 있으면 토큰도 그에 맞춰 조인다(한글 1토큰≈1.3자, 문장이 잘리지 않게 1.2배 여유).
+    if (capChars) maxTok = Math.min(maxTok, Math.ceil(capChars * 1.2));
+
+    /* ★재시도(2026-07-31 Macho 전수): 예전엔 첫 호출 실패 시 곧장 에러 → 클라가 '원답변 그대로'로 폴백해
+       조악한 책이 나왔다(동시 사용자 많으면 rate-limit로 자주 발생). 최대 3회, 점증 대기로 회복시킨다. */
+    /* ★2인칭 표류 검사(2026-08-03 전집 전수에서 발견): 프롬프트로 금지해도 Haiku가 자기 자신을
+       "당신은 이미 남기고 있었다"처럼 부르는 장이 나온다(회고·유산 성격의 장에서 특히).
+       단 아내 대사 "당신 밥은 누가 챙기나"는 정당하므로 따옴표 안은 제외하고 검사한다. */
+    function _selfSecondPerson(s) {
+      const bare = String(s || '').replace(/["'“”‘’][^"'“”‘’]{0,200}["'“”‘’]/g, ' ');
+      return /당신[은는도의이가을]/.test(bare);
     }
+    let text = null, lastErr = null;
+    for (let attempt = 0; attempt < 3 && !text; attempt++) {
+      try {
+        const t = await aiText({ tag: 'memoirSection', system: systemPrompt, user: userMsg, maxTokens: maxTok, model: useModel, provider: useProvider });
+        if (_selfSecondPerson(t) && attempt < 2) { continue; }   // 표류하면 다시 뽑는다(마지막 시도는 그대로 채택)
+        text = t;
+      }
+      catch (e) { lastErr = e; if (attempt < 2) await new Promise(r => setTimeout(r, 500 * (attempt + 1))); }
+    }
+    if (!text) throw new functions.https.HttpsError('internal', '생성 오류: ' + (lastErr && lastErr.message || ''));
+
+    /* ★상투 부사 후처리(2026-07-31 Macho 전수): '묵묵히'·'비로소'는 프롬프트로 금지해도 Haiku가 못 끊어
+       거의 모든 책(묵묵히 97%·비로소 90%)에 나와 톤이 획일했다. → 답변 해시로 회전하는 동의어로 결정적 치환.
+       (책마다 seed가 달라 서로 다른 낱말이 들어가므로 클러스터가 원천 차단된다. 부사↔부사라 문법 안전.) */
+    let _seed = 0; { const _ss = String(answer || '') + String(chapterName || ''); for (let k = 0; k < _ss.length; k++) _seed = (_seed * 31 + _ss.charCodeAt(k)) >>> 0; }
+    const SWAPS = [
+      { re: /묵묵히/g, alt: ['꿋꿋이', '말없이', '우직하게', '뚝심 있게', '한결같이', '군말 없이'] },
+      { re: /비로소/g, alt: ['그제야', '그때서야', '그러고서야', '마침내'] },
+      { re: /결국/g, alt: ['끝내', '마침내', '그예', '종내', '돌고 돌아'] },
+      { re: /쉴 새 없이/g, alt: ['밤낮없이', '한시도 쉬지 않고', '부지런히', '쉬지 않고', '잠시도 못 쉬고'] },
+      { re: /가슴 한구석이/g, alt: ['마음 한켠이', '가슴 깊은 곳이', '마음 한구석이', '명치 끝이'] },
+    ];
+    SWAPS.forEach((s, i) => { let c = 0; text = String(text).replace(s.re, () => s.alt[(_seed + i + (c++)) % s.alt.length]); });
+
     return { text };
   });
 
@@ -940,7 +1048,10 @@ exports.logTraffic = functions
 // ════════════════════════════════════════
 const PT_AWARD = {   // 서버 권위 지급표(클라가 보낸 액수는 절대 안 믿음)
   attend: 10, memoir: 50, brain: 30, arcade: 30, matgo: 30,
-  nostalgia: 10, trendy: 10, dream: 10, maeum: 10, gag: 10, debate: 10, maeumlab: 10
+  nostalgia: 10, trendy: 10, dream: 10, maeum: 10, gag: 10, debate: 10, maeumlab: 10,
+  trot: 10,  // 트로트 퀴즈 완주(정답 1개 이상) — 하루 1회 (2026-08-01)
+  bible: 10, // 말씀 한 그루 필사 완료 — 하루 1회 (2026-08-01)
+  trivia: 10 // 시시콜콜 순위왕 예측 성공 — 하루 1회 (2026-08-03)
 };
 const PT_REFERRAL = 80;       // 공유 → 유입 1건당 공유자 지급
 const PT_REFERRAL_CAP = 10;   // 공유자 하루 유입보상 상한(스팸 농장 차단)
@@ -1605,8 +1716,11 @@ exports.extractPeople = functions
 [자서전]
 ${text}`;
     let raw;
+    // 제목도 본문과 같은 제공자로(자서전 일관성). Claude 키 있으면 Haiku, 없으면 Gemini.
+    const _tProvider = _claudeReady() ? 'anthropic' : 'gemini';
+    const _tModel = _claudeReady() ? MODEL : G_MODEL;
     try {
-      raw = await aiText({ tag: 'memoirTitles', user: prompt, maxTokens: 800, json: true });
+      raw = await aiText({ tag: 'memoirTitles', user: prompt, maxTokens: 800, json: true, model: _tModel, provider: _tProvider });
     } catch (e) {
       throw new functions.https.HttpsError('internal', '추출 오류: ' + e.message);
     }
@@ -1638,38 +1752,121 @@ exports.generateTitles = functions
       throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
     }
 
-    const { answers } = data; // [{ q, a }, ...]
+    const { answers, chapters } = data; // answers:[{q,a}] · chapters:[{ch,name,qa:[{q,a}]}](선택)
     if (!answers || !answers.length) {
       throw new functions.https.HttpsError('invalid-argument', '답변 데이터가 필요합니다.');
     }
 
     const qa = answers.slice(0, 5).map(item => `Q: ${item.q}\nA: ${item.a}`).join('\n\n');
 
-    const prompt =
-`다음 인생 답변들을 읽고, 감성적인 자서전 제목 후보 4개를 만들어주세요.
+    /* ★장 제목 개인화(2026-07-30 Macho: "모든 자서전이 다 '뿌리'로 시작해 비슷하다").
+       예전엔 장 제목이 뿌리/가족/… 고정이라 22권이 전부 똑같았다. 이제 각 장 답변의 구체적 내용으로
+       개인화한 장 제목을 '책 제목과 같은 한 번의 호출'로 함께 받는다(추가 AI 비용 0). */
+    const hasChapters = Array.isArray(chapters) && chapters.length;
+    let chapBlock = '';
+    if (hasChapters) {
+      chapBlock = '\n\n[각 장의 답변]\n' + chapters.map(c =>
+        '· 장' + c.ch + '(' + (c.name || '') + '): ' + (c.qa || []).slice(0, 3).map(x => x.a).join(' / ').slice(0, 240)
+      ).join('\n');
+    }
 
-[답변]
-${qa}
+    const prompt =
+`다음 인생 답변들을 읽고, 이 사람만의 자서전 제목과 각 장 제목을 지어주세요.
+
+[전체 답변]
+${qa}${chapBlock}
 
 [규칙]
-- 따뜻하고 시적인 한국어 제목
-- 10자 내외로 간결하게
-- 각 제목에 한 줄 설명 추가
-- JSON 배열만 출력: [{"title":"제목","desc":"설명"}, ...]`;
+- 책 제목 후보 4개: 이 사람의 '구체적 사실'(지역·직업·인물)을 반드시 하나 담아 10자 내외. 각 제목에 한 줄 설명.
+  ★상투 모티프 금지(다른 책마다 똑같이 나옴): 등잔·봄날·노을·세월·뒤안길·뿌리·인생·계절.
+${hasChapters ? `- 각 장 제목: 그 장 답변의 '구체적 내용'(장소·사람 이름·사건)을 담아 8~16자. 위 상투 모티프 금지, 서로·다른 사람과도 겹치지 않게.
+- JSON만 출력(설명은 짧게): {"titles":[{"title":"제목","desc":"설명"}, ...], "chapters":[{"ch":0,"title":"장 제목"}, ...]}`
+  : `- JSON 배열만 출력: [{"title":"제목","desc":"설명"}, ...]`}`;
 
-    let raw;
-    try {
-      raw = await aiText({ tag: 'wisdom', user: prompt, maxTokens: 400, json: true });
-    } catch (e) {
-      throw new functions.https.HttpsError('internal', '제목 생성 오류: ' + e.message);
+    /* ★견고화(2026-07-30): 확장 JSON(제목+장제목)이 가끔 파싱 실패해 제목 생성이 통째로 죽던 문제.
+       ①코드펜스 제거 ②본문 앞뒤 잡소리 있어도 JSON 덩어리만 추출 ③실패 시 1회 재시도
+       ④그래도 실패하면 던지지 말고 빈 구조 반환(클라가 폴백 제목 사용 — '절대 안 뜸'보다 낫다). */
+    function extractJson(s) {
+      s = String(s || '').replace(/```json|```/g, '').trim();
+      try { return JSON.parse(s); } catch (e) {}
+      var i0 = s.indexOf('{'), i1 = s.lastIndexOf('}');
+      var a0 = s.indexOf('['), a1 = s.lastIndexOf(']');
+      // 객체·배열 중 더 바깥을 감싸는 것 선택
+      var cand = (i0 >= 0 && (a0 < 0 || i0 < a0)) ? s.slice(i0, i1 + 1) : (a0 >= 0 ? s.slice(a0, a1 + 1) : '');
+      try { return JSON.parse(cand); } catch (e) { return null; }
     }
-    raw = raw.replace(/```json|```/g, '').trim();
-    let titles;
-    try { titles = JSON.parse(raw); } catch (e) {
-      throw new functions.https.HttpsError('internal', '제목 JSON 파싱 실패: ' + raw.slice(0, 100));
+    let parsed = null;
+    for (let attempt = 0; attempt < 3 && !parsed; attempt++) {   /* 3회로(폴백 16%→감소, 2026-07-31) */
+      let raw;
+      /* ★출력 한도는 '장 수에 비례'해야 한다(2026-08-03). 950 고정이던 시절 전집(27장)은 JSON이 늘 잘려
+         3회 재시도가 전부 실패 → 개인화 장 제목이 통째로 안 나오고 폴백 제목만 떴다. 무료 5장은 950 그대로. */
+      const titleTok = hasChapters ? Math.min(600 + chapters.length * 70, 3000) : 400;
+      try { raw = await aiText({ tag: 'memoirTitles', user: prompt, maxTokens: titleTok, json: true, model: _claudeReady() ? MODEL : G_MODEL, provider: _claudeReady() ? 'anthropic' : 'gemini' }); }   /* 제목·소제목도 Haiku로(품질·JSON 안정화, 2026-08-03) */
+      catch (e) { if (attempt < 2) await new Promise(r => setTimeout(r, 400 * (attempt + 1))); continue; }
+      parsed = extractJson(raw);
+    }
+    if (!parsed) return { titles: [], chapterTitles: {} };   // 폴백(클라가 기본 제목 표시)
+    if (Array.isArray(parsed)) return { titles: parsed, chapterTitles: {} };   // 구버전 호환
+    const chapterTitles = {};
+    (parsed.chapters || []).forEach(c => { if (c && c.ch != null && c.title) chapterTitles[c.ch] = String(c.title).trim(); });
+    return { titles: parsed.titles || [], chapterTitles };
+  });
+
+// ════════════════════════════════════════
+// 사실 카드 — 책 전체의 사실 일관성 (2026-08-03 Macho)
+// ════════════════════════════════════════
+/* ★왜 필요한가: 장은 각각 독립적으로 생성돼서, 그 장의 답변에 안 적힌 사실을 모른다.
+   전집 27장 실측에서 '비밀·고백' 장이 3년 전 세상을 떠난 아내를 살아 있는 사람처럼 써버렸다
+   (그 장 답변엔 아내의 죽음이 없었으니 모델은 알 길이 없었다).
+   → 책을 만들기 전 답변 전체에서 인물·시기 사실을 한 번 뽑아, 모든 장 생성에 함께 넘긴다.
+   호출 1회 + 장당 입력 200토큰 남짓이라 비용은 사실상 안 는다. */
+exports.extractBookFacts = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 60, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    }
+    const { answers } = data;   // [{q,a}] — 전체 답변
+    if (!Array.isArray(answers) || !answers.length) {
+      throw new functions.https.HttpsError('invalid-argument', '답변 데이터가 필요합니다.');
     }
 
-    return { titles };
+    const src = answers
+      .map(x => `- ${String(x && x.q || '').slice(0, 40)}: ${String(x && x.a || '').slice(0, 180)}`)
+      .join('\n').slice(0, 14000);
+
+    const prompt =
+`다음은 한 사람이 자서전을 위해 쓴 답변 전체입니다. 이 사람의 자서전을 장별로 나눠 쓸 때
+서로 모순되지 않도록, 답변에서 '확인된 사실'만 뽑아 짧은 목록으로 정리하세요.
+
+[답변]
+${src}
+
+[규칙]
+- 답변에 적힌 것만 쓰세요. 추측·창작 금지. 확실하지 않으면 아예 빼세요.
+- 최대 10줄, 한 줄 40자 이내. 설명·인사말 없이 목록만 출력.
+- ★이미 세상을 떠난 사람은 반드시 '(별세)'로 표시하세요. 이게 가장 중요합니다.
+- 담을 것: 출생지·현재 나이·직업과 은퇴 여부·배우자·자녀 수·형제·가까운 친구·현재 함께 사는지 여부.
+- 예시 형식:
+  · 전라도 순창 출생, 현재 81세
+  · 아내 (별세, 3년 전 위암)
+  · 개인택시 38년, 지난달 은퇴
+  · 2남 1녀, 손주 있음`;
+
+    let text = null;
+    for (let attempt = 0; attempt < 2 && !text; attempt++) {
+      try {
+        text = await aiText({
+          tag: 'memoirFacts', user: prompt, maxTokens: 400,
+          model: _claudeReady() ? MODEL : G_MODEL,
+          provider: _claudeReady() ? 'anthropic' : 'gemini'
+        });
+      } catch (e) { if (attempt < 1) await new Promise(r => setTimeout(r, 400)); }
+    }
+    // 실패해도 던지지 않는다 — 사실 카드가 없어도 책은 나와야 한다(있으면 더 정확해질 뿐).
+    return { facts: String(text || '').replace(/```/g, '').trim().slice(0, 600) };
   });
 
 // ════════════════════════════════════════
