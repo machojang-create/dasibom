@@ -4150,6 +4150,9 @@ body.dark .bom-guide-text{color:#c8bba4}
     inp.value=''; btn.disabled=true;
     if(!_bomChatStarted){ bomAppendHTML('<div class="bcp-divider"></div>'); _bomChatStarted=true; }
     bomAppendUser(msg);
+    /* ★꽃잎 적립(2026-08-04 FGT): 봄이와의 대화가 타깃 선호 6위인데 보상이 0이었다.
+       화면을 연 것만으론 안 주고 '말을 걸었을 때' 하루 1회. 80대+에겐 이게 유일한 보상 접점일 수 있다. */
+    try{ DasibomPoints.earn('bomchat'); }catch(e){}
     /* ★위험어 필터는 'AI에게 조언을 시키는 것'을 막는 장치다(의료·법률·정치·금융).
        그런데 '병원·약·보험·카드'가 목록에 있어 생활비서의 핵심(병원 일정·복약·보험료·카드값)까지
        전부 차단됐다(2026-07-30 봇 검증). → 여기서 바로 막지 말고, 생활비서(DB)가 처리하면 통과시키고
