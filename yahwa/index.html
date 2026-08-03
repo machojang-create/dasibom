@@ -9,13 +9,13 @@
   </head>
   <body>
     <div id="root"></div>
-    <!-- ★꽃잎 적립(2026-08-04 FGT): 이 콘텐츠는 보상이 0이었다. 8초 머물고 조작 1회 하면 하루 1회 지급.
+    <!-- ★꽃잎 적립(2026-08-04 FGT): 이 콘텐츠는 보상이 0이었다. 잠깐 머물고 한 번 조작하면 하루 1회 지급.
          ⚠️React 재빌드 시 dist/index.html이 이 래퍼를 덮어쓴다 — 재빌드하면 아래를 반드시 되살릴 것. -->
     <!-- ★firebase 부팅(2026-08-04): dasibom-points.js는 firebase가 이미 떠 있다고 가정한다.
          yahwa는 맨몸 래퍼라 부팅 주체가 없어 꽃잎 적립이 조용히 실패했다. bom_voice.js가 표준 부팅 스크립트.
          (BOM_GUIDE를 정의하지 않았으므로 봄이 가이드 UI는 뜨지 않고 부팅만 한다) -->
     <script src="/bom_voice.js?v=12"></script>
-    <script src="/dasibom-points.js?v=1"></script>
+    <script src="/dasibom-points.js?v=2"></script>
     <script>window.addEventListener('load',function(){try{DasibomPoints.earnOnEngage('yahwa');}catch(e){}});</script>
   </body>
 </html>

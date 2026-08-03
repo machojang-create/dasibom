@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="영양제·약 성분을 큰 글씨로 쉽게. 함께 드셔도 되는지 봄이가 짚어드려요.">
 <meta name="twitter:image" content="https://dasibomlife.com/og-image.png">
 <title>건강 돋보기 — 다시봄</title>
-<script src="/a11y.js?v=9" defer></script>
-<!-- ★꽃잎 적립(2026-08-04 FGT): 건강돋보기는 보상이 0이었다. 8초 머물고 조작 1회 하면 하루 1회 지급. -->
-<script src="/dasibom-points.js?v=1"></script>
+<script src="/a11y.js?v=10" defer></script>
+<!-- ★꽃잎 적립(2026-08-04 FGT): 건강돋보기는 보상이 0이었다. 잠깐 머물고 한 번 조작하면 하루 1회 지급. -->
+<script src="/dasibom-points.js?v=2"></script>
 <script>window.addEventListener('load',function(){try{DasibomPoints.earnOnEngage('health');}catch(e){}});</script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
@@ -887,7 +887,9 @@ function renderShop(){
 
 /* ── 공통 ── */
 var _tt;
-function popToast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},2800);}
+/* ★읽는 시간 규칙(2026-08-04 FGT ②): 2.8초면 어르신이 다 못 읽고 사라진다. 글자 수에 맞춰 늘린다. */
+function dsbReadMs(t){var n=String(t||'').length;return Math.max(4500,Math.min(10000,1200+n*330));}
+function popToast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},dsbReadMs(msg));}
 
 (function(){
   renderCatBtns();filterIng('');

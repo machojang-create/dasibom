@@ -1226,7 +1226,7 @@
 #dasibom-onboarding .dob-guide-item small{ font-size:clamp(12.5px,3vw,13.5px); color:#7a8a7f; line-height:1.55; }
 </style>
 
-<script src="/a11y.js?v=9" defer></script>
+<script src="/a11y.js?v=10" defer></script>
 <script src="/attend.js?v=3" defer></script>
 <script src="/questions_v3.js?v=6" defer></script><!-- 봄이의 오늘 질문 계산용 -->
 <script src="/dasibom-bomlife.js?v=3" defer></script><!-- 봄이 생활비서 엔진 — 기존 봄이 챗봇에 통합(별도 UI 없음). 저장 브리지는 하단 dasibom-points.js -->
@@ -2296,7 +2296,7 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
 </footer>
 <script src="/dasibom-bizinfo.js?v=1"></script>
 <script src="/dasibom-share.js?v=1"></script>
-<script src="/dasibom-points.js?v=1"></script>
+<script src="/dasibom-points.js?v=2"></script>
 <script src="/dasibom-promobanner.js?v=1" defer></script><!-- 봄이의 추천 배너(자체 콘텐츠 광고) — 섹션 사이 자동 삽입 -->
 
 <script>
@@ -3811,8 +3811,27 @@ body.dark .bom-guide-text{color:#c8bba4}
     arcade:{emoji:'🕹️',label:'추억의 오락실',href:'/arcade'},
     // library(공개 서재)는 콘텐츠가 쌓이기 전까지 챗봇 추천에서 제외(2026-06-30) — 비어있는 화면 홍보 방지
     // letter(마음의 유언)는 아직 시기가 아님 — 봄이 추천에서 전면 제외(2026-07-22, Macho)
-    trendy:{emoji:'💬',label:'말동무 사전',href:'/trendy'}
+    trendy:{emoji:'💬',label:'말동무 사전',href:'/trendy'},
+    /* ★추천 폭 확대(2026-08-04 Macho): 봄이가 5개만 돌려 말하고 있었다.
+       FGT에서 타깃 선호 2위(온기)·5위(라디오 극장)·3위(화분)가 추천에 아예 없었다. */
+    trivia:{emoji:'🏆',label:'시시콜콜 순위왕',href:'/trivia'},
+    ongi:{emoji:'🔥',label:'추억의 소리, 온기',href:'/ongi'},
+    yahwa:{emoji:'📻',label:'봄이의 라디오 극장',href:'/yahwa'},
+    plant:{emoji:'🌱',label:'수다쟁이 화분',href:'/plant'},
+    guppy:{emoji:'🐠',label:'우리집 구피 어항',href:'/guppy'},
+    jobs:{emoji:'💼',label:'시니어 직업 상담소',href:'/jobs'}
   };
+  /* ★꽃잎 안내(2026-08-04 Macho) — FGT '보상 매력' 62.9(80대+ 44)의 절반은 '보상이 있는 줄 몰라서'다.
+     봄이가 직접 알려준다. 시시콜콜 순위왕은 매일 새 순위가 열리므로 랭킹 자체를 노출한다. */
+  var PETAL_LINES = [
+    '🌸 저랑 이야기 나누시면 오늘의 꽃잎을 드려요. 뭐든 편하게 말 걸어보세요!',
+    '🌸 콘텐츠 하나 둘러보시면 꽃잎이 톡 하고 쌓인답니다. 하루에 하나씩요!',
+    '🏆 시시콜콜 순위왕에 오늘 새 순위가 하나 열렸어요. 1위 맞히면 꽃잎도 드려요!',
+    '🌸 모은 꽃잎으로는 화분도 꾸미고 어항도 채울 수 있어요.',
+    '🔥 추억의 소리 온기, 잠깐 듣기만 하셔도 꽃잎을 챙겨드려요.',
+    '📻 봄이의 라디오 극장 한 편 들으시면 꽃잎이 쌓여요. 오늘은 어떤 이야기일까요?',
+    '🌸 출석만 하셔도 꽃잎이에요. 자주 들르실수록 소복이 쌓인답니다.'
+  ];
   function tutSeen(k){ try{ return !!localStorage.getItem('dasibom_tut_'+k); }catch(e){ return false; } }
   function pickTags(n){
     var keys=Object.keys(CONTENT_TAGS);
@@ -3882,7 +3901,7 @@ body.dark .bom-guide-text{color:#c8bba4}
   ];
 
   // ── 말풍선 순차 등장 — 한꺼번에 3개가 아니라 살아있는 사람처럼 시간차로 말을 건다 ──
-  var BCP_TALK_EVERY = 60000;  // [조정] 봄이가 먼저 말 거는 주기(1분). 창이 열려 있는 동안 계속.
+  var BCP_TALK_EVERY = 40000;  // [조정] 봄이가 먼저 말 거는 주기. 60초 → 40초로 높임(2026-08-04 Macho "빈도수도 높여서"). 창이 열려 있는 동안 계속.
   var _bcpTimers = [];
   // ★첫 인사는 '한 마디'만 — 창을 열자마자 2개가 쌓여 있으면 어색하다.
   //   두 번째 말("오늘 기분 어떠세요?" 등)은 1분 뒤 대화 주기로 자연스럽게 이어진다.
@@ -3974,9 +3993,10 @@ body.dark .bom-guide-text{color:#c8bba4}
       var pets=[bomPlantMsg(),bomGuppyMsg()].filter(function(x){return !!x;});
       if(pets.length){ _talkLast='plant'; return bomMsgRow(_rndOne(pets),'bom_think'); }
     }
-    // 비중(Macho 2026-07-20): 취재 36% / 감성케어 27% / 잡담 18% / 콘텐츠 9% / 자서전화면 9%
-    var kinds=['interview','interview','interview','interview','care','care','care','chat','chat','content','memoir'];
-    if(window._KIOSK_BROWSE) kinds=['care','care','chat','content']; // 키오스크: 취재는 대화방에서만
+    // 비중(2026-08-04 Macho 지시로 꽃잎 안내 추가): 취재 29% / 케어 21% / 잡담 14% / 콘텐츠 7% / 자서전 7% / 꽃잎 21%
+    var kinds=['interview','interview','interview','interview','care','care','care','chat','chat','content','memoir',
+               'petal','petal','petal'];
+    if(window._KIOSK_BROWSE) kinds=['care','care','chat','content','petal']; // 키오스크: 취재는 대화방에서만
     var avail=kinds.filter(function(k){ return k!==_talkLast; });
     var pick=_rndOne(avail.length?avail:kinds) || 'care';
     _talkLast=pick;
@@ -3986,6 +4006,9 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(pick==='care'){   // 날씨·건강·안부 (계절별)
       var pool=TIPS_BY_SEASON[seasonKey()].concat(TIPS_GENERAL).concat(BOM_GREET2_COMMON);
       return bomMsgRow(_rndOne(pool),'bom_calm');
+    }
+    if(pick==='petal'){   // 꽃잎을 받을 수 있다는 안내 — 몰라서 못 받는 사람이 많다
+      return bomMsgRow(_rndOne(PETAL_LINES),'bom_sparkle');
     }
     if(pick==='content'){
       var c=bomContentMsg();
@@ -4053,6 +4076,12 @@ body.dark .bom-guide-text{color:#c8bba4}
       lines.push({text:c.emoji+' '+c.label+', 한번 둘러보러 가볼까요? 저 누르면 바로 가요!', face:'bom_sparkle', href:c.href});
     });
     ['심심하지 않으세요? 저랑 얘기해요! 🌸','오늘 하루는 어떠셨어요?','저 여기서 기다리고 있었어요! 😊','문득 생각나서 인사하러 왔어요 ٩(◕‿◕)۶','오늘 컨디션은 어떠세요? 무리하지 마시고 천천히요 🌱'].forEach(function(t){ lines.push({text:t, face:'bom_grin'}); });
+    /* ★꽃잎 안내를 홈 말풍선에도(2026-08-04 Macho). 두 번씩 넣어 노출 빈도를 높였다 —
+       '보상이 있는 줄 몰랐다'가 FGT 보상 점수(62.9)의 절반이었다. */
+    PETAL_LINES.forEach(function(t){
+      lines.push({text:t, face:'bom_sparkle'});
+      lines.push({text:t, face:'bom_sparkle'});
+    });
     return lines;
   }
   function paintFabFace(face){ var img=document.querySelector('#bomFab img'); if(img) img.src='/img/'+(face||'bom_fab')+'.png'; }
@@ -4062,7 +4091,10 @@ body.dark .bom-guide-text{color:#c8bba4}
     g.innerHTML=esc(text); g.style.display='block'; greetShown=true;
     paintFabFace(face);
     _greetHref=href||null;
-    setTimeout(function(){ g.style.display='none'; paintFabFace('bom_fab'); }, 9000);
+    /* ★읽는 시간 규칙(2026-08-04 FGT ②): 9초 고정이라 긴 말풍선은 다 읽기 전에 사라졌다.
+       시니어 기준 한글 3자/초 + 알아채는 시간. 짧은 인사는 9초, 긴 안내는 최대 14초. */
+    var _hold=Math.max(9000, Math.min(14000, 1800 + String(text||'').length*330));
+    setTimeout(function(){ g.style.display='none'; paintFabFace('bom_fab'); }, _hold);
   }
   document.getElementById('bomGreet').addEventListener('click', function(){
     if(_greetHref){ location.href=_greetHref; } else { bomChatToggle(true); }
@@ -4081,7 +4113,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(!homeReady()) return;
     var lines=_floatingLines(), pick=lines[Math.floor(Math.random()*lines.length)];
     showFloatingGreet(pick.text, pick.face, pick.href);
-  }, 60000);
+  }, 40000);   // 60초 → 40초 (2026-08-04 Macho "빈도수도 높여서")
 
   // ── 봄이 자유 대화(AI) — 위험 주제는 클라에서도 즉시 차단(서버가 최종 권한) ──
   var BOM_RISKY_KEYWORDS=['정치','대통령','선거','국회','여당','야당','경제','금리','환율','인플레이션','종교','교회','성당','절','불교','기독교','천주교','이슬람','외교','북한','전쟁','국방','주식','코인','비트코인','투자','개인정보','주민등록번호','전화번호','주소','계좌번호','비밀번호','결제','환불','구매','카드번호','금융','대출','보험','세금','의학','진단','처방','질병','약','병원','수술','증상','법률','소송','변호사','계약'];

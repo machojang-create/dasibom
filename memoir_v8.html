@@ -539,7 +539,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .lm-teaser-text::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:linear-gradient(transparent,var(--warm))}
 .lm-teaser-hint{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:12px;color:var(--sepia);margin-top:10px;opacity:.7}
 </style>
-<script src="/a11y.js?v=9" defer></script>
+<script src="/a11y.js?v=10" defer></script>
 <script src="/dasibom-kiosk-usage.js" defer></script>
 <script src="/attend.js?v=3" defer></script>
 </head>
@@ -2221,7 +2221,7 @@ function bookReveal(){
     el('bkfHint').textContent='';
     el('bkfBook').classList.add('bkf-open');
     if(window.BomVoice) BomVoice.say(_honorific()+'께서 살아오신 날들이, 한 권의 책이 되었습니다'); // 봄이 프리미엄 음성
-    finT=setTimeout(finish, 5200); // 헌정 페이지 감상 시간
+    finT=setTimeout(finish, 9000); // 헌정 페이지 감상 시간 (5.2초 → 9초, 2026-08-04 FGT ②: "다 읽기 전에 넘어간다")
   }
   function finish(){
     if(done) return; done=true;
@@ -2230,7 +2230,7 @@ function bookReveal(){
     setTimeout(function(){ fx.classList.remove('on'); fx.onclick=null; showPreview(); }, 750);
   }
   fx.onclick=function(){ if(opened){ finish(); } else { openIt(); } };
-  autoT=setTimeout(openIt, 2800); // 안 누르셔도 저절로 펼쳐짐
+  autoT=setTimeout(openIt, 5000); // 안 누르셔도 저절로 펼쳐짐 (2.8초 → 5초: 표지를 볼 새도 없이 넘어간다는 지적, 2026-08-04 FGT ②)
 }
 // 부팅/재진입 시: 익일 10시가 '지난' 예약만 깜짝 공개. 그 전엔 아무것도 안 띄움(서프라이즈라 미리 안 보여줌).
 function maybeShowSurprise(){
@@ -3096,7 +3096,7 @@ document.addEventListener('DOMContentLoaded',function(){
   BomPop.bind({ overlay:'#modalBg', box:'.modal-box', face:'bom_smile' }); // 공용 알림
   BomPop.bind({ overlay:'#loginModalBg', box:'.lm-box', face:'bom_smile' }); // 로그인
 </script>
-<script src="/dasibom-points.js?v=1"></script>
+<script src="/dasibom-points.js?v=2"></script>
 <script>
 /* 자서전 완성 보너스 5,000잎(2026-07-21 Macho 확정) — 서버가 완성을 검증(답변 60개+·중복 제거 50개+), 평생 1회.
    하루 1번만 조용히 확인 — 미완성이면 아무 일도 없고, 완성 순간의 방문에서 축하가 터진다. */

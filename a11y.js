@@ -13,7 +13,7 @@
    ════════════════════════════════════════════════════════════════ */
 (function () {
   if (window.__dsbA11y) return; window.__dsbA11y = true;
-  var TS_KEY = 'dasibom_ts', DARK_KEY = 'dasibom_dark';
+  var TS_KEY = 'dasibom_ts', DARK_KEY = 'dasibom_dark', MO_KEY = 'dasibom_motion';
 
   /* ── 공용 읽어주기(TTS) 제거됨 (2026-07-08 Macho 지시) ──
      브라우저 로봇 음성이 봄이(어린 소녀) 컨셉과 안 맞아 전면 삭제.
@@ -52,6 +52,9 @@
     var css = [
       /* 구버전 컨트롤 일괄 숨김 (통일) */
       '.a11y-bar,.ts-bar,.font-ctrl,.hc-btn{display:none!important}',
+      /* ★움직임 줄이기(2026-08-04 FGT ②): 켜면 무한 반복 애니메이션이 멈추고 전환이 즉시 끝난다.
+         진행 표시(스피너)까지 멈추면 멈춘 줄 알까 봐 .dsb-keepmotion은 예외로 둔다. */
+      'html.dsb-nomotion *:not(.dsb-keepmotion):not(.dsb-keepmotion *){animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important;scroll-behavior:auto!important}',
       /* 글씨 바가 하단 콘텐츠·버튼을 가리지 않도록 본문 하단 여백 확보 (고정 footer는 페이지별 보정) */
       'body{padding-bottom:84px}',
       /* ★접이식 아이콘 개편(2026-07-28 Macho): 항상 펼쳐진 바 → 작은 '가' 아이콘 + 탭하면 팝업.
@@ -111,6 +114,7 @@
       '<button type="button" data-ts="3" role="menuitem"><span class="ga t3">가</span><span class="nm">아주 크게</span></button>' +
       '<div class="dv"></div>' +
       '<button type="button" class="dk" role="menuitemcheckbox" aria-pressed="false"><span class="ic">🌙</span><span class="nm">어두운 화면</span></button>' +
+      '<button type="button" class="mo" role="menuitemcheckbox" aria-pressed="false"><span class="ic">🍃</span><span class="nm">움직임 줄이기</span></button>' +
       '</div>';
     document.body.appendChild(bar);
     var fab = bar.querySelector('.a-fab'), curEl = bar.querySelector('.cur');
@@ -137,6 +141,19 @@
       dk.setAttribute('aria-pressed', on ? 'true' : 'false');
     }
 
+    /* ── 움직임 줄이기 (2026-08-04 FGT ②) ────────────────────────────
+       "화면이 자꾸 바뀌어서 놓친다" · "움직이는 게 많아 어지럽다"(88세) 지적.
+       기존 prefers-reduced-motion 규칙은 카드 등장·호버만 덮었고, 홈에서 계속 도는
+       무한 애니메이션(히어로 확대·흐르는 배너·둥둥 뜨는 요소)은 그대로였다.
+       OS 설정을 아는 어르신은 거의 없으므로 화면에서 직접 끌 수 있게 한다. */
+    function setMotion(off) {
+      document.documentElement.classList.toggle('dsb-nomotion', !!off);
+      try { localStorage.setItem(MO_KEY, off ? '1' : '0'); } catch (e) {}
+      var mo = bar.querySelector('.mo');
+      mo.classList.toggle('on', !!off);
+      mo.setAttribute('aria-pressed', off ? 'true' : 'false');
+    }
+
     /* ── 펼침/접힘 ── */
     function open(o) { bar.classList.toggle('open', o); fab.setAttribute('aria-expanded', o ? 'true' : 'false'); }
     fab.addEventListener('click', function (e) { e.stopPropagation(); open(!bar.classList.contains('open')); });
@@ -147,6 +164,8 @@
         var on = darkNative ? document.body.classList.contains('dark')
                             : document.documentElement.classList.contains('dsb-dark');
         setDark(!on);
+      } else if (b.classList.contains('mo')) {          // 움직임 줄이기 — 팝업은 열어둔 채
+        setMotion(!document.documentElement.classList.contains('dsb-nomotion'));
       } else if (b.hasAttribute('data-ts')) {           // 글씨 크기 — 고르면 접힘
         setTs(b.getAttribute('data-ts'));
         open(false);
@@ -185,9 +204,17 @@
     }
 
     /* ── 저장값 적용 ── */
-    var ts = '1', dk = false;
-    try { ts = localStorage.getItem(TS_KEY) || '1'; dk = localStorage.getItem(DARK_KEY) === '1'; } catch (e) {}
-    setTs(ts); setDark(dk);
+    var ts = '1', dk = false, mo = false;
+    try {
+      ts = localStorage.getItem(TS_KEY) || '1';
+      dk = localStorage.getItem(DARK_KEY) === '1';
+      /* 저장값이 없으면 OS의 '동작 줄이기' 설정을 따른다(설정해 둔 분은 별도 조작 없이 바로 적용). */
+      var moSaved = localStorage.getItem(MO_KEY);
+      mo = (moSaved === null)
+        ? (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+        : (moSaved === '1');
+    } catch (e) {}
+    setTs(ts); setDark(dk); setMotion(mo);
 
     reserveScrollAreas();
     setTimeout(reserveScrollAreas, 1500);        // 나중에 그려지는 패널까지

@@ -239,7 +239,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
   .bom-bubble{min-width:130px;max-width:180px;font-size:12px;padding:7px 10px}
 }
 </style>
-<script src="/a11y.js?v=9" defer></script>
+<script src="/a11y.js?v=10" defer></script>
 <script src="/dasibom-bgm.js?v=1"></script><!-- 공용 배경음(전역 스위치 하나) -->
 
 <script src="/dasibom-kiosk-usage.js" defer></script>
@@ -1239,7 +1239,8 @@ function askKukjinOnce(){
 }
 function finalPreview(p,base){ return base; }
 function say(t){ document.getElementById('turnMsg').textContent=t; }
-function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},1800); }
+function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},dsbReadMs(t)); }
+function dsbReadMs(t){var n=String(t||'').length;return Math.max(4500,Math.min(10000,1200+n*330));}
 function banner(t){
   var el=document.getElementById('evtBanner'); el.textContent=t; el.style.display='block';
   sfx(t.indexOf('고')>=0||t.indexOf('흔들')>=0?'go':'event');
@@ -2187,6 +2188,6 @@ BomPop.bind({ overlay:'#kjOverlay',   box:'.mm-box', face:'bom_think' }); // 국
   if(p) p.addEventListener('click', function(){ pick(true); });
 })();
 </script>
-<script src="/dasibom-points.js?v=1"></script>
+<script src="/dasibom-points.js?v=2"></script>
 </body>
 </html>

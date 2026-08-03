@@ -113,7 +113,10 @@
           (function (pp) { setTimeout(function () { pp.remove(); }, 1900); })(p);
         }
       }
-      clearTimeout(_t); _t = setTimeout(function () { d.style.transition = 'opacity .3s'; d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 300); }, 2600);
+      /* ★읽는 시간 규칙(2026-08-04 FGT ②): 2.6초 고정이라 "글씨가 빨리 사라진다"는 지적이 나왔다.
+         시니어 기준 한글 3자/초 + 알아채는 시간 1.2초. 최소 4.5초, 최대 10초. */
+      var _hold = Math.max(4500, Math.min(10000, 1200 + String(msg || '').length * 330));
+      clearTimeout(_t); _t = setTimeout(function () { d.style.transition = 'opacity .3s'; d.style.opacity = '0'; setTimeout(function () { d.remove(); }, 300); }, _hold);
     } catch (e) {}
   }
 
@@ -269,11 +272,17 @@
     //   React 파일럿 등 내부를 몰라도 붙는 범용 방식(탭만 훑는 어뷰징 차단).
     earnOnEngage: function (event, opt) {
       opt = opt || {};
-      var sec = opt.seconds || 8;
+      /* ★8초 → 3초 (2026-08-04 Macho "왜 8초나 머물러야 하나").
+         원래 8초는 '탭만 훑는 어뷰징 차단'이 이유였는데, 다시 보니 근거가 약했다.
+         서버에 이미 '콘텐츠당 하루 1회' 상한이 있어서 오래 머물지 않아도 더 받을 꽃잎이 없다.
+         즉 어뷰징은 상한이 막고 있고 8초는 실사용자만 걸러내는 이중 장벽이었다.
+         잠깐 들렀다 나가는 어르신이 못 받는 쪽이 훨씬 큰 손해다. */
+      var sec = opt.seconds || 3;
       // 오늘 이미 받았으면 아예 리스너 안 검
       try { var day = new Date().toISOString().slice(0, 10); if (localStorage.getItem('dsbpt_' + event + '_' + day)) return; } catch (e) {}
       var timeOk = false, interacted = false, done = false, self = this;
-      var evs = ['pointerdown', 'keydown', 'touchstart'];
+      // 스크롤도 '이용'으로 인정 — 건강돋보기·직업 상담소처럼 읽기만 하는 화면은 누를 일이 없다(2026-08-04)
+      var evs = ['pointerdown', 'keydown', 'touchstart', 'wheel', 'scroll'];
       function onI() { interacted = true; go(); }
       function cleanup() { evs.forEach(function (e) { document.removeEventListener(e, onI, true); }); }
       function go() { if (done || !timeOk || !interacted) return; done = true; cleanup(); self.earn(event); }

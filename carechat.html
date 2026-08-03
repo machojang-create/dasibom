@@ -206,7 +206,8 @@ var ENDED=false, seniorTurns=0, transitionShown=false;
 var GIFT_DEMO = new URLSearchParams(location.search).get('giftdemo')==='1';
 
 function esc(s){ return String(s||'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},2200); }
+function toast(t){ var el=document.getElementById('toast'); el.textContent=t; el.style.opacity=1; setTimeout(function(){el.style.opacity=0;},dsbReadMs(t)); }
+function dsbReadMs(t){var n=String(t||'').length;return Math.max(4500,Math.min(10000,1200+n*330));}
 function initial(name){ return (name||'').trim().charAt(0)||'봄'; }
 
 (function loadSenior(){
