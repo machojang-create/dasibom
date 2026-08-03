@@ -1,0 +1,11 @@
+# 네이버 로그인 세션 — 절대 커밋 금지
+.naver_session.json
+
+# API 키
+.env
+
+node_modules/
+
+# 생성물
+out/*
+!out/.gitkeep

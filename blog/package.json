@@ -1,0 +1,18 @@
+{
+  "name": "dasibom-blog",
+  "private": true,
+  "type": "module",
+  "description": "다시봄라이프 네이버 블로그 자동 발행 파이프라인",
+  "scripts": {
+    "login": "node login_naver.mjs",
+    "status": "node run.mjs --status",
+    "draft": "node run.mjs --no-publish",
+    "post": "node run.mjs",
+    "post:now": "node run.mjs --now"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.70.0",
+    "playwright": "^1.50.0",
+    "sharp": "^0.35.3"
+  }
+}

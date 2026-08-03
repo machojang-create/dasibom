@@ -1,0 +1,144 @@
+{
+  "blog": {
+    "platform": "naver",
+    "id": "dasibomlife",
+    "url": "https://blog.naver.com/dasibomlife",
+    "app_base": "https://dasibomlife.com"
+  },
+
+  "schedule": {
+    "posts_per_week": 3,
+    "publish_days": [1, 3, 5],
+    "publish_hour": 9,
+    "publish_minute": 0,
+    "timezone": "Asia/Seoul"
+  },
+
+  "categories": [
+    {
+      "key": "parent_time",
+      "name": "부모님과의 시간",
+      "track": "A",
+      "weight": 35,
+      "reader": "40~50대 자녀 세대",
+      "goal": "자서전/편지 기능으로 유입",
+      "cta": {
+        "label": "부모님 자서전 만들어보기",
+        "url": "https://dasibomlife.com/memoir"
+      }
+    },
+    {
+      "key": "healthy_aging",
+      "name": "건강한 노후",
+      "track": "AC",
+      "weight": 25,
+      "reader": "60대 본인 + 걱정하는 자녀",
+      "goal": "건강돋보기 진입",
+      "cta": {
+        "label": "건강돋보기에서 확인하기",
+        "url": "https://dasibomlife.com/health"
+      }
+    },
+    {
+      "key": "care_policy",
+      "name": "돌봄 정책과 현장",
+      "track": "B",
+      "weight": 20,
+      "reader": "지자체·복지관 담당자",
+      "goal": "B2G 도입 문의",
+      "cta": {
+        "label": "다시봄 돌봄키오스크 문의하기",
+        "url": "https://dasibomlife.com/kiosk"
+      }
+    },
+    {
+      "key": "elder_voice",
+      "name": "어르신들의 이야기",
+      "track": "A",
+      "weight": 10,
+      "reader": "전 연령",
+      "goal": "브랜드 신뢰",
+      "manual_only": true,
+      "cta": {
+        "label": "우리 부모님 이야기도 남기기",
+        "url": "https://dasibomlife.com/memoir"
+      }
+    },
+    {
+      "key": "daily_joy",
+      "name": "오늘의 즐거움",
+      "track": "C",
+      "weight": 10,
+      "reader": "60대 본인",
+      "goal": "오락실/추억 콘텐츠 진입",
+      "cta": {
+        "label": "추억의 오락실 가보기",
+        "url": "https://dasibomlife.com/arcade"
+      }
+    }
+  ],
+
+  "app_map": {
+    "memoir": { "name": "자서전", "url": "https://dasibomlife.com/memoir" },
+    "health": { "name": "건강돋보기", "url": "https://dasibomlife.com/health" },
+    "arcade": { "name": "추억의 오락실", "url": "https://dasibomlife.com/arcade" },
+    "matgo": { "name": "봄이 맞고", "url": "https://dasibomlife.com/matgo" },
+    "nostalgia": { "name": "그때 그 시절", "url": "https://dasibomlife.com/nostalgia" },
+    "jobs": { "name": "시니어 일자리", "url": "https://dasibomlife.com/jobs" },
+    "letter": { "name": "마음 편지", "url": "https://dasibomlife.com/letter" },
+    "family": { "name": "가족 연결", "url": "https://dasibomlife.com/family" },
+    "kiosk": { "name": "돌봄 키오스크", "url": "https://dasibomlife.com/kiosk" },
+    "care_report": { "name": "돌봄 리포트", "url": "https://dasibomlife.com/care-report" },
+    "trendy": { "name": "요즘말 사전", "url": "https://dasibomlife.com/trendy" },
+    "library": { "name": "다시봄 서재", "url": "https://dasibomlife.com/library" }
+  },
+
+  "writing": {
+    "model": "claude-opus-5",
+    "target_chars": [1400, 2200],
+    "tone": "담백하고 구체적. 감탄사·과장 금지. 존댓말.",
+    "heading_style": "h3",
+    "cta_rule": "글 하나에 CTA는 하나만. 카테고리에 매핑된 것만 사용.",
+    "volatility_rules": [
+      "연도·나이·기간을 '올해', '작년', '요즘' 같은 상대 표현으로 쓰지 말 것. 필요하면 생략.",
+      "통계 수치, 비율, 순위를 지어내지 말 것. 출처를 댈 수 없으면 아예 쓰지 말 것.",
+      "정부 지원금 액수, 신청 기간, 제도명은 변동되므로 구체적 숫자 대신 '거주지 주민센터에 확인' 으로 안내.",
+      "가격·요금제·할인율을 본문에 적지 말 것.",
+      "의학적 진단·처방·복용법을 단정하지 말 것. '전문의와 상의' 로 마무리.",
+      "특정 병원·제품·브랜드를 추천하지 말 것.",
+      "'최고', '유일한', '100%' 같은 단정 표현 금지."
+    ],
+    "forbidden_phrases": [
+      "여러분",
+      "~하시길 바랍니다",
+      "놀랍게도",
+      "충격적인",
+      "지금 바로 클릭",
+      "필수템"
+    ]
+  },
+
+  "image": {
+    "width": 800,
+    "height": 800,
+    "font_family": "NanumGothic",
+    "brand_color": "#F2994A",
+    "bg_color": "#FFF8F0",
+    "text_color": "#3D2C1E"
+  },
+
+  "naver": {
+    "session_file": ".naver_session.json",
+    "write_url": "https://blog.naver.com/{id}?Redirect=Write",
+    "category_map": {
+      "parent_time": "부모님과의 시간",
+      "healthy_aging": "건강한 노후",
+      "care_policy": "돌봄 정책과 현장",
+      "elder_voice": "어르신들의 이야기",
+      "daily_joy": "오늘의 즐거움"
+    },
+    "tag_common": ["다시봄라이프", "시니어"],
+    "open_type": "public",
+    "allow_comment": true
+  }
+}
