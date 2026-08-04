@@ -1,7 +1,6 @@
 {
-  "version": 5,
+  "version": 6,
   "note": "status: pending | drafted | published | skipped. 발행되면 published_at 과 post_url 이 채워집니다.",
-  "_v5_note": "시니어 정보 블로그로 전면 재작성했습니다. 다시봄라이프와 억지로 엮지 않습니다. 글마다 붙는 CTA 는 없습니다 — 모든 글 끝에 똑같은 카드 하나가 붙을 뿐이고, 그것도 발행기가 붙이지 글 생성기는 모릅니다.",
   "topics": [
     {
       "id": "B01",
@@ -244,102 +243,6 @@
       "status": "pending"
     },
     {
-      "id": "D01",
-      "category": "digital_care",
-      "title": "카카오톡 글씨 크게 키우고 글꼴 바꾸기",
-      "keyword": "카카오톡 글씨 크기",
-      "angle": "앱 안에서 바꾸는 법과 휴대폰 전체를 바꾸는 법, 두 가지",
-      "status": "pending"
-    },
-    {
-      "id": "D02",
-      "category": "digital_care",
-      "title": "자녀·손주를 사칭한 문자, 이렇게 가려냅니다",
-      "keyword": "스미싱 문자 대처",
-      "angle": "누르면 안 되는 링크의 생김새. 이미 눌렀을 때 해야 할 일",
-      "status": "pending"
-    },
-    {
-      "id": "D03",
-      "category": "digital_care",
-      "title": "유튜브 화면 크게 보고 시청 기록 지우기",
-      "keyword": "유튜브 화면 크게",
-      "angle": "전체화면과 글씨 키우기. 기록을 지우면 달라지는 것",
-      "status": "pending"
-    },
-    {
-      "id": "D04",
-      "category": "digital_care",
-      "title": "사진 여러 장을 카카오톡으로 한 번에 보내기",
-      "keyword": "카톡 사진 여러장",
-      "angle": "고르는 순서와 화질 선택. 용량이 클 때",
-      "status": "pending"
-    },
-    {
-      "id": "D05",
-      "category": "digital_care",
-      "title": "휴대폰이 느려졌을 때 저장공간 정리하기",
-      "keyword": "스마트폰 저장공간",
-      "angle": "무엇부터 지워야 안전한가. 사진을 지우지 않고 줄이는 법",
-      "status": "pending"
-    },
-    {
-      "id": "D06",
-      "category": "digital_care",
-      "title": "식당 키오스크, 당황하지 않고 주문하는 순서",
-      "keyword": "키오스크 주문",
-      "angle": "화면이 달라도 순서는 비슷하다. 잘못 눌렀을 때 되돌리기",
-      "status": "pending"
-    },
-    {
-      "id": "D07",
-      "category": "digital_care",
-      "title": "병원 진료 예약을 휴대폰으로 하는 법",
-      "keyword": "병원 예약 앱",
-      "angle": "예약과 접수의 차이. 취소하는 방법까지",
-      "status": "pending"
-    },
-    {
-      "id": "D08",
-      "category": "digital_care",
-      "title": "모바일 신분증, 어떻게 발급하고 어디에 쓰나",
-      "keyword": "모바일 신분증",
-      "angle": "발급 절차와 쓸 수 있는 곳. 실물 신분증이 여전히 필요한 경우",
-      "status": "pending"
-    },
-    {
-      "id": "D09",
-      "category": "digital_care",
-      "title": "지하철과 버스를 앱으로 확인하는 법",
-      "keyword": "지하철 버스 앱",
-      "angle": "도착 시간 보기와 길찾기. 즐겨찾기 등록",
-      "status": "pending"
-    },
-    {
-      "id": "D10",
-      "category": "digital_care",
-      "title": "광고 전화와 스팸 문자 차단하기",
-      "keyword": "스팸 전화 차단",
-      "angle": "한 번 차단하면 끝인 것과 아닌 것. 신고하는 방법",
-      "status": "pending"
-    },
-    {
-      "id": "D11",
-      "category": "digital_care",
-      "title": "간편결제, 안전하게 쓰려면 무엇을 지켜야 하나",
-      "keyword": "간편결제 안전",
-      "angle": "비밀번호와 생체인증. 휴대폰을 잃어버렸을 때",
-      "status": "pending"
-    },
-    {
-      "id": "D12",
-      "category": "digital_care",
-      "title": "사진이 사라지지 않게 백업해두기",
-      "keyword": "스마트폰 사진 백업",
-      "angle": "자동 백업 켜는 법. 휴대폰을 바꿔도 남게 하는 것",
-      "status": "pending"
-    },
-    {
       "id": "P01",
       "category": "hobby_pet",
       "title": "은퇴하고 취미를 고를 때 무엇을 기준으로 하나",
@@ -515,5 +418,6 @@
       "angle": "비밀번호와 인증서. 의심스러운 화면을 만났을 때",
       "status": "pending"
     }
-  ]
+  ],
+  "_v6_note": "디지털 케어 카테고리를 뺐습니다. 4개 카테고리로 운영합니다."
 }
