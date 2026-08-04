@@ -1,0 +1,27 @@
+# 네이버 로그인 세션 — 절대 커밋 금지
+.naver_session.json
+
+# API 키
+.env
+
+node_modules/
+
+# 생성물
+# 원고와 이미지는 커밋합니다. GitHub Actions 에서 만든 그림을 노트북에서
+# 받아 써야 발행이 되고, 만들어진 그림을 눈으로 확인할 수도 있어야 합니다.
+# 다만 디버깅용 스크린샷과 미리보기는 남길 이유가 없습니다.
+out/*
+!out/.gitkeep
+!out/*.json
+!out/*.png
+!out/assets/
+!out/assets/*.png
+!out/figs/
+!out/figs/*.png
+!out/illust/
+!out/illust/*.jpg
+
+# 디버깅용 — 커밋하지 않습니다
+out/error_*.png
+out/dryrun_*.png
+out/preview_*.html
