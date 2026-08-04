@@ -31,6 +31,18 @@
     <link rel="stylesheet" crossorigin href="/trivia/assets/index-sh2jNa47.css">
   </head>
   <body>
+    <!-- ★[← 홈으로](2026-08-04 Macho): 이 화면만 나가는 길이 없었다. 다른 콘텐츠와 같은 자리.
+         ⚠️React 재빌드 시 dist/index.html이 이 래퍼를 덮어쓴다 — 재빌드하면 이 블록을 되살릴 것. -->
+    <style>
+      .dsb-exit{position:fixed;bottom:14px;left:12px;z-index:9500;display:inline-flex;align-items:center;
+        min-height:48px;padding:0 18px;border-radius:50px;text-decoration:none;
+        background:rgba(255,255,255,.94);color:#6b5a48;font-weight:800;font-size:15px;
+        font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+        box-shadow:0 6px 18px -8px rgba(0,0,0,.35);border:1px solid #e2dbcc}
+      .dsb-exit:active{transform:scale(.97)}
+      @media(prefers-color-scheme:dark){.dsb-exit{background:rgba(40,34,28,.94);color:#e6d9c5;border-color:#4a4034}}
+    </style>
+    <a href="/?home=1" class="dsb-exit" aria-label="홈으로 돌아가기">← 홈으로</a>
     <div id="root"></div>
   </body>
 </html>
