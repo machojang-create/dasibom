@@ -1796,6 +1796,19 @@ body.dark .mk-sec-ic{background:color-mix(in srgb,var(--sc) 20%,#242420)}
 .card{position:relative}
 .mk-sec .card[data-reveal]{opacity:1 !important;transform:none !important;filter:none !important}
 .card .top{padding-right:30px}
+/* ★점층 공개(2026-08-04): 아직 안 열린 카드는 '아예 안 보이게'. 잠금(회색)이 아니라 감춤 — Macho 확인. */
+.card.mk-veil{display:none!important}
+.card.mk-fresh{position:relative}
+.card.mk-fresh::after{content:"오늘 새로 열렸어요";position:absolute;left:12px;top:12px;z-index:7;
+  background:#0E9C7D;color:#fff;font-size:11.5px;font-weight:800;padding:4px 10px;border-radius:50px;
+  box-shadow:0 6px 14px -6px rgba(0,0,0,.4);letter-spacing:.01em}
+#mkMoreWrap{max-width:1120px;margin:6px auto 30px;padding:0 20px;text-align:center}
+#mkMoreBtn{width:100%;max-width:520px;min-height:56px;border:none;border-radius:18px;cursor:pointer;
+  background:#FFF3E2;color:#8a6a48;font-size:16px;font-weight:800;font-family:inherit;
+  box-shadow:0 8px 20px -12px rgba(120,100,75,.45);padding:14px 18px;line-height:1.35}
+#mkMoreBtn:active{transform:scale(.985)}
+.mk-more-sub{margin-top:9px;font-size:13.5px;color:var(--muted);line-height:1.5}
+body.dark #mkMoreBtn,html.dsb-dark #mkMoreBtn{background:#3a3226;color:#e7d9bf}
 /* ★터치 규격(2026-08-04 FGT ③): 40×40 → 48×48. 카드마다 있어 오조작이 가장 잦은 버튼이다. */
 .mk-star{position:absolute;top:9px;right:9px;z-index:6;width:48px;height:48px;border-radius:50%;border:none;background:rgba(255,255,255,.92);box-shadow:0 6px 16px -8px rgba(80,64,36,.3);cursor:pointer;font-size:20px;line-height:1;color:#b3a17a;display:grid;place-items:center;padding:0;transition:transform .15s}
 body.dark .mk-star{background:rgba(40,36,30,.9);color:#c9b98e}
@@ -4545,5 +4558,121 @@ body.dark #dsbSoundInvite .si-text{color:#e8d9c2}
 })();
 </script>
 
+<script>
+/* ═══ 점층 공개 (2026-08-04 Macho 아이디어) ═══════════════════════════════
+   FGT: 첫인상 79.6(80대+ 69.5) — "17개나 되는데 뭘 먼저 해야 할지 모르겠다"(40대~80대 공통).
+   처음엔 카드 몇 개만 보이고 매일 하나씩 늘어난다. '선택장애 해소 + 내일 올 이유'를 동시에.
+
+   ★Macho 확인: '딤'은 회색 잠금이 아니라 '아예 안 보임'. 그래서 잠그지 않고 감춘다 —
+     [모두 보기]를 항상 두어 원할 때 전부 볼 수 있게 한다(막으면 유료로 오해받고, 이탈하면 영영 못 봄).
+   ★기존 사용자는 후퇴로 느끼므로 처음부터 전부 펼친 상태로 둔다.
+   순서는 봄이 추천 배너와 같은 원칙(인기 × 미이용) — 인기 높고 아직 안 써본 것부터.
+   ═══════════════════════════════════════════════════════════════════════ */
+(function(){
+  var SKEY='dasibom_reveal_start', AKEY='dasibom_reveal_all';
+  var FIRST_DAY=6;          // [조정] 첫날 보여줄 카드 수
+  var PER_DAY=1;            // [조정] 하루에 하나씩
+  // 인기 가중(FGT 타깃 60명 선호 + 기존 추천 배너 pop). 클수록 먼저 열린다.
+  var POP={memoir:92,matgo:90,ongi:88,trot:86,yahwa:84,plant:80,guppy:74,trendy:70,
+           gag:66,health:64,trivia:62,debate:58,dream:56,arcade:54,maeum:50,maeumlab:48,jobs:46,bible:20};
+
+  function today(){ var d=new Date(); return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2); }
+  function ls(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+  function lset(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+  // 이미 쓰고 계신 분인가 — 자서전 답변·출석·꽃잎·튜토리얼 흔적 중 하나라도 있으면 기존 사용자
+  function priorUser(){
+    try{
+      if(localStorage.getItem('memoir_answers')||localStorage.getItem('dasibom_content_visits')) return true;
+      for(var i=0;i<localStorage.length;i++){
+        var k=localStorage.key(i);
+        if(/^(dsbpt_|dasibom_tut_|memoir_)/.test(k)) return true;
+      }
+    }catch(e){}
+    return false;
+  }
+  function daysSince(s){
+    var a=new Date(s+'T00:00:00'), b=new Date(today()+'T00:00:00');
+    return Math.max(0, Math.round((b-a)/86400000));
+  }
+  function visits(){ try{ return JSON.parse(localStorage.getItem('dasibom_content_visits')||'{}')||{}; }catch(e){ return {}; } }
+
+  function apply(){
+    var cards=[].slice.call(document.querySelectorAll('.cards .card[data-key]'));
+    if(!cards.length) return;
+
+    if(ls(AKEY)==='1'){ mark(cards, cards.length, -1); return; }      // 모두 보기 선택함
+    if(!ls(SKEY)){
+      if(priorUser()){ lset(AKEY,'1'); mark(cards, cards.length, -1); return; }   // 기존 사용자 = 전부
+      lset(SKEY, today());
+    }
+    var day=daysSince(ls(SKEY));
+    var show=Math.min(cards.length, FIRST_DAY + day*PER_DAY);
+    if(show>=cards.length){ mark(cards, cards.length, -1); return; }
+
+    // 순서: 인기 × 미이용. 단 카테고리마다 최소 1개는 보이게 한다.
+    var v=visits();
+    var scored=cards.map(function(c,i){
+      var k=c.getAttribute('data-key');
+      var used=!!v[k];
+      return { el:c, i:i, cat:c.getAttribute('data-cat'), s:(POP[k]||40)*(used?0.5:1) };
+    }).sort(function(a,b){ return b.s-a.s; });
+
+    /* 카테고리를 돌아가며 하나씩 뽑는다(라운드로빈) — 한 칸에 몰리면 나머지 섹션이 텅 비어 보인다.
+       카테고리 안에서는 인기 × 미이용 순. */
+    var q={}, order=[];
+    scored.forEach(function(o){ if(!q[o.cat]){ q[o.cat]=[]; order.push(o.cat); } q[o.cat].push(o); });
+    var picked=[];
+    while(picked.length<show){
+      var moved=false;
+      for(var c0=0;c0<order.length && picked.length<show;c0++){
+        var arr=q[order[c0]];
+        if(arr && arr.length){ picked.push(arr.shift()); moved=true; }
+      }
+      if(!moved) break;
+    }
+    var set={}; picked.forEach(function(o){ set[o.i]=1; });
+
+    cards.forEach(function(c,i){ if(!set[i]) c.classList.add('mk-veil'); else c.classList.remove('mk-veil'); });
+    syncSectionCounts();
+    // 오늘 새로 열린 카드(가장 마지막에 편입된 것)에 표시
+    var newest=picked[Math.min(picked.length,show)-1];
+    if(day>0 && newest) newest.el.classList.add('mk-fresh');
+    addMoreBtn(cards.length - Object.keys(set).length);
+  }
+
+  function mark(cards){ cards.forEach(function(c){ c.classList.remove('mk-veil'); }); removeMoreBtn(); syncSectionCounts(); }
+
+  // 섹션 머리말의 개수(🕰추억·기록 3)를 '지금 보이는 수'로 맞춘다 — 3이라 써놓고 1개만 보이면 고장으로 오해한다.
+  function syncSectionCounts(){
+    document.querySelectorAll('.mk-sec').forEach(function(sec){
+      var n=sec.querySelectorAll('.card[data-key]:not(.mk-veil)').length;
+      var el=sec.querySelector('.mk-sec-n');
+      if(el) el.textContent=n;
+      sec.style.display = n ? '' : 'none';   // 통째로 감춰진 섹션은 머리말도 숨김
+    });
+  }
+
+  function removeMoreBtn(){ var b=document.getElementById('mkMoreWrap'); if(b) b.remove(); }
+  function addMoreBtn(hidden){
+    removeMoreBtn();
+    if(hidden<=0) return;
+    var last=document.querySelector('.mk-sec:last-of-type') || document.querySelector('.mk-sec');
+    if(!last) return;
+    var w=document.createElement('div'); w.id='mkMoreWrap';
+    w.innerHTML='<button type="button" id="mkMoreBtn">🌸 봄이가 아껴둔 이야기 '+hidden+'가지 모두 보기</button>'+
+                '<div class="mk-more-sub">하루에 하나씩 저절로 열려요. 지금 다 보셔도 괜찮아요.</div>';
+    last.parentNode.insertBefore(w, last.nextSibling);
+    document.getElementById('mkMoreBtn').addEventListener('click', function(){
+      lset(AKEY,'1');
+      document.querySelectorAll('.cards .card.mk-veil').forEach(function(c){ c.classList.remove('mk-veil'); });
+      removeMoreBtn();
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', apply);
+  else apply();
+  window._mkRevealApply=apply;   // QA용
+})();
+</script>
 </body>
 </html>
