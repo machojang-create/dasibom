@@ -1,10 +1,10 @@
 {
-  "version": 6,
+  "version": 7,
   "note": "status: pending | drafted | published | skipped. 발행되면 published_at 과 post_url 이 채워집니다.",
   "topics": [
     {
       "id": "B01",
-      "category": "benefit",
+      "category": "money",
       "title": "기초연금 수급자격과 신청 방법, 소득인정액이 뭔가",
       "keyword": "기초연금 수급자격",
       "angle": "소득인정액이라는 말부터 풀어야 한다. 재산이 소득으로 환산되는 구조와 주민센터 준비물",
@@ -12,7 +12,7 @@
     },
     {
       "id": "B02",
-      "category": "benefit",
+      "category": "money",
       "title": "어르신 무료 교통카드, 어디서 어떻게 발급받나",
       "keyword": "어르신 교통카드",
       "angle": "지하철과 버스가 지역마다 다르다. 발급처와 준비물, 분실했을 때",
@@ -20,7 +20,7 @@
     },
     {
       "id": "B03",
-      "category": "benefit",
+      "category": "money",
       "title": "국민연금 조기수령, 일찍 받는 게 이득일까",
       "keyword": "국민연금 조기수령",
       "angle": "앞당기면 줄고 미루면 는다. 어느 쪽이 유리한지는 건강과 소득으로 갈린다",
@@ -28,7 +28,7 @@
     },
     {
       "id": "B04",
-      "category": "benefit",
+      "category": "money",
       "title": "경로우대 KTX·SRT 할인, 얼마나 어떻게 받나",
       "keyword": "경로우대 기차표",
       "angle": "할인 대상 열차와 요일 조건. 창구와 앱 예매가 다른 점",
@@ -36,7 +36,7 @@
     },
     {
       "id": "B05",
-      "category": "benefit",
+      "category": "money",
       "title": "보건소 무료 건강검진, 무슨 검사를 받을 수 있나",
       "keyword": "보건소 무료 건강검진",
       "angle": "일반 병원 검진과 무엇이 다른지. 예약 방법과 준비",
@@ -44,7 +44,7 @@
     },
     {
       "id": "B06",
-      "category": "benefit",
+      "category": "money",
       "title": "임플란트 건강보험, 몇 살부터 몇 개까지 되나",
       "keyword": "임플란트 건강보험",
       "angle": "적용 나이와 개수 제한. 적용 안 되는 경우가 따로 있다",
@@ -52,7 +52,7 @@
     },
     {
       "id": "B07",
-      "category": "benefit",
+      "category": "money",
       "title": "장기요양등급 신청, 어디에 어떻게 하나",
       "keyword": "장기요양등급 신청",
       "angle": "신청부터 방문조사·판정까지 순서. 등급이 안 나왔을 때",
@@ -60,7 +60,7 @@
     },
     {
       "id": "B08",
-      "category": "benefit",
+      "category": "money",
       "title": "노인일자리 사업, 어떤 종류가 있고 언제 신청하나",
       "keyword": "노인일자리 신청",
       "angle": "공익형과 시장형의 차이. 모집 시기를 놓치지 않는 법",
@@ -68,7 +68,7 @@
     },
     {
       "id": "B09",
-      "category": "benefit",
+      "category": "money",
       "title": "치매 검사를 무료로 받는 방법",
       "keyword": "치매안심센터",
       "angle": "치매안심센터에서 하는 일. 검사 종류와 가족 상담",
@@ -76,7 +76,7 @@
     },
     {
       "id": "B10",
-      "category": "benefit",
+      "category": "money",
       "title": "무료로 맞을 수 있는 예방접종은 무엇인가",
       "keyword": "어르신 무료 예방접종",
       "angle": "독감과 폐렴 접종 대상과 시기. 보건소와 지정 병원의 차이",
@@ -84,7 +84,7 @@
     },
     {
       "id": "B11",
-      "category": "benefit",
+      "category": "money",
       "title": "기초연금과 국민연금을 같이 받을 수 있나",
       "keyword": "기초연금 국민연금 중복",
       "angle": "같이 받되 조정되는 구조. 무엇을 확인해야 하는지",
@@ -92,7 +92,7 @@
     },
     {
       "id": "B12",
-      "category": "benefit",
+      "category": "money",
       "title": "재산세·자동차세 어르신 감면, 해당되는지 확인하기",
       "keyword": "경로 세금 감면",
       "angle": "감면 대상과 신청처. 자동으로 되는 것과 신청해야 하는 것",
@@ -100,7 +100,7 @@
     },
     {
       "id": "B13",
-      "category": "benefit",
+      "category": "money",
       "title": "보청기 지원금, 받으려면 무엇이 필요한가",
       "keyword": "보청기 지원금",
       "angle": "청각장애 등록 여부에 따라 갈린다. 절차와 준비물",
@@ -108,7 +108,7 @@
     },
     {
       "id": "B14",
-      "category": "benefit",
+      "category": "money",
       "title": "난방비·전기요금 지원, 어디에 신청하나",
       "keyword": "에너지바우처 신청",
       "angle": "대상 확인과 신청 창구. 놓치기 쉬운 조건",
@@ -116,10 +116,90 @@
     },
     {
       "id": "B15",
-      "category": "benefit",
+      "category": "money",
       "title": "복지 혜택을 한 번에 확인하는 방법",
       "keyword": "복지로 맞춤급여",
       "angle": "흩어진 제도를 한자리에서 찾는 창구와 쓰는 법",
+      "status": "pending"
+    },
+    {
+      "id": "B16",
+      "category": "money",
+      "title": "은퇴 후 생활비, 얼마나 있어야 하는지 계산하기",
+      "keyword": "노후 생활비",
+      "angle": "남의 평균이 아니라 내 지출로 계산하는 순서",
+      "status": "pending"
+    },
+    {
+      "id": "B17",
+      "category": "money",
+      "title": "주택연금, 집을 넘기는 것인가",
+      "keyword": "주택연금",
+      "angle": "소유권에 대한 오해부터. 계속 살면서 받는 구조",
+      "status": "pending"
+    },
+    {
+      "id": "B18",
+      "category": "money",
+      "title": "퇴직금을 한 번에 받을까 나눠 받을까",
+      "keyword": "퇴직금 수령",
+      "angle": "목돈이 필요한 시점과 세금 처리가 갈림길",
+      "status": "pending"
+    },
+    {
+      "id": "B19",
+      "category": "money",
+      "title": "은퇴하니 건강보험료가 올랐다면",
+      "keyword": "은퇴 후 건강보험료",
+      "angle": "직장에서 지역으로 바뀌며 생기는 일. 완충 장치",
+      "status": "pending"
+    },
+    {
+      "id": "B20",
+      "category": "money",
+      "title": "잊고 있던 통장과 보험금 찾기",
+      "keyword": "휴면예금 찾기",
+      "angle": "한자리에서 조회하는 방법. 상속인이 찾을 때",
+      "status": "pending"
+    },
+    {
+      "id": "B21",
+      "category": "money",
+      "title": "예금자보호, 어디까지 지켜지나",
+      "keyword": "예금자보호",
+      "angle": "보호되는 것과 안 되는 것. 나눠 넣어야 하는 이유",
+      "status": "pending"
+    },
+    {
+      "id": "B22",
+      "category": "money",
+      "title": "자녀를 돕다가 내 노후가 흔들릴 때",
+      "keyword": "자녀 지원 노후",
+      "angle": "도움의 상한선을 미리 정해두기",
+      "status": "pending"
+    },
+    {
+      "id": "B23",
+      "category": "money",
+      "title": "상속과 증여, 미리 정리해두면 뭐가 다른가",
+      "keyword": "상속 증여 준비",
+      "angle": "남는 사람이 겪을 일을 줄이는 관점",
+      "status": "pending"
+    },
+    {
+      "id": "B24",
+      "category": "money",
+      "title": "은행 수수료를 줄이는 방법",
+      "keyword": "은행 수수료 면제",
+      "angle": "우대 조건과 창구 대신 쓸 수 있는 것",
+      "status": "pending"
+    },
+    {
+      "id": "B25",
+      "category": "money",
+      "title": "인터넷뱅킹을 안전하게 쓰려면",
+      "keyword": "인터넷뱅킹 보안",
+      "angle": "비밀번호와 인증서. 의심스러운 화면을 만났을 때",
       "status": "pending"
     },
     {
@@ -243,6 +323,86 @@
       "status": "pending"
     },
     {
+      "id": "H16",
+      "category": "health_food",
+      "title": "비타민C가 하는 일과 많이 든 음식",
+      "keyword": "비타민C 음식",
+      "angle": "면역만이 아니다. 열에 약해서 조리하면 줄어드는 점",
+      "status": "pending"
+    },
+    {
+      "id": "H17",
+      "category": "health_food",
+      "title": "나트륨을 줄이면 몸에서 달라지는 것",
+      "keyword": "나트륨 줄이기",
+      "angle": "싱겁게 먹는 게 아니라 짠맛을 옮기는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "H18",
+      "category": "health_food",
+      "title": "근육이 빠지는 것을 늦추려면 무엇을 먹나",
+      "keyword": "근감소증 음식",
+      "angle": "단백질만으로는 부족하다. 함께 필요한 것",
+      "status": "pending"
+    },
+    {
+      "id": "H19",
+      "category": "health_food",
+      "title": "뼈가 약해지는 것을 늦추는 음식",
+      "keyword": "골다공증 음식",
+      "angle": "칼슘과 비타민D 를 같이 봐야 하는 이유",
+      "status": "pending"
+    },
+    {
+      "id": "H20",
+      "category": "health_food",
+      "title": "소화가 잘 안 될 때 살펴볼 식습관",
+      "keyword": "소화 안될 때",
+      "angle": "먹는 것보다 먹는 방식. 씹는 횟수와 식사 간격",
+      "status": "pending"
+    },
+    {
+      "id": "H21",
+      "category": "health_food",
+      "title": "잇몸이 약해졌을 때 먹기 좋은 음식",
+      "keyword": "잇몸 건강 음식",
+      "angle": "씹기 부담을 줄이면서 영양을 지키는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "H22",
+      "category": "health_food",
+      "title": "변비가 이어질 때 무엇을 바꾸나",
+      "keyword": "변비 음식",
+      "angle": "식이섬유만 늘리면 오히려 더할 수 있다",
+      "status": "pending"
+    },
+    {
+      "id": "H23",
+      "category": "health_food",
+      "title": "눈이 쉽게 피로할 때 도움이 되는 음식",
+      "keyword": "눈 피로 음식",
+      "angle": "기대할 수 있는 것과 없는 것을 나눠서",
+      "status": "pending"
+    },
+    {
+      "id": "H24",
+      "category": "health_food",
+      "title": "영양제 대신 음식으로 채우려면",
+      "keyword": "영양제 대신 음식",
+      "angle": "보충제로 갈 때와 음식으로 될 때의 경계",
+      "status": "pending"
+    },
+    {
+      "id": "H25",
+      "category": "health_food",
+      "title": "혼자 먹는 끼니를 부실하지 않게 차리는 법",
+      "keyword": "혼밥 영양",
+      "angle": "반찬 수가 아니라 구성. 한 그릇으로 갖추는 방법",
+      "status": "pending"
+    },
+    {
       "id": "P01",
       "category": "hobby_pet",
       "title": "은퇴하고 취미를 고를 때 무엇을 기준으로 하나",
@@ -339,85 +499,69 @@
       "status": "pending"
     },
     {
-      "id": "F01",
-      "category": "senior_money",
-      "title": "은퇴 후 생활비, 얼마나 있어야 하는지 계산하기",
-      "keyword": "노후 생활비",
-      "angle": "남의 평균이 아니라 내 지출로 계산하는 순서",
+      "id": "P13",
+      "category": "hobby_pet",
+      "title": "사진을 취미로 시작할 때 무엇부터",
+      "keyword": "시니어 사진 취미",
+      "angle": "비싼 장비가 아니라 찍는 습관. 휴대폰으로 충분한 이유",
       "status": "pending"
     },
     {
-      "id": "F02",
-      "category": "senior_money",
-      "title": "주택연금, 집을 넘기는 것인가",
-      "keyword": "주택연금",
-      "angle": "소유권에 대한 오해부터. 계속 살면서 받는 구조",
+      "id": "P14",
+      "category": "hobby_pet",
+      "title": "악기를 처음 배운다면 무엇이 수월한가",
+      "keyword": "시니어 악기",
+      "angle": "손가락 힘과 호흡을 기준으로. 하모니카와 우쿨렐레가 꼽히는 이유",
       "status": "pending"
     },
     {
-      "id": "F03",
-      "category": "senior_money",
-      "title": "퇴직금을 한 번에 받을까 나눠 받을까",
-      "keyword": "퇴직금 수령",
-      "angle": "목돈이 필요한 시점과 세금 처리가 갈림길",
+      "id": "P15",
+      "category": "hobby_pet",
+      "title": "그림을 배운 적 없어도 시작할 수 있나",
+      "keyword": "시니어 그림 취미",
+      "angle": "잘 그리는 게 목적이 아닐 때 고르는 재료와 주제",
       "status": "pending"
     },
     {
-      "id": "F04",
-      "category": "senior_money",
-      "title": "은퇴하니 건강보험료가 올랐다면",
-      "keyword": "은퇴 후 건강보험료",
-      "angle": "직장에서 지역으로 바뀌며 생기는 일. 완충 장치",
+      "id": "P16",
+      "category": "hobby_pet",
+      "title": "동네에서 걷기 모임을 찾거나 만드는 법",
+      "keyword": "걷기 모임",
+      "angle": "혼자 걷기가 이어지지 않는 이유. 사람을 끼우는 방법",
       "status": "pending"
     },
     {
-      "id": "F05",
-      "category": "senior_money",
-      "title": "잊고 있던 통장과 보험금 찾기",
-      "keyword": "휴면예금 찾기",
-      "angle": "한자리에서 조회하는 방법. 상속인이 찾을 때",
+      "id": "P17",
+      "category": "hobby_pet",
+      "title": "도서관을 취미 공간으로 쓰는 방법",
+      "keyword": "도서관 이용",
+      "angle": "책만이 아니다. 강좌와 공간을 쓰는 법",
       "status": "pending"
     },
     {
-      "id": "F06",
-      "category": "senior_money",
-      "title": "예금자보호, 어디까지 지켜지나",
-      "keyword": "예금자보호",
-      "angle": "보호되는 것과 안 되는 것. 나눠 넣어야 하는 이유",
+      "id": "P18",
+      "category": "hobby_pet",
+      "title": "나이 든 강아지를 돌볼 때 달라지는 것",
+      "keyword": "노령견 돌봄",
+      "angle": "산책·사료·병원 주기가 바뀐다. 미리 알아둘 신호",
       "status": "pending"
     },
     {
-      "id": "F07",
-      "category": "senior_money",
-      "title": "자녀를 돕다가 내 노후가 흔들릴 때",
-      "keyword": "자녀 지원 노후",
-      "angle": "도움의 상한선을 미리 정해두기",
+      "id": "P19",
+      "category": "hobby_pet",
+      "title": "나이 든 고양이가 보내는 신호",
+      "keyword": "노묘 돌봄",
+      "angle": "물 마시는 양과 화장실 습관부터",
       "status": "pending"
     },
     {
-      "id": "F08",
-      "category": "senior_money",
-      "title": "상속과 증여, 미리 정리해두면 뭐가 다른가",
-      "keyword": "상속 증여 준비",
-      "angle": "남는 사람이 겪을 일을 줄이는 관점",
-      "status": "pending"
-    },
-    {
-      "id": "F09",
-      "category": "senior_money",
-      "title": "은행 수수료를 줄이는 방법",
-      "keyword": "은행 수수료 면제",
-      "angle": "우대 조건과 창구 대신 쓸 수 있는 것",
-      "status": "pending"
-    },
-    {
-      "id": "F10",
-      "category": "senior_money",
-      "title": "인터넷뱅킹을 안전하게 쓰려면",
-      "keyword": "인터넷뱅킹 보안",
-      "angle": "비밀번호와 인증서. 의심스러운 화면을 만났을 때",
+      "id": "P20",
+      "category": "hobby_pet",
+      "title": "화분에 물을 언제 줘야 할지 모르겠다면",
+      "keyword": "화분 물주기",
+      "angle": "날짜가 아니라 흙 상태로 판단하는 법",
       "status": "pending"
     }
   ],
-  "_v6_note": "디지털 케어 카테고리를 뺐습니다. 4개 카테고리로 운영합니다."
+  "_v7_note": "정책과 혜택 + 시니어 금융을 '돈과 혜택' 하나로 합쳤습니다. 국민연금·기초연금·건강보험료가 두 카테고리에 흩어져 있어 독자가 어디를 눌러야 할지 알 수 없었습니다. 건강과 영양은 비중(35%)을 감당하도록 15→25편으로 보강했습니다."
 }
