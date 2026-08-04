@@ -44,10 +44,13 @@ if (!fs.existsSync(sessionFile)) {
   process.exit(1);
 }
 
-// CTA 가 있는 글에만 링크를 붙입니다. 없으면 본문 그대로 — 정보로 끝나는 글입니다.
-const bodyWithCta = post.cta?.url
-  ? `${post.body.trim()}\n\n\n${post.cta.label}\n${post.cta.url}`
-  : post.body.trim();
+// 본문은 순수 정보입니다. 모든 글 끝에 똑같은 카드 하나만 붙습니다.
+// 글마다 다른 링크를 고르지 않습니다 — config.json 의 footer_card 를 끄면 카드도 없습니다.
+const card = config.footer_card;
+const bodyWithCta =
+  card?.enabled && card.lines?.length
+    ? `${post.body.trim()}\n\n\n${card.lines.join('\n')}`
+    : post.body.trim();
 
 let step = 'start';
 const browser = await chromium.launch({ headless: !headed, slowMo: headed ? 120 : 0 });
@@ -186,7 +189,7 @@ try {
   saveQueue(queue);
 
   console.log(`\n발행 완료: ${post.title}`);
-  console.log(`  ${reserveAt ? `예약 ${reserveAt}` : '즉시 발행'} · ${post.cta?.url ? 'CTA ' + post.cta.url : 'CTA 없음(정보 글)'}`);
+  console.log(`  ${reserveAt ? `예약 ${reserveAt}` : '즉시 발행'} · ${card?.enabled ? '고정 카드 붙임' : '카드 없음'}`);
   console.log(`  ${postUrl}`);
 } catch (err) {
   const shot = path.join(ensureOutDir(), `error_${post.id}_${Date.now()}.png`);

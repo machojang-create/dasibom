@@ -84,6 +84,24 @@ const assets = [
   ${logoMark(b, { x: w * 0.16, y: h * 0.16, size: w * 0.68, withPlate: false })}`,
   },
   {
+    name: 'side_banner.png',
+    what: '사이드바 배너 위젯 (네이버 관리 → 레이아웃·위젯 → 위젯 직접등록)',
+    w: 170,
+    h: 220,
+    svg: (w, h) => `
+  <rect width="${w}" height="${h}" rx="14" fill="${b.bg}" stroke="${b.primary}" stroke-width="2"/>
+  ${logoMark(b, { x: w / 2 - 26, y: 22, size: 52, withPlate: false })}
+  <text x="${w / 2}" y="103" text-anchor="middle" font-family="${b.font_family}"
+        font-size="19" font-weight="bold" fill="${b.text}">다시봄라이프</text>
+  <text x="${w / 2}" y="130" text-anchor="middle" font-family="${b.font_family}"
+        font-size="12.5" fill="${b.text}" opacity="0.7">은퇴 이후의 하루를</text>
+  <text x="${w / 2}" y="148" text-anchor="middle" font-family="${b.font_family}"
+        font-size="12.5" fill="${b.text}" opacity="0.7">위한 서비스</text>
+  <rect x="26" y="168" width="${w - 52}" height="32" rx="16" fill="${b.primary}"/>
+  <text x="${w / 2}" y="189" text-anchor="middle" font-family="${b.font_family}"
+        font-size="13" font-weight="bold" fill="#ffffff">둘러보기</text>`,
+  },
+  {
     name: 'mobile_cover.png',
     what: '모바일 커버 이미지',
     w: a.mobile_cover.width,

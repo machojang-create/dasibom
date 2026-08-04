@@ -1,579 +1,519 @@
 {
-  "version": 4,
+  "version": 5,
   "note": "status: pending | drafted | published | skipped. 발행되면 published_at 과 post_url 이 채워집니다.",
+  "_v5_note": "시니어 정보 블로그로 전면 재작성했습니다. 다시봄라이프와 억지로 엮지 않습니다. 글마다 붙는 CTA 는 없습니다 — 모든 글 끝에 똑같은 카드 하나가 붙을 뿐이고, 그것도 발행기가 붙이지 글 생성기는 모릅니다.",
   "topics": [
     {
-      "id": "M01",
-      "category": "my_record",
-      "title": "내 이야기를 글로 남기고 싶은데 어디서부터 시작할까",
-      "keyword": "자서전 쓰기",
-      "angle": "첫 문장이 안 써지는 건 시작점이 너무 커서다. 하루치로 잘라 쓰는 법",
-      "status": "pending",
-      "cta_key": "memoir"
-    },
-    {
-      "id": "M02",
-      "category": "my_record",
-      "title": "기억이 흐려지기 전에 적어두면 좋은 것들",
-      "keyword": "기억 기록",
-      "angle": "큰 사건보다 사라지기 쉬운 건 사소한 장면들. 무엇부터 붙잡을지",
+      "id": "B01",
+      "category": "benefit",
+      "title": "기초연금 수급자격과 신청 방법, 소득인정액이 뭔가",
+      "keyword": "기초연금 수급자격",
+      "angle": "소득인정액이라는 말부터 풀어야 한다. 재산이 소득으로 환산되는 구조와 주민센터 준비물",
       "status": "pending"
     },
     {
-      "id": "M03",
-      "category": "my_record",
-      "title": "말할 사람이 없어 하루 종일 입을 안 뗄 때",
-      "keyword": "노년 외로움",
-      "angle": "말수가 줄면 생각도 줄어든다. 매일 말을 이어갈 상대를 만드는 방법",
+      "id": "B02",
+      "category": "benefit",
+      "title": "어르신 무료 교통카드, 어디서 어떻게 발급받나",
+      "keyword": "어르신 교통카드",
+      "angle": "지하철과 버스가 지역마다 다르다. 발급처와 준비물, 분실했을 때",
       "status": "pending"
     },
     {
-      "id": "M04",
-      "category": "my_record",
-      "title": "혼잣말과 대화는 무엇이 다른가",
-      "keyword": "대화 상대",
-      "angle": "듣고 기억해주는 상대가 있을 때 말이 달라진다",
-      "status": "pending",
-      "cta_key": "subscribe"
-    },
-    {
-      "id": "M05",
-      "category": "my_record",
-      "title": "손주에게 남기고 싶은 이야기, 무엇을 골라야 할까",
-      "keyword": "손주에게 남기는 글",
-      "angle": "훈계는 안 읽힌다. 남는 건 구체적인 장면 하나",
+      "id": "B03",
+      "category": "benefit",
+      "title": "국민연금 조기수령, 일찍 받는 게 이득일까",
+      "keyword": "국민연금 조기수령",
+      "angle": "앞당기면 줄고 미루면 는다. 어느 쪽이 유리한지는 건강과 소득으로 갈린다",
       "status": "pending"
     },
     {
-      "id": "M06",
-      "category": "my_record",
-      "title": "지금 정리해두면 나중에 가족이 덜 힘든 것들",
-      "keyword": "마음의 유언",
-      "angle": "재산 이야기가 아니라 마음의 정리. 미루면 못 하는 이유",
-      "status": "pending",
-      "cta_key": "letter"
-    },
-    {
-      "id": "M07",
-      "category": "my_record",
-      "title": "글 쓰는 게 어색할 때, 말로 시작해도 되는 이유",
-      "keyword": "말로 쓰는 글",
-      "angle": "글씨체·맞춤법 걱정이 손을 멈추게 한다. 그 벽을 넘는 순서",
+      "id": "B04",
+      "category": "benefit",
+      "title": "경로우대 KTX·SRT 할인, 얼마나 어떻게 받나",
+      "keyword": "경로우대 기차표",
+      "angle": "할인 대상 열차와 요일 조건. 창구와 앱 예매가 다른 점",
       "status": "pending"
     },
     {
-      "id": "M08",
-      "category": "my_record",
-      "title": "내 인생에서 되짚어볼 만한 갈림길 찾기",
-      "keyword": "인생 회고",
-      "angle": "후회를 세는 게 아니라 선택의 이유를 기억해내는 작업",
+      "id": "B05",
+      "category": "benefit",
+      "title": "보건소 무료 건강검진, 무슨 검사를 받을 수 있나",
+      "keyword": "보건소 무료 건강검진",
+      "angle": "일반 병원 검진과 무엇이 다른지. 예약 방법과 준비",
       "status": "pending"
     },
     {
-      "id": "M09",
-      "category": "my_record",
-      "title": "살면서 만난 사람들을 한 장에 정리해보기",
-      "keyword": "인물 정리",
-      "angle": "이름이 떠오르지 않는 사람일수록 이야기가 남아 있다",
-      "status": "pending",
-      "cta_key": "people"
+      "id": "B06",
+      "category": "benefit",
+      "title": "임플란트 건강보험, 몇 살부터 몇 개까지 되나",
+      "keyword": "임플란트 건강보험",
+      "angle": "적용 나이와 개수 제한. 적용 안 되는 경우가 따로 있다",
+      "status": "pending"
     },
     {
-      "id": "M10",
-      "category": "my_record",
-      "title": "다른 사람은 자기 이야기를 어떻게 썼을까",
-      "keyword": "자서전 예시",
-      "angle": "남의 글을 먼저 읽으면 내 이야기의 실마리가 잡힌다",
-      "status": "pending",
-      "cta_key": "library"
+      "id": "B07",
+      "category": "benefit",
+      "title": "장기요양등급 신청, 어디에 어떻게 하나",
+      "keyword": "장기요양등급 신청",
+      "angle": "신청부터 방문조사·판정까지 순서. 등급이 안 나왔을 때",
+      "status": "pending"
+    },
+    {
+      "id": "B08",
+      "category": "benefit",
+      "title": "노인일자리 사업, 어떤 종류가 있고 언제 신청하나",
+      "keyword": "노인일자리 신청",
+      "angle": "공익형과 시장형의 차이. 모집 시기를 놓치지 않는 법",
+      "status": "pending"
+    },
+    {
+      "id": "B09",
+      "category": "benefit",
+      "title": "치매 검사를 무료로 받는 방법",
+      "keyword": "치매안심센터",
+      "angle": "치매안심센터에서 하는 일. 검사 종류와 가족 상담",
+      "status": "pending"
+    },
+    {
+      "id": "B10",
+      "category": "benefit",
+      "title": "무료로 맞을 수 있는 예방접종은 무엇인가",
+      "keyword": "어르신 무료 예방접종",
+      "angle": "독감과 폐렴 접종 대상과 시기. 보건소와 지정 병원의 차이",
+      "status": "pending"
+    },
+    {
+      "id": "B11",
+      "category": "benefit",
+      "title": "기초연금과 국민연금을 같이 받을 수 있나",
+      "keyword": "기초연금 국민연금 중복",
+      "angle": "같이 받되 조정되는 구조. 무엇을 확인해야 하는지",
+      "status": "pending"
+    },
+    {
+      "id": "B12",
+      "category": "benefit",
+      "title": "재산세·자동차세 어르신 감면, 해당되는지 확인하기",
+      "keyword": "경로 세금 감면",
+      "angle": "감면 대상과 신청처. 자동으로 되는 것과 신청해야 하는 것",
+      "status": "pending"
+    },
+    {
+      "id": "B13",
+      "category": "benefit",
+      "title": "보청기 지원금, 받으려면 무엇이 필요한가",
+      "keyword": "보청기 지원금",
+      "angle": "청각장애 등록 여부에 따라 갈린다. 절차와 준비물",
+      "status": "pending"
+    },
+    {
+      "id": "B14",
+      "category": "benefit",
+      "title": "난방비·전기요금 지원, 어디에 신청하나",
+      "keyword": "에너지바우처 신청",
+      "angle": "대상 확인과 신청 창구. 놓치기 쉬운 조건",
+      "status": "pending"
+    },
+    {
+      "id": "B15",
+      "category": "benefit",
+      "title": "복지 혜택을 한 번에 확인하는 방법",
+      "keyword": "복지로 맞춤급여",
+      "angle": "흩어진 제도를 한자리에서 찾는 창구와 쓰는 법",
+      "status": "pending"
     },
     {
       "id": "H01",
-      "category": "healthy_aging",
-      "title": "치매 예방에 도움이 된다는 활동, 무엇부터 하면 되나",
-      "keyword": "치매 예방",
-      "angle": "거창한 프로그램보다 매일 반복되는 짧은 활동이 현실적",
+      "category": "health_food",
+      "title": "단백질이 부족하면 몸에 생기는 일과 챙기는 음식",
+      "keyword": "시니어 단백질",
+      "angle": "근육이 줄고 회복이 늦어진다. 끼니마다 나눠 먹는 것이 핵심",
       "status": "pending"
     },
     {
       "id": "H02",
-      "category": "healthy_aging",
-      "title": "기억력이 예전 같지 않다고 느껴질 때 살펴볼 것",
-      "keyword": "기억력 감퇴",
-      "angle": "노화와 이상 신호의 차이. 병원 가기 전 스스로 관찰할 지점",
+      "category": "health_food",
+      "title": "칼슘, 부족하면 어떻게 되고 무엇에 많은가",
+      "keyword": "칼슘 많은 음식",
+      "angle": "뼈만이 아니다. 우유가 안 맞을 때 대신할 음식들",
       "status": "pending"
     },
     {
       "id": "H03",
-      "category": "healthy_aging",
-      "title": "혼자 사는 집에서 가장 위험한 곳은 어디인가",
-      "keyword": "혼자 사는 노인 안전",
-      "angle": "낙상·탈수·약 누락. 집 안에서 실제로 생기는 일과 대비",
+      "category": "health_food",
+      "title": "비타민D가 왜 중요하고 어떻게 채우나",
+      "keyword": "비타민D 부족",
+      "angle": "햇빛과 음식 두 갈래. 실내 생활이 길어질 때 생기는 일",
       "status": "pending"
     },
     {
       "id": "H04",
-      "category": "healthy_aging",
-      "title": "약 챙겨 먹는 걸 자꾸 잊는다면",
-      "keyword": "약 복용 잊음",
-      "angle": "약통보다 중요한 건 하루 일과에 붙이는 것",
-      "status": "pending",
-      "cta_key": "health"
+      "category": "health_food",
+      "title": "마그네슘이 부족할 때 나타나는 신호",
+      "keyword": "마그네슘 많은 음식",
+      "angle": "다리에 쥐가 나거나 눈꺼풀이 떨릴 때. 견과류와 채소",
+      "status": "pending"
     },
     {
       "id": "H05",
-      "category": "healthy_aging",
-      "title": "괜히 기운이 없고 아무것도 하기 싫을 때",
-      "keyword": "노년기 우울",
-      "angle": "게으름이 아니라 신호일 수 있다. 스스로 확인할 지점",
-      "status": "pending",
-      "cta_key": "maeum"
+      "category": "health_food",
+      "title": "오메가3, 무슨 일을 하고 어떤 생선에 많은가",
+      "keyword": "오메가3 음식",
+      "angle": "등푸른 생선 위주. 조리 방법에 따라 달라지는 점",
+      "status": "pending"
     },
     {
       "id": "H06",
-      "category": "healthy_aging",
-      "title": "넘어지지 않으려면 집에서 먼저 바꿀 곳",
-      "keyword": "낙상 예방",
-      "angle": "화장실·문턱·조명. 돈 안 드는 것부터",
+      "category": "health_food",
+      "title": "식이섬유가 부족하면 생기는 일",
+      "keyword": "식이섬유 많은 음식",
+      "angle": "변비만의 문제가 아니다. 물과 함께 늘려야 하는 이유",
       "status": "pending"
     },
     {
       "id": "H07",
-      "category": "healthy_aging",
-      "title": "병원에서 들은 말이 잘 기억나지 않을 때",
-      "keyword": "진료 기록",
-      "angle": "진료실에서 물어볼 것을 미리 적어가는 방법",
+      "category": "health_food",
+      "title": "철분 부족의 신호와 흡수를 돕는 음식",
+      "keyword": "철분 많은 음식",
+      "angle": "기운이 없고 어지러울 때. 같이 먹으면 흡수가 잘 되는 것",
       "status": "pending"
     },
     {
       "id": "H08",
-      "category": "healthy_aging",
-      "title": "입맛이 없어 끼니를 거르게 된다면",
-      "keyword": "노인 식사량",
-      "angle": "입맛이 아니라 씹기·삼키기·혼자 먹는 상황의 문제일 수 있다",
+      "category": "health_food",
+      "title": "비타민B12, 나이 들수록 신경 써야 하는 이유",
+      "keyword": "비타민B12 부족",
+      "angle": "흡수가 떨어진다. 저림과 기억력에 관련된 신호",
       "status": "pending"
     },
     {
       "id": "H09",
-      "category": "healthy_aging",
-      "title": "잠이 얕아지고 새벽에 자꾸 깰 때",
-      "keyword": "노년 불면",
-      "angle": "수면 시간이 준 게 아니라 나뉜 것일 수 있다. 낮을 바꾸는 접근",
+      "category": "health_food",
+      "title": "칼륨이 하는 일과 많이 든 음식",
+      "keyword": "칼륨 많은 음식",
+      "angle": "짜게 먹는 식습관과의 관계. 신장이 약할 때 주의할 점",
       "status": "pending"
     },
     {
       "id": "H10",
-      "category": "healthy_aging",
-      "title": "무릎이 아파도 계속할 수 있는 운동",
-      "keyword": "무릎 운동",
-      "angle": "쉬면 더 나빠진다. 강도가 아니라 방식을 바꾸는 것",
+      "category": "health_food",
+      "title": "아연이 부족하면 어떤 일이 생기나",
+      "keyword": "아연 많은 음식",
+      "angle": "입맛이 떨어지고 상처가 늦게 아문다",
+      "status": "pending"
+    },
+    {
+      "id": "H11",
+      "category": "health_food",
+      "title": "눈 건강에 관계된 루테인, 어떤 음식에 있나",
+      "keyword": "루테인 음식",
+      "angle": "초록 잎채소 위주. 기대할 수 있는 것과 없는 것",
+      "status": "pending"
+    },
+    {
+      "id": "H12",
+      "category": "health_food",
+      "title": "물을 얼마나 마셔야 하고 왜 갈증을 못 느끼나",
+      "keyword": "시니어 수분 섭취",
+      "angle": "나이가 들면 갈증 신호가 둔해진다. 나눠 마시는 습관",
+      "status": "pending"
+    },
+    {
+      "id": "H13",
+      "category": "health_food",
+      "title": "무릎이 아플 때 집에서 하는 스트레칭 세 가지",
+      "keyword": "무릎 스트레칭",
+      "angle": "앉아서 할 수 있는 동작만. 아프면 멈추는 기준",
+      "status": "pending"
+    },
+    {
+      "id": "H14",
+      "category": "health_food",
+      "title": "굳은 어깨를 푸는 간단한 동작",
+      "keyword": "어깨 스트레칭",
+      "angle": "벽이나 수건을 쓰는 방법. 하루에 몇 번이 적당한지",
+      "status": "pending"
+    },
+    {
+      "id": "H15",
+      "category": "health_food",
+      "title": "허리가 뻐근할 때 누워서 하는 동작",
+      "keyword": "허리 스트레칭",
+      "angle": "누운 자세로만. 하면 안 되는 경우",
+      "status": "pending"
+    },
+    {
+      "id": "D01",
+      "category": "digital_care",
+      "title": "카카오톡 글씨 크게 키우고 글꼴 바꾸기",
+      "keyword": "카카오톡 글씨 크기",
+      "angle": "앱 안에서 바꾸는 법과 휴대폰 전체를 바꾸는 법, 두 가지",
+      "status": "pending"
+    },
+    {
+      "id": "D02",
+      "category": "digital_care",
+      "title": "자녀·손주를 사칭한 문자, 이렇게 가려냅니다",
+      "keyword": "스미싱 문자 대처",
+      "angle": "누르면 안 되는 링크의 생김새. 이미 눌렀을 때 해야 할 일",
+      "status": "pending"
+    },
+    {
+      "id": "D03",
+      "category": "digital_care",
+      "title": "유튜브 화면 크게 보고 시청 기록 지우기",
+      "keyword": "유튜브 화면 크게",
+      "angle": "전체화면과 글씨 키우기. 기록을 지우면 달라지는 것",
+      "status": "pending"
+    },
+    {
+      "id": "D04",
+      "category": "digital_care",
+      "title": "사진 여러 장을 카카오톡으로 한 번에 보내기",
+      "keyword": "카톡 사진 여러장",
+      "angle": "고르는 순서와 화질 선택. 용량이 클 때",
+      "status": "pending"
+    },
+    {
+      "id": "D05",
+      "category": "digital_care",
+      "title": "휴대폰이 느려졌을 때 저장공간 정리하기",
+      "keyword": "스마트폰 저장공간",
+      "angle": "무엇부터 지워야 안전한가. 사진을 지우지 않고 줄이는 법",
+      "status": "pending"
+    },
+    {
+      "id": "D06",
+      "category": "digital_care",
+      "title": "식당 키오스크, 당황하지 않고 주문하는 순서",
+      "keyword": "키오스크 주문",
+      "angle": "화면이 달라도 순서는 비슷하다. 잘못 눌렀을 때 되돌리기",
+      "status": "pending"
+    },
+    {
+      "id": "D07",
+      "category": "digital_care",
+      "title": "병원 진료 예약을 휴대폰으로 하는 법",
+      "keyword": "병원 예약 앱",
+      "angle": "예약과 접수의 차이. 취소하는 방법까지",
+      "status": "pending"
+    },
+    {
+      "id": "D08",
+      "category": "digital_care",
+      "title": "모바일 신분증, 어떻게 발급하고 어디에 쓰나",
+      "keyword": "모바일 신분증",
+      "angle": "발급 절차와 쓸 수 있는 곳. 실물 신분증이 여전히 필요한 경우",
+      "status": "pending"
+    },
+    {
+      "id": "D09",
+      "category": "digital_care",
+      "title": "지하철과 버스를 앱으로 확인하는 법",
+      "keyword": "지하철 버스 앱",
+      "angle": "도착 시간 보기와 길찾기. 즐겨찾기 등록",
+      "status": "pending"
+    },
+    {
+      "id": "D10",
+      "category": "digital_care",
+      "title": "광고 전화와 스팸 문자 차단하기",
+      "keyword": "스팸 전화 차단",
+      "angle": "한 번 차단하면 끝인 것과 아닌 것. 신고하는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "D11",
+      "category": "digital_care",
+      "title": "간편결제, 안전하게 쓰려면 무엇을 지켜야 하나",
+      "keyword": "간편결제 안전",
+      "angle": "비밀번호와 생체인증. 휴대폰을 잃어버렸을 때",
+      "status": "pending"
+    },
+    {
+      "id": "D12",
+      "category": "digital_care",
+      "title": "사진이 사라지지 않게 백업해두기",
+      "keyword": "스마트폰 사진 백업",
+      "angle": "자동 백업 켜는 법. 휴대폰을 바꿔도 남게 하는 것",
       "status": "pending"
     },
     {
       "id": "P01",
       "category": "hobby_pet",
-      "title": "이 나이에 강아지를 키워도 될까 망설여진다면",
-      "keyword": "노년 반려견",
-      "angle": "산책·병원비·내가 아플 때. 결정 전에 스스로 따져볼 것",
-      "status": "pending"
-    },
-    {
-      "id": "P02",
-      "category": "hobby_pet",
-      "title": "손이 덜 가는 반려동물은 무엇이 다른가",
-      "keyword": "손 안 가는 반려동물",
-      "angle": "품종이 아니라 하루에 몇 번 움직여야 하는지가 기준",
-      "status": "pending"
-    },
-    {
-      "id": "P03",
-      "category": "hobby_pet",
-      "title": "무릎이 아파도 강아지 산책을 이어가는 방법",
-      "keyword": "반려견 산책",
-      "angle": "시간을 줄이는 대신 밀도를 올리는 코스 짜기",
-      "status": "pending"
-    },
-    {
-      "id": "P04",
-      "category": "hobby_pet",
-      "title": "반려동물을 떠나보낸 뒤 어떻게 기억할까",
-      "keyword": "반려동물 무지개다리",
-      "angle": "잊는 게 아니라 남기는 쪽. 함께한 시간을 글로 옮기기",
-      "status": "pending"
-    },
-    {
-      "id": "P05",
-      "category": "hobby_pet",
-      "title": "반려동물을 키울 형편이 안 될 때 택할 수 있는 것",
-      "keyword": "반려동물 대신",
-      "angle": "주거·건강·돌봄 공백으로 어려울 때의 대안들",
-      "status": "pending"
-    },
-    {
-      "id": "P06",
-      "category": "hobby_pet",
-      "title": "고양이와 살 때 집 안에서 바꿔야 할 것",
-      "keyword": "고양이 키우기",
-      "angle": "높은 곳·모래·털. 허리 굽히는 횟수를 줄이는 배치",
-      "status": "pending"
-    },
-    {
-      "id": "P07",
-      "category": "hobby_pet",
-      "title": "화분을 자꾸 죽인다면 이 식물부터",
-      "keyword": "키우기 쉬운 식물",
-      "angle": "물 주는 주기가 헷갈리는 게 원인. 실패해도 되살아나는 종류",
-      "status": "pending",
-      "cta_key": "plant"
-    },
-    {
-      "id": "P08",
-      "category": "hobby_pet",
-      "title": "베란다 텃밭, 무엇부터 준비하면 되나",
-      "keyword": "베란다 텃밭",
-      "angle": "흙과 화분 고르기부터. 허리를 덜 쓰는 높이",
-      "status": "pending"
-    },
-    {
-      "id": "P09",
-      "category": "hobby_pet",
-      "title": "식물에 말을 거는 게 정말 도움이 될까",
-      "keyword": "반려 식물",
-      "angle": "말할 상대가 있다는 것의 의미",
-      "status": "pending",
-      "cta_key": "plant"
-    },
-    {
-      "id": "P10",
-      "category": "hobby_pet",
-      "title": "어항 준비부터 첫 주까지 무엇을 해야 하나",
-      "keyword": "어항 초보",
-      "angle": "물 잡기가 전부다. 서두르면 실패하는 이유",
-      "status": "pending",
-      "cta_key": "guppy"
-    },
-    {
-      "id": "P11",
-      "category": "hobby_pet",
-      "title": "구피가 새끼를 낳았을 때 해야 할 일",
-      "keyword": "구피 새끼",
-      "angle": "분리·먹이·물 관리. 가장 흔한 실수부터",
-      "status": "pending",
-      "cta_key": "guppy"
-    },
-    {
-      "id": "P12",
-      "category": "hobby_pet",
-      "title": "은퇴하고 나서 시작하기 좋은 취미 고르는 기준",
+      "title": "은퇴하고 취미를 고를 때 무엇을 기준으로 하나",
       "keyword": "은퇴 후 취미",
       "angle": "재미보다 지속 가능성. 혼자 할 수 있는지, 돈이 계속 드는지",
       "status": "pending"
     },
     {
-      "id": "P13",
+      "id": "P02",
       "category": "hobby_pet",
-      "title": "서예를 다시 시작하고 싶은데 손이 떨린다면",
+      "title": "서예를 시작하고 싶은데 손이 떨린다면",
       "keyword": "서예 시작",
-      "angle": "떨림이 있어도 할 수 있는 방식. 도구부터 가볍게",
+      "angle": "떨림이 있어도 되는 방식. 도구는 가볍게",
       "status": "pending"
     },
     {
-      "id": "P14",
+      "id": "P03",
       "category": "hobby_pet",
       "title": "무릎을 아끼면서 등산을 오래 하는 법",
       "keyword": "등산 무릎",
-      "angle": "오르막보다 내리막이 문제. 코스와 속도를 바꾸는 기준",
+      "angle": "오르막보다 내리막이 문제. 코스와 속도",
       "status": "pending"
     },
     {
-      "id": "P15",
+      "id": "P04",
       "category": "hobby_pet",
-      "title": "노래교실이 오래 인기 있는 진짜 이유",
-      "keyword": "노래교실",
-      "angle": "노래가 아니라 매주 같은 시간에 만나는 사람이 핵심",
+      "title": "베란다 텃밭, 무엇부터 준비하나",
+      "keyword": "베란다 텃밭",
+      "angle": "흙과 화분 고르기. 허리를 덜 쓰는 높이",
       "status": "pending"
     },
     {
-      "id": "B01",
-      "category": "care_policy",
-      "title": "고독사 예방 사업, 현장에서 실제로 막히는 지점",
-      "keyword": "고독사 예방",
-      "angle": "명단은 있는데 확인이 안 되는 구조. 접촉 빈도의 문제",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "B02",
-      "category": "care_policy",
-      "title": "스마트 경로당, 도입 전에 확인해야 할 5가지",
-      "keyword": "스마트 경로당",
-      "angle": "장비보다 중요한 건 어르신이 계속 쓰느냐",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "B03",
-      "category": "care_policy",
-      "title": "노인 안부확인 시스템, 전화·방문과 무엇이 다른가",
-      "keyword": "노인 안부확인",
-      "angle": "인력 없이 매일 확인이 가능한지, 기록이 남는지",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "B04",
-      "category": "care_policy",
-      "title": "복지관 프로그램 참여율이 낮은 이유와 개선 순서",
-      "keyword": "복지관 프로그램 참여율",
-      "angle": "홍보 문제가 아니라 진입 장벽 문제인 경우가 많다",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "B05",
-      "category": "care_policy",
-      "title": "돌봄 사업 실적 보고, 무엇을 기록해야 남는가",
-      "keyword": "돌봄 사업 실적",
-      "angle": "사진과 서명 말고 지표로 남는 데이터",
-      "cta_key": "care_report",
+      "id": "P05",
+      "category": "hobby_pet",
+      "title": "자꾸 죽이게 된다면 이 식물부터",
+      "keyword": "키우기 쉬운 식물",
+      "angle": "물 주는 주기가 헷갈리는 게 원인",
       "status": "pending"
     },
     {
-      "id": "B06",
-      "category": "care_policy",
-      "title": "어르신이 안 쓰는 복지 기기의 공통점",
-      "keyword": "시니어 디지털 기기",
-      "angle": "글씨 크기, 단계 수, 실패했을 때 되돌아가는 길",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "B07",
-      "category": "care_policy",
-      "title": "장기요양 대상자 대화 기록, 어디까지 남겨야 하나",
-      "keyword": "장기요양 기록",
-      "angle": "민감정보 동의 범위와 실무에서 실제로 쓰이는 기록의 형태",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "B08",
-      "category": "care_policy",
-      "title": "돌봄 인력 한 명이 감당할 수 있는 인원의 한계",
-      "keyword": "돌봄 인력 부족",
-      "angle": "인원을 늘리는 것 말고 접촉 방식을 바꾸는 선택지",
-      "status": "pending",
-      "cta_key": "kiosk"
-    },
-    {
-      "id": "N01",
-      "category": "fun_memory",
-      "title": "옛날 오락실 게임, 지금 다시 해볼 수 있는 곳",
-      "keyword": "추억의 오락실 게임",
-      "angle": "그 시절 게임이 왜 지금 머리 쓰기에 좋은가",
-      "status": "pending",
-      "cta_key": "arcade"
-    },
-    {
-      "id": "N02",
-      "category": "fun_memory",
-      "title": "판 짤 사람이 없어도 화투를 칠 수 있을까",
-      "keyword": "맞고 혼자",
-      "angle": "사람을 못 모으는 상황에서의 대안",
-      "status": "pending",
-      "cta_key": "matgo"
-    },
-    {
-      "id": "N03",
-      "category": "fun_memory",
-      "title": "그때 그 시절 물건 이름, 얼마나 기억나시나요",
-      "keyword": "옛날 물건 이름",
-      "angle": "기억을 꺼내는 놀이. 가족과 함께 맞춰보는 방식",
+      "id": "P06",
+      "category": "hobby_pet",
+      "title": "강아지를 키울지 망설여질 때 따져볼 것",
+      "keyword": "노년 반려견",
+      "angle": "산책·병원비·내가 아플 때를 미리 계산하기",
       "status": "pending"
     },
     {
-      "id": "N04",
-      "category": "fun_memory",
-      "title": "간밤에 꾼 꿈이 자꾸 마음에 걸릴 때",
-      "keyword": "꿈 해몽",
-      "angle": "꿈풀이를 믿고 말고를 떠나, 꿈을 적어두면 생기는 것",
-      "status": "pending",
-      "cta_key": "dream"
-    },
-    {
-      "id": "N05",
-      "category": "fun_memory",
-      "title": "손주가 쓰는 말이 도무지 안 들릴 때",
-      "keyword": "요즘 말",
-      "angle": "모르는 채 넘기면 대화가 끊긴다. 되묻지 않고 알아두는 법",
+      "id": "P07",
+      "category": "hobby_pet",
+      "title": "손이 덜 가는 반려동물은 무엇이 다른가",
+      "keyword": "손 안 가는 반려동물",
+      "angle": "품종이 아니라 하루에 몇 번 움직여야 하는지",
       "status": "pending"
     },
     {
-      "id": "W01",
-      "category": "work_again",
-      "title": "은퇴하고 다시 일을 찾을 때 무엇부터 정해야 하나",
-      "keyword": "은퇴 후 재취업",
-      "angle": "직종보다 먼저 정할 것은 하루에 몇 시간을 쓸 것인가",
-      "status": "pending",
-      "cta_key": "jobs"
-    },
-    {
-      "id": "W02",
-      "category": "work_again",
-      "title": "해온 일을 그만두고 다른 일을 해도 될까",
-      "keyword": "시니어 직업 전환",
-      "angle": "경력을 버리는 게 아니라 옮겨 쓰는 방법",
+      "id": "P08",
+      "category": "hobby_pet",
+      "title": "무릎이 아파도 강아지 산책을 이어가려면",
+      "keyword": "반려견 산책",
+      "angle": "시간을 줄이고 밀도를 올리는 코스",
       "status": "pending"
     },
     {
-      "id": "W03",
-      "category": "work_again",
-      "title": "이력서에 쓸 게 없다고 느껴진다면",
-      "keyword": "시니어 이력서",
-      "angle": "긴 경력을 한 장으로 줄이는 순서. 무엇을 남기고 무엇을 뺄지",
-      "status": "pending",
-      "cta_key": "jobs"
-    },
-    {
-      "id": "W04",
-      "category": "work_again",
-      "title": "노인일자리와 일반 채용은 무엇이 다른가",
-      "keyword": "노인일자리",
-      "angle": "신청 경로와 근무 조건의 차이. 어느 쪽이 나에게 맞는지",
-      "status": "pending",
-      "cta_key": "jobs"
-    },
-    {
-      "id": "W05",
-      "category": "work_again",
-      "title": "면접에서 나이 이야기가 나왔을 때",
-      "keyword": "시니어 면접",
-      "angle": "변명하지 않고 강점으로 돌리는 대답의 구조",
+      "id": "P09",
+      "category": "hobby_pet",
+      "title": "고양이와 살 때 집에서 바꿔야 할 것",
+      "keyword": "고양이 키우기",
+      "angle": "높은 곳·모래·털. 허리 굽히는 횟수 줄이기",
       "status": "pending"
     },
     {
-      "id": "E01",
-      "category": "my_record",
-      "title": "[인터뷰] 여든에 처음 자기 이야기를 적어보신 분",
-      "keyword": "어르신 인터뷰",
-      "angle": "직접 인터뷰 필요. 자동 생성 금지",
-      "manual": true,
+      "id": "P10",
+      "category": "hobby_pet",
+      "title": "어항을 처음 시작할 때 첫 주에 할 일",
+      "keyword": "어항 초보",
+      "angle": "물 잡기가 전부다. 서두르면 실패하는 이유",
       "status": "pending"
     },
     {
-      "id": "E02",
-      "category": "my_record",
-      "title": "[인터뷰] 매일 아침 같은 시간에 앱을 켜시는 이유",
-      "keyword": "시니어 사용자 이야기",
-      "angle": "직접 인터뷰 필요. 자동 생성 금지",
-      "manual": true,
+      "id": "P11",
+      "category": "hobby_pet",
+      "title": "반려동물 병원비, 미리 준비하는 방법",
+      "keyword": "반려동물 병원비",
+      "angle": "갑자기 큰돈이 나가는 구조. 매달 떼어두는 습관",
       "status": "pending"
     },
     {
-      "id": "E03",
-      "category": "my_record",
-      "title": "[인터뷰] 예순여덟에 새 일을 시작한 이야기",
-      "keyword": "시니어 재취업 사례",
-      "angle": "직접 인터뷰 필요. 자동 생성 금지",
-      "manual": true,
+      "id": "P12",
+      "category": "hobby_pet",
+      "title": "문화센터와 노래교실, 어떻게 고르고 이어가나",
+      "keyword": "문화센터 등록",
+      "angle": "등록 시기와 고르는 기준. 오래 다니는 사람들의 공통점",
       "status": "pending"
     },
     {
       "id": "F01",
-      "category": "money_ready",
-      "title": "국민연금, 언제부터 받는 게 나은가",
-      "keyword": "국민연금 수령 시기",
-      "angle": "일찍 받으면 깎이고 늦추면 늘어난다. 어느 쪽이 유리한지는 건강과 소득으로 갈린다",
+      "category": "senior_money",
+      "title": "은퇴 후 생활비, 얼마나 있어야 하는지 계산하기",
+      "keyword": "노후 생활비",
+      "angle": "남의 평균이 아니라 내 지출로 계산하는 순서",
       "status": "pending"
     },
     {
       "id": "F02",
-      "category": "money_ready",
-      "title": "국민연금 받으면서 계속 일해도 되나",
-      "keyword": "국민연금 감액",
-      "angle": "소득이 있으면 줄어드는 구간이 있다. 그 구조를 이해하고 일하는 방식을 정하기",
-      "status": "pending"
-    },
-    {
-      "id": "F03",
-      "category": "money_ready",
-      "title": "기초연금을 받을 수 있는지 어떻게 확인하나",
-      "keyword": "기초연금 자격",
-      "angle": "재산과 소득을 어떻게 따지는지, 어디서 확인하는지",
-      "status": "pending"
-    },
-    {
-      "id": "F04",
-      "category": "money_ready",
+      "category": "senior_money",
       "title": "주택연금, 집을 넘기는 것인가",
       "keyword": "주택연금",
       "angle": "소유권에 대한 오해부터. 계속 살면서 받는 구조",
       "status": "pending"
     },
     {
-      "id": "F05",
-      "category": "money_ready",
+      "id": "F03",
+      "category": "senior_money",
       "title": "퇴직금을 한 번에 받을까 나눠 받을까",
       "keyword": "퇴직금 수령",
       "angle": "목돈이 필요한 시점과 세금 처리가 갈림길",
       "status": "pending"
     },
     {
-      "id": "F06",
-      "category": "money_ready",
-      "title": "은퇴하니 건강보험료가 확 올랐다면",
+      "id": "F04",
+      "category": "senior_money",
+      "title": "은퇴하니 건강보험료가 올랐다면",
       "keyword": "은퇴 후 건강보험료",
-      "angle": "직장에서 지역으로 바뀌며 생기는 일. 완충 장치가 있다",
+      "angle": "직장에서 지역으로 바뀌며 생기는 일. 완충 장치",
+      "status": "pending"
+    },
+    {
+      "id": "F05",
+      "category": "senior_money",
+      "title": "잊고 있던 통장과 보험금 찾기",
+      "keyword": "휴면예금 찾기",
+      "angle": "한자리에서 조회하는 방법. 상속인이 찾을 때",
+      "status": "pending"
+    },
+    {
+      "id": "F06",
+      "category": "senior_money",
+      "title": "예금자보호, 어디까지 지켜지나",
+      "keyword": "예금자보호",
+      "angle": "보호되는 것과 안 되는 것. 나눠 넣어야 하는 이유",
       "status": "pending"
     },
     {
       "id": "F07",
-      "category": "money_ready",
-      "title": "노후 생활비는 얼마나 있어야 하나",
-      "keyword": "노후 생활비",
-      "angle": "남의 평균이 아니라 내 지출로 계산하는 순서",
+      "category": "senior_money",
+      "title": "자녀를 돕다가 내 노후가 흔들릴 때",
+      "keyword": "자녀 지원 노후",
+      "angle": "도움의 상한선을 미리 정해두기",
       "status": "pending"
     },
     {
       "id": "F08",
-      "category": "money_ready",
-      "title": "자녀를 돕다가 내 노후가 흔들릴 때",
-      "keyword": "자녀 지원 노후",
-      "angle": "도움의 상한선을 미리 정해두는 방법",
-      "status": "pending"
-    },
-    {
-      "id": "F09",
-      "category": "money_ready",
+      "category": "senior_money",
       "title": "상속과 증여, 미리 정리해두면 뭐가 다른가",
       "keyword": "상속 증여 준비",
       "angle": "남는 사람이 겪을 일을 줄이는 관점",
       "status": "pending"
     },
     {
+      "id": "F09",
+      "category": "senior_money",
+      "title": "은행 수수료를 줄이는 방법",
+      "keyword": "은행 수수료 면제",
+      "angle": "우대 조건과 창구 대신 쓸 수 있는 것",
+      "status": "pending"
+    },
+    {
       "id": "F10",
-      "category": "money_ready",
-      "title": "실손보험을 계속 유지해야 할까",
-      "keyword": "실손보험 유지",
-      "angle": "보험료가 오를 때 따져볼 기준",
-      "status": "pending"
-    },
-    {
-      "id": "F11",
-      "category": "money_ready",
-      "title": "연금 나오기 전까지의 공백기를 어떻게 넘기나",
-      "keyword": "은퇴 소득 공백",
-      "angle": "퇴직과 연금 개시 사이. 가장 많이 놓치는 구간",
-      "status": "pending"
-    },
-    {
-      "id": "F12",
-      "category": "money_ready",
-      "title": "치매에 대비해 재산을 어떻게 해두나",
-      "keyword": "치매 재산 관리",
-      "angle": "판단이 어려워졌을 때를 위한 제도들",
+      "category": "senior_money",
+      "title": "인터넷뱅킹을 안전하게 쓰려면",
+      "keyword": "인터넷뱅킹 보안",
+      "angle": "비밀번호와 인증서. 의심스러운 화면을 만났을 때",
       "status": "pending"
     }
-  ],
-  "_v4_note": "CTA 를 기본값에서 선택값으로 뒤집었습니다. 글의 결론이 앱 기능으로 정말로 이어지는 글에만 붙입니다. 국민연금 글에 일자리 링크, 강아지 글에 가상 화분 링크 같은 억지 연결을 전부 걷어냈습니다. 이 블로그는 다시봄라이프 홍보물이 아니라 독립적인 정보 블로그입니다."
+  ]
 }

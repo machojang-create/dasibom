@@ -167,22 +167,19 @@ const RULES = [
     test: (text) => matchAll(text, /나이가 들면 (?:어렵|힘들|못)|이 나이에는 무리|연세가 있으[시]?니/g),
   },
   {
-    id: 'brand-repeat',
+    id: 'brand-in-body',
     level: 'error',
-    label: '브랜드 반복 언급',
-    why: 'CTA 가 있는 글이라도 마지막에 한 번이면 충분합니다. 반복하면 광고가 됩니다.',
-    test: (text) => {
-      const hits = matchAll(text, /다시봄라이프|다시봄/g);
-      return hits.length > 2 ? hits : [];
-    },
+    label: '본문에 서비스 이름',
+    why: '본문은 순수 정보입니다. 링크는 발행기가 글 끝에 카드로 붙입니다. 본문에서 언급하면 광고가 됩니다.',
+    test: (text) => matchAll(text, /다시봄라이프|다시봄|봄이(?:와|가|는|를|에게|의)/g),
   },
   {
     id: 'soft-sell',
-    level: 'warn',
-    label: '무언가로 넘기려는 마무리',
-    why: 'CTA 가 아닌 글에서 이런 문장은 링크 없는 광고처럼 읽힙니다.',
+    level: 'error',
+    label: '다른 데로 넘기려는 마무리',
+    why: '이 글은 정보로 끝나야 합니다.',
     test: (text) =>
-      matchAll(text, /더 알아보(?:려면|시려면)|도움이 필요하시(?:면|다면)|서비스를 (?:이용|활용)해|앱을 (?:설치|이용)/g),
+      matchAll(text, /더 알아보(?:려면|시려면)|도움이 필요하시(?:면|다면)|서비스를 (?:이용|활용)해|앱을 (?:설치|이용)해/g),
   },
   {
     id: 'brand-recommend',
@@ -304,20 +301,6 @@ function lint(post) {
       found: `${tagCount}개`,
       context: '',
     });
-  }
-
-  // CTA 가 없는 글은 정보로 끝나야 합니다. 브랜드를 언급하면 CTA 없는 광고가 됩니다.
-  if (!post.cta?.url) {
-    for (const hit of matchAll(target, /다시봄라이프|다시봄|봄이(?:와|가|는|를|에게)?/g)) {
-      issues.push({
-        rule: 'brand-in-noncta',
-        level: 'error',
-        label: 'CTA 없는 글에 브랜드 언급',
-        why: '이 글은 정보로 끝나야 합니다. 링크 없이 서비스 이름만 넣는 것이 더 광고처럼 읽힙니다.',
-        found: hit.text,
-        context: context(target, hit.index, hit.text.length),
-      });
-    }
   }
 
   return issues;

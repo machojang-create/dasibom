@@ -48,36 +48,15 @@ if (topic.manual) {
 const category = getCategory(config, topic.category);
 const w = config.writing;
 
-// CTA 결정: 주제에 cta_key 가 있으면 그것을, 없으면 카테고리 기본값을.
-// (같은 카테고리라도 글의 성격에 따라 목적지가 달라야 할 때가 있습니다.
-//  예: 원예 글은 수다쟁이 화분, 강아지 글은 자서전 쪽이 자연스럽습니다.)
-let cta = null;
-if (topic.cta_key) {
-  const app = config.app_map[topic.cta_key];
-  if (!app) {
-    console.error(`알 수 없는 cta_key: ${topic.cta_key} (config.json 의 app_map 확인)`);
-    process.exit(1);
-  }
-  cta = { label: app.cta_label ?? app.name, url: app.url };
-} else if (category.cta_default && category.cta) {
-  cta = category.cta;
-}
-
-const SYSTEM = `당신은 '다시봄라이프'의 블로그 편집자입니다. 네이버 블로그에 올릴 글을 씁니다.
-
-# 다시봄라이프가 무엇인가
-"다시 오는 봄, 다시 보는 인생" — 은퇴 이후 세대를 위한 콘텐츠 공간입니다.
-쓰는 사람은 60대 본인입니다. 누가 대신 써주는 서비스가 아닙니다.
-'봄이'라는 이름의 인공지능이 옆에서 말동무가 되어, 나눈 이야기가 자서전으로 쌓입니다.
-그 밖에 건강 정보, 시니어 일자리, 옛 추억 콘텐츠, 놀이와 취미를 다룹니다.
-콘텐츠는 대부분 무료이고, 유료는 '매일 이어지는 관계'를 위한 구독 하나뿐입니다.
-지자체·복지관을 위한 돌봄 사업(안부 확인, 보고서)은 별개 사업이며 대상층도 다릅니다.
+const SYSTEM = `당신은 시니어 정보 블로그의 편집자입니다. 네이버 블로그에 올릴 글을 씁니다.
+이 블로그는 은퇴 이후 세대가 검색해서 찾아오는 정보 블로그입니다.
+어떤 서비스도 홍보하지 않습니다. 읽고 나서 '쓸모 있었다'로 끝나면 그것으로 충분합니다.
 
 # 읽는 사람
 ${category.reader}
 
-# 이 카테고리의 목적
-${category.goal}
+# 이 카테고리를 쓰는 법
+${category.guide}
 
 # 읽는 사람을 대하는 법
 ${w.reader_rules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
@@ -96,28 +75,14 @@ ${w.volatility_rules.map((r, i) => `${i + 1}. ${r}`).join('\n')}
 # 쓰지 않는 표현
 ${w.forbidden_phrases.join(', ')}
 
-${
-  cta
-    ? `# 이 글의 마무리
-${w.cta_rule}
-이 글은 CTA 를 하나 붙입니다: "${cta.label}" → ${cta.url}
-본문 마지막 문단에서 자연스럽게 한 번만 언급합니다. 링크 주소는 본문에 쓰지 말고, cta 필드로만 반환하세요.
-"클릭하세요", "지금 바로" 같은 광고 문구는 쓰지 않습니다.
-앱 기능 설명을 길게 늘어놓지 않습니다. 이 글은 왜 필요한지까지만 다룹니다.`
-    : `# 이 글의 마무리 — 중요
-이 글에는 CTA 가 없습니다. 정보로 시작해서 정보로 끝냅니다.
-
-'다시봄', '다시봄라이프', '봄이' 를 **한 번도 언급하지 마세요.** 어떤 서비스나 앱도 권하지 마세요.
-마지막 문단은 앞의 내용을 정리하거나, 독자가 오늘 해볼 만한 것 하나로 마무리합니다.
-"더 알아보려면", "도움이 필요하시면" 같이 무언가로 넘기려는 문장도 쓰지 마세요.
-
-이 블로그는 광고 게시판이 아니라 독립적인 정보 블로그입니다.
-읽고 나서 "쓸모 있었다"로 끝나면 그것으로 이 글의 역할은 끝입니다.`
-}
+# 마무리
+마지막 문단은 앞의 내용을 한 번 정리하거나, 오늘 해볼 만한 것 하나로 끝냅니다.
+"더 알아보려면", "도움이 필요하시면" 같이 다른 데로 넘기는 문장은 쓰지 않습니다.
 
 # 하지 말 것
 - 제목에 이모지를 넣지 않습니다.
-- 본문에 링크 주소를 쓰지 않습니다.`;
+- 본문에 링크 주소나 서비스 이름을 쓰지 않습니다.
+- 특정 앱·제품·병원을 권하지 않습니다.`;
 
 const USER = `아래 주제로 블로그 글을 써주세요.
 
@@ -191,7 +156,7 @@ const post = {
   body: draft.body,
   summary: draft.summary,
   tags: [...new Set([...draft.tags, ...config.naver.tag_common])],
-  cta,
+  cta: null, // 링크는 발행기가 붙이는 고정 카드뿐입니다
   generated_at: new Date().toISOString(),
   usage: response.usage,
 };

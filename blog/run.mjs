@@ -36,8 +36,7 @@ if (has('categories')) {
     console.log(`■ ${cat.name}  ${cat.weight}%  (${mine.length}편)`);
     console.log(`   무엇: ${cat.contains ?? '-'}`);
     console.log(`   독자: ${cat.reader}`);
-    const withCta = mine.filter((x) => x.cta_key).length;
-    console.log(`   CTA : ${withCta}/${mine.length}편${withCta === 0 ? ' — 정보로만 끝냅니다' : ''}`);
+    if (cat.guide) console.log(`   쓰는 법: ${cat.guide.split('\n')[0]}`);
     const sample = mine.filter((t) => t.status === 'pending').slice(0, 3);
     for (const t of sample) console.log(`     · ${t.title}`);
     if (mine.length > sample.length) console.log(`     · … 외 ${mine.length - sample.length}편`);
