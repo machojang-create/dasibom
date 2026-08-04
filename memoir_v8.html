@@ -338,6 +338,13 @@ body.hc .ts-bar{border-color:#000;background:#fff}
 .mode-row{display:flex;gap:8px;margin-bottom:16px}
 .mode-btn{flex:1;padding:13px 0;cursor:pointer;transition:all .2s;font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:15px;border:1px solid var(--sepiaP);min-height:46px}
 .mode-btn.on{background:var(--sepiaP);border-color:var(--sepiaL);color:var(--inkL)}
+/* ★말로 하기를 눈에 띄게(2026-08-04 Macho) — 기능은 원래 있었는데 두 버튼이 똑같이 생겨서
+   타자가 벽이라던 70~80대가 버튼이 있는 줄도 몰랐다(FGT 7명). 색 + 말랑말랑 숨쉬기. */
+#mVoice:not(.on){background:#FFF3E2;border-color:#E8A54B;color:#A9662B;font-weight:800;animation:mvBreath 2.2s ease-in-out infinite}
+@keyframes mvBreath{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(232,165,75,.45)}50%{transform:scale(1.045);box-shadow:0 0 0 9px rgba(232,165,75,0)}}
+#mVoice.on{background:#E8A54B;border-color:#C9832F;color:#fff;animation:none}
+@media (prefers-reduced-motion:reduce){#mVoice:not(.on){animation:none;box-shadow:0 0 0 3px rgba(232,165,75,.28)}}
+html.dsb-nomotion #mVoice:not(.on){animation:none;box-shadow:0 0 0 3px rgba(232,165,75,.28)}
 .mode-btn:not(.on){background:transparent;color:var(--sepia)}
 .q-ta{width:100%;min-height:150px;padding:18px;background:var(--cream);border:1px solid var(--sepiaP);font-family:'Georgia','Batang',serif;font-size:calc(16px * var(--ts,1));color:var(--ink);line-height:2;resize:none;outline:none;box-sizing:border-box}
 .v-wrap{display:flex;flex-direction:column;align-items:center;gap:14px}
@@ -728,7 +735,7 @@ body.hc .ts-bar{border-color:#000;background:#fff}
       <button class="mode-btn" id="mVoice">🎤 말로 하기</button>
     </div>
     <div id="iText">
-      <textarea class="q-ta" id="tArea" placeholder="한 줄만 적으셔도 괜찮아요.&#10;나머지는 봄이가 멋진 글로 풀어드려요 🌱"></textarea>
+      <textarea class="q-ta" id="tArea" placeholder="한 줄만 적으셔도 괜찮아요.&#10;타자가 불편하시면 위 [🎤 말로 하기]를 눌러 말씀만 하셔도 돼요 🌱"></textarea>
     </div>
     <div id="iVoice" style="display:none">
       <div class="v-wrap">

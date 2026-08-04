@@ -3844,6 +3844,13 @@ body.dark .bom-guide-text{color:#c8bba4}
   };
   /* ★꽃잎 안내(2026-08-04 Macho) — FGT '보상 매력' 62.9(80대+ 44)의 절반은 '보상이 있는 줄 몰라서'다.
      봄이가 직접 알려준다. 시시콜콜 순위왕은 매일 새 순위가 열리므로 랭킹 자체를 노출한다. */
+  /* ★말로 하기 안내(2026-08-04 Macho) — 자서전에 음성 입력이 원래 있는데 못 찾아
+     타자와 씨름하신 분이 FGT에서 7명이었다. 없는 기능을 만드는 게 아니라 봄이가 알려준다. */
+  var VOICE_LINES = [
+    '🎤 자서전은 손으로 안 쓰셔도 돼요. [말로 하기]를 누르고 말씀만 하시면 제가 받아 적어요!',
+    '🎤 타자가 불편하시면 자서전에서 말로 답해보세요. 말씀하신 그대로 글이 된답니다.',
+    '🎤 오늘 이야기, 말로 들려주실래요? 자서전 화면에서 마이크만 누르시면 돼요.'
+  ];
   var PETAL_LINES = [
     '🌸 저랑 이야기 나누시면 오늘의 꽃잎을 드려요. 뭐든 편하게 말 걸어보세요!',
     '🌸 콘텐츠 하나 둘러보시면 꽃잎이 톡 하고 쌓인답니다. 하루에 하나씩요!',
@@ -4016,7 +4023,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     }
     // 비중(2026-08-04 Macho 지시로 꽃잎 안내 추가): 취재 29% / 케어 21% / 잡담 14% / 콘텐츠 7% / 자서전 7% / 꽃잎 21%
     var kinds=['interview','interview','interview','interview','care','care','care','chat','chat','content','memoir',
-               'petal','petal','petal'];
+               'petal','petal','petal','voice','voice'];
     if(window._KIOSK_BROWSE) kinds=['care','care','chat','content','petal']; // 키오스크: 취재는 대화방에서만
     var avail=kinds.filter(function(k){ return k!==_talkLast; });
     var pick=_rndOne(avail.length?avail:kinds) || 'care';
@@ -4027,6 +4034,9 @@ body.dark .bom-guide-text{color:#c8bba4}
     if(pick==='care'){   // 날씨·건강·안부 (계절별)
       var pool=TIPS_BY_SEASON[seasonKey()].concat(TIPS_GENERAL).concat(BOM_GREET2_COMMON);
       return bomMsgRow(_rndOne(pool),'bom_calm');
+    }
+    if(pick==='voice'){   // 자서전 음성 입력 안내 — 있는 줄 몰라 못 쓰던 기능
+      return bomMsgRow(_rndOne(VOICE_LINES),'bom_grin');
     }
     if(pick==='petal'){   // 꽃잎을 받을 수 있다는 안내 — 몰라서 못 받는 사람이 많다
       return bomMsgRow(_rndOne(PETAL_LINES),'bom_sparkle');
@@ -4103,6 +4113,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     ['심심하지 않으세요? 저랑 얘기해요! 🌸','오늘 하루는 어떠셨어요?','저 여기서 기다리고 있었어요! 😊','문득 생각나서 인사하러 왔어요 ٩(◕‿◕)۶','오늘 컨디션은 어떠세요? 무리하지 마시고 천천히요 🌱'].forEach(function(t){ lines.push({text:t, face:'bom_grin'}); });
     /* ★꽃잎 안내를 홈 말풍선에도(2026-08-04 Macho). 두 번씩 넣어 노출 빈도를 높였다 —
        '보상이 있는 줄 몰랐다'가 FGT 보상 점수(62.9)의 절반이었다. */
+    VOICE_LINES.forEach(function(t){ lines.push({text:t, face:'bom_grin'}); lines.push({text:t, face:'bom_grin'}); });
     PETAL_LINES.forEach(function(t){
       lines.push({text:t, face:'bom_sparkle'});
       lines.push({text:t, face:'bom_sparkle'});

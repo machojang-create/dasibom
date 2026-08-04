@@ -14,7 +14,6 @@
 <script src="/bom_voice.js?v=12" defer></script>
 <script src="/bom_guide.js?v=3" defer></script>
 <script src="/bom_tutorial.js?v=8" defer></script>
-<script src="/comments.js?v=9" defer></script>
 <script>window.BOM_TUT={
   key:'jobs', face:'bom_smile.png', name:'시니어 직업 상담소',
   welcome:'{호칭}, 여기는 인생 2막 일터를 함께 찾는 상담소예요. 아래로 시니어 채용 소식이 쭉 펼쳐져 있으니 편하게 구경해봐요 🌷',
@@ -471,6 +470,9 @@ function ensureAuth(){return new Promise(function(resolve,reject){(function go()
     firebase.auth().signInAnonymously().then(function(r){resolve(r.user);}).catch(reject);});
 })();});}
 function callFn(name,payload){return ensureAuth().then(function(){return firebase.app().functions('asia-northeast3').httpsCallable(name)(payload);});}
+/* firebase를 로드 시 미리 띄운다(2026-08-04). 원래는 검색·찜하기를 할 때만 초기화해서
+   첫 조작이 한 박자 늦었다. 댓글은 제거했지만 이 선점 초기화는 그대로 두는 게 이득. */
+ensureAuth().catch(function(){});
 
 /* ───────── 인사말 ───────── */
 (function(){var h=honor();document.getElementById('greet').innerHTML=esc(h)+',<br>반갑습니다';document.getElementById('meName').textContent=h+' 님';})();
@@ -845,15 +847,9 @@ updateSavedCount();
 loadReal('','');
 </script>
 
-<!-- 한 줄 공감(공용 폼) — 2026-07-26 전 콘텐츠 확산 -->
-<div id="dsbCmtMount" style="max-width:720px;margin:30px auto 130px;padding:0 16px"></div>
-<script>
-(function(){
-  var scope="jobs:main";
-  function m(){ var el=document.getElementById("dsbCmtMount"); if(el&&window.DasibomComments) DasibomComments.mount(el,scope,"채용 소식, 한마디 남겨보세요"); }
-  if(window.DasibomComments){m();}else{document.addEventListener("dasibom-comments-ready",m,{once:true});}
-})();
-</script>
+<!-- 한 줄 공감 제거(2026-08-04 Macho): "일자리에 댓글은 필요없어".
+     채용 공고를 보러 온 화면이라 오락실·맞고와 같은 이유로 부적합.
+     FGT에서도 일자리 요구는 '내 지역 공고'·'경력 맞춤 추천'이었지 댓글이 아니었다. -->
 <script src="/fx.js?v=2"></script>
 </body>
 </html>
