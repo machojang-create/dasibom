@@ -11,7 +11,10 @@
     "post:now": "node run.mjs --now",
     "expand": "node expand_queue.mjs --auto",
     "lint": "node lint_post.mjs --all",
-    "cats": "node run.mjs --categories"
+    "cats": "node run.mjs --categories",
+    "figures": "node gen_figures.mjs --all",
+    "illust": "node gen_illust.mjs --all",
+    "images": "node gen_blog_assets.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.0",

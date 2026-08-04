@@ -121,7 +121,22 @@ const USER = `아래 주제로 블로그 글을 써주세요.
 - 본문 분량 ${w.target_chars[0]}~${w.target_chars[1]}자 (공백 포함)
 - 제목은 초안을 그대로 쓰지 말고, 검색 키워드가 앞쪽에 들어가도록 다듬어주세요. 32자 이내.
 - 태그는 5~7개. 검색될 만한 말로. 해시(#) 없이 단어만.
-- 본문은 순수 텍스트로. 마크다운 기호(#, **, - )를 쓰지 마세요. 소제목은 그냥 한 줄로 두고 앞뒤를 비워주세요.`;
+- 본문은 순수 텍스트로. 마크다운 기호(#, **, - )를 쓰지 마세요. 소제목은 그냥 한 줄로 두고 앞뒤를 비워주세요.
+
+그림 자리도 같이 정해주세요. 글에 그림이 없으면 아무도 끝까지 읽지 않습니다.
+
+illustrations 3개 — 본문에 넣을 그림입니다.
+- after: 그 그림을 넣을 위치. 본문에 실제로 있는 줄을 글자 그대로 옮겨 적으세요. 소제목 줄이 가장 좋습니다.
+- prompt: 그릴 장면을 한국어 한 문장으로. 인물의 나이대와 장소, 하는 동작, 분위기를 씁니다.
+  글자나 숫자가 들어가는 장면은 안 됩니다. 특정 상표나 실제 인물도 안 됩니다.
+
+figures 2개 — 본문 내용을 그대로 옮긴 정보 카드입니다. 아래 다섯 중에서 주제에 맞는 것으로 고르세요.
+- checklist: 준비물, 서류, 증상 확인처럼 한 줄에 하나인 것. { type, after, title, items[] }
+- steps: 순서가 있는 것. { type, after, title, items[] }
+- compare: 되는 것과 안 되는 것. { type, after, title, left:{label,items[]}, right:{label,items[]} }
+- note: 하면 안 되는 것, 위험한 것. { type, after, title, items[] }
+- summary: 세 줄 요약. { type, after, title, items[] }
+카드의 items 는 한 줄에 25자 안쪽으로 짧게 씁니다. 본문에 없는 내용을 새로 만들지 마세요.`;
 
 const outDir = ensureOutDir();
 const slug = slugify(topic.id, topic.title);
@@ -144,8 +159,48 @@ const schema = {
     body: { type: 'string', description: '순수 텍스트 본문. 마크다운 기호 없음.' },
     tags: { type: 'array', items: { type: 'string' }, description: '5~7개, # 없이' },
     summary: { type: 'string', description: '네이버 블로그 요약본용 2~3문장' },
+    illustrations: {
+      type: 'array',
+      description: '본문 삽입 그림 3개',
+      items: {
+        type: 'object',
+        properties: {
+          after: { type: 'string', description: '본문에 실제로 있는 줄. 글자 그대로.' },
+          prompt: { type: 'string', description: '그릴 장면. 한국어 한 문장.' },
+        },
+        required: ['after', 'prompt'],
+        additionalProperties: false,
+      },
+    },
+    figures: {
+      type: 'array',
+      description: '본문 삽입 정보 카드 2개',
+      items: {
+        type: 'object',
+        properties: {
+          type: { type: 'string', enum: ['checklist', 'steps', 'compare', 'note', 'summary'] },
+          after: { type: 'string', description: '본문에 실제로 있는 줄. 글자 그대로.' },
+          title: { type: 'string' },
+          items: { type: 'array', items: { type: 'string' } },
+          left: {
+            type: 'object',
+            properties: { label: { type: 'string' }, items: { type: 'array', items: { type: 'string' } } },
+            required: ['label', 'items'],
+            additionalProperties: false,
+          },
+          right: {
+            type: 'object',
+            properties: { label: { type: 'string' }, items: { type: 'array', items: { type: 'string' } } },
+            required: ['label', 'items'],
+            additionalProperties: false,
+          },
+        },
+        required: ['type', 'after', 'title'],
+        additionalProperties: false,
+      },
+    },
   },
-  required: ['title', 'body', 'tags', 'summary'],
+  required: ['title', 'body', 'tags', 'summary', 'illustrations', 'figures'],
   additionalProperties: false,
 };
 
@@ -173,6 +228,15 @@ if (!text) {
 
 const draft = JSON.parse(text);
 
+/** after 가 본문의 어느 줄과도 안 맞으면 버립니다. 조용히 안 들어가는 것보다 낫습니다. */
+function keepPlaceable(list, body, label) {
+  const lines = new Set(body.split('\n').map((l) => l.trim()));
+  const kept = (list ?? []).filter((it) => lines.has((it.after ?? '').trim()));
+  const dropped = (list ?? []).length - kept.length;
+  if (dropped) console.log(`  (${label} ${dropped}개는 본문에 없는 위치라 뺐습니다)`);
+  return kept;
+}
+
 const post = {
   id: topic.id,
   category: topic.category,
@@ -183,6 +247,9 @@ const post = {
   body: draft.body,
   summary: draft.summary,
   tags: [...new Set([...draft.tags, ...config.naver.tag_common])],
+  // after 가 본문에 없으면 발행기가 그 그림을 못 넣습니다. 여기서 미리 걸러냅니다.
+  illustrations: keepPlaceable(draft.illustrations, draft.body, 'illustrations'),
+  figures: keepPlaceable(draft.figures, draft.body, 'figures'),
   cta: null, // 링크는 발행기가 붙이는 고정 카드뿐입니다
   generated_at: new Date().toISOString(),
   usage: response.usage,

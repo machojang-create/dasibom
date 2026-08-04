@@ -9,15 +9,15 @@ set -e
 cd "$(dirname "$0")"
 
 echo
-echo "[1/5] 패키지 설치"
+echo "[1/6] 패키지 설치"
 npm install --silent
 
 echo
-echo "[2/5] 크롬 설치 (이미 있으면 건너뜁니다)"
+echo "[2/6] 크롬 설치 (이미 있으면 건너뜁니다)"
 npx playwright install chromium
 
 echo
-echo "[3/5] 한글 폰트 확인"
+echo "[3/6] 한글 폰트 확인"
 FONT=$(node -e "console.log(JSON.parse(require('fs').readFileSync('config.json','utf8')).brand.font_family)")
 if command -v fc-list >/dev/null 2>&1; then
   if fc-list :lang=ko family | grep -qi "$(echo "$FONT" | sed 's/Gothic/ *Gothic/')"; then
@@ -34,12 +34,24 @@ else
 fi
 
 echo
-echo "[4/5] 블로그 이미지 생성"
+echo "[4/6] 블로그 이미지 생성"
 node gen_blog_assets.mjs >/dev/null
 echo "  out/assets/ 에 타이틀·프로필·사이드배너·모바일커버 4개 생성"
 
 echo
-echo "[5/5] 네이버 로그인"
+echo "[5/6] 일러스트 키 확인"
+if [ -f .env ]; then set -a; . ./.env; set +a; fi
+if [ -n "${GEMINI_API_KEY:-}${GOOGLE_API_KEY:-}" ]; then
+  echo "  GEMINI_API_KEY 있음 — 본문 일러스트를 만듭니다."
+else
+  echo "  GEMINI_API_KEY 가 없습니다. 본문에는 카드 이미지만 들어갑니다."
+  echo "    1. https://aistudio.google.com/apikey 에서 키 발급"
+  echo "    2. blog/.env 에  GEMINI_API_KEY=...  한 줄"
+  echo "    (.env 는 .gitignore 에 있습니다. 커밋되지 않습니다.)"
+fi
+
+echo
+echo "[6/6] 네이버 로그인"
 if [ -f .naver_session.json ]; then
   echo "  .naver_session.json 이 이미 있습니다. 다시 로그인하려면:  npm run login"
 else

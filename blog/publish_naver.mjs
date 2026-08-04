@@ -35,6 +35,35 @@ if (!postPath) {
 const post = JSON.parse(fs.readFileSync(postPath, 'utf8'));
 const imagePath = flag('image') ?? postPath.replace(/\.json$/, '.png');
 const hasImage = fs.existsSync(imagePath);
+
+// 본문 삽입 이미지 — 카드(figures)와 일러스트(illustrations)를 한 줄 기준으로 모읍니다.
+// 같은 줄에 둘 다 걸리면 일러스트를 먼저 넣습니다(그림 → 정리 카드 순서가 자연스럽습니다).
+const outRoot = ensureOutDir();
+const inlineImages = new Map(); // 본문 줄 → [이미지 경로]
+const addInline = (after, file) => {
+  if (!after || !fs.existsSync(file)) return false;
+  const key = after.trim();
+  if (!inlineImages.has(key)) inlineImages.set(key, []);
+  inlineImages.get(key).push(file);
+  return true;
+};
+(post.illustrations ?? []).forEach((it, i) =>
+  addInline(it.after, path.join(outRoot, 'illust', `${post.id}_${i + 1}.png`)),
+);
+(post.figures ?? []).forEach((it, i) =>
+  addInline(it.after, path.join(outRoot, 'figs', `${post.id}_${i + 1}.png`)),
+);
+
+const inlineCount = [...inlineImages.values()].reduce((n, a) => n + a.length, 0);
+const totalImages = inlineCount + (hasImage ? 1 : 0);
+const minImages = config.writing.min_images ?? 0;
+if (minImages && totalImages < minImages && !has('skip-image-check')) {
+  console.error(`이미지가 ${totalImages}장뿐입니다. 최소 ${minImages}장이 필요합니다.`);
+  console.error('  node gen_figures.mjs --post <파일>   카드 이미지');
+  console.error('  node gen_illust.mjs  --post <파일>   Gemini 일러스트');
+  console.error('  그래도 발행하려면 --skip-image-check');
+  process.exit(1);
+}
 const reserveAt = flag('reserve');
 const headed = has('headed') || has('pause');
 
@@ -92,34 +121,56 @@ try {
   if (!bodyEl) throw new Error('본문 입력란을 못 찾았습니다.');
   await bodyEl.click();
 
-  if (hasImage) {
-    step = '대표 이미지 첨부';
+  // 이미지 한 장을 커서 자리에 넣고 다시 본문으로 돌아옵니다.
+  const attachImage = async (file) => {
     const chooser = page.waitForEvent('filechooser', { timeout: 8000 }).catch(() => null);
     const clicked = await clickIfPresent(frame, SEL.imageButton, 4000);
-    if (clicked) {
-      const fc = await chooser;
-      if (fc) {
-        await fc.setFiles(imagePath);
-        await page.waitForTimeout(2500); // 업로드 대기
-      }
-    } else {
-      console.log('  (사진 버튼을 못 찾아 이미지 없이 진행합니다)');
+    if (!clicked) {
+      console.log(`  (사진 버튼을 못 찾아 건너뜁니다: ${path.basename(file)})`);
+      return false;
     }
-    const after = await firstVisible(frame, SEL.body, 5000);
-    if (after) await after.click();
+    const fc = await chooser;
+    if (!fc) return false;
+    await fc.setFiles(file);
+    await page.waitForTimeout(2500); // 업로드 대기
+    const back = await firstVisible(frame, SEL.body, 5000);
+    if (back) await back.click();
     await page.keyboard.press('End');
     await page.keyboard.press('Enter');
+    return true;
+  };
+
+  let attached = 0;
+
+  if (hasImage) {
+    step = '대표 이미지 첨부';
+    if (await attachImage(imagePath)) attached++;
   }
 
   step = '본문 입력';
   // 한 줄씩 넣어야 에디터가 문단을 제대로 나눕니다.
+  // 줄을 친 뒤 그 줄에 걸린 이미지가 있으면 바로 이어서 넣습니다.
   for (const line of bodyWithCta.split('\n')) {
     if (line.trim() === '') {
       await page.keyboard.press('Enter');
-    } else {
-      await page.keyboard.type(line, { delay: 4 });
-      await page.keyboard.press('Enter');
+      continue;
     }
+    await page.keyboard.type(line, { delay: 4 });
+    await page.keyboard.press('Enter');
+
+    const files = inlineImages.get(line.trim());
+    if (files) {
+      step = `본문 이미지 삽입 (${line.slice(0, 20)}…)`;
+      await page.keyboard.press('Enter');
+      for (const file of files) {
+        if (await attachImage(file)) attached++;
+      }
+      step = '본문 입력';
+    }
+  }
+
+  if (attached < totalImages) {
+    console.log(`  (이미지 ${totalImages}장 중 ${attached}장만 들어갔습니다)`);
   }
 
   step = '발행 패널 열기';

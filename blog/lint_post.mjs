@@ -296,6 +296,39 @@ function lint(post) {
     });
   }
 
+  // 이미지 검사 — 대표 1장 + 본문 그림. 자리(after)가 본문에 없으면 안 들어갑니다.
+  const minImages = w.min_images ?? 0;
+  if (minImages) {
+    const lines = new Set(body.split('\n').map((l) => l.trim()));
+    const placed = [...(post.illustrations ?? []), ...(post.figures ?? [])].filter((it) =>
+      lines.has((it.after ?? '').trim()),
+    );
+    const misplaced =
+      (post.illustrations ?? []).length + (post.figures ?? []).length - placed.length;
+    const total = placed.length + 1; // 대표 이미지
+
+    if (total < minImages) {
+      issues.push({
+        rule: 'too-few-images',
+        level: 'error',
+        label: '이미지 부족',
+        why: `대표 1장 + 본문 ${placed.length}장 = ${total}장. 최소 ${minImages}장이 필요합니다. 글에 그림이 없으면 끝까지 안 읽습니다.`,
+        found: `${total}장`,
+        context: '',
+      });
+    }
+    if (misplaced) {
+      issues.push({
+        rule: 'image-misplaced',
+        level: 'error',
+        label: '그림 자리를 못 찾음',
+        why: `${misplaced}개의 after 가 본문의 어느 줄과도 안 맞습니다. 그대로 발행하면 조용히 빠집니다.`,
+        found: `${misplaced}개`,
+        context: '',
+      });
+    }
+  }
+
   if (post.title && post.title.length > 32) {
     issues.push({
       rule: 'title-length',

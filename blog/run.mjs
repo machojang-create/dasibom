@@ -118,6 +118,20 @@ for (let n = 0; n < count; n++) {
     process.exit(1);
   }
 
+  // 이미지 — 대표 1장 + 본문 카드 + 본문 일러스트.
+  // 네이버는 글에 이미지가 없으면 체류시간이 안 나오고 노출도 밀립니다.
+  run('gen_image.mjs', ['--post', outFile]);
+  run('gen_figures.mjs', ['--post', outFile]);
+  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
+    try {
+      run('gen_illust.mjs', ['--post', outFile]);
+    } catch {
+      console.error('  (일러스트 생성이 실패했습니다. 카드 이미지만 들어갑니다)');
+    }
+  } else if (!has('no-illust')) {
+    console.log('  (GEMINI_API_KEY 가 없어 일러스트를 건너뜁니다. 카드 이미지만 들어갑니다)');
+  }
+
   // 검수 — 변동성 규칙 위반이 있으면 발행하지 않습니다.
   if (!has('skip-lint')) {
     try {
