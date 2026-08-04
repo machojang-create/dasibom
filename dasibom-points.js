@@ -83,7 +83,12 @@
       '18%{opacity:1}100%{opacity:0;transform:translate(var(--px),var(--py)) scale(1.15) rotate(var(--pr))}}' +
       '@keyframes dsbptBump{0%{transform:scale(1)}32%{transform:scale(1.26)}62%{transform:scale(.96)}100%{transform:scale(1)}}' +
       '[data-dsbpt-badge].dsbpt-bumped{display:inline-block;animation:dsbptBump .5s ease;color:#0e9d7d}' +
-      '@media (prefers-reduced-motion:reduce){.dsbpt-toast{animation:none !important}.dsbpt-petal{display:none}[data-dsbpt-badge].dsbpt-bumped{animation:none}}';
+      /* ★동작 줄이기라도 '받았다'는 신호는 남긴다(2026-08-04): 예전엔 꽃잎을 통째로 숨겨
+     "연출이 아예 안 나온다"가 됐다. 흩날리기만 없애고 잠깐 떠 있다 사라지게 한다. */
+      '@media (prefers-reduced-motion:reduce){.dsbpt-toast{animation:none !important}' +
+      '.dsbpt-petal{animation:dsbptPetalStill 1.1s ease-out both !important}' +
+      '[data-dsbpt-badge].dsbpt-bumped{animation:none}}' +
+      '@keyframes dsbptPetalStill{0%{opacity:0}20%{opacity:1}100%{opacity:0}}';
     document.head.appendChild(s);
   }
   function toast(msg) {
@@ -93,7 +98,7 @@
       d.className = 'dsbpt-toast';
       d.innerHTML = withPetal(msg);
       d.style.cssText = 'position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#33492A;color:#F5F1E8;' +
-        'padding:13px 22px;border-radius:50px;font-size:15px;font-weight:800;z-index:99999;box-shadow:0 12px 28px -12px rgba(0,0,0,.5);' +
+        'padding:13px 22px;border-radius:50px;font-size:15px;font-weight:800;z-index:100010;box-shadow:0 12px 28px -12px rgba(0,0,0,.5);' +
         "font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;max-width:88vw;text-align:center;" +
         'animation:dsbptPop .5s cubic-bezier(.34,1.7,.5,1) both';
       document.body.appendChild(d);
@@ -104,7 +109,7 @@
           p.className = 'dsbpt-petal';
           var ang = (-90 + (i - 2.5) * 26) * Math.PI / 180;    // 부채꼴 위쪽으로
           var dist = 54 + Math.random() * 46;
-          p.style.cssText = 'position:fixed;left:50%;bottom:112px;z-index:99999;font-size:' + (14 + Math.random() * 8) + 'px;' +
+          p.style.cssText = 'position:fixed;left:50%;bottom:112px;z-index:100010;font-size:' + (14 + Math.random() * 8) + 'px;' +
             'pointer-events:none;--px:' + Math.round(Math.cos(ang) * dist) + 'px;--py:' + Math.round(Math.sin(ang) * dist - 26) + 'px;' +
             '--pr:' + Math.round(-40 + Math.random() * 80) + 'deg;' +
             'animation:dsbptPetal ' + (0.9 + Math.random() * 0.5) + 's ease-out ' + (i * 0.06) + 's both';
