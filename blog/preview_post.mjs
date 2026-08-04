@@ -71,11 +71,16 @@ const imgBlock = (it) =>
     : `<figure class="todo"><div class="tag">아직 안 만든 일러스트 ${it.n}</div><p>${esc(it.prompt)}</p>
        <small>npm run illust 을 돌리면 이 자리에 그림이 들어갑니다.</small></figure>`;
 
+// 발행기와 같은 순서 — 본문, 해마다 확인 안내, 운영 주체 카드.
 const card = config.footer_card;
-const body =
-  card?.enabled && card.lines?.length
-    ? `${post.body.trim()}\n\n\n${card.lines.join('\n')}`
-    : post.body.trim();
+const notice = post.skip_notice ? null : config.writing.annual_notice;
+const body = [
+  post.body.trim(),
+  notice?.length ? notice.join('\n') : null,
+  card?.enabled && card.lines?.length ? card.lines.join('\n') : null,
+]
+  .filter(Boolean)
+  .join('\n\n\n');
 
 // 소제목 판별: 앞뒤가 빈 줄이고 문장부호로 안 끝나는 짧은 줄.
 const lines = body.split('\n');

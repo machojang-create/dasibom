@@ -82,4 +82,6 @@ functions/.runtimeconfig.json
 *.bak
 *.bak2
 index.html.bak*
-.claude/
+.claude/*
+# 스킬은 팀이 같이 쓰는 것이라 예외로 둡니다.
+!.claude/skills/

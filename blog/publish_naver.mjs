@@ -75,11 +75,20 @@ if (!fs.existsSync(sessionFile)) {
 
 // 본문은 순수 정보입니다. 모든 글 끝에 똑같은 카드 하나만 붙습니다.
 // 글마다 다른 링크를 고르지 않습니다 — config.json 의 footer_card 를 끄면 카드도 없습니다.
+// 글 끝에 붙는 것 두 가지.
+// 1) 해마다 다시 확인하시라는 안내 — 자동 발행이라 시간이 지나면 내용이 낡습니다.
+//    글마다 쓰면 문구가 조금씩 달라지므로 여기서 한 번에 붙입니다.
+// 2) 운영 주체 카드 — 모든 글에 똑같이 하나. 글마다 다른 링크를 고르지 않습니다.
 const card = config.footer_card;
-const bodyWithCta =
-  card?.enabled && card.lines?.length
-    ? `${post.body.trim()}\n\n\n${card.lines.join('\n')}`
-    : post.body.trim();
+const notice = post.skip_notice ? null : config.writing.annual_notice;
+
+const bodyWithCta = [
+  post.body.trim(),
+  notice?.length ? notice.join('\n') : null,
+  card?.enabled && card.lines?.length ? card.lines.join('\n') : null,
+]
+  .filter(Boolean)
+  .join('\n\n\n');
 
 let step = 'start';
 const browser = await chromium.launch({ headless: !headed, slowMo: headed ? 120 : 0 });
