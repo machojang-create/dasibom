@@ -3858,7 +3858,11 @@ body.dark .bom-guide-text{color:#c8bba4}
     '🌸 모은 꽃잎으로는 화분도 꾸미고 어항도 채울 수 있어요.',
     '🔥 추억의 소리 온기, 잠깐 듣기만 하셔도 꽃잎을 챙겨드려요.',
     '📻 봄이의 라디오 극장 한 편 들으시면 꽃잎이 쌓여요. 오늘은 어떤 이야기일까요?',
-    '🌸 출석만 하셔도 꽃잎이에요. 자주 들르실수록 소복이 쌓인답니다.'
+    '🌸 출석만 하셔도 꽃잎이에요. 자주 들르실수록 소복이 쌓인답니다.',
+    /* 화폐 2종 혼란·사용처 안내(FGT: "꽃잎과 포인트가 뭐가 다른지 모르겠다") */
+    '🌸 꽃잎은 화분 꾸미고 어항 채우는 데 써요. 맞고에서 쓰는 화투코인과는 따로랍니다.',
+    '🌸 오늘 콘텐츠 서너 곳만 들러도 꽃잎이 제법 모여요. 한 곳당 하루 한 번씩 드려요.',
+    '🌸 모은 꽃잎이 아까우시면 화분 화분갈이나 어항 장식을 구경해 보세요.'
   ];
   function tutSeen(k){ try{ return !!localStorage.getItem('dasibom_tut_'+k); }catch(e){ return false; } }
   function pickTags(n){
@@ -4120,6 +4124,23 @@ body.dark .bom-guide-text{color:#c8bba4}
     });
     return lines;
   }
+  /* ★돌봄 알림을 홈 말풍선으로(2026-08-04 FGT): 목마른 화분·배고픈 구피는
+     챗봇을 열어야만 알 수 있었다. 앱을 켜자마자 보이게 한다. 진짜 알림이라 다른 말보다 먼저. */
+  function _petGreet(){
+    try{
+      var ps=JSON.parse(localStorage.getItem('plant_slots')||'[]');
+      for(var i=0;i<ps.length;i++){ var pl=ps[i];
+        if(pl && typeof pl.waterLevel==='number' && pl.waterLevel<35){
+          var nm=(pl.customName||((pl.type&&pl.type.name)||'화분'));
+          var _l=nm.charCodeAt(nm.length-1), _j=(_l>=44032&&_l<=55203&&(_l-44032)%28)?'이':'가';   // 받침 있으면 이/없으면 가
+          return { text:'💧 '+nm+_j+' 목이 마른가 봐요. 물 한 잔 주러 가실래요?', face:'bom_think', href:'/plant' };
+        } }
+      var gs=JSON.parse(localStorage.getItem('guppy_state')||'null');
+      if(gs && typeof gs.fullness==='number' && gs.fullness<35)
+        return { text:'🐠 어항 친구들이 배가 고픈가 봐요. 밥 주러 가실래요?', face:'bom_think', href:'/guppy' };
+    }catch(e){}
+    return null;
+  }
   function paintFabFace(face){ var img=document.querySelector('#bomFab img'); if(img) img.src='/img/'+(face||'bom_fab')+'.png'; }
   function showFloatingGreet(text,face,href){
     var g=document.getElementById('bomGreet'), p=document.getElementById('bomChatPanel');
@@ -4143,7 +4164,8 @@ body.dark .bom-guide-text{color:#c8bba4}
   (function waitHome(){
     if(homeReady()){
       setTimeout(function(){
-        var lines=_floatingLines(), pick=lines[Math.floor(Math.random()*lines.length)];
+        var pg=_petGreet();
+        var lines=_floatingLines(), pick=pg || lines[Math.floor(Math.random()*lines.length)];
         showFloatingGreet(pick.text, pick.face, pick.href);
       }, 1200);
     }
@@ -4151,7 +4173,8 @@ body.dark .bom-guide-text{color:#c8bba4}
   })();
   setInterval(function(){
     if(!homeReady()) return;
-    var lines=_floatingLines(), pick=lines[Math.floor(Math.random()*lines.length)];
+    var pg=_petGreet();   // 돌봄이 필요하면 그게 먼저 — 진짜 알림이니까
+    var lines=_floatingLines(), pick=pg || lines[Math.floor(Math.random()*lines.length)];
     showFloatingGreet(pick.text, pick.face, pick.href);
   }, 40000);   // 60초 → 40초 (2026-08-04 Macho "빈도수도 높여서")
 
