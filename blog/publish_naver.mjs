@@ -48,7 +48,7 @@ const addInline = (after, file) => {
   return true;
 };
 (post.illustrations ?? []).forEach((it, i) =>
-  addInline(it.after, path.join(outRoot, 'illust', `${post.id}_${i + 1}.png`)),
+  addInline(it.after, path.join(outRoot, 'illust', `${post.id}_${i + 1}.jpg`)),
 );
 (post.figures ?? []).forEach((it, i) =>
   addInline(it.after, path.join(outRoot, 'figs', `${post.id}_${i + 1}.png`)),

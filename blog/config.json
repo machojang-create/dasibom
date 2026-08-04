@@ -249,8 +249,9 @@
   "illustration": {
     "model": "gemini-2.5-flash-image",
     "width": 800,
-    "delay_ms": 1500,
+    "delay_ms": 6500,
     "style": "따뜻한 파스텔 톤의 손그림 일러스트. 부드러운 수채화 질감, 굵고 단순한 윤곽선, 흰 배경.",
-    "_readme": "본문 일러스트는 Gemini 로 만듭니다. GEMINI_API_KEY 가 필요합니다. 그림체를 고정해야 글이 쌓일수록 한 사람이 쓴 블로그처럼 보입니다."
+    "_readme": "본문 일러스트는 Gemini 로 만듭니다. 키는 저장소의 tools/gemini.key (그때그시절 생성기와 같은 파일) 또는 환경변수 GEMINI_API_KEY. 그림체를 고정해야 글이 쌓일수록 한 사람이 쓴 블로그처럼 보입니다.",
+    "quality": 78
   }
 }

@@ -42,12 +42,15 @@ echo
 echo "[5/6] 일러스트 키 확인"
 if [ -f .env ]; then set -a; . ./.env; set +a; fi
 if [ -n "${GEMINI_API_KEY:-}${GOOGLE_API_KEY:-}" ]; then
-  echo "  GEMINI_API_KEY 있음 — 본문 일러스트를 만듭니다."
+  echo "  환경변수에서 키를 찾았습니다 — 본문 일러스트를 만듭니다."
+elif [ -s ../tools/gemini.key ]; then
+  echo "  tools/gemini.key 에서 키를 찾았습니다 — 본문 일러스트를 만듭니다."
+  echo "  (그때그시절 이미지 생성기와 같은 키입니다.)"
 else
-  echo "  GEMINI_API_KEY 가 없습니다. 본문에는 카드 이미지만 들어갑니다."
-  echo "    1. https://aistudio.google.com/apikey 에서 키 발급"
-  echo "    2. blog/.env 에  GEMINI_API_KEY=...  한 줄"
-  echo "    (.env 는 .gitignore 에 있습니다. 커밋되지 않습니다.)"
+  echo "  Gemini 키가 없습니다. 본문에는 카드 이미지만 들어갑니다."
+  echo "    이미 키가 있으시면:  ../tools/gemini.key 에 키 한 줄만 넣으세요."
+  echo "    없으시면:            https://aistudio.google.com/apikey"
+  echo "    (tools/gemini.key 는 .gitignore 에 있습니다. 커밋되지 않습니다.)"
 fi
 
 echo

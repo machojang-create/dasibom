@@ -88,6 +88,12 @@ function nextSlot(skip = 0) {
   throw new Error('발행 슬롯을 계산하지 못했습니다. config.json 의 publish_days 를 확인하세요.');
 }
 
+/** 키는 그때그시절 생성기(tools/gemini.key)와 같은 자리를 씁니다. */
+function hasGeminiKey() {
+  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) return true;
+  return fs.existsSync(path.join(paths.root, '..', 'tools', 'gemini.key'));
+}
+
 function run(script, scriptArgs) {
   execFileSync('node', [path.join(HERE, script), ...scriptArgs], {
     stdio: 'inherit',
@@ -122,14 +128,14 @@ for (let n = 0; n < count; n++) {
   // 네이버는 글에 이미지가 없으면 체류시간이 안 나오고 노출도 밀립니다.
   run('gen_image.mjs', ['--post', outFile]);
   run('gen_figures.mjs', ['--post', outFile]);
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY) {
+  if (hasGeminiKey() && !has('no-illust')) {
     try {
       run('gen_illust.mjs', ['--post', outFile]);
     } catch {
       console.error('  (일러스트 생성이 실패했습니다. 카드 이미지만 들어갑니다)');
     }
   } else if (!has('no-illust')) {
-    console.log('  (GEMINI_API_KEY 가 없어 일러스트를 건너뜁니다. 카드 이미지만 들어갑니다)');
+    console.log('  (Gemini 키가 없어 일러스트를 건너뜁니다. 카드 이미지만 들어갑니다)');
   }
 
   // 검수 — 변동성 규칙 위반이 있으면 발행하지 않습니다.

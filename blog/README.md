@@ -306,18 +306,17 @@ sudo apt install fonts-nanum && fc-cache -fv     # Ubuntu/WSL
 
 ### 일러스트 — Gemini
 
-```bash
-# https://aistudio.google.com/apikey 에서 키 발급 후
-echo 'GEMINI_API_KEY=...' >> .env
+키는 **`그때그시절` 이미지 생성기와 같은 파일**을 씁니다 — 저장소 루트의 `tools/gemini.key`. 이미 쓰고 계시면 새로 발급받으실 필요 없습니다. (`.gitignore` 에 있어 커밋되지 않습니다. 환경변수 `GEMINI_API_KEY` 도 됩니다.)
 
+```bash
 npm run illust                        # out/ 의 모든 원고
 node gen_illust.mjs --post out/B01_xxx.json
 node gen_illust.mjs --post out/B01_xxx.json --force   # 이미 있어도 다시
 ```
 
-이미 만든 그림은 건너뜁니다. 그림이 마음에 안 들면 원고의 `prompt` 를 고치고 `--force` 로 다시 뽑으세요.
+이미 만든 그림은 건너뜁니다. **중간에 끊겨도 같은 명령으로 이어 돌리면 됩니다.** 무료 키 한도(429)에 걸리면 헛돌지 않고 거기서 멈추니, 다음 날 같은 명령을 주시면 됩니다. 그림이 마음에 안 들면 원고의 `prompt` 를 고치고 `--force` 로 다시 뽑으세요.
 
-**사진을 안 쓰는 이유.** 남의 사진을 자동으로 가져다 쓰면 저작권과 초상권이 걸립니다. 자동 발행이라 한 장씩 사람이 걸러낼 수 없으니 애초에 만들어 씁니다. 화풍은 `config.json` 의 `illustration.style` 에 고정해 두었습니다. **이걸 바꾸면 그때부터 나오는 그림이 이전 글들과 따로 놉니다.** 바꾸려면 전체를 `--force` 로 다시 뽑을 각오를 하고 바꾸세요.
+**사진을 안 쓰는 이유.** 남의 사진을 자동으로 가져다 쓰면 저작권과 초상권이 걸립니다. 자동 발행이라 한 장씩 사람이 걸러낼 수 없으니 애초에 만들어 씁니다. 화풍은 `config.json` 의 `illustration.style` 에 고정해 두었고, **일본풍이 섞이지 않도록 막는 문구**도 함께 넣었습니다 — `tools/gen_nostalgia.mjs` 에서 겪은 문제라 같은 방어를 씁니다. **이걸 바꾸면 그때부터 나오는 그림이 이전 글들과 따로 놉니다.** 바꾸려면 전체를 `--force` 로 다시 뽑을 각오를 하고 바꾸세요.
 
 키가 없어도 발행은 됩니다. 카드 이미지만 들어갑니다.
 
