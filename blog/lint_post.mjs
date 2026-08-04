@@ -256,11 +256,12 @@ function lint(post) {
   const cat = config.categories.find((c) => c.key === post.category);
   const want = cat?.template?.length ?? 0;
   if (want) {
-    // 앞뒤가 빈 줄이고 마침표로 끝나지 않는 짧은 줄 = 소제목
-    const heads = body
-      .split('\n')
-      .map((l) => l.trim())
-      .filter((l) => l && l.length <= 40 && !/[.!?]$/.test(l) && !/[,·]/.test(l));
+    // 소제목 = 빈 줄 두 개 뒤에 오는 짧은 줄. 본문에서 소제목만 이렇게 띄웁니다.
+    // (쉼표로 거르지 않습니다. "첫째, 나이가 되셨는지부터" 같은 소제목을 쓰기 때문입니다.)
+    const all = body.split('\n').map((l) => l.trim());
+    const heads = all.filter(
+      (l, i) => l && l.length <= 40 && !/[.!?]$/.test(l) && all[i - 1] === '' && all[i - 2] === '',
+    );
     if (heads.length < want - 2) {
       issues.push({
         rule: 'template-skipped',
@@ -275,7 +276,8 @@ function lint(post) {
 
   // 구조 검사
   const len = body.length;
-  const [min, max] = w.target_chars;
+  // 카테고리가 따로 목표를 두면 그쪽을 씁니다 (칼럼은 정보 글보다 짧습니다).
+  const [min, max] = cat?.target_chars ?? w.target_chars;
   if (len < min * 0.8) {
     issues.push({
       rule: 'length',
