@@ -6,6 +6,7 @@
  *   node run.mjs --now              # 예약 대신 즉시 발행
  *   node run.mjs --count 3          # 3편 연속 (예약 슬롯이 차례로 밀립니다)
  *   node run.mjs --no-publish       # 원고와 이미지만 만들고 멈춤 (검토용)
+ *   node run.mjs --skip-lint        # 검수를 건너뛰고 발행 (규칙이 과할 때만)
  *   node run.mjs --id B02           # 특정 주제 지정
  *   node run.mjs --status           # 큐 현황만 출력
  *
@@ -99,7 +100,18 @@ for (let n = 0; n < count; n++) {
     process.exit(1);
   }
 
-  run('gen_image.mjs', ['--post', outFile]);
+  // 검수 — 변동성 규칙 위반이 있으면 발행하지 않습니다.
+  if (!has('skip-lint')) {
+    try {
+      run('lint_post.mjs', ['--post', outFile]);
+    } catch {
+      console.error(`\n[${topic.id}] 검수에서 걸렸습니다. 발행하지 않습니다.`);
+      console.error('  원고를 직접 고치거나, 주제의 angle 을 다듬어 다시 생성하세요.');
+      console.error(`    node gen_post.mjs --id ${topic.id}`);
+      console.error('  검수 결과가 과하다고 판단되면 --skip-lint 로 넘길 수 있습니다.');
+      process.exit(1);
+    }
+  }
 
   if (has('no-publish')) {
     console.log(`  검토용으로 남겨둡니다: ${outFile}`);

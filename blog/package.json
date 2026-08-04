@@ -9,7 +9,8 @@
     "draft": "node run.mjs --no-publish",
     "post": "node run.mjs",
     "post:now": "node run.mjs --now",
-    "expand": "node expand_queue.mjs --auto"
+    "expand": "node expand_queue.mjs --auto",
+    "lint": "node lint_post.mjs --all"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.0",
