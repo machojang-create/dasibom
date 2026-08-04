@@ -6,6 +6,7 @@
 
 node_modules/
 
-# 생성물
+# 생성물 — 이미지와 스크린샷은 빼고, 원고(json)는 남깁니다.
 out/*
 !out/.gitkeep
+!out/*.json

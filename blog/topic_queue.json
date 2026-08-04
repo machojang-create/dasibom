@@ -8,7 +8,8 @@
       "title": "기초연금 수급자격과 신청 방법, 소득인정액이 뭔가",
       "keyword": "기초연금 수급자격",
       "angle": "소득인정액이라는 말부터 풀어야 한다. 재산이 소득으로 환산되는 구조와 주민센터 준비물",
-      "status": "pending"
+      "status": "drafted",
+      "draft_file": "B01_기초연금-수급자격-만-65세라면-먼저-확인할-것.json"
     },
     {
       "id": "B02",
@@ -45,21 +46,13 @@
     {
       "id": "B06",
       "category": "benefit",
-      "title": "임플란트 건강보험, 몇 살부터 몇 개까지 되나",
-      "keyword": "임플란트 건강보험",
-      "angle": "적용 나이와 개수 제한. 적용 안 되는 경우가 따로 있다",
-      "status": "pending"
-    },
-    {
-      "id": "B07",
-      "category": "benefit",
       "title": "장기요양등급 신청, 어디에 어떻게 하나",
       "keyword": "장기요양등급 신청",
       "angle": "신청부터 방문조사·판정까지 순서. 등급이 안 나왔을 때",
       "status": "pending"
     },
     {
-      "id": "B08",
+      "id": "B07",
       "category": "benefit",
       "title": "노인일자리 사업, 어떤 종류가 있고 언제 신청하나",
       "keyword": "노인일자리 신청",
@@ -67,7 +60,7 @@
       "status": "pending"
     },
     {
-      "id": "B09",
+      "id": "B08",
       "category": "benefit",
       "title": "치매 검사를 무료로 받는 방법",
       "keyword": "치매안심센터",
@@ -75,7 +68,7 @@
       "status": "pending"
     },
     {
-      "id": "B10",
+      "id": "B09",
       "category": "benefit",
       "title": "무료로 맞을 수 있는 예방접종은 무엇인가",
       "keyword": "어르신 무료 예방접종",
@@ -83,7 +76,7 @@
       "status": "pending"
     },
     {
-      "id": "B11",
+      "id": "B10",
       "category": "benefit",
       "title": "기초연금과 국민연금을 같이 받을 수 있나",
       "keyword": "기초연금 국민연금 중복",
@@ -91,7 +84,7 @@
       "status": "pending"
     },
     {
-      "id": "B12",
+      "id": "B11",
       "category": "benefit",
       "title": "재산세·자동차세 어르신 감면, 해당되는지 확인하기",
       "keyword": "경로 세금 감면",
@@ -99,7 +92,7 @@
       "status": "pending"
     },
     {
-      "id": "B13",
+      "id": "B12",
       "category": "benefit",
       "title": "보청기 지원금, 받으려면 무엇이 필요한가",
       "keyword": "보청기 지원금",
@@ -107,7 +100,7 @@
       "status": "pending"
     },
     {
-      "id": "B14",
+      "id": "B13",
       "category": "benefit",
       "title": "난방비·전기요금 지원, 어디에 신청하나",
       "keyword": "에너지바우처 신청",
@@ -115,7 +108,7 @@
       "status": "pending"
     },
     {
-      "id": "B15",
+      "id": "B14",
       "category": "benefit",
       "title": "복지 혜택을 한 번에 확인하는 방법",
       "keyword": "복지로 맞춤급여",
@@ -123,7 +116,7 @@
       "status": "pending"
     },
     {
-      "id": "B16",
+      "id": "B15",
       "category": "benefit",
       "title": "은퇴 후 생활비, 얼마나 있어야 하는지 계산하기",
       "keyword": "노후 생활비",
@@ -131,7 +124,7 @@
       "status": "pending"
     },
     {
-      "id": "B17",
+      "id": "B16",
       "category": "benefit",
       "title": "주택연금, 집을 넘기는 것인가",
       "keyword": "주택연금",
@@ -139,7 +132,7 @@
       "status": "pending"
     },
     {
-      "id": "B18",
+      "id": "B17",
       "category": "benefit",
       "title": "퇴직금을 한 번에 받을까 나눠 받을까",
       "keyword": "퇴직금 수령",
@@ -147,7 +140,7 @@
       "status": "pending"
     },
     {
-      "id": "B19",
+      "id": "B18",
       "category": "benefit",
       "title": "은퇴하니 건강보험료가 올랐다면",
       "keyword": "은퇴 후 건강보험료",
@@ -155,7 +148,7 @@
       "status": "pending"
     },
     {
-      "id": "B20",
+      "id": "B19",
       "category": "benefit",
       "title": "잊고 있던 통장과 보험금 찾기",
       "keyword": "휴면예금 찾기",
@@ -163,7 +156,7 @@
       "status": "pending"
     },
     {
-      "id": "B21",
+      "id": "B20",
       "category": "benefit",
       "title": "예금자보호, 어디까지 지켜지나",
       "keyword": "예금자보호",
@@ -171,7 +164,7 @@
       "status": "pending"
     },
     {
-      "id": "B22",
+      "id": "B21",
       "category": "benefit",
       "title": "자녀를 돕다가 내 노후가 흔들릴 때",
       "keyword": "자녀 지원 노후",
@@ -179,7 +172,7 @@
       "status": "pending"
     },
     {
-      "id": "B23",
+      "id": "B22",
       "category": "benefit",
       "title": "상속과 증여, 미리 정리해두면 뭐가 다른가",
       "keyword": "상속 증여 준비",
@@ -187,7 +180,7 @@
       "status": "pending"
     },
     {
-      "id": "B24",
+      "id": "B23",
       "category": "benefit",
       "title": "은행 수수료를 줄이는 방법",
       "keyword": "은행 수수료 면제",
@@ -195,7 +188,7 @@
       "status": "pending"
     },
     {
-      "id": "B25",
+      "id": "B24",
       "category": "benefit",
       "title": "인터넷뱅킹을 안전하게 쓰려면",
       "keyword": "인터넷뱅킹 보안",
@@ -205,13 +198,22 @@
     {
       "id": "H01",
       "category": "health",
+      "title": "임플란트 건강보험, 만 65세부터 몇 개까지 되나",
+      "keyword": "임플란트 건강보험",
+      "angle": "적용 나이와 개수 제한. 적용 안 되는 경우와 본인부담이 갈리는 지점",
+      "status": "drafted",
+      "draft_file": "H01_임플란트-건강보험-만-65세부터-몇-개까지-되나.json"
+    },
+    {
+      "id": "H02",
+      "category": "health",
       "title": "단백질이 부족하면 몸에 생기는 일과 챙기는 음식",
       "keyword": "시니어 단백질",
       "angle": "근육이 줄고 회복이 늦어진다. 끼니마다 나눠 먹는 것이 핵심",
       "status": "pending"
     },
     {
-      "id": "H02",
+      "id": "H03",
       "category": "health",
       "title": "칼슘, 부족하면 어떻게 되고 무엇에 많은가",
       "keyword": "칼슘 많은 음식",
@@ -219,7 +221,7 @@
       "status": "pending"
     },
     {
-      "id": "H03",
+      "id": "H04",
       "category": "health",
       "title": "비타민D가 왜 중요하고 어떻게 채우나",
       "keyword": "비타민D 부족",
@@ -227,7 +229,7 @@
       "status": "pending"
     },
     {
-      "id": "H04",
+      "id": "H05",
       "category": "health",
       "title": "마그네슘이 부족할 때 나타나는 신호",
       "keyword": "마그네슘 많은 음식",
@@ -235,7 +237,7 @@
       "status": "pending"
     },
     {
-      "id": "H05",
+      "id": "H06",
       "category": "health",
       "title": "오메가3, 무슨 일을 하고 어떤 생선에 많은가",
       "keyword": "오메가3 음식",
@@ -243,7 +245,7 @@
       "status": "pending"
     },
     {
-      "id": "H06",
+      "id": "H07",
       "category": "health",
       "title": "식이섬유가 부족하면 생기는 일",
       "keyword": "식이섬유 많은 음식",
@@ -251,7 +253,7 @@
       "status": "pending"
     },
     {
-      "id": "H07",
+      "id": "H08",
       "category": "health",
       "title": "철분 부족의 신호와 흡수를 돕는 음식",
       "keyword": "철분 많은 음식",
@@ -259,7 +261,7 @@
       "status": "pending"
     },
     {
-      "id": "H08",
+      "id": "H09",
       "category": "health",
       "title": "비타민B12, 나이 들수록 신경 써야 하는 이유",
       "keyword": "비타민B12 부족",
@@ -267,7 +269,7 @@
       "status": "pending"
     },
     {
-      "id": "H09",
+      "id": "H10",
       "category": "health",
       "title": "칼륨이 하는 일과 많이 든 음식",
       "keyword": "칼륨 많은 음식",
@@ -275,7 +277,7 @@
       "status": "pending"
     },
     {
-      "id": "H10",
+      "id": "H11",
       "category": "health",
       "title": "아연이 부족하면 어떤 일이 생기나",
       "keyword": "아연 많은 음식",
@@ -283,7 +285,7 @@
       "status": "pending"
     },
     {
-      "id": "H11",
+      "id": "H12",
       "category": "health",
       "title": "눈 건강에 관계된 루테인, 어떤 음식에 있나",
       "keyword": "루테인 음식",
@@ -291,7 +293,7 @@
       "status": "pending"
     },
     {
-      "id": "H12",
+      "id": "H13",
       "category": "health",
       "title": "물을 얼마나 마셔야 하고 왜 갈증을 못 느끼나",
       "keyword": "시니어 수분 섭취",
@@ -299,7 +301,7 @@
       "status": "pending"
     },
     {
-      "id": "H13",
+      "id": "H14",
       "category": "health",
       "title": "무릎이 아플 때 집에서 하는 스트레칭 세 가지",
       "keyword": "무릎 스트레칭",
@@ -307,7 +309,7 @@
       "status": "pending"
     },
     {
-      "id": "H14",
+      "id": "H15",
       "category": "health",
       "title": "굳은 어깨를 푸는 간단한 동작",
       "keyword": "어깨 스트레칭",
@@ -315,7 +317,7 @@
       "status": "pending"
     },
     {
-      "id": "H15",
+      "id": "H16",
       "category": "health",
       "title": "허리가 뻐근할 때 누워서 하는 동작",
       "keyword": "허리 스트레칭",
@@ -323,7 +325,7 @@
       "status": "pending"
     },
     {
-      "id": "H16",
+      "id": "H17",
       "category": "health",
       "title": "비타민C가 하는 일과 많이 든 음식",
       "keyword": "비타민C 음식",
@@ -331,7 +333,7 @@
       "status": "pending"
     },
     {
-      "id": "H17",
+      "id": "H18",
       "category": "health",
       "title": "나트륨을 줄이면 몸에서 달라지는 것",
       "keyword": "나트륨 줄이기",
@@ -339,7 +341,7 @@
       "status": "pending"
     },
     {
-      "id": "H18",
+      "id": "H19",
       "category": "health",
       "title": "근육이 빠지는 것을 늦추려면 무엇을 먹나",
       "keyword": "근감소증 음식",
@@ -347,7 +349,7 @@
       "status": "pending"
     },
     {
-      "id": "H19",
+      "id": "H20",
       "category": "health",
       "title": "뼈가 약해지는 것을 늦추는 음식",
       "keyword": "골다공증 음식",
@@ -355,7 +357,7 @@
       "status": "pending"
     },
     {
-      "id": "H20",
+      "id": "H21",
       "category": "health",
       "title": "소화가 잘 안 될 때 살펴볼 식습관",
       "keyword": "소화 안될 때",
@@ -363,7 +365,7 @@
       "status": "pending"
     },
     {
-      "id": "H21",
+      "id": "H22",
       "category": "health",
       "title": "잇몸이 약해졌을 때 먹기 좋은 음식",
       "keyword": "잇몸 건강 음식",
@@ -371,7 +373,7 @@
       "status": "pending"
     },
     {
-      "id": "H22",
+      "id": "H23",
       "category": "health",
       "title": "변비가 이어질 때 무엇을 바꾸나",
       "keyword": "변비 음식",
@@ -379,7 +381,7 @@
       "status": "pending"
     },
     {
-      "id": "H23",
+      "id": "H24",
       "category": "health",
       "title": "눈이 쉽게 피로할 때 도움이 되는 음식",
       "keyword": "눈 피로 음식",
@@ -387,7 +389,7 @@
       "status": "pending"
     },
     {
-      "id": "H24",
+      "id": "H25",
       "category": "health",
       "title": "영양제 대신 음식으로 채우려면",
       "keyword": "영양제 대신 음식",
@@ -395,7 +397,7 @@
       "status": "pending"
     },
     {
-      "id": "H25",
+      "id": "H26",
       "category": "health",
       "title": "혼자 먹는 끼니를 부실하지 않게 차리는 법",
       "keyword": "혼밥 영양",
@@ -403,7 +405,7 @@
       "status": "pending"
     },
     {
-      "id": "H26",
+      "id": "H27",
       "category": "health",
       "title": "무릎이 시큰거릴 때 관절에서 일어나는 일",
       "keyword": "무릎 관절통",
@@ -411,7 +413,7 @@
       "status": "pending"
     },
     {
-      "id": "H27",
+      "id": "H28",
       "category": "health",
       "title": "이가 시리고 잇몸이 내려앉을 때",
       "keyword": "잇몸 질환",
@@ -419,7 +421,7 @@
       "status": "pending"
     },
     {
-      "id": "H28",
+      "id": "H29",
       "category": "health",
       "title": "눈이 침침하고 뿌옇게 보인다면",
       "keyword": "백내장 초기 증상",
@@ -427,7 +429,7 @@
       "status": "pending"
     },
     {
-      "id": "H29",
+      "id": "H30",
       "category": "health",
       "title": "귀가 잘 안 들린다고 느껴질 때",
       "keyword": "난청 초기",
@@ -435,7 +437,7 @@
       "status": "pending"
     },
     {
-      "id": "H30",
+      "id": "H31",
       "category": "health",
       "title": "손발이 저리고 감각이 무뎌질 때",
       "keyword": "손발 저림",
@@ -443,7 +445,7 @@
       "status": "pending"
     },
     {
-      "id": "H31",
+      "id": "H32",
       "category": "health",
       "title": "어지럼증이 반복될 때 살펴볼 것",
       "keyword": "어지럼증 원인",
@@ -451,7 +453,7 @@
       "status": "pending"
     },
     {
-      "id": "H32",
+      "id": "H33",
       "category": "health",
       "title": "소변이 자주 마렵고 잔뇨감이 있을 때",
       "keyword": "전립선 증상",
@@ -459,7 +461,7 @@
       "status": "pending"
     },
     {
-      "id": "H33",
+      "id": "H34",
       "category": "health",
       "title": "혈압이 아침에만 높게 나온다면",
       "keyword": "아침 고혈압",
@@ -467,7 +469,7 @@
       "status": "pending"
     },
     {
-      "id": "H34",
+      "id": "H35",
       "category": "health",
       "title": "당뇨 전 단계라는 말을 들었다면",
       "keyword": "당뇨 전단계",
@@ -475,7 +477,7 @@
       "status": "pending"
     },
     {
-      "id": "H35",
+      "id": "H36",
       "category": "health",
       "title": "허리가 아픈데 다리까지 저리다면",
       "keyword": "허리 디스크 신호",
@@ -973,7 +975,8 @@
       "title": "카카오톡 글씨 크게 키우고 글꼴 바꾸기",
       "keyword": "카카오톡 글씨 크기",
       "angle": "앱 안에서 바꾸는 법과 휴대폰 전체를 바꾸는 법, 두 가지",
-      "status": "pending"
+      "status": "drafted",
+      "draft_file": "D01_카카오톡-글씨-크기-크게-키우는-법.json"
     },
     {
       "id": "D02",
