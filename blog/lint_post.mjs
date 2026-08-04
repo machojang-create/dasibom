@@ -121,6 +121,33 @@ const RULES = [
     test: (text) => matchAll(text, /https?:\/\/\S+|dasibomlife\.com/g),
   },
   {
+    id: 'third-person-senior',
+    level: 'error',
+    label: '독자를 3인칭으로 부름',
+    why: '이 글의 독자는 시니어 본인입니다. 옆에서 설명하는 말투가 되면 읽는 사람이 대상화됩니다.',
+    // 자녀 대상(family_track)과 실무자 대상(care_policy)은 예외입니다.
+    categories: (key) => key !== 'family_track' && key !== 'care_policy',
+    test: (text) =>
+      matchAll(text, /어르신(?:은|이|께|들|분)|부모님(?:은|이|께|의|과|을|도)|고령자(?:는|가|의)/g),
+  },
+  {
+    id: 'caretaking-tone',
+    level: 'error',
+    label: '돌봄 대상 취급',
+    why: '독자가 스스로 하는 일입니다. 누가 대신 해주는 말투로 쓰지 마세요.',
+    categories: (key) => key !== 'family_track' && key !== 'care_policy',
+    test: (text) =>
+      matchAll(text, /해\s?드리세요|챙겨\s?드리|도와\s?드리세요|권해\s?드리세요|모시고|보살펴/g),
+  },
+  {
+    id: 'age-as-limit',
+    level: 'warn',
+    label: '나이를 한계로 서술',
+    why: '나이 때문에 못 한다가 아니라, 방법을 바꾸는 이야기로 써야 합니다.',
+    categories: (key) => key !== 'care_policy',
+    test: (text) => matchAll(text, /나이가 들면 (?:어렵|힘들|못)|이 나이에는 무리|연세가 있으[시]?니/g),
+  },
+  {
     id: 'brand-repeat',
     level: 'warn',
     label: '브랜드 반복 언급',
@@ -169,6 +196,8 @@ function lint(post) {
   const target = `${post.title}\n${body}`;
 
   for (const rule of RULES) {
+    // 카테고리별로 적용 여부가 다른 규칙이 있습니다 (독자가 다르므로).
+    if (rule.categories && !rule.categories(post.category)) continue;
     const hits = rule.test(target);
     for (const hit of hits) {
       issues.push({
@@ -309,10 +338,21 @@ for (const file of files) {
     const list = issues.filter((i) => i.level === group);
     if (list.length === 0) continue;
     console.log(`\n   ${group === 'error' ? '발행 차단' : '확인 권장'} (${list.length})`);
+
+    // 같은 규칙이 여러 번 걸리면 로그가 도배됩니다. 규칙별로 묶고 예시만 보여줍니다.
+    const byRule = new Map();
     for (const i of list) {
-      console.log(`     · ${i.label}: "${i.found}"`);
-      if (i.context) console.log(`       ${i.context}`);
-      console.log(`       ${i.why}`);
+      if (!byRule.has(i.rule)) byRule.set(i.rule, []);
+      byRule.get(i.rule).push(i);
+    }
+
+    for (const [, hits] of byRule) {
+      const head = hits[0];
+      const samples = [...new Set(hits.map((h) => h.found))].slice(0, 4);
+      const count = hits.length > 1 ? ` — ${hits.length}곳` : '';
+      console.log(`     · ${head.label}${count}: ${samples.map((s) => `"${s}"`).join(', ')}`);
+      if (head.context) console.log(`       ${head.context}`);
+      console.log(`       ${head.why}`);
     }
   }
 }
