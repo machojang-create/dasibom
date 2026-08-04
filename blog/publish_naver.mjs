@@ -44,8 +44,10 @@ if (!fs.existsSync(sessionFile)) {
   process.exit(1);
 }
 
-// 본문 끝에 CTA 한 줄 붙이기 (링크는 여기서만 들어갑니다)
-const bodyWithCta = `${post.body.trim()}\n\n\n${post.cta.label}\n${post.cta.url}`;
+// CTA 가 있는 글에만 링크를 붙입니다. 없으면 본문 그대로 — 정보로 끝나는 글입니다.
+const bodyWithCta = post.cta?.url
+  ? `${post.body.trim()}\n\n\n${post.cta.label}\n${post.cta.url}`
+  : post.body.trim();
 
 let step = 'start';
 const browser = await chromium.launch({ headless: !headed, slowMo: headed ? 120 : 0 });
@@ -184,7 +186,7 @@ try {
   saveQueue(queue);
 
   console.log(`\n발행 완료: ${post.title}`);
-  console.log(`  ${reserveAt ? `예약 ${reserveAt}` : '즉시 발행'}`);
+  console.log(`  ${reserveAt ? `예약 ${reserveAt}` : '즉시 발행'} · ${post.cta?.url ? 'CTA ' + post.cta.url : 'CTA 없음(정보 글)'}`);
   console.log(`  ${postUrl}`);
 } catch (err) {
   const shot = path.join(ensureOutDir(), `error_${post.id}_${Date.now()}.png`);

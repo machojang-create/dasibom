@@ -144,8 +144,8 @@ const RULES = [
     level: 'error',
     label: '독자를 3인칭으로 부름',
     why: '이 글의 독자는 시니어 본인입니다. 옆에서 설명하는 말투가 되면 읽는 사람이 대상화됩니다.',
-    // 자녀 대상(family_track)과 실무자 대상(care_policy)은 예외입니다.
-    categories: (key) => key !== 'family_track' && key !== 'care_policy',
+    // 실무자 대상(care_policy)만 예외입니다. 그 글의 독자는 시니어 본인이 아닙니다.
+    categories: (key) => key !== 'care_policy',
     test: (text) =>
       matchAll(text, /어르신(?:은|이|께|들|분)|부모님(?:은|이|께|의|과|을|도)|고령자(?:는|가|의)/g),
   },
@@ -154,7 +154,7 @@ const RULES = [
     level: 'error',
     label: '돌봄 대상 취급',
     why: '독자가 스스로 하는 일입니다. 누가 대신 해주는 말투로 쓰지 마세요.',
-    categories: (key) => key !== 'family_track' && key !== 'care_policy',
+    categories: (key) => key !== 'care_policy',
     test: (text) =>
       matchAll(text, /해\s?드리세요|챙겨\s?드리|도와\s?드리세요|권해\s?드리세요|모시고|보살펴/g),
   },
@@ -168,13 +168,21 @@ const RULES = [
   },
   {
     id: 'brand-repeat',
-    level: 'warn',
+    level: 'error',
     label: '브랜드 반복 언급',
-    why: '마지막에 한 번이면 충분합니다. 광고처럼 읽힙니다.',
+    why: 'CTA 가 있는 글이라도 마지막에 한 번이면 충분합니다. 반복하면 광고가 됩니다.',
     test: (text) => {
       const hits = matchAll(text, /다시봄라이프|다시봄/g);
       return hits.length > 2 ? hits : [];
     },
+  },
+  {
+    id: 'soft-sell',
+    level: 'warn',
+    label: '무언가로 넘기려는 마무리',
+    why: 'CTA 가 아닌 글에서 이런 문장은 링크 없는 광고처럼 읽힙니다.',
+    test: (text) =>
+      matchAll(text, /더 알아보(?:려면|시려면)|도움이 필요하시(?:면|다면)|서비스를 (?:이용|활용)해|앱을 (?:설치|이용)/g),
   },
   {
     id: 'brand-recommend',
@@ -298,15 +306,18 @@ function lint(post) {
     });
   }
 
+  // CTA 가 없는 글은 정보로 끝나야 합니다. 브랜드를 언급하면 CTA 없는 광고가 됩니다.
   if (!post.cta?.url) {
-    issues.push({
-      rule: 'cta-missing',
-      level: 'error',
-      label: 'CTA 없음',
-      why: '목적지가 없는 글은 유입을 만들지 못합니다.',
-      found: '',
-      context: '',
-    });
+    for (const hit of matchAll(target, /다시봄라이프|다시봄|봄이(?:와|가|는|를|에게)?/g)) {
+      issues.push({
+        rule: 'brand-in-noncta',
+        level: 'error',
+        label: 'CTA 없는 글에 브랜드 언급',
+        why: '이 글은 정보로 끝나야 합니다. 링크 없이 서비스 이름만 넣는 것이 더 광고처럼 읽힙니다.',
+        found: hit.text,
+        context: context(target, hit.index, hit.text.length),
+      });
+    }
   }
 
   return issues;
