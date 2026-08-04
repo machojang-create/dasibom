@@ -252,6 +252,27 @@ function lint(post) {
     }
   }
 
+  // 목차 — 소제목 개수가 템플릿 단수에 크게 못 미치면 목차를 안 따른 것입니다.
+  const cat = config.categories.find((c) => c.key === post.category);
+  const want = cat?.template?.length ?? 0;
+  if (want) {
+    // 앞뒤가 빈 줄이고 마침표로 끝나지 않는 짧은 줄 = 소제목
+    const heads = body
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l && l.length <= 40 && !/[.!?]$/.test(l) && !/[,·]/.test(l));
+    if (heads.length < want - 2) {
+      issues.push({
+        rule: 'template-skipped',
+        level: 'warn',
+        label: '목차를 덜 따름',
+        why: `소제목이 ${heads.length}개입니다. 이 카테고리 목차는 ${want}단입니다.`,
+        found: `${heads.length}/${want}`,
+        context: '',
+      });
+    }
+  }
+
   // 구조 검사
   const len = body.length;
   const [min, max] = w.target_chars;

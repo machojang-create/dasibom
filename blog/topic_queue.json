@@ -1,10 +1,10 @@
 {
-  "version": 9,
+  "version": 11,
   "note": "status: pending | drafted | published | skipped. 발행되면 published_at 과 post_url 이 채워집니다.",
   "topics": [
     {
       "id": "B01",
-      "category": "money",
+      "category": "benefit",
       "title": "기초연금 수급자격과 신청 방법, 소득인정액이 뭔가",
       "keyword": "기초연금 수급자격",
       "angle": "소득인정액이라는 말부터 풀어야 한다. 재산이 소득으로 환산되는 구조와 주민센터 준비물",
@@ -12,7 +12,7 @@
     },
     {
       "id": "B02",
-      "category": "money",
+      "category": "benefit",
       "title": "어르신 무료 교통카드, 어디서 어떻게 발급받나",
       "keyword": "어르신 교통카드",
       "angle": "지하철과 버스가 지역마다 다르다. 발급처와 준비물, 분실했을 때",
@@ -20,7 +20,7 @@
     },
     {
       "id": "B03",
-      "category": "money",
+      "category": "benefit",
       "title": "국민연금 조기수령, 일찍 받는 게 이득일까",
       "keyword": "국민연금 조기수령",
       "angle": "앞당기면 줄고 미루면 는다. 어느 쪽이 유리한지는 건강과 소득으로 갈린다",
@@ -28,7 +28,7 @@
     },
     {
       "id": "B04",
-      "category": "money",
+      "category": "benefit",
       "title": "경로우대 KTX·SRT 할인, 얼마나 어떻게 받나",
       "keyword": "경로우대 기차표",
       "angle": "할인 대상 열차와 요일 조건. 창구와 앱 예매가 다른 점",
@@ -36,7 +36,7 @@
     },
     {
       "id": "B05",
-      "category": "money",
+      "category": "benefit",
       "title": "보건소 무료 건강검진, 무슨 검사를 받을 수 있나",
       "keyword": "보건소 무료 건강검진",
       "angle": "일반 병원 검진과 무엇이 다른지. 예약 방법과 준비",
@@ -44,7 +44,7 @@
     },
     {
       "id": "B06",
-      "category": "money",
+      "category": "benefit",
       "title": "임플란트 건강보험, 몇 살부터 몇 개까지 되나",
       "keyword": "임플란트 건강보험",
       "angle": "적용 나이와 개수 제한. 적용 안 되는 경우가 따로 있다",
@@ -52,7 +52,7 @@
     },
     {
       "id": "B07",
-      "category": "money",
+      "category": "benefit",
       "title": "장기요양등급 신청, 어디에 어떻게 하나",
       "keyword": "장기요양등급 신청",
       "angle": "신청부터 방문조사·판정까지 순서. 등급이 안 나왔을 때",
@@ -60,7 +60,7 @@
     },
     {
       "id": "B08",
-      "category": "money",
+      "category": "benefit",
       "title": "노인일자리 사업, 어떤 종류가 있고 언제 신청하나",
       "keyword": "노인일자리 신청",
       "angle": "공익형과 시장형의 차이. 모집 시기를 놓치지 않는 법",
@@ -68,7 +68,7 @@
     },
     {
       "id": "B09",
-      "category": "money",
+      "category": "benefit",
       "title": "치매 검사를 무료로 받는 방법",
       "keyword": "치매안심센터",
       "angle": "치매안심센터에서 하는 일. 검사 종류와 가족 상담",
@@ -76,7 +76,7 @@
     },
     {
       "id": "B10",
-      "category": "money",
+      "category": "benefit",
       "title": "무료로 맞을 수 있는 예방접종은 무엇인가",
       "keyword": "어르신 무료 예방접종",
       "angle": "독감과 폐렴 접종 대상과 시기. 보건소와 지정 병원의 차이",
@@ -84,7 +84,7 @@
     },
     {
       "id": "B11",
-      "category": "money",
+      "category": "benefit",
       "title": "기초연금과 국민연금을 같이 받을 수 있나",
       "keyword": "기초연금 국민연금 중복",
       "angle": "같이 받되 조정되는 구조. 무엇을 확인해야 하는지",
@@ -92,7 +92,7 @@
     },
     {
       "id": "B12",
-      "category": "money",
+      "category": "benefit",
       "title": "재산세·자동차세 어르신 감면, 해당되는지 확인하기",
       "keyword": "경로 세금 감면",
       "angle": "감면 대상과 신청처. 자동으로 되는 것과 신청해야 하는 것",
@@ -100,7 +100,7 @@
     },
     {
       "id": "B13",
-      "category": "money",
+      "category": "benefit",
       "title": "보청기 지원금, 받으려면 무엇이 필요한가",
       "keyword": "보청기 지원금",
       "angle": "청각장애 등록 여부에 따라 갈린다. 절차와 준비물",
@@ -108,7 +108,7 @@
     },
     {
       "id": "B14",
-      "category": "money",
+      "category": "benefit",
       "title": "난방비·전기요금 지원, 어디에 신청하나",
       "keyword": "에너지바우처 신청",
       "angle": "대상 확인과 신청 창구. 놓치기 쉬운 조건",
@@ -116,7 +116,7 @@
     },
     {
       "id": "B15",
-      "category": "money",
+      "category": "benefit",
       "title": "복지 혜택을 한 번에 확인하는 방법",
       "keyword": "복지로 맞춤급여",
       "angle": "흩어진 제도를 한자리에서 찾는 창구와 쓰는 법",
@@ -124,7 +124,7 @@
     },
     {
       "id": "B16",
-      "category": "money",
+      "category": "benefit",
       "title": "은퇴 후 생활비, 얼마나 있어야 하는지 계산하기",
       "keyword": "노후 생활비",
       "angle": "남의 평균이 아니라 내 지출로 계산하는 순서",
@@ -132,7 +132,7 @@
     },
     {
       "id": "B17",
-      "category": "money",
+      "category": "benefit",
       "title": "주택연금, 집을 넘기는 것인가",
       "keyword": "주택연금",
       "angle": "소유권에 대한 오해부터. 계속 살면서 받는 구조",
@@ -140,7 +140,7 @@
     },
     {
       "id": "B18",
-      "category": "money",
+      "category": "benefit",
       "title": "퇴직금을 한 번에 받을까 나눠 받을까",
       "keyword": "퇴직금 수령",
       "angle": "목돈이 필요한 시점과 세금 처리가 갈림길",
@@ -148,7 +148,7 @@
     },
     {
       "id": "B19",
-      "category": "money",
+      "category": "benefit",
       "title": "은퇴하니 건강보험료가 올랐다면",
       "keyword": "은퇴 후 건강보험료",
       "angle": "직장에서 지역으로 바뀌며 생기는 일. 완충 장치",
@@ -156,7 +156,7 @@
     },
     {
       "id": "B20",
-      "category": "money",
+      "category": "benefit",
       "title": "잊고 있던 통장과 보험금 찾기",
       "keyword": "휴면예금 찾기",
       "angle": "한자리에서 조회하는 방법. 상속인이 찾을 때",
@@ -164,7 +164,7 @@
     },
     {
       "id": "B21",
-      "category": "money",
+      "category": "benefit",
       "title": "예금자보호, 어디까지 지켜지나",
       "keyword": "예금자보호",
       "angle": "보호되는 것과 안 되는 것. 나눠 넣어야 하는 이유",
@@ -172,7 +172,7 @@
     },
     {
       "id": "B22",
-      "category": "money",
+      "category": "benefit",
       "title": "자녀를 돕다가 내 노후가 흔들릴 때",
       "keyword": "자녀 지원 노후",
       "angle": "도움의 상한선을 미리 정해두기",
@@ -180,7 +180,7 @@
     },
     {
       "id": "B23",
-      "category": "money",
+      "category": "benefit",
       "title": "상속과 증여, 미리 정리해두면 뭐가 다른가",
       "keyword": "상속 증여 준비",
       "angle": "남는 사람이 겪을 일을 줄이는 관점",
@@ -188,7 +188,7 @@
     },
     {
       "id": "B24",
-      "category": "money",
+      "category": "benefit",
       "title": "은행 수수료를 줄이는 방법",
       "keyword": "은행 수수료 면제",
       "angle": "우대 조건과 창구 대신 쓸 수 있는 것",
@@ -196,7 +196,7 @@
     },
     {
       "id": "B25",
-      "category": "money",
+      "category": "benefit",
       "title": "인터넷뱅킹을 안전하게 쓰려면",
       "keyword": "인터넷뱅킹 보안",
       "angle": "비밀번호와 인증서. 의심스러운 화면을 만났을 때",
@@ -204,7 +204,7 @@
     },
     {
       "id": "H01",
-      "category": "health_food",
+      "category": "health",
       "title": "단백질이 부족하면 몸에 생기는 일과 챙기는 음식",
       "keyword": "시니어 단백질",
       "angle": "근육이 줄고 회복이 늦어진다. 끼니마다 나눠 먹는 것이 핵심",
@@ -212,7 +212,7 @@
     },
     {
       "id": "H02",
-      "category": "health_food",
+      "category": "health",
       "title": "칼슘, 부족하면 어떻게 되고 무엇에 많은가",
       "keyword": "칼슘 많은 음식",
       "angle": "뼈만이 아니다. 우유가 안 맞을 때 대신할 음식들",
@@ -220,7 +220,7 @@
     },
     {
       "id": "H03",
-      "category": "health_food",
+      "category": "health",
       "title": "비타민D가 왜 중요하고 어떻게 채우나",
       "keyword": "비타민D 부족",
       "angle": "햇빛과 음식 두 갈래. 실내 생활이 길어질 때 생기는 일",
@@ -228,7 +228,7 @@
     },
     {
       "id": "H04",
-      "category": "health_food",
+      "category": "health",
       "title": "마그네슘이 부족할 때 나타나는 신호",
       "keyword": "마그네슘 많은 음식",
       "angle": "다리에 쥐가 나거나 눈꺼풀이 떨릴 때. 견과류와 채소",
@@ -236,7 +236,7 @@
     },
     {
       "id": "H05",
-      "category": "health_food",
+      "category": "health",
       "title": "오메가3, 무슨 일을 하고 어떤 생선에 많은가",
       "keyword": "오메가3 음식",
       "angle": "등푸른 생선 위주. 조리 방법에 따라 달라지는 점",
@@ -244,7 +244,7 @@
     },
     {
       "id": "H06",
-      "category": "health_food",
+      "category": "health",
       "title": "식이섬유가 부족하면 생기는 일",
       "keyword": "식이섬유 많은 음식",
       "angle": "변비만의 문제가 아니다. 물과 함께 늘려야 하는 이유",
@@ -252,7 +252,7 @@
     },
     {
       "id": "H07",
-      "category": "health_food",
+      "category": "health",
       "title": "철분 부족의 신호와 흡수를 돕는 음식",
       "keyword": "철분 많은 음식",
       "angle": "기운이 없고 어지러울 때. 같이 먹으면 흡수가 잘 되는 것",
@@ -260,7 +260,7 @@
     },
     {
       "id": "H08",
-      "category": "health_food",
+      "category": "health",
       "title": "비타민B12, 나이 들수록 신경 써야 하는 이유",
       "keyword": "비타민B12 부족",
       "angle": "흡수가 떨어진다. 저림과 기억력에 관련된 신호",
@@ -268,7 +268,7 @@
     },
     {
       "id": "H09",
-      "category": "health_food",
+      "category": "health",
       "title": "칼륨이 하는 일과 많이 든 음식",
       "keyword": "칼륨 많은 음식",
       "angle": "짜게 먹는 식습관과의 관계. 신장이 약할 때 주의할 점",
@@ -276,7 +276,7 @@
     },
     {
       "id": "H10",
-      "category": "health_food",
+      "category": "health",
       "title": "아연이 부족하면 어떤 일이 생기나",
       "keyword": "아연 많은 음식",
       "angle": "입맛이 떨어지고 상처가 늦게 아문다",
@@ -284,7 +284,7 @@
     },
     {
       "id": "H11",
-      "category": "health_food",
+      "category": "health",
       "title": "눈 건강에 관계된 루테인, 어떤 음식에 있나",
       "keyword": "루테인 음식",
       "angle": "초록 잎채소 위주. 기대할 수 있는 것과 없는 것",
@@ -292,7 +292,7 @@
     },
     {
       "id": "H12",
-      "category": "health_food",
+      "category": "health",
       "title": "물을 얼마나 마셔야 하고 왜 갈증을 못 느끼나",
       "keyword": "시니어 수분 섭취",
       "angle": "나이가 들면 갈증 신호가 둔해진다. 나눠 마시는 습관",
@@ -300,7 +300,7 @@
     },
     {
       "id": "H13",
-      "category": "health_food",
+      "category": "health",
       "title": "무릎이 아플 때 집에서 하는 스트레칭 세 가지",
       "keyword": "무릎 스트레칭",
       "angle": "앉아서 할 수 있는 동작만. 아프면 멈추는 기준",
@@ -308,7 +308,7 @@
     },
     {
       "id": "H14",
-      "category": "health_food",
+      "category": "health",
       "title": "굳은 어깨를 푸는 간단한 동작",
       "keyword": "어깨 스트레칭",
       "angle": "벽이나 수건을 쓰는 방법. 하루에 몇 번이 적당한지",
@@ -316,7 +316,7 @@
     },
     {
       "id": "H15",
-      "category": "health_food",
+      "category": "health",
       "title": "허리가 뻐근할 때 누워서 하는 동작",
       "keyword": "허리 스트레칭",
       "angle": "누운 자세로만. 하면 안 되는 경우",
@@ -324,7 +324,7 @@
     },
     {
       "id": "H16",
-      "category": "health_food",
+      "category": "health",
       "title": "비타민C가 하는 일과 많이 든 음식",
       "keyword": "비타민C 음식",
       "angle": "면역만이 아니다. 열에 약해서 조리하면 줄어드는 점",
@@ -332,7 +332,7 @@
     },
     {
       "id": "H17",
-      "category": "health_food",
+      "category": "health",
       "title": "나트륨을 줄이면 몸에서 달라지는 것",
       "keyword": "나트륨 줄이기",
       "angle": "싱겁게 먹는 게 아니라 짠맛을 옮기는 방법",
@@ -340,7 +340,7 @@
     },
     {
       "id": "H18",
-      "category": "health_food",
+      "category": "health",
       "title": "근육이 빠지는 것을 늦추려면 무엇을 먹나",
       "keyword": "근감소증 음식",
       "angle": "단백질만으로는 부족하다. 함께 필요한 것",
@@ -348,7 +348,7 @@
     },
     {
       "id": "H19",
-      "category": "health_food",
+      "category": "health",
       "title": "뼈가 약해지는 것을 늦추는 음식",
       "keyword": "골다공증 음식",
       "angle": "칼슘과 비타민D 를 같이 봐야 하는 이유",
@@ -356,7 +356,7 @@
     },
     {
       "id": "H20",
-      "category": "health_food",
+      "category": "health",
       "title": "소화가 잘 안 될 때 살펴볼 식습관",
       "keyword": "소화 안될 때",
       "angle": "먹는 것보다 먹는 방식. 씹는 횟수와 식사 간격",
@@ -364,7 +364,7 @@
     },
     {
       "id": "H21",
-      "category": "health_food",
+      "category": "health",
       "title": "잇몸이 약해졌을 때 먹기 좋은 음식",
       "keyword": "잇몸 건강 음식",
       "angle": "씹기 부담을 줄이면서 영양을 지키는 방법",
@@ -372,7 +372,7 @@
     },
     {
       "id": "H22",
-      "category": "health_food",
+      "category": "health",
       "title": "변비가 이어질 때 무엇을 바꾸나",
       "keyword": "변비 음식",
       "angle": "식이섬유만 늘리면 오히려 더할 수 있다",
@@ -380,7 +380,7 @@
     },
     {
       "id": "H23",
-      "category": "health_food",
+      "category": "health",
       "title": "눈이 쉽게 피로할 때 도움이 되는 음식",
       "keyword": "눈 피로 음식",
       "angle": "기대할 수 있는 것과 없는 것을 나눠서",
@@ -388,7 +388,7 @@
     },
     {
       "id": "H24",
-      "category": "health_food",
+      "category": "health",
       "title": "영양제 대신 음식으로 채우려면",
       "keyword": "영양제 대신 음식",
       "angle": "보충제로 갈 때와 음식으로 될 때의 경계",
@@ -396,15 +396,95 @@
     },
     {
       "id": "H25",
-      "category": "health_food",
+      "category": "health",
       "title": "혼자 먹는 끼니를 부실하지 않게 차리는 법",
       "keyword": "혼밥 영양",
       "angle": "반찬 수가 아니라 구성. 한 그릇으로 갖추는 방법",
       "status": "pending"
     },
     {
+      "id": "H26",
+      "category": "health",
+      "title": "무릎이 시큰거릴 때 관절에서 일어나는 일",
+      "keyword": "무릎 관절통",
+      "angle": "연골이 닳는다는 말의 실제 의미. 쉬면 낫는 통증과 아닌 통증",
+      "status": "pending"
+    },
+    {
+      "id": "H27",
+      "category": "health",
+      "title": "이가 시리고 잇몸이 내려앉을 때",
+      "keyword": "잇몸 질환",
+      "angle": "잇몸병은 소리 없이 진행된다. 칫솔질만으로 안 되는 이유",
+      "status": "pending"
+    },
+    {
+      "id": "H28",
+      "category": "health",
+      "title": "눈이 침침하고 뿌옇게 보인다면",
+      "keyword": "백내장 초기 증상",
+      "angle": "노안과 다른 신호. 밤 운전이 어려워지는 시점",
+      "status": "pending"
+    },
+    {
+      "id": "H29",
+      "category": "health",
+      "title": "귀가 잘 안 들린다고 느껴질 때",
+      "keyword": "난청 초기",
+      "angle": "말소리가 아니라 자음이 먼저 안 들린다",
+      "status": "pending"
+    },
+    {
+      "id": "H30",
+      "category": "health",
+      "title": "손발이 저리고 감각이 무뎌질 때",
+      "keyword": "손발 저림",
+      "angle": "혈액순환만의 문제가 아닐 수 있다",
+      "status": "pending"
+    },
+    {
+      "id": "H31",
+      "category": "health",
+      "title": "어지럼증이 반복될 때 살펴볼 것",
+      "keyword": "어지럼증 원인",
+      "angle": "일어설 때와 누울 때가 다르다. 구별하는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "H32",
+      "category": "health",
+      "title": "소변이 자주 마렵고 잔뇨감이 있을 때",
+      "keyword": "전립선 증상",
+      "angle": "밤에 몇 번 깨는지가 기준",
+      "status": "pending"
+    },
+    {
+      "id": "H33",
+      "category": "health",
+      "title": "혈압이 아침에만 높게 나온다면",
+      "keyword": "아침 고혈압",
+      "angle": "재는 시간에 따라 달라진다. 집에서 재는 순서",
+      "status": "pending"
+    },
+    {
+      "id": "H34",
+      "category": "health",
+      "title": "당뇨 전 단계라는 말을 들었다면",
+      "keyword": "당뇨 전단계",
+      "angle": "아직 되돌릴 수 있는 구간. 무엇부터 바꾸나",
+      "status": "pending"
+    },
+    {
+      "id": "H35",
+      "category": "health",
+      "title": "허리가 아픈데 다리까지 저리다면",
+      "keyword": "허리 디스크 신호",
+      "angle": "단순 요통과 신경 눌림의 차이",
+      "status": "pending"
+    },
+    {
       "id": "P01",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "은퇴하고 취미를 고를 때 무엇을 기준으로 하나",
       "keyword": "은퇴 후 취미",
       "angle": "재미보다 지속 가능성. 혼자 할 수 있는지, 돈이 계속 드는지",
@@ -412,7 +492,7 @@
     },
     {
       "id": "P02",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "서예를 시작하고 싶은데 손이 떨린다면",
       "keyword": "서예 시작",
       "angle": "떨림이 있어도 되는 방식. 도구는 가볍게",
@@ -420,7 +500,7 @@
     },
     {
       "id": "P03",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "무릎을 아끼면서 등산을 오래 하는 법",
       "keyword": "등산 무릎",
       "angle": "오르막보다 내리막이 문제. 코스와 속도",
@@ -428,7 +508,7 @@
     },
     {
       "id": "P04",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "베란다 텃밭, 무엇부터 준비하나",
       "keyword": "베란다 텃밭",
       "angle": "흙과 화분 고르기. 허리를 덜 쓰는 높이",
@@ -436,7 +516,7 @@
     },
     {
       "id": "P05",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "자꾸 죽이게 된다면 이 식물부터",
       "keyword": "키우기 쉬운 식물",
       "angle": "물 주는 주기가 헷갈리는 게 원인",
@@ -444,7 +524,7 @@
     },
     {
       "id": "P06",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "강아지를 키울지 망설여질 때 따져볼 것",
       "keyword": "노년 반려견",
       "angle": "산책·병원비·내가 아플 때를 미리 계산하기",
@@ -452,7 +532,7 @@
     },
     {
       "id": "P07",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "손이 덜 가는 반려동물은 무엇이 다른가",
       "keyword": "손 안 가는 반려동물",
       "angle": "품종이 아니라 하루에 몇 번 움직여야 하는지",
@@ -460,7 +540,7 @@
     },
     {
       "id": "P08",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "무릎이 아파도 강아지 산책을 이어가려면",
       "keyword": "반려견 산책",
       "angle": "시간을 줄이고 밀도를 올리는 코스",
@@ -468,7 +548,7 @@
     },
     {
       "id": "P09",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "고양이와 살 때 집에서 바꿔야 할 것",
       "keyword": "고양이 키우기",
       "angle": "높은 곳·모래·털. 허리 굽히는 횟수 줄이기",
@@ -476,7 +556,7 @@
     },
     {
       "id": "P10",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "어항을 처음 시작할 때 첫 주에 할 일",
       "keyword": "어항 초보",
       "angle": "물 잡기가 전부다. 서두르면 실패하는 이유",
@@ -484,7 +564,7 @@
     },
     {
       "id": "P11",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "반려동물 병원비, 미리 준비하는 방법",
       "keyword": "반려동물 병원비",
       "angle": "갑자기 큰돈이 나가는 구조. 매달 떼어두는 습관",
@@ -492,7 +572,7 @@
     },
     {
       "id": "P12",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "문화센터와 노래교실, 어떻게 고르고 이어가나",
       "keyword": "문화센터 등록",
       "angle": "등록 시기와 고르는 기준. 오래 다니는 사람들의 공통점",
@@ -500,7 +580,7 @@
     },
     {
       "id": "P13",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "사진을 취미로 시작할 때 무엇부터",
       "keyword": "시니어 사진 취미",
       "angle": "비싼 장비가 아니라 찍는 습관. 휴대폰으로 충분한 이유",
@@ -508,7 +588,7 @@
     },
     {
       "id": "P14",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "악기를 처음 배운다면 무엇이 수월한가",
       "keyword": "시니어 악기",
       "angle": "손가락 힘과 호흡을 기준으로. 하모니카와 우쿨렐레가 꼽히는 이유",
@@ -516,7 +596,7 @@
     },
     {
       "id": "P15",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "그림을 배운 적 없어도 시작할 수 있나",
       "keyword": "시니어 그림 취미",
       "angle": "잘 그리는 게 목적이 아닐 때 고르는 재료와 주제",
@@ -524,7 +604,7 @@
     },
     {
       "id": "P16",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "동네에서 걷기 모임을 찾거나 만드는 법",
       "keyword": "걷기 모임",
       "angle": "혼자 걷기가 이어지지 않는 이유. 사람을 끼우는 방법",
@@ -532,7 +612,7 @@
     },
     {
       "id": "P17",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "도서관을 취미 공간으로 쓰는 방법",
       "keyword": "도서관 이용",
       "angle": "책만이 아니다. 강좌와 공간을 쓰는 법",
@@ -540,7 +620,7 @@
     },
     {
       "id": "P18",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "나이 든 강아지를 돌볼 때 달라지는 것",
       "keyword": "노령견 돌봄",
       "angle": "산책·사료·병원 주기가 바뀐다. 미리 알아둘 신호",
@@ -548,7 +628,7 @@
     },
     {
       "id": "P19",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "나이 든 고양이가 보내는 신호",
       "keyword": "노묘 돌봄",
       "angle": "물 마시는 양과 화장실 습관부터",
@@ -556,10 +636,543 @@
     },
     {
       "id": "P20",
-      "category": "hobby_pet",
+      "category": "hobby",
       "title": "화분에 물을 언제 줘야 할지 모르겠다면",
       "keyword": "화분 물주기",
       "angle": "날짜가 아니라 흙 상태로 판단하는 법",
+      "status": "pending"
+    },
+    {
+      "id": "P21",
+      "category": "hobby",
+      "title": "팬카페 가입부터 등업까지, 혼자 해보기",
+      "keyword": "팬카페 가입 방법",
+      "angle": "가입 신청서에 무엇을 적는지. 등업 조건을 못 채워 못 들어가는 경우",
+      "status": "pending",
+      "template": "digital"
+    },
+    {
+      "id": "P22",
+      "category": "hobby",
+      "title": "트로트 프로그램 문자투표, 누르는 순서",
+      "keyword": "트로트 문자투표",
+      "angle": "방송 중 투표와 사전 투표가 다르다. 중복 투표가 되는지",
+      "status": "pending",
+      "template": "digital"
+    },
+    {
+      "id": "P23",
+      "category": "hobby",
+      "title": "공식 팬카페와 비공식 카페를 구별하는 법",
+      "keyword": "공식 팬카페 구별",
+      "angle": "가짜 카페에서 회비를 걷는 일이 있다. 확인할 지점",
+      "status": "pending",
+      "template": "digital"
+    },
+    {
+      "id": "P24",
+      "category": "hobby",
+      "title": "콘서트 티켓 예매, 시작 전에 준비할 것",
+      "keyword": "콘서트 티켓 예매",
+      "angle": "회원가입과 결제수단을 미리. 대기번호가 뜬 뒤에 할 일",
+      "status": "pending",
+      "template": "digital"
+    },
+    {
+      "id": "P25",
+      "category": "hobby",
+      "title": "응원봉과 굿즈, 어디서 사야 진짜인가",
+      "keyword": "공식 굿즈 구매",
+      "angle": "공식 판매처를 확인하는 방법. 되팔이와 가품",
+      "status": "pending",
+      "template": "digital"
+    },
+    {
+      "id": "P26",
+      "category": "hobby",
+      "title": "파크골프를 시작하려면 무엇이 필요한가",
+      "keyword": "파크골프 시작",
+      "angle": "등록과 이용 절차. 첫날 챙겨 갈 것",
+      "status": "pending"
+    },
+    {
+      "id": "P27",
+      "category": "hobby",
+      "title": "파크골프 채, 무엇을 보고 고르나",
+      "keyword": "파크골프 채 고르기",
+      "angle": "무게와 길이가 기준. 손목과 허리에 부담이 덜 가는 조건",
+      "status": "pending"
+    },
+    {
+      "id": "P28",
+      "category": "hobby",
+      "title": "파크골프 규칙, 처음 나가기 전에 알아둘 것",
+      "keyword": "파크골프 규칙",
+      "angle": "점수 세는 법과 예절. 다른 팀과 겹칠 때",
+      "status": "pending"
+    },
+    {
+      "id": "P29",
+      "category": "hobby",
+      "title": "게이트볼과 파크골프는 무엇이 다른가",
+      "keyword": "게이트볼 파크골프",
+      "angle": "체력 부담과 인원. 어느 쪽이 나에게 맞는지",
+      "status": "pending"
+    },
+    {
+      "id": "P30",
+      "category": "hobby",
+      "title": "당구를 다시 시작하고 싶다면",
+      "keyword": "시니어 당구",
+      "angle": "눈과 손의 문제가 아니다. 자세를 바꾸는 이야기",
+      "status": "pending"
+    },
+    {
+      "id": "P31",
+      "category": "hobby",
+      "title": "유튜브로 취미를 배울 때 걸러야 할 것",
+      "keyword": "유튜브 취미 배우기",
+      "angle": "따라 하다 다치는 경우. 믿을 만한 영상을 고르는 기준",
+      "status": "pending"
+    },
+    {
+      "id": "P32",
+      "category": "hobby",
+      "title": "체력 부담 없는 당일치기 여행 고르는 기준",
+      "keyword": "당일치기 여행",
+      "angle": "걷는 거리·계단·앉을 곳. 출발 전에 확인할 것",
+      "status": "pending"
+    },
+    {
+      "id": "P33",
+      "category": "hobby",
+      "title": "기차로 다녀오기 좋은 여행 짜는 법",
+      "keyword": "기차 여행",
+      "angle": "환승 횟수와 역에서 목적지까지. 경로 할인 받는 법",
+      "status": "pending"
+    },
+    {
+      "id": "P34",
+      "category": "hobby",
+      "title": "온천 여행 갈 때 알아둘 것",
+      "keyword": "온천 여행",
+      "angle": "입욕 시간과 횟수. 혈압이 있을 때 주의할 점",
+      "status": "pending"
+    },
+    {
+      "id": "P35",
+      "category": "hobby",
+      "title": "수목원과 정원, 무리 없이 둘러보는 법",
+      "keyword": "수목원 나들이",
+      "angle": "코스 길이와 그늘. 계절마다 다른 볼거리",
+      "status": "pending"
+    },
+    {
+      "id": "P36",
+      "category": "hobby",
+      "title": "입장료가 무료이거나 할인되는 곳 찾기",
+      "keyword": "경로 무료 입장",
+      "angle": "고궁·박물관·미술관. 신분증을 챙겨야 하는 이유",
+      "status": "pending"
+    },
+    {
+      "id": "P37",
+      "category": "hobby",
+      "title": "여행 짐, 무엇을 넣고 무엇을 빼나",
+      "keyword": "여행 짐 싸기",
+      "angle": "약과 서류가 먼저. 무게를 줄이는 순서",
+      "status": "pending"
+    },
+    {
+      "id": "P38",
+      "category": "hobby",
+      "title": "혼자 떠나는 여행, 무엇을 준비하나",
+      "keyword": "혼자 여행",
+      "angle": "숙소와 이동을 정할 때의 기준. 연락 남기는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "P39",
+      "category": "hobby",
+      "title": "친구들과 여행 갈 때 정해두면 좋은 것",
+      "keyword": "친구 여행",
+      "angle": "비용과 일정. 나중에 서운해지지 않으려면",
+      "status": "pending"
+    },
+    {
+      "id": "P40",
+      "category": "hobby",
+      "title": "패키지 여행을 고를 때 봐야 할 것",
+      "keyword": "패키지 여행 고르기",
+      "angle": "일정표에서 확인할 항목. 자유시간과 이동 시간",
+      "status": "pending"
+    },
+    {
+      "id": "P41",
+      "category": "hobby",
+      "title": "여행 중 아플 때를 대비하는 방법",
+      "keyword": "여행 건강 준비",
+      "angle": "약 챙기기와 병원 찾기. 보험 확인",
+      "status": "pending"
+    },
+    {
+      "id": "P42",
+      "category": "hobby",
+      "title": "가까운 섬으로 다녀오는 여행",
+      "keyword": "섬 여행",
+      "angle": "배 시간과 날씨. 하루로 되는 곳",
+      "status": "pending"
+    },
+    {
+      "id": "P43",
+      "category": "hobby",
+      "title": "사찰과 고택을 둘러보는 여행",
+      "keyword": "사찰 여행",
+      "angle": "템플스테이와 당일 방문의 차이",
+      "status": "pending"
+    },
+    {
+      "id": "P44",
+      "category": "hobby",
+      "title": "계절마다 가기 좋은 곳을 정하는 방법",
+      "keyword": "계절 여행지",
+      "angle": "더위와 추위를 피하는 시간대와 지역",
+      "status": "pending"
+    },
+    {
+      "id": "P45",
+      "category": "hobby",
+      "title": "차 없이 다니는 여행, 어떻게 짜나",
+      "keyword": "대중교통 여행",
+      "angle": "기차와 시내버스 연결. 시간표를 미리 보는 법",
+      "status": "pending"
+    },
+    {
+      "id": "K01",
+      "category": "home",
+      "title": "혈당이 덜 오르는 밑반찬 세 가지",
+      "keyword": "혈당 밑반찬",
+      "angle": "단맛을 빼는 게 아니라 옮기는 것. 만들어 두고 먹는 법",
+      "status": "pending"
+    },
+    {
+      "id": "K02",
+      "category": "home",
+      "title": "싱겁게 먹어도 맛이 나는 국물 내기",
+      "keyword": "저염 국물",
+      "angle": "소금을 줄이면 맹맹하다. 대신 쓰는 재료들",
+      "status": "pending"
+    },
+    {
+      "id": "K03",
+      "category": "home",
+      "title": "혼자 먹는 한 끼를 부실하지 않게 차리기",
+      "keyword": "1인분 요리",
+      "angle": "반찬 수가 아니라 구성. 한 그릇으로 갖추는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "K04",
+      "category": "home",
+      "title": "반찬을 오래 두고 먹는 보관법",
+      "keyword": "반찬 보관",
+      "angle": "덜어 먹는 습관 하나로 달라진다. 냉장과 냉동을 나누는 기준",
+      "status": "pending"
+    },
+    {
+      "id": "K05",
+      "category": "home",
+      "title": "에어프라이어, 뭘 넣고 몇 분이 적당한가",
+      "keyword": "에어프라이어 사용법",
+      "angle": "태우지 않는 온도와 시간. 예열이 필요한 경우",
+      "status": "pending"
+    },
+    {
+      "id": "K06",
+      "category": "home",
+      "title": "오래된 수건에서 나는 냄새 없애기",
+      "keyword": "수건 냄새 제거",
+      "angle": "삶지 않고 없애는 법. 과탄산소다를 쓸 때 주의할 점",
+      "status": "pending"
+    },
+    {
+      "id": "K07",
+      "category": "home",
+      "title": "세탁기 거름망과 세제통 청소하기",
+      "keyword": "세탁기 청소",
+      "angle": "빨래에서 냄새가 나는 진짜 이유. 한 달에 한 번이면 된다",
+      "status": "pending"
+    },
+    {
+      "id": "K08",
+      "category": "home",
+      "title": "욕실 곰팡이, 다시 안 생기게 하려면",
+      "keyword": "욕실 곰팡이",
+      "angle": "지우는 것보다 마르게 하는 것. 섞으면 위험한 세제",
+      "status": "pending"
+    },
+    {
+      "id": "K09",
+      "category": "home",
+      "title": "싱크대 배수구 냄새 잡는 법",
+      "keyword": "배수구 냄새",
+      "angle": "뚫는 약을 쓰기 전에 해볼 것",
+      "status": "pending"
+    },
+    {
+      "id": "K10",
+      "category": "home",
+      "title": "냉장고를 정리하면 버리는 음식이 준다",
+      "keyword": "냉장고 정리",
+      "angle": "칸마다 정하는 규칙. 안 보이면 없는 것과 같다",
+      "status": "pending"
+    },
+    {
+      "id": "K11",
+      "category": "home",
+      "title": "옷장 습기와 좀을 막는 방법",
+      "keyword": "옷장 습기",
+      "angle": "계절 옷을 넣기 전에 할 일",
+      "status": "pending"
+    },
+    {
+      "id": "K12",
+      "category": "home",
+      "title": "전기요금을 줄이는 생활 습관",
+      "keyword": "전기요금 절약",
+      "angle": "대기전력보다 큰 것부터. 여름과 겨울이 다르다",
+      "status": "pending"
+    },
+    {
+      "id": "K13",
+      "category": "home",
+      "title": "코팅이 벗겨진 프라이팬, 계속 써도 되나",
+      "keyword": "프라이팬 코팅",
+      "angle": "바꿀 때를 판단하는 기준. 오래 쓰는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "K14",
+      "category": "home",
+      "title": "설거지를 편하게 하는 순서",
+      "keyword": "설거지 순서",
+      "angle": "손목에 부담을 줄이는 자세와 도구",
+      "status": "pending"
+    },
+    {
+      "id": "K15",
+      "category": "home",
+      "title": "김치냉장고를 제대로 쓰는 법",
+      "keyword": "김치냉장고 사용",
+      "angle": "칸별 온도가 다르다. 김치 말고 넣어도 되는 것",
+      "status": "pending"
+    },
+    {
+      "id": "D01",
+      "category": "digital",
+      "title": "카카오톡 글씨 크게 키우고 글꼴 바꾸기",
+      "keyword": "카카오톡 글씨 크기",
+      "angle": "앱 안에서 바꾸는 법과 휴대폰 전체를 바꾸는 법, 두 가지",
+      "status": "pending"
+    },
+    {
+      "id": "D02",
+      "category": "digital",
+      "title": "자녀·손주를 사칭한 문자, 이렇게 가려냅니다",
+      "keyword": "스미싱 문자 대처",
+      "angle": "누르면 안 되는 링크의 생김새. 이미 눌렀을 때 해야 할 일",
+      "status": "pending"
+    },
+    {
+      "id": "D03",
+      "category": "digital",
+      "title": "유튜브 화면 크게 보고 시청 기록 지우기",
+      "keyword": "유튜브 화면 크게",
+      "angle": "전체화면과 글씨 키우기. 기록을 지우면 달라지는 것",
+      "status": "pending"
+    },
+    {
+      "id": "D04",
+      "category": "digital",
+      "title": "사진 여러 장을 카카오톡으로 한 번에 보내기",
+      "keyword": "카톡 사진 여러장",
+      "angle": "고르는 순서와 화질 선택. 용량이 클 때",
+      "status": "pending"
+    },
+    {
+      "id": "D05",
+      "category": "digital",
+      "title": "휴대폰이 느려졌을 때 저장공간 정리하기",
+      "keyword": "스마트폰 저장공간",
+      "angle": "무엇부터 지워야 안전한가. 사진을 지우지 않고 줄이는 법",
+      "status": "pending"
+    },
+    {
+      "id": "D06",
+      "category": "digital",
+      "title": "식당 키오스크, 당황하지 않고 주문하는 순서",
+      "keyword": "키오스크 주문",
+      "angle": "화면이 달라도 순서는 비슷하다. 잘못 눌렀을 때 되돌리기",
+      "status": "pending"
+    },
+    {
+      "id": "D07",
+      "category": "digital",
+      "title": "병원 진료 예약을 휴대폰으로 하는 법",
+      "keyword": "병원 예약 앱",
+      "angle": "예약과 접수의 차이. 취소하는 방법까지",
+      "status": "pending"
+    },
+    {
+      "id": "D08",
+      "category": "digital",
+      "title": "모바일 신분증, 어떻게 발급하고 어디에 쓰나",
+      "keyword": "모바일 신분증",
+      "angle": "발급 절차와 쓸 수 있는 곳. 실물이 여전히 필요한 경우",
+      "status": "pending"
+    },
+    {
+      "id": "D09",
+      "category": "digital",
+      "title": "지하철과 버스를 앱으로 확인하는 법",
+      "keyword": "지하철 버스 앱",
+      "angle": "도착 시간 보기와 길찾기. 즐겨찾기 등록",
+      "status": "pending"
+    },
+    {
+      "id": "D10",
+      "category": "digital",
+      "title": "광고 전화와 스팸 문자 차단하기",
+      "keyword": "스팸 전화 차단",
+      "angle": "한 번 차단하면 끝인 것과 아닌 것. 신고하는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "D11",
+      "category": "digital",
+      "title": "간편결제, 안전하게 쓰려면 무엇을 지켜야 하나",
+      "keyword": "간편결제 안전",
+      "angle": "비밀번호와 생체인증. 휴대폰을 잃어버렸을 때",
+      "status": "pending"
+    },
+    {
+      "id": "D12",
+      "category": "digital",
+      "title": "사진이 사라지지 않게 백업해두기",
+      "keyword": "스마트폰 사진 백업",
+      "angle": "자동 백업 켜는 법. 휴대폰을 바꿔도 남게 하는 것",
+      "status": "pending"
+    },
+    {
+      "id": "R01",
+      "category": "mind",
+      "title": "자녀와 사이가 서먹해졌다고 느낄 때",
+      "keyword": "자녀와의 관계",
+      "angle": "연락 횟수가 문제가 아닐 수 있다. 대화의 주제를 바꾸는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "R02",
+      "category": "mind",
+      "title": "손주와 무슨 이야기를 해야 할지 모르겠다면",
+      "keyword": "손주와 대화",
+      "angle": "가르치려는 말을 줄이고 묻는 말을 늘리기",
+      "status": "pending"
+    },
+    {
+      "id": "R03",
+      "category": "mind",
+      "title": "자녀에게 서운한 마음이 들 때",
+      "keyword": "자녀 서운함",
+      "angle": "기대를 말로 꺼내는 것과 삼키는 것의 차이",
+      "status": "pending"
+    },
+    {
+      "id": "R04",
+      "category": "mind",
+      "title": "은퇴 후 부부가 하루 종일 붙어 있게 되면",
+      "keyword": "은퇴 후 부부",
+      "angle": "각자의 시간을 만드는 방법. 규칙을 정하는 이야기",
+      "status": "pending"
+    },
+    {
+      "id": "R05",
+      "category": "mind",
+      "title": "나이 들어 새 친구를 사귈 수 있나",
+      "keyword": "시니어 친구 사귀기",
+      "angle": "모임에 가는 것만으로는 부족하다. 이어지는 관계의 조건",
+      "status": "pending"
+    },
+    {
+      "id": "R06",
+      "category": "mind",
+      "title": "오랜 친구와 멀어졌을 때",
+      "keyword": "친구 멀어짐",
+      "angle": "먼저 연락하는 것이 손해가 아닌 이유",
+      "status": "pending"
+    },
+    {
+      "id": "R07",
+      "category": "mind",
+      "title": "배우자를 떠나보낸 뒤의 시간",
+      "keyword": "배우자 상실",
+      "angle": "슬픔에 순서는 없다. 혼자 결정하지 말아야 할 것들",
+      "status": "pending"
+    },
+    {
+      "id": "R08",
+      "category": "mind",
+      "title": "하루 종일 아무 말도 안 하게 될 때",
+      "keyword": "노년 외로움",
+      "angle": "말수가 줄면 생각도 줄어든다. 말할 자리를 만드는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "R09",
+      "category": "mind",
+      "title": "화가 예전보다 쉽게 난다고 느껴지면",
+      "keyword": "노년 화",
+      "angle": "몸 상태와 관계있을 수 있다. 잠깐 멈추는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "R10",
+      "category": "mind",
+      "title": "후회가 자꾸 떠오를 때",
+      "keyword": "후회 다스리기",
+      "angle": "돌이킬 수 없는 일과 아직 할 수 있는 일을 나누기",
+      "status": "pending"
+    },
+    {
+      "id": "R11",
+      "category": "mind",
+      "title": "잠들기 전 걱정이 몰려올 때",
+      "keyword": "밤 걱정",
+      "angle": "걱정을 낮으로 옮기는 방법. 적어두는 것의 효과",
+      "status": "pending"
+    },
+    {
+      "id": "R12",
+      "category": "mind",
+      "title": "이웃과 적당한 거리를 두는 법",
+      "keyword": "이웃 관계",
+      "angle": "가까워지면 편하지만 부담도 는다. 선을 정하는 기준",
+      "status": "pending"
+    },
+    {
+      "id": "R13",
+      "category": "mind",
+      "title": "은퇴한 배우자와 하루 종일 붙어 있을 때의 대화법",
+      "keyword": "은퇴 후 부부 대화",
+      "angle": "말투 하나로 갈린다. 지적 대신 부탁으로 바꾸기",
+      "status": "pending"
+    },
+    {
+      "id": "R14",
+      "category": "mind",
+      "title": "자녀에게 손 벌리지 않는 노후를 준비하려면",
+      "keyword": "독립적인 노후",
+      "angle": "돈만의 문제가 아니다. 결정권을 지키는 방법",
       "status": "pending"
     },
     {
@@ -681,215 +1294,7 @@
       "keyword": "일기 자서전",
       "angle": "매일 쓰는 것과 돌아보며 쓰는 것은 다른 일이다",
       "status": "pending"
-    },
-    {
-      "id": "T01",
-      "category": "travel",
-      "title": "체력 부담 없는 당일치기 여행 고르는 기준",
-      "keyword": "당일치기 여행",
-      "angle": "걷는 거리·계단·앉을 곳. 출발 전에 확인할 것",
-      "status": "pending"
-    },
-    {
-      "id": "T02",
-      "category": "travel",
-      "title": "기차로 다녀오기 좋은 여행 짜는 법",
-      "keyword": "기차 여행",
-      "angle": "환승 횟수와 역에서 목적지까지. 경로 할인 받는 법",
-      "status": "pending"
-    },
-    {
-      "id": "T03",
-      "category": "travel",
-      "title": "온천 여행 갈 때 알아둘 것",
-      "keyword": "온천 여행",
-      "angle": "입욕 시간과 횟수. 혈압이 있을 때 주의할 점",
-      "status": "pending"
-    },
-    {
-      "id": "T04",
-      "category": "travel",
-      "title": "수목원과 정원, 무리 없이 둘러보는 법",
-      "keyword": "수목원 나들이",
-      "angle": "코스 길이와 그늘. 계절마다 다른 볼거리",
-      "status": "pending"
-    },
-    {
-      "id": "T05",
-      "category": "travel",
-      "title": "입장료가 무료이거나 할인되는 곳 찾기",
-      "keyword": "경로 무료 입장",
-      "angle": "고궁·박물관·미술관. 신분증을 챙겨야 하는 이유",
-      "status": "pending"
-    },
-    {
-      "id": "T06",
-      "category": "travel",
-      "title": "여행 짐, 무엇을 넣고 무엇을 빼나",
-      "keyword": "여행 짐 싸기",
-      "angle": "약과 서류가 먼저. 무게를 줄이는 순서",
-      "status": "pending"
-    },
-    {
-      "id": "T07",
-      "category": "travel",
-      "title": "혼자 떠나는 여행, 무엇을 준비하나",
-      "keyword": "혼자 여행",
-      "angle": "숙소와 이동을 정할 때의 기준. 연락 남기는 방법",
-      "status": "pending"
-    },
-    {
-      "id": "T08",
-      "category": "travel",
-      "title": "친구들과 여행 갈 때 정해두면 좋은 것",
-      "keyword": "친구 여행",
-      "angle": "비용과 일정. 나중에 서운해지지 않으려면",
-      "status": "pending"
-    },
-    {
-      "id": "T09",
-      "category": "travel",
-      "title": "패키지 여행을 고를 때 봐야 할 것",
-      "keyword": "패키지 여행 고르기",
-      "angle": "일정표에서 확인할 항목. 자유시간과 이동 시간",
-      "status": "pending"
-    },
-    {
-      "id": "T10",
-      "category": "travel",
-      "title": "여행 중 아플 때를 대비하는 방법",
-      "keyword": "여행 건강 준비",
-      "angle": "약 챙기기와 병원 찾기. 보험 확인",
-      "status": "pending"
-    },
-    {
-      "id": "T11",
-      "category": "travel",
-      "title": "가까운 섬으로 다녀오는 여행",
-      "keyword": "섬 여행",
-      "angle": "배 시간과 날씨. 하루로 되는 곳",
-      "status": "pending"
-    },
-    {
-      "id": "T12",
-      "category": "travel",
-      "title": "사찰과 고택을 둘러보는 여행",
-      "keyword": "사찰 여행",
-      "angle": "템플스테이와 당일 방문의 차이",
-      "status": "pending"
-    },
-    {
-      "id": "T13",
-      "category": "travel",
-      "title": "계절마다 가기 좋은 곳을 정하는 방법",
-      "keyword": "계절 여행지",
-      "angle": "더위와 추위를 피하는 시간대와 지역",
-      "status": "pending"
-    },
-    {
-      "id": "T14",
-      "category": "travel",
-      "title": "차 없이 다니는 여행, 어떻게 짜나",
-      "keyword": "대중교통 여행",
-      "angle": "기차와 시내버스 연결. 시간표를 미리 보는 법",
-      "status": "pending"
-    },
-    {
-      "id": "R01",
-      "category": "mind",
-      "title": "자녀와 사이가 서먹해졌다고 느낄 때",
-      "keyword": "자녀와의 관계",
-      "angle": "연락 횟수가 문제가 아닐 수 있다. 대화의 주제를 바꾸는 방법",
-      "status": "pending"
-    },
-    {
-      "id": "R02",
-      "category": "mind",
-      "title": "손주와 무슨 이야기를 해야 할지 모르겠다면",
-      "keyword": "손주와 대화",
-      "angle": "가르치려는 말을 줄이고 묻는 말을 늘리기",
-      "status": "pending"
-    },
-    {
-      "id": "R03",
-      "category": "mind",
-      "title": "자녀에게 서운한 마음이 들 때",
-      "keyword": "자녀 서운함",
-      "angle": "기대를 말로 꺼내는 것과 삼키는 것의 차이",
-      "status": "pending"
-    },
-    {
-      "id": "R04",
-      "category": "mind",
-      "title": "은퇴 후 부부가 하루 종일 붙어 있게 되면",
-      "keyword": "은퇴 후 부부",
-      "angle": "각자의 시간을 만드는 방법. 규칙을 정하는 이야기",
-      "status": "pending"
-    },
-    {
-      "id": "R05",
-      "category": "mind",
-      "title": "나이 들어 새 친구를 사귈 수 있나",
-      "keyword": "시니어 친구 사귀기",
-      "angle": "모임에 가는 것만으로는 부족하다. 이어지는 관계의 조건",
-      "status": "pending"
-    },
-    {
-      "id": "R06",
-      "category": "mind",
-      "title": "오랜 친구와 멀어졌을 때",
-      "keyword": "친구 멀어짐",
-      "angle": "먼저 연락하는 것이 손해가 아닌 이유",
-      "status": "pending"
-    },
-    {
-      "id": "R07",
-      "category": "mind",
-      "title": "배우자를 떠나보낸 뒤의 시간",
-      "keyword": "배우자 상실",
-      "angle": "슬픔에 순서는 없다. 혼자 결정하지 말아야 할 것들",
-      "status": "pending"
-    },
-    {
-      "id": "R08",
-      "category": "mind",
-      "title": "하루 종일 아무 말도 안 하게 될 때",
-      "keyword": "노년 외로움",
-      "angle": "말수가 줄면 생각도 줄어든다. 말할 자리를 만드는 방법",
-      "status": "pending"
-    },
-    {
-      "id": "R09",
-      "category": "mind",
-      "title": "화가 예전보다 쉽게 난다고 느껴지면",
-      "keyword": "노년 화",
-      "angle": "몸 상태와 관계있을 수 있다. 잠깐 멈추는 방법",
-      "status": "pending"
-    },
-    {
-      "id": "R10",
-      "category": "mind",
-      "title": "후회가 자꾸 떠오를 때",
-      "keyword": "후회 다스리기",
-      "angle": "돌이킬 수 없는 일과 아직 할 수 있는 일을 나누기",
-      "status": "pending"
-    },
-    {
-      "id": "R11",
-      "category": "mind",
-      "title": "잠들기 전 걱정이 몰려올 때",
-      "keyword": "밤 걱정",
-      "angle": "걱정을 낮으로 옮기는 방법. 적어두는 것의 효과",
-      "status": "pending"
-    },
-    {
-      "id": "R12",
-      "category": "mind",
-      "title": "이웃과 적당한 거리를 두는 법",
-      "keyword": "이웃 관계",
-      "angle": "가까워지면 편하지만 부담도 는다. 선을 정하는 기준",
-      "status": "pending"
     }
   ],
-  "_v9_note": "자서전과 기록 카테고리의 각도를 바꿨습니다. '쓰는 법' 을 단계별로 알려주면 블로그가 서비스를 대체합니다. '왜 대부분 시작만 하고 멈추는가' 로 바꿔, 막히는 지점을 정직하게 드러내되 해결은 독자의 판단에 맡깁니다. 유언장·사전연명의료의향서처럼 서비스와 무관한 글은 정보를 충실히 줍니다."
+  "_v11_note": "6개 트래픽 축(정책·건강·취미여가·요리살림·디지털·심리) + 자서전과 기록으로 재편. 카테고리마다 고정 목차 템플릿(categories[].template)을 넣었습니다. 팬카페·투표·예매처럼 순서가 핵심인 주제는 template: digital 로 단계형 목차를 씁니다."
 }

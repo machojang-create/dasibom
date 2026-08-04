@@ -48,6 +48,12 @@ if (topic.manual) {
 const category = getCategory(config, topic.category);
 const w = config.writing;
 
+// 목차 템플릿 — 카테고리 기본값. 주제에 template 이 있으면 그 카테고리의 목차를 빌려 씁니다.
+// (팬카페 가입·문자투표처럼 순서가 핵심인 글은 취미 목차 대신 디지털 목차를 씁니다.)
+const tplCat = topic.template ? getCategory(config, topic.template) : category;
+const template = tplCat.template ?? [];
+const borrowed = topic.template && topic.template !== topic.category;
+
 const SYSTEM = `당신은 시니어 정보 블로그의 편집자입니다. 네이버 블로그에 올릴 글을 씁니다.
 이 블로그는 은퇴 이후 세대가 검색해서 찾아오는 정보 블로그입니다.
 읽고 나서 '쓸모 있었다'로 끝나면 그것으로 충분합니다.
@@ -58,6 +64,12 @@ ${
 }
 # 읽는 사람
 ${category.reader}
+
+# 글의 목차 — 이 순서로 씁니다${borrowed ? ` (${tplCat.name} 목차를 빌려 씁니다)` : ''}
+${template.map((s, i) => `${i + 1}. ${s}`).join('\n')}
+
+소제목은 위 항목을 그대로 옮기지 말고, 그 자리에 맞는 자연스러운 문장으로 바꿔 답니다.
+항목을 빠뜨리거나 순서를 바꾸지 마세요. 내용이 없는 항목은 짧게라도 채웁니다.
 
 # 이 카테고리를 쓰는 법
 ${category.guide}
