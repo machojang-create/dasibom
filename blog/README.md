@@ -20,7 +20,7 @@
 
 ---
 
-## 2. 카테고리 5개와 비중
+## 2. 카테고리 6개와 비중
 
 `config.json` 의 `categories` 에 정의되어 있습니다. 큐에서 다음 주제를 고를 때 이 비중을 맞추는 쪽을 먼저 집습니다.
 
@@ -91,7 +91,28 @@ node lint_post.mjs --post out/A01_x.json
 
 ---
 
-## 4. 설치 (최초 1회, 대표님 PC에서)
+## 4. 블로그 기본 세팅 (최초 1회)
+
+스킨·카테고리·프로필은 네이버에 API 가 없어서 관리 화면에서 손으로 해야 합니다.
+**순서와 체크리스트는 [SETUP_NAVER.md](SETUP_NAVER.md) 를 보세요.**
+
+디자인 자산은 명령 한 줄로 만듭니다.
+
+```bash
+node gen_blog_assets.mjs
+# out/assets/ → title.png(966x300) / profile.png(400x400) / mobile_cover.png(1300x420)
+```
+
+색과 로고는 앱에서 그대로 가져옵니다 — `#0e9d7d`(manifest 의 theme_color), logo.svg 의 해·새싹. `config.json` 의 `brand` 에 모여 있고, 썸네일 생성기도 같은 값을 씁니다. **앱 로고나 색이 바뀌면 `config.json` 의 `brand` 와 `lib/brand.mjs` 를 같이 고치세요.** 따로 놀면 브랜드가 두 개가 됩니다.
+
+세팅에서 놓치기 쉬운 두 가지만 미리 말씀드립니다.
+
+1. **검색엔진 수집 허용** — 이게 꺼져 있으면 나머지가 전부 무의미합니다.
+2. **카테고리 이름을 글자 하나 안 틀리게** — `config.json` 의 `naver.category_map` 과 다르면 발행 시 카테고리 선택이 실패합니다.
+
+---
+
+## 5. 설치 (최초 1회, 대표님 PC에서)
 
 ```bash
 cd blog
@@ -111,7 +132,7 @@ fc-list :lang=ko family
 # Ubuntu/WSL
 sudo apt install fonts-nanum && fc-cache -fv
 
-# macOS / Windows 는 config.json 의 image.font_family 를 바꾸세요
+# macOS / Windows 는 config.json 의 brand.font_family 를 바꾸세요
 #   macOS   → "AppleSDGothicNeo"
 #   Windows → "Malgun Gothic"
 ```
@@ -128,7 +149,7 @@ npm run login
 
 ---
 
-## 5. 매일 쓰는 명령
+## 6. 매일 쓰는 명령
 
 ```bash
 npm run status      # 큐 현황 (카테고리별 남은 편수, 몇 주치인지, 보충 필요 여부)
@@ -152,11 +173,11 @@ node run.mjs --headed                  # 브라우저 보면서 (문제 생겼�
 
 **처음 2~3주는 `npm run draft` 로 원고를 눈으로 확인한 뒤 발행하시길 권합니다.** 문체와 변동성 규칙이 의도대로 나오는지 보고, `config.json` 의 `writing.tone` 을 다듬는 게 좋습니다.
 
-발행 주기는 `config.json` 의 `schedule` 에 있습니다. 기본값은 **주 3회, 월·수·금 오전 9시**입니다. 혼자 운영하시는 상황이면 주 1~2회로 줄이는 걸 권합니다 — 주 3회는 두 달이면 큐가 마릅니다 (현재 27편, 주3회 기준 9주치).
+발행 주기는 `config.json` 의 `schedule` 에 있습니다. 기본값은 **주 3회, 월·수·금 오전 9시**입니다. 혼자 운영하시는 상황이면 주 1~2회로 줄이는 걸 권합니다 — 주 3회로 두면 큐 소진이 그만큼 빨라집니다 (현재 48편, 주3회 기준 약 16주치). 소진 대책은 10번 항목을 보세요.
 
 ---
 
-## 6. 자동 실행 (선택)
+## 7. 자동 실행 (선택)
 
 큐에 주제가 충분히 쌓인 뒤에 거는 걸 권합니다.
 
@@ -175,19 +196,22 @@ node run.mjs --headed                  # 브라우저 보면서 (문제 생겼�
 
 ---
 
-## 7. 파일 구조
+## 8. 파일 구조
 
 ```
 blog/
-  config.json          카테고리·비중·CTA·문체·변동성 규칙·발행 주기
-  topic_queue.json     주제 큐 (30편). status: pending → drafted → published
+  config.json          카테고리·비중·CTA·브랜드 색·문체·변동성 규칙·발행 주기
+  SETUP_NAVER.md       네이버 관리 화면에서 손으로 할 세팅 체크리스트
+  topic_queue.json     주제 큐 (51편). status: pending → drafted → published
   lib/
     queue.mjs          큐 읽기/쓰기, 비중 맞춰 다음 주제 선택
     selectors.mjs      네이버 에디터 셀렉터 — 발행 깨지면 여기만 고침
+    brand.mjs          앱 로고·색 (logo.svg / manifest.json 에서 가져옴)
   gen_post.mjs         글 생성 (Claude API)
   expand_queue.mjs     주제 큐 자동 보충 (중복 회피)
   lint_post.mjs        원고 검수 — 규칙 위반 시 발행 차단
   gen_image.mjs        썸네일 800x800 PNG (sharp)
+  gen_blog_assets.mjs  블로그 타이틀·프로필·모바일 커버 이미지
   login_naver.mjs      네이버 세션 저장 (최초 1회)
   publish_naver.mjs    발행 / 예약 발행 (Playwright)
   run.mjs              전체 오케스트레이션
@@ -196,7 +220,7 @@ blog/
 
 ---
 
-## 8. 발행이 깨졌을 때
+## 9. 발행이 깨졌을 때
 
 네이버는 예고 없이 에디터 DOM 을 바꿉니다. 발행 실패는 코드 버그가 아니라 대부분 이것입니다.
 
@@ -216,7 +240,7 @@ node publish_naver.mjs --post out/A01_xxx.json --dry-run --headed
 
 ---
 
-## 9. 큐가 마르지 않게 하기
+## 10. 큐가 마르지 않게 하기
 
 `npm run status` 가 카테고리별로 **몇 주치 남았는지** 계산해서 보여줍니다. 전체 편수가 아니라 그 카테고리의 목표 비중만큼 소비된다고 보고 나눈 값입니다.
 
@@ -261,7 +285,7 @@ B2G 카테고리는 **도입 지자체가 생기면 그 자체가 최고의 콘�
 
 ---
 
-## 10. 아직 안 한 것
+## 11. 아직 안 한 것
 
 - **자체 블로그(`dasibomlife.com/blog`)** — 장기적으로는 본 도메인에 콘텐츠가 쌓이는 게 유리합니다. 다만 지금 Firebase 호스팅은 `/**` 가 `index.html` 로 가는 SPA 구조라, `/blog` 경로를 쓰려면 `firebase.json` 의 rewrites 에 `/**` 보다 **위쪽에** 별도 규칙을 넣어야 합니다. 네이버 블로그가 자리를 잡은 뒤에 하는 게 순서입니다.
 - **네이버 요약본 자동화** — 자체 블로그가 생기면, 네이버에는 요약본 + 원문 링크만 올리는 방식으로 바꿉니다. 지금은 네이버가 원문이라 해당 없습니다.

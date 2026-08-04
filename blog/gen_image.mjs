@@ -5,16 +5,19 @@
  *   node gen_image.mjs --post out/A01_....json
  *   node gen_image.mjs --title "직접 넣은 제목" --out out/test.png
  *
+ * 색과 로고는 앱의 manifest.json / logo.svg 값을 그대로 씁니다 (lib/brand.mjs).
+ *
  * 한글 폰트가 시스템에 있어야 합니다. 없으면 네모(두부)로 나옵니다.
  *   Ubuntu/Debian:  sudo apt install fonts-nanum && fc-cache -fv
- *   macOS:          기본 폰트(AppleSDGothicNeo)로 config.json 의 font_family 를 바꾸세요.
- *   Windows:        'Malgun Gothic'
+ *   macOS:          config.json 의 brand.font_family 를 "AppleSDGothicNeo" 로
+ *   Windows:        "Malgun Gothic"
  * 설치된 한글 폰트 확인:  fc-list :lang=ko family
  */
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import { loadConfig, ensureOutDir } from './lib/queue.mjs';
+import { logoMark, esc, wrap } from './lib/brand.mjs';
 
 const args = process.argv.slice(2);
 const flag = (name) => {
@@ -23,6 +26,7 @@ const flag = (name) => {
 };
 
 const config = loadConfig();
+const b = config.brand;
 const img = config.image;
 
 let title = flag('title');
@@ -43,54 +47,40 @@ if (!title) {
 }
 outFile = outFile ?? path.join(ensureOutDir(), 'thumbnail.png');
 
-/** 글자 수 기준으로 줄바꿈. 한글은 폭이 일정해서 이 정도로 충분합니다. */
-function wrap(text, perLine) {
-  const words = text.split(/\s+/);
-  const lines = [];
-  let cur = '';
-  for (const word of words) {
-    if (cur && (cur + ' ' + word).length > perLine) {
-      lines.push(cur);
-      cur = word;
-    } else {
-      cur = cur ? cur + ' ' + word : word;
-    }
-  }
-  if (cur) lines.push(cur);
-  return lines;
-}
-
-const esc = (s) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
 const lines = wrap(title, 11).slice(0, 4);
-const fontSize = lines.length >= 4 ? 52 : lines.length === 3 ? 58 : 64;
-const lineHeight = Math.round(fontSize * 1.45);
+const fontSize = lines.length >= 4 ? 50 : lines.length === 3 ? 56 : 62;
+const lineHeight = Math.round(fontSize * 1.5);
 const blockHeight = lines.length * lineHeight;
-const startY = Math.round((img.height - blockHeight) / 2) + fontSize;
+const startY = Math.round((img.height - blockHeight) / 2) + fontSize - 10;
 
 const svg = `<svg width="${img.width}" height="${img.height}" xmlns="http://www.w3.org/2000/svg">
-  <rect width="${img.width}" height="${img.height}" fill="${img.bg_color}"/>
-  <rect x="0" y="0" width="${img.width}" height="14" fill="${img.brand_color}"/>
+  <rect width="${img.width}" height="${img.height}" fill="${b.bg}"/>
 
-  <text x="72" y="128"
-        font-family="${img.font_family}" font-size="30" font-weight="bold"
-        fill="${img.brand_color}">${esc(label)}</text>
+  <!-- 상단 브랜드 바 -->
+  <rect x="0" y="0" width="${img.width}" height="10" fill="${b.primary}"/>
 
+  <!-- 로고 + 카테고리 -->
+  ${logoMark(b, { x: 68, y: 74, size: 52, withPlate: false })}
+  <text x="132" y="112" font-family="${b.font_family}" font-size="29" font-weight="bold"
+        fill="${b.primary}">${esc(label)}</text>
+
+  <!-- 제목 -->
   ${lines
     .map(
       (line, i) =>
-        `<text x="72" y="${startY + i * lineHeight}" font-family="${img.font_family}" font-size="${fontSize}" font-weight="bold" fill="${img.text_color}">${esc(line)}</text>`
+        `<text x="68" y="${startY + i * lineHeight}" font-family="${b.font_family}" font-size="${fontSize}" font-weight="bold" fill="${b.text}">${esc(line)}</text>`
     )
     .join('\n  ')}
 
-  <text x="72" y="${img.height - 72}"
-        font-family="${img.font_family}" font-size="28"
-        fill="${img.text_color}" opacity="0.55">dasibomlife.com</text>
+  <!-- 하단 -->
+  <line x1="68" y1="${img.height - 118}" x2="${68 + 90}" y2="${img.height - 118}"
+        stroke="${b.sprout}" stroke-width="5" stroke-linecap="round"/>
+  <text x="68" y="${img.height - 66}" font-family="${b.font_family}" font-size="27"
+        fill="${b.text}" opacity="0.5">dasibomlife.com</text>
 </svg>`;
 
 await sharp(Buffer.from(svg)).png().toFile(outFile);
 
 console.log(`이미지 생성: ${outFile}`);
-console.log(`  제목 ${lines.length}줄 / 폰트 ${img.font_family} ${fontSize}px`);
+console.log(`  제목 ${lines.length}줄 / 폰트 ${b.font_family} ${fontSize}px`);
 console.log('  글자가 네모로 나오면 한글 폰트가 없는 것입니다. 파일 상단 주석을 보세요.');

@@ -213,13 +213,30 @@
       "필수템"
     ]
   },
+  "_brand_note": "앱에서 실제로 쓰는 값입니다. manifest.json 의 theme_color, logo.svg 의 해·새싹 색. 임의로 바꾸면 블로그와 앱이 따로 놉니다.",
+  "brand": {
+    "primary": "#0e9d7d",
+    "bg": "#F6FBF9",
+    "text": "#3d342a",
+    "sun": "#FFD54F",
+    "sprout": "#81C784",
+    "sprout_light": "#A5D6A7",
+    "sand": "#e6d9c5",
+    "terracotta": "#d4845a",
+    "font_family": "NanumGothic"
+  },
+
   "image": {
     "width": 800,
-    "height": 800,
-    "font_family": "NanumGothic",
-    "brand_color": "#F2994A",
-    "bg_color": "#FFF8F0",
-    "text_color": "#3D2C1E"
+    "height": 800
+  },
+
+  "blog_assets": {
+    "title_image": { "width": 966, "height": 300 },
+    "profile": { "width": 400, "height": 400 },
+    "mobile_cover": { "width": 1300, "height": 420 },
+    "tagline": "부모님과의 시간을 기록합니다",
+    "description": "시니어 자서전, 건강, 돌봄 이야기"
   },
   "naver": {
     "session_file": ".naver_session.json",
