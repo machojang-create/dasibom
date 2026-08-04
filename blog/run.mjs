@@ -28,6 +28,24 @@ const has = (name) => args.includes(`--${name}`);
 
 const config = loadConfig();
 
+if (has('categories')) {
+  const queue = loadQueue();
+  console.log('\n네이버 블로그에 이 이름 그대로 만드세요 (SETUP_NAVER.md 2번):\n');
+  for (const cat of config.categories) {
+    const mine = queue.topics.filter((t) => t.category === cat.key);
+    console.log(`■ ${cat.name}  ${cat.weight}%  (${mine.length}편)`);
+    console.log(`   무엇: ${cat.contains ?? '-'}`);
+    console.log(`   독자: ${cat.reader}`);
+    console.log(`   CTA : ${cat.cta.url}`);
+    const sample = mine.filter((t) => t.status === 'pending').slice(0, 3);
+    for (const t of sample) console.log(`     · ${t.title}`);
+    if (mine.length > sample.length) console.log(`     · … 외 ${mine.length - sample.length}편`);
+    if (cat.note) console.log(`   ※ ${cat.note}`);
+    console.log('');
+  }
+  process.exit(0);
+}
+
 if (has('status')) {
   const queue = loadQueue();
   const stats = queueStats(config, queue);

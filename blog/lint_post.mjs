@@ -89,6 +89,25 @@ const RULES = [
       ),
   },
   {
+    id: 'financial-advice',
+    level: 'error',
+    label: '금융상품 추천·판단',
+    why: '무자격 금융 조언입니다. 앱의 봄이도 이 주제는 답하지 않습니다. 판단 기준과 확인처만 쓰세요.',
+    test: (text) =>
+      matchAll(
+        text,
+        /(?:연금저축|펀드|예금|적금|보험|주식|채권|ETF)[^.\n]{0,12}(?:추천|가입하세요|드는 게 (?:좋|유리)|유리합니다)|수익률이 (?:높|좋)|비과세 혜택을 받으려면 반드시/g
+      ),
+  },
+  {
+    id: 'financial-figure',
+    level: 'error',
+    label: '연금·요율 수치',
+    why: '제도가 바뀌면 바로 틀린 글이 됩니다. 액수 대신 계산하는 방법과 확인처를 쓰세요.',
+    test: (text) =>
+      matchAll(text, /(?:수령액|연금액|보험료|공제율|세율|이자율)[^.\n]{0,10}\d|월 \d[\d,]*\s?만/g),
+  },
+  {
     id: 'forbidden-phrase',
     level: 'error',
     label: '금지 표현',

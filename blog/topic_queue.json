@@ -1,11 +1,11 @@
 {
-  "version": 2,
+  "version": 3,
   "note": "status: pending | drafted | published | skipped. 발행되면 published_at 과 post_url 이 채워집니다.",
   "_v2_note": "v1 은 독자를 자녀 세대로 잡고 썼습니다. 앱의 주 사용자와 결제자가 모두 시니어 본인이라 전면 재작성했습니다. 자녀 대상은 family_track 5% 로만 남깁니다.",
   "topics": [
     {
       "id": "M01",
-      "category": "my_story",
+      "category": "my_record",
       "title": "내 이야기를 글로 남기고 싶은데 어디서부터 시작할까",
       "keyword": "자서전 쓰기",
       "angle": "첫 문장이 안 써지는 건 시작점이 너무 커서다. 하루치로 잘라 쓰는 법",
@@ -13,7 +13,7 @@
     },
     {
       "id": "M02",
-      "category": "my_story",
+      "category": "my_record",
       "title": "기억이 흐려지기 전에 적어두면 좋은 것들",
       "keyword": "기억 기록",
       "angle": "큰 사건보다 사라지기 쉬운 건 사소한 장면들. 무엇부터 붙잡을지",
@@ -21,7 +21,7 @@
     },
     {
       "id": "M03",
-      "category": "my_story",
+      "category": "my_record",
       "title": "말할 사람이 없어 하루 종일 입을 안 뗄 때",
       "keyword": "노년 외로움",
       "angle": "말수가 줄면 생각도 줄어든다. 매일 말을 이어갈 상대를 만드는 방법",
@@ -30,7 +30,7 @@
     },
     {
       "id": "M04",
-      "category": "my_story",
+      "category": "my_record",
       "title": "혼잣말과 대화는 무엇이 다른가",
       "keyword": "대화 상대",
       "angle": "듣고 기억해주는 상대가 있을 때 말이 달라진다",
@@ -39,7 +39,7 @@
     },
     {
       "id": "M05",
-      "category": "my_story",
+      "category": "my_record",
       "title": "손주에게 남기고 싶은 이야기, 무엇을 골라야 할까",
       "keyword": "손주에게 남기는 글",
       "angle": "훈계는 안 읽힌다. 남는 건 구체적인 장면 하나",
@@ -47,7 +47,7 @@
     },
     {
       "id": "M06",
-      "category": "my_story",
+      "category": "my_record",
       "title": "지금 정리해두면 나중에 가족이 덜 힘든 것들",
       "keyword": "마음의 유언",
       "angle": "재산 이야기가 아니라 마음의 정리. 미루면 못 하는 이유",
@@ -56,7 +56,7 @@
     },
     {
       "id": "M07",
-      "category": "my_story",
+      "category": "my_record",
       "title": "글 쓰는 게 어색할 때, 말로 시작해도 되는 이유",
       "keyword": "말로 쓰는 글",
       "angle": "글씨체·맞춤법 걱정이 손을 멈추게 한다. 그 벽을 넘는 순서",
@@ -64,7 +64,7 @@
     },
     {
       "id": "M08",
-      "category": "my_story",
+      "category": "my_record",
       "title": "내 인생에서 되짚어볼 만한 갈림길 찾기",
       "keyword": "인생 회고",
       "angle": "후회를 세는 게 아니라 선택의 이유를 기억해내는 작업",
@@ -72,7 +72,7 @@
     },
     {
       "id": "M09",
-      "category": "my_story",
+      "category": "my_record",
       "title": "살면서 만난 사람들을 한 장에 정리해보기",
       "keyword": "인물 정리",
       "angle": "이름이 떠오르지 않는 사람일수록 이야기가 남아 있다",
@@ -81,14 +81,13 @@
     },
     {
       "id": "M10",
-      "category": "my_story",
+      "category": "my_record",
       "title": "다른 사람은 자기 이야기를 어떻게 썼을까",
       "keyword": "자서전 예시",
       "angle": "남의 글을 먼저 읽으면 내 이야기의 실마리가 잡힌다",
       "cta_key": "library",
       "status": "pending"
     },
-
     {
       "id": "H01",
       "category": "healthy_aging",
@@ -170,7 +169,6 @@
       "angle": "쉬면 더 나빠진다. 강도가 아니라 방식을 바꾸는 것",
       "status": "pending"
     },
-
     {
       "id": "P01",
       "category": "hobby_pet",
@@ -298,7 +296,6 @@
       "cta_key": "debate",
       "status": "pending"
     },
-
     {
       "id": "B01",
       "category": "care_policy",
@@ -364,10 +361,9 @@
       "angle": "인원을 늘리는 것 말고 접촉 방식을 바꾸는 선택지",
       "status": "pending"
     },
-
     {
       "id": "N01",
-      "category": "nostalgia_fun",
+      "category": "fun_memory",
       "title": "옛날 오락실 게임, 지금 다시 해볼 수 있는 곳",
       "keyword": "추억의 오락실 게임",
       "angle": "그 시절 게임이 왜 지금 머리 쓰기에 좋은가",
@@ -376,7 +372,7 @@
     },
     {
       "id": "N02",
-      "category": "nostalgia_fun",
+      "category": "fun_memory",
       "title": "판 짤 사람이 없어도 화투를 칠 수 있을까",
       "keyword": "맞고 혼자",
       "angle": "사람을 못 모으는 상황에서의 대안",
@@ -385,7 +381,7 @@
     },
     {
       "id": "N03",
-      "category": "nostalgia_fun",
+      "category": "fun_memory",
       "title": "그때 그 시절 물건 이름, 얼마나 기억나시나요",
       "keyword": "옛날 물건 이름",
       "angle": "기억을 꺼내는 놀이. 가족과 함께 맞춰보는 방식",
@@ -393,7 +389,7 @@
     },
     {
       "id": "N04",
-      "category": "nostalgia_fun",
+      "category": "fun_memory",
       "title": "간밤에 꾼 꿈이 자꾸 마음에 걸릴 때",
       "keyword": "꿈 해몽",
       "angle": "꿈풀이를 믿고 말고를 떠나, 꿈을 적어두면 생기는 것",
@@ -402,14 +398,13 @@
     },
     {
       "id": "N05",
-      "category": "nostalgia_fun",
+      "category": "fun_memory",
       "title": "손주가 쓰는 말이 도무지 안 들릴 때",
       "keyword": "요즘 말",
       "angle": "모르는 채 넘기면 대화가 끊긴다. 되묻지 않고 알아두는 법",
       "cta_key": "trendy",
       "status": "pending"
     },
-
     {
       "id": "W01",
       "category": "work_again",
@@ -450,35 +445,9 @@
       "angle": "변명하지 않고 강점으로 돌리는 대답의 구조",
       "status": "pending"
     },
-
-    {
-      "id": "F01",
-      "category": "family_track",
-      "title": "부모님 생신 선물, 물건 말고 남는 걸 드리고 싶다면",
-      "keyword": "부모님 생신 선물",
-      "angle": "매년 반복되는 고민. 기록으로 남는 선물의 사례",
-      "status": "pending"
-    },
-    {
-      "id": "F02",
-      "category": "family_track",
-      "title": "부모님과 옛날 이야기 꺼내는 대화 주제",
-      "keyword": "부모님 대화 주제",
-      "angle": "명절이나 방문 때 쓸 수 있는 구체적인 질문",
-      "status": "pending"
-    },
-    {
-      "id": "F03",
-      "category": "family_track",
-      "title": "부모님이 스마트폰을 어려워하실 때 알려드리는 순서",
-      "keyword": "부모님 스마트폰",
-      "angle": "한 번에 다 알려주면 실패한다. 한 화면씩 나누는 방법",
-      "status": "pending"
-    },
-
     {
       "id": "E01",
-      "category": "elder_voice",
+      "category": "my_record",
       "title": "[인터뷰] 여든에 처음 자기 이야기를 적어보신 분",
       "keyword": "어르신 인터뷰",
       "angle": "직접 인터뷰 필요. 자동 생성 금지",
@@ -487,7 +456,7 @@
     },
     {
       "id": "E02",
-      "category": "elder_voice",
+      "category": "my_record",
       "title": "[인터뷰] 매일 아침 같은 시간에 앱을 켜시는 이유",
       "keyword": "시니어 사용자 이야기",
       "angle": "직접 인터뷰 필요. 자동 생성 금지",
@@ -496,12 +465,109 @@
     },
     {
       "id": "E03",
-      "category": "elder_voice",
+      "category": "my_record",
       "title": "[인터뷰] 예순여덟에 새 일을 시작한 이야기",
       "keyword": "시니어 재취업 사례",
       "angle": "직접 인터뷰 필요. 자동 생성 금지",
       "manual": true,
       "status": "pending"
+    },
+    {
+      "id": "F01",
+      "category": "money_ready",
+      "title": "국민연금, 언제부터 받는 게 나은가",
+      "keyword": "국민연금 수령 시기",
+      "angle": "일찍 받으면 깎이고 늦추면 늘어난다. 어느 쪽이 유리한지는 건강과 소득으로 갈린다",
+      "status": "pending"
+    },
+    {
+      "id": "F02",
+      "category": "money_ready",
+      "title": "국민연금 받으면서 계속 일해도 되나",
+      "keyword": "국민연금 감액",
+      "angle": "소득이 있으면 줄어드는 구간이 있다. 그 구조를 이해하고 일하는 방식을 정하기",
+      "status": "pending"
+    },
+    {
+      "id": "F03",
+      "category": "money_ready",
+      "title": "기초연금을 받을 수 있는지 어떻게 확인하나",
+      "keyword": "기초연금 자격",
+      "angle": "재산과 소득을 어떻게 따지는지, 어디서 확인하는지",
+      "status": "pending"
+    },
+    {
+      "id": "F04",
+      "category": "money_ready",
+      "title": "주택연금, 집을 넘기는 것인가",
+      "keyword": "주택연금",
+      "angle": "소유권에 대한 오해부터. 계속 살면서 받는 구조",
+      "status": "pending"
+    },
+    {
+      "id": "F05",
+      "category": "money_ready",
+      "title": "퇴직금을 한 번에 받을까 나눠 받을까",
+      "keyword": "퇴직금 수령",
+      "angle": "목돈이 필요한 시점과 세금 처리가 갈림길",
+      "status": "pending"
+    },
+    {
+      "id": "F06",
+      "category": "money_ready",
+      "title": "은퇴하니 건강보험료가 확 올랐다면",
+      "keyword": "은퇴 후 건강보험료",
+      "angle": "직장에서 지역으로 바뀌며 생기는 일. 완충 장치가 있다",
+      "status": "pending"
+    },
+    {
+      "id": "F07",
+      "category": "money_ready",
+      "title": "노후 생활비는 얼마나 있어야 하나",
+      "keyword": "노후 생활비",
+      "angle": "남의 평균이 아니라 내 지출로 계산하는 순서",
+      "status": "pending"
+    },
+    {
+      "id": "F08",
+      "category": "money_ready",
+      "title": "자녀를 돕다가 내 노후가 흔들릴 때",
+      "keyword": "자녀 지원 노후",
+      "angle": "도움의 상한선을 미리 정해두는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "F09",
+      "category": "money_ready",
+      "title": "상속과 증여, 미리 정리해두면 뭐가 다른가",
+      "keyword": "상속 증여 준비",
+      "angle": "남는 사람이 겪을 일을 줄이는 관점",
+      "status": "pending"
+    },
+    {
+      "id": "F10",
+      "category": "money_ready",
+      "title": "실손보험을 계속 유지해야 할까",
+      "keyword": "실손보험 유지",
+      "angle": "보험료가 오를 때 따져볼 기준",
+      "status": "pending"
+    },
+    {
+      "id": "F11",
+      "category": "money_ready",
+      "title": "연금 나오기 전까지의 공백기를 어떻게 넘기나",
+      "keyword": "은퇴 소득 공백",
+      "angle": "퇴직과 연금 개시 사이. 가장 많이 놓치는 구간",
+      "status": "pending"
+    },
+    {
+      "id": "F12",
+      "category": "money_ready",
+      "title": "치매에 대비해 재산을 어떻게 해두나",
+      "keyword": "치매 재산 관리",
+      "angle": "판단이 어려워졌을 때를 위한 제도들",
+      "status": "pending"
     }
-  ]
+  ],
+  "_v3_note": "카테고리 이름을 내용이 보이는 라벨로 바꾸고, 연금·노후자금(money_ready)을 신설했습니다. 5%짜리 자녀 카테고리(family_track)는 클릭했을 때 글이 세 편뿐이라 폐지했습니다."
 }
