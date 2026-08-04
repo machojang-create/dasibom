@@ -1,46 +1,60 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
-rem  창이 바로 꺼져도 무슨 일이 있었는지 알 수 있게, 모든 내용을
-rem  실행기록.txt 에 남기고 마지막에 메모장으로 열어 줍니다.
+rem  창이 바로 꺼져도 알 수 있게 모든 내용을 실행기록.txt 에 남깁니다.
 if "%~1"=="RUN" goto RUN
-
 set LOG=%~dp0실행기록.txt
 cmd /c ""%~f0" RUN" > "%LOG%" 2>&1
 notepad "%LOG%"
 exit /b
 
 :RUN
-cd /d "%~dp0"
-
 echo ==========================================
 echo   다시봄 블로그 이미지 만들기
 echo ==========================================
 echo.
-echo [확인] 지금 폴더: %CD%
+
+set REPO=
+
+rem  1) 이 파일이 있는 폴더가 저장소인지 먼저 봅니다.
+if exist "%~dp0tools\gen_nostalgia.mjs" set REPO=%~dp0
+if defined REPO goto FOUND
+
+rem  2) 아니면 컴퓨터에서 저장소를 찾습니다.
+echo [찾는 중] 저장소 폴더를 찾고 있습니다. 잠시만 기다려 주세요...
 echo.
 
-echo [확인] git 이 깔려 있는지...
-git --version
-if errorlevel 1 echo    ^>^> git 이 없습니다. https://git-scm.com 에서 설치가 필요합니다.
-echo.
+call :SEARCH "%USERPROFILE%\Desktop"
+if defined REPO goto FOUND
+call :SEARCH "%USERPROFILE%\Documents"
+if defined REPO goto FOUND
+call :SEARCH "%USERPROFILE%\Downloads"
+if defined REPO goto FOUND
+if defined OneDrive call :SEARCH "%OneDrive%"
+if defined REPO goto FOUND
+call :SEARCH "%USERPROFILE%"
+if defined REPO goto FOUND
 
-echo [확인] node 가 깔려 있는지...
-node --version
-if errorlevel 1 echo    ^>^> node 가 없습니다. https://nodejs.org 에서 설치가 필요합니다.
+echo [!] 저장소 폴더를 찾지 못했습니다.
 echo.
-
-if exist ".git" goto HAVEREPO
-echo [!] 여기는 저장소 폴더가 아닙니다.
+echo     그때그시절 이미지를 만드실 때 쓰셨던 폴더입니다.
+echo     그 폴더 안에는 tools 라는 폴더가 있고,
+echo     그 안에 gen_nostalgia.mjs 라는 파일이 있습니다.
 echo.
-echo     이 파일을 아래 폴더에 넣고 다시 두 번 누르세요.
-echo     C:\Users\USER\Desktop\이전작업\백업\memoir
-echo.
-echo     그 폴더에 들어갔을 때 index.html, tools, img 같은 것이
-echo     보이면 맞는 폴더입니다.
+echo     그 폴더를 찾으시면 이 파일을 거기에 넣고 다시 두 번 누르세요.
 goto END
 
-:HAVEREPO
+:FOUND
+cd /d "%REPO%"
+echo [확인] 저장소를 찾았습니다: %CD%
+echo.
+
+echo [확인] git...
+git --version
+echo [확인] node...
+node --version
+echo.
+
 echo [1/5] 최신 내용 받는 중...
 git pull
 echo.
@@ -73,6 +87,16 @@ echo   끝났습니다.
 echo   그림 위치: %CD%\out\illust
 echo ==========================================
 start "" "%CD%\out\illust"
+goto END
+
+rem  ---- 폴더 하나를 뒤져 tools\gen_nostalgia.mjs 를 찾습니다 ----
+:SEARCH
+if not exist %1 goto :eof
+for /f "delims=" %%p in ('dir /s /b "%~1\gen_nostalgia.mjs" 2^>nul') do (
+  for %%q in ("%%~dpp.") do set REPO=%%~dpq
+  goto :eof
+)
+goto :eof
 
 :END
 echo.
