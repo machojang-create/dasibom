@@ -309,10 +309,13 @@ sudo apt install fonts-nanum && fc-cache -fv     # Ubuntu/WSL
 키는 **`그때그시절` 이미지 생성기와 같은 파일**을 씁니다 — 저장소 루트의 `tools/gemini.key`. 이미 쓰고 계시면 새로 발급받으실 필요 없습니다. (`.gitignore` 에 있어 커밋되지 않습니다. 환경변수 `GEMINI_API_KEY` 도 됩니다.)
 
 ```bash
-npm run illust                        # out/ 의 모든 원고
+node gen_illust.mjs --all --limit 3    # 먼저 3장만 뽑아 화풍 확인
+npm run illust                         # out/ 의 모든 원고
 node gen_illust.mjs --post out/B01_xxx.json
 node gen_illust.mjs --post out/B01_xxx.json --force   # 이미 있어도 다시
 ```
+
+**처음에는 `--limit 3` 으로 세 장만 뽑아 보세요.** 화풍이 마음에 안 드는 채로 89장을 다 뽑으면 다시 뽑느라 한도를 두 배로 씁니다.
 
 이미 만든 그림은 건너뜁니다. **중간에 끊겨도 같은 명령으로 이어 돌리면 됩니다.** 무료 키 한도(429)에 걸리면 헛돌지 않고 거기서 멈추니, 다음 날 같은 명령을 주시면 됩니다. 그림이 마음에 안 들면 원고의 `prompt` 를 고치고 `--force` 로 다시 뽑으세요.
 

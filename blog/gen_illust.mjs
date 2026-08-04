@@ -4,6 +4,7 @@
  *
  *   node gen_illust.mjs --post out/B01_....json
  *   node gen_illust.mjs --all
+ *   node gen_illust.mjs --all --limit 3      # 이번에 3장만 (무료 한도 아껴 쓰기)
  *   node gen_illust.mjs --all --force        # 이미 있어도 다시 만들기
  *
  * 키는 `그때그시절` 생성기(tools/gen_nostalgia.mjs)와 같은 자리에서 읽습니다.
@@ -134,7 +135,7 @@ async function generate(scene, outFile) {
     .toFile(outFile);
 }
 
-async function buildOne(postPath) {
+async function buildOne(postPath, room = 0) {
   const post = JSON.parse(fs.readFileSync(postPath, 'utf8'));
   const list = post.illustrations ?? [];
   if (!list.length) return { made: 0, stop: false };
@@ -143,6 +144,7 @@ async function buildOne(postPath) {
   let made = 0;
 
   for (let i = 0; i < list.length; i++) {
+    if (room && made >= room) break; // --limit 로 이번에 뽑을 장수를 제한한 경우
     const file = path.join(dir, `${post.id}_${i + 1}.jpg`);
     if (fs.existsSync(file) && !has('force')) continue;
     try {
@@ -174,11 +176,15 @@ if (!targets.length) {
 
 console.log(`모델 ${MODEL} · 호출 간격 ${(ill.delay_ms ?? 6500) / 1000}초\n`);
 
+const limit = Number(flag('limit') ?? 0);
+if (limit) console.log(`이번에 ${limit}장만 뽑습니다. 나머지는 다음에 같은 명령으로 이어 가시면 됩니다.\n`);
+
 let total = 0;
 for (const t of targets) {
-  const { made, stop } = await buildOne(t);
+  const { made, stop } = await buildOne(t, limit ? limit - total : 0);
   total += made;
   if (stop) break;
+  if (limit && total >= limit) break;
 }
 
 console.log(`\n일러스트 ${total}장 · ${path.join(outDir, 'illust')}`);
