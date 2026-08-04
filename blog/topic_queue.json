@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "note": "status: pending | drafted | published | skipped. 발행되면 published_at 과 post_url 이 채워집니다.",
   "topics": [
     {
@@ -561,7 +561,335 @@
       "keyword": "화분 물주기",
       "angle": "날짜가 아니라 흙 상태로 판단하는 법",
       "status": "pending"
+    },
+    {
+      "id": "M01",
+      "category": "memoir",
+      "title": "자서전은 유명한 사람만 쓰는 것인가",
+      "keyword": "자서전 쓰기",
+      "angle": "오랫동안 사업가와 유명인의 것으로 여겨졌다. 지금은 비용도 기간도 달라졌다",
+      "status": "pending"
+    },
+    {
+      "id": "M02",
+      "category": "memoir",
+      "title": "자서전, 첫 문장을 어디서 시작하나",
+      "keyword": "자서전 첫 문장",
+      "angle": "태어난 해부터 쓰려니 막힌다. 가장 선명한 장면 하나부터",
+      "status": "pending"
+    },
+    {
+      "id": "M03",
+      "category": "memoir",
+      "title": "글재주가 없어도 자서전을 쓸 수 있나",
+      "keyword": "자서전 글쓰기",
+      "angle": "맞춤법과 문장력 걱정이 손을 멈추게 한다. 말하듯 적는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "M04",
+      "category": "memoir",
+      "title": "기억이 잘 안 날 때 되살리는 방법",
+      "keyword": "기억 되살리기",
+      "angle": "사진·물건·장소·노래가 실마리가 된다",
+      "status": "pending"
+    },
+    {
+      "id": "M05",
+      "category": "memoir",
+      "title": "자서전에 무엇을 쓰고 무엇을 빼나",
+      "keyword": "자서전 내용",
+      "angle": "가족이 상처받을 대목을 다루는 기준",
+      "status": "pending"
+    },
+    {
+      "id": "M06",
+      "category": "memoir",
+      "title": "회고록과 자서전은 무엇이 다른가",
+      "keyword": "회고록 자서전 차이",
+      "angle": "전 생애를 훑을지 한 시기를 파고들지",
+      "status": "pending"
+    },
+    {
+      "id": "M07",
+      "category": "memoir",
+      "title": "인생 연표를 먼저 만들어보기",
+      "keyword": "인생 연표",
+      "angle": "글이 안 써질 때 뼈대부터. 열 줄이면 시작된다",
+      "status": "pending"
+    },
+    {
+      "id": "M08",
+      "category": "memoir",
+      "title": "옛날 사진을 정리하면서 이야기를 붙이는 법",
+      "keyword": "사진 정리",
+      "angle": "사진만 모으면 나중에 아무도 못 알아본다",
+      "status": "pending"
+    },
+    {
+      "id": "M09",
+      "category": "memoir",
+      "title": "가족에게 인터뷰를 받아 기록하는 방법",
+      "keyword": "가족 인터뷰",
+      "angle": "혼자 쓰기 어려울 때. 질문을 미리 정해두면 수월하다",
+      "status": "pending"
+    },
+    {
+      "id": "M10",
+      "category": "memoir",
+      "title": "손주에게 남길 글, 무엇을 골라야 하나",
+      "keyword": "손주에게 남기는 글",
+      "angle": "훈계는 안 읽힌다. 남는 건 구체적인 장면 하나",
+      "status": "pending"
+    },
+    {
+      "id": "M11",
+      "category": "memoir",
+      "title": "유언장, 어떤 형식이라야 효력이 있나",
+      "keyword": "유언장 쓰는 법",
+      "angle": "자필 유언의 요건. 빠뜨리면 무효가 되는 항목",
+      "status": "pending"
+    },
+    {
+      "id": "M12",
+      "category": "memoir",
+      "title": "사전연명의료의향서는 무엇이고 어디서 쓰나",
+      "keyword": "사전연명의료의향서",
+      "angle": "작성 기관과 절차. 언제든 바꿀 수 있다는 점",
+      "status": "pending"
+    },
+    {
+      "id": "M13",
+      "category": "memoir",
+      "title": "남긴 기록을 어디에 어떻게 보관하나",
+      "keyword": "기록 보관",
+      "angle": "종이와 파일. 가족이 찾을 수 있게 두는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "M14",
+      "category": "memoir",
+      "title": "자서전을 책으로 만들려면 무엇이 필요한가",
+      "keyword": "자서전 출판",
+      "angle": "소량 제작과 출판의 차이. 준비할 것",
+      "status": "pending"
+    },
+    {
+      "id": "M15",
+      "category": "memoir",
+      "title": "일기와 자서전은 무엇이 다른가",
+      "keyword": "일기 자서전",
+      "angle": "매일 쓰는 것과 돌아보며 쓰는 것. 이어가는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "T01",
+      "category": "travel",
+      "title": "체력 부담 없는 당일치기 여행 고르는 기준",
+      "keyword": "당일치기 여행",
+      "angle": "걷는 거리·계단·앉을 곳. 출발 전에 확인할 것",
+      "status": "pending"
+    },
+    {
+      "id": "T02",
+      "category": "travel",
+      "title": "기차로 다녀오기 좋은 여행 짜는 법",
+      "keyword": "기차 여행",
+      "angle": "환승 횟수와 역에서 목적지까지. 경로 할인 받는 법",
+      "status": "pending"
+    },
+    {
+      "id": "T03",
+      "category": "travel",
+      "title": "온천 여행 갈 때 알아둘 것",
+      "keyword": "온천 여행",
+      "angle": "입욕 시간과 횟수. 혈압이 있을 때 주의할 점",
+      "status": "pending"
+    },
+    {
+      "id": "T04",
+      "category": "travel",
+      "title": "수목원과 정원, 무리 없이 둘러보는 법",
+      "keyword": "수목원 나들이",
+      "angle": "코스 길이와 그늘. 계절마다 다른 볼거리",
+      "status": "pending"
+    },
+    {
+      "id": "T05",
+      "category": "travel",
+      "title": "입장료가 무료이거나 할인되는 곳 찾기",
+      "keyword": "경로 무료 입장",
+      "angle": "고궁·박물관·미술관. 신분증을 챙겨야 하는 이유",
+      "status": "pending"
+    },
+    {
+      "id": "T06",
+      "category": "travel",
+      "title": "여행 짐, 무엇을 넣고 무엇을 빼나",
+      "keyword": "여행 짐 싸기",
+      "angle": "약과 서류가 먼저. 무게를 줄이는 순서",
+      "status": "pending"
+    },
+    {
+      "id": "T07",
+      "category": "travel",
+      "title": "혼자 떠나는 여행, 무엇을 준비하나",
+      "keyword": "혼자 여행",
+      "angle": "숙소와 이동을 정할 때의 기준. 연락 남기는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "T08",
+      "category": "travel",
+      "title": "친구들과 여행 갈 때 정해두면 좋은 것",
+      "keyword": "친구 여행",
+      "angle": "비용과 일정. 나중에 서운해지지 않으려면",
+      "status": "pending"
+    },
+    {
+      "id": "T09",
+      "category": "travel",
+      "title": "패키지 여행을 고를 때 봐야 할 것",
+      "keyword": "패키지 여행 고르기",
+      "angle": "일정표에서 확인할 항목. 자유시간과 이동 시간",
+      "status": "pending"
+    },
+    {
+      "id": "T10",
+      "category": "travel",
+      "title": "여행 중 아플 때를 대비하는 방법",
+      "keyword": "여행 건강 준비",
+      "angle": "약 챙기기와 병원 찾기. 보험 확인",
+      "status": "pending"
+    },
+    {
+      "id": "T11",
+      "category": "travel",
+      "title": "가까운 섬으로 다녀오는 여행",
+      "keyword": "섬 여행",
+      "angle": "배 시간과 날씨. 하루로 되는 곳",
+      "status": "pending"
+    },
+    {
+      "id": "T12",
+      "category": "travel",
+      "title": "사찰과 고택을 둘러보는 여행",
+      "keyword": "사찰 여행",
+      "angle": "템플스테이와 당일 방문의 차이",
+      "status": "pending"
+    },
+    {
+      "id": "T13",
+      "category": "travel",
+      "title": "계절마다 가기 좋은 곳을 정하는 방법",
+      "keyword": "계절 여행지",
+      "angle": "더위와 추위를 피하는 시간대와 지역",
+      "status": "pending"
+    },
+    {
+      "id": "T14",
+      "category": "travel",
+      "title": "차 없이 다니는 여행, 어떻게 짜나",
+      "keyword": "대중교통 여행",
+      "angle": "기차와 시내버스 연결. 시간표를 미리 보는 법",
+      "status": "pending"
+    },
+    {
+      "id": "R01",
+      "category": "mind",
+      "title": "자녀와 사이가 서먹해졌다고 느낄 때",
+      "keyword": "자녀와의 관계",
+      "angle": "연락 횟수가 문제가 아닐 수 있다. 대화의 주제를 바꾸는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "R02",
+      "category": "mind",
+      "title": "손주와 무슨 이야기를 해야 할지 모르겠다면",
+      "keyword": "손주와 대화",
+      "angle": "가르치려는 말을 줄이고 묻는 말을 늘리기",
+      "status": "pending"
+    },
+    {
+      "id": "R03",
+      "category": "mind",
+      "title": "자녀에게 서운한 마음이 들 때",
+      "keyword": "자녀 서운함",
+      "angle": "기대를 말로 꺼내는 것과 삼키는 것의 차이",
+      "status": "pending"
+    },
+    {
+      "id": "R04",
+      "category": "mind",
+      "title": "은퇴 후 부부가 하루 종일 붙어 있게 되면",
+      "keyword": "은퇴 후 부부",
+      "angle": "각자의 시간을 만드는 방법. 규칙을 정하는 이야기",
+      "status": "pending"
+    },
+    {
+      "id": "R05",
+      "category": "mind",
+      "title": "나이 들어 새 친구를 사귈 수 있나",
+      "keyword": "시니어 친구 사귀기",
+      "angle": "모임에 가는 것만으로는 부족하다. 이어지는 관계의 조건",
+      "status": "pending"
+    },
+    {
+      "id": "R06",
+      "category": "mind",
+      "title": "오랜 친구와 멀어졌을 때",
+      "keyword": "친구 멀어짐",
+      "angle": "먼저 연락하는 것이 손해가 아닌 이유",
+      "status": "pending"
+    },
+    {
+      "id": "R07",
+      "category": "mind",
+      "title": "배우자를 떠나보낸 뒤의 시간",
+      "keyword": "배우자 상실",
+      "angle": "슬픔에 순서는 없다. 혼자 결정하지 말아야 할 것들",
+      "status": "pending"
+    },
+    {
+      "id": "R08",
+      "category": "mind",
+      "title": "하루 종일 아무 말도 안 하게 될 때",
+      "keyword": "노년 외로움",
+      "angle": "말수가 줄면 생각도 줄어든다. 말할 자리를 만드는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "R09",
+      "category": "mind",
+      "title": "화가 예전보다 쉽게 난다고 느껴지면",
+      "keyword": "노년 화",
+      "angle": "몸 상태와 관계있을 수 있다. 잠깐 멈추는 방법",
+      "status": "pending"
+    },
+    {
+      "id": "R10",
+      "category": "mind",
+      "title": "후회가 자꾸 떠오를 때",
+      "keyword": "후회 다스리기",
+      "angle": "돌이킬 수 없는 일과 아직 할 수 있는 일을 나누기",
+      "status": "pending"
+    },
+    {
+      "id": "R11",
+      "category": "mind",
+      "title": "잠들기 전 걱정이 몰려올 때",
+      "keyword": "밤 걱정",
+      "angle": "걱정을 낮으로 옮기는 방법. 적어두는 것의 효과",
+      "status": "pending"
+    },
+    {
+      "id": "R12",
+      "category": "mind",
+      "title": "이웃과 적당한 거리를 두는 법",
+      "keyword": "이웃 관계",
+      "angle": "가까워지면 편하지만 부담도 는다. 선을 정하는 기준",
+      "status": "pending"
     }
   ],
-  "_v7_note": "정책과 혜택 + 시니어 금융을 '돈과 혜택' 하나로 합쳤습니다. 국민연금·기초연금·건강보험료가 두 카테고리에 흩어져 있어 독자가 어디를 눌러야 할지 알 수 없었습니다. 건강과 영양은 비중(35%)을 감당하도록 15→25편으로 보강했습니다."
+  "_v8_note": "카테고리 3 → 6개. 자서전과 기록·여행과 나들이·마음과 관계 신설. 자서전과 기록은 allow_brand: true — 이 카테고리에서만 본문에 다시봄라이프를 언급할 수 있습니다. 광고를 정보 사이에 숨기는 것보다 한 카테고리에 모으는 편이 정직하고, 나머지 글의 신뢰도 지킵니다."
 }

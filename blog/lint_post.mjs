@@ -26,6 +26,9 @@ const has = (name) => args.includes(`--${name}`);
 const config = loadConfig();
 const w = config.writing;
 
+// 본문에서 서비스 이름을 써도 되는 카테고리 (config.categories[].allow_brand)
+const allowBrand = new Set(config.categories.filter((c) => c.allow_brand).map((c) => c.key));
+
 /**
  * 검사 규칙.
  *  level: 'error' 는 발행 차단, 'warn' 은 알림만.
@@ -171,11 +174,25 @@ const RULES = [
     level: 'error',
     label: '본문에 서비스 이름',
     why: '본문은 순수 정보입니다. 링크는 발행기가 글 끝에 카드로 붙입니다. 본문에서 언급하면 광고가 됩니다.',
+    // allow_brand: true 인 카테고리(자서전과 기록)만 예외입니다.
+    categories: (key) => !allowBrand.has(key),
     test: (text) => matchAll(text, /다시봄라이프|다시봄|봄이(?:와|가|는|를|에게|의)/g),
+  },
+  {
+    id: 'brand-overuse',
+    level: 'error',
+    label: '브랜드 반복 언급',
+    why: '언급이 허용된 카테고리라도 글 전체에서 한 번입니다. 두 번 넘어가면 광고문이 됩니다.',
+    categories: (key) => allowBrand.has(key),
+    test: (text) => {
+      const hits = matchAll(text, /다시봄라이프|다시봄/g);
+      return hits.length > 2 ? hits : [];
+    },
   },
   {
     id: 'soft-sell',
     level: 'error',
+    categories: (key) => !allowBrand.has(key),
     label: '다른 데로 넘기려는 마무리',
     why: '이 글은 정보로 끝나야 합니다.',
     test: (text) =>
