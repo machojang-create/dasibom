@@ -3726,11 +3726,12 @@ body.dark .bom-guide-text{color:#c8bba4}
   .bcp-chat-send{flex-shrink:0;width:46px;height:46px;border:none;border-radius:50%;background:linear-gradient(135deg,#c8784a,#d4845a);color:#fff;font-size:15px;cursor:pointer}
   .bcp-chat-send:disabled{opacity:.5}
   /* 말로 하기(음성 입력) — 타이핑이 힘든 어르신용. 지원 브라우저에서만 노출 */
-  .bcp-chat-mic{flex-shrink:0;width:46px;height:46px;border:1.5px solid #E6D8C4;border-radius:50%;background:#fff;
+  .bcp-chat-mic{flex-shrink:0;width:46px;height:46px;border:2px solid #E8A54B;border-radius:50%;background:#FFF3E2;color:#A9662B;animation:bcpMicBreath 2.2s ease-in-out infinite;
     font-size:17px;cursor:pointer;line-height:1;display:flex;align-items:center;justify-content:center;padding:0}
-  .bcp-chat-mic.listening{background:#d4584a;border-color:#d4584a;color:#fff;animation:bcpMicPulse 1s infinite}
+  @keyframes bcpMicBreath{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(232,165,75,.4)}50%{transform:scale(1.06);box-shadow:0 0 0 8px rgba(232,165,75,0)}}
+  .bcp-chat-mic.listening{animation:none;background:#d4584a;border-color:#d4584a;color:#fff;animation:bcpMicPulse 1s infinite}
   @keyframes bcpMicPulse{0%{box-shadow:0 0 0 0 rgba(212,88,74,.5)}70%{box-shadow:0 0 0 10px rgba(212,88,74,0)}100%{box-shadow:0 0 0 0 rgba(212,88,74,0)}}
-  @media (prefers-reduced-motion:reduce){.bcp-chat-mic.listening{animation:none}}
+  @media (prefers-reduced-motion:reduce){.bcp-chat-mic,.bcp-chat-mic.listening{animation:none}}
   body.dark .bcp-chat-mic{background:#241f1a;border-color:#3d342a;color:#e6d9c5}
   .bcp-user-msg{background:#5b3a1a;color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;font-size:14px;line-height:1.6;margin-bottom:14px;margin-left:38px;text-align:right}
   .bcp-typing-row{display:flex;align-items:center;gap:7px;margin-bottom:14px}
@@ -3758,7 +3759,7 @@ body.dark .bom-guide-text{color:#c8bba4}
 <div class="bomchat" id="bomChat">
   <div class="bomchat-panel" id="bomChatPanel" role="dialog" aria-label="봄이와 대화">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px 0;flex-shrink:0">
-      <button id="bomWardrobeBtn" aria-label="봄이 옷장" style="min-height:44px;padding:0 14px;border:2px solid #F0E0C8;border-radius:22px;background:#FFF9F0;color:#7a5a38;font-size:15px;font-weight:800;cursor:pointer">👗 옷장</button>
+      <button id="bomWardrobeBtn" aria-label="봄이 옷장" style="min-height:44px;padding:0 14px;border:2px solid #F0E0C8;border-radius:22px;background:#FFF9F0;color:#7a5a38;font-size:15px;font-weight:800;cursor:pointer">👗 봄이 옷장</button>
       <button class="bcp-x" onclick="bomChatToggle(false)" aria-label="닫기" style="background:rgba(0,0,0,.06)">✕</button>
     </div>
     <div class="bcp-body" id="bcpBody"></div>
@@ -4041,7 +4042,7 @@ body.dark .bom-guide-text{color:#c8bba4}
       return bomMsgRow(_rndOne(pool),'bom_calm');
     }
     if(pick==='voice'){   // 자서전 음성 입력 안내 — 있는 줄 몰라 못 쓰던 기능
-      return bomMsgRow(_rndOne(VOICE_LINES),'bom_grin');
+      return bomMsgRow(_rndOne(VOICE_LINES)+' <a class="bcp-tag-inline" href="/memoir_v8.html"><b>자서전 열기</b></a>','bom_grin');
     }
     if(pick==='petal'){   // 꽃잎을 받을 수 있다는 안내 — 몰라서 못 받는 사람이 많다
       return bomMsgRow(_rndOne(PETAL_LINES),'bom_sparkle');
@@ -4080,7 +4081,10 @@ body.dark .bom-guide-text{color:#c8bba4}
       /* '아직 안 본 것'만이 아니라 최근 말풍선 전부(20개) — 닫았다 열어도 그대로 남아 있어야
          "지금까지 한 말이 누적"이 된다(2026-08-04 Macho). done 표시는 새 말 알림점 용도로만 유지. */
       var hist=(window._bomBubbleAll&&window._bomBubbleAll())||[];
-      hist.forEach(function(x){ b.insertAdjacentHTML('beforeend', bomMsgRow(esc(x.t),'bom_smile')); });
+      hist.forEach(function(x){
+        var body=esc(x.t)+(x.href?' <a href="'+esc(x.href)+'" style="display:inline-block;margin-top:4px;padding:6px 14px;border-radius:14px;background:#E8804B;color:#fff;font-weight:800;text-decoration:none">바로 가기 →</a>':'');
+        b.insertAdjacentHTML('beforeend', bomMsgRow(body,'bom_smile'));
+      });
       if(hist.length && window._bomBubbleMarkDone) window._bomBubbleMarkDone();
       if(_bomCarryLine && !hist.some(function(x){ return x.t===_bomCarryLine; }))
         b.insertAdjacentHTML('beforeend', bomMsgRow(esc(_bomCarryLine),'bom_sparkle'));
@@ -4131,7 +4135,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     ['심심하지 않으세요? 저랑 얘기해요! 🌸','오늘 하루는 어떠셨어요?','저 여기서 기다리고 있었어요! 😊','문득 생각나서 인사하러 왔어요 ٩(◕‿◕)۶','오늘 컨디션은 어떠세요? 무리하지 마시고 천천히요 🌱'].forEach(function(t){ lines.push({text:t, face:'bom_grin'}); });
     /* ★꽃잎 안내를 홈 말풍선에도(2026-08-04 Macho). 두 번씩 넣어 노출 빈도를 높였다 —
        '보상이 있는 줄 몰랐다'가 FGT 보상 점수(62.9)의 절반이었다. */
-    VOICE_LINES.forEach(function(t){ lines.push({text:t, face:'bom_grin'}); lines.push({text:t, face:'bom_grin'}); });
+    VOICE_LINES.forEach(function(t){ lines.push({text:t, face:'bom_grin', href:'/memoir_v8.html'}); lines.push({text:t, face:'bom_grin', href:'/memoir_v8.html'}); });
     PETAL_LINES.forEach(function(t){
       lines.push({text:t, face:'bom_sparkle'});
       lines.push({text:t, face:'bom_sparkle'});
@@ -4160,7 +4164,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     var g=document.getElementById('bomGreet'), p=document.getElementById('bomChatPanel');
     if(!g || !p || p.classList.contains('open')) return;
     g.innerHTML=esc(text); g.style.display='block'; greetShown=true;
-    try{ bubAdd(text); }catch(e){}    // 뜨는 즉시 쌓아둔다 — 눌렀는지와 상관없이 창에 남아야 한다
+    try{ bubAdd(text, href); }catch(e){}    // 뜨는 즉시 쌓아둔다(링크까지) — 눌렀는지와 상관없이 창에 남아야 한다
     paintFabFace(face);
     _greetHref=href||null;
     /* ★읽는 시간 규칙(2026-08-04 FGT ②): 9초 고정이라 긴 말풍선은 다 읽기 전에 사라졌다.
@@ -4184,11 +4188,11 @@ body.dark .bom-guide-text{color:#c8bba4}
   var BUB_KEY='dasibom_bom_bubbles', BUB_MAX=20;
   function bubLoad(){ try{ return JSON.parse(localStorage.getItem(BUB_KEY)||'[]'); }catch(e){ return []; } }
   function bubSave(a){ try{ localStorage.setItem(BUB_KEY, JSON.stringify(a.slice(-BUB_MAX))); }catch(e){} }
-  function bubAdd(text){
+  function bubAdd(text,href){
     var t=String(text||'').replace(/\s+/g,' ').trim(); if(!t) return;
     var a=bubLoad();
     if(a.length && a[a.length-1].t===t) return;      // 같은 말이 연달아 뜨면 한 번만
-    a.push({t:t, done:false}); bubSave(a);
+    a.push({t:t, href:href||null, done:false}); bubSave(a);
   }
   window._bomBubblePending=function(){ return bubLoad().filter(function(x){ return !x.done; }); };
   window._bomBubbleAll=function(){ return bubLoad(); };   // 창에는 최근 20개 전부(닫았다 열어도 유지)
