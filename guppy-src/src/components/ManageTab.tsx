@@ -262,7 +262,9 @@ export const ManageTab = React.memo(function ManageTab({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm rounded-[24px]"
+            /* fixed(화면 기준)여야 한다 — absolute는 스크롤 내리면 창이 화면 밖 위에 그려져
+               반투명 배경만 보였다(2026-08-05 Macho "결과창이 안 떠"). */
+            className="fixed inset-0 z-[100] bg-slate-900/60 flex items-center justify-center p-4 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0.95, opacity: 0, y: 10 }}

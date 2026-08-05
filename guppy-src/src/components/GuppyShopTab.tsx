@@ -109,7 +109,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 bg-slate-950/95 flex flex-col items-center justify-center p-6 text-white overflow-hidden rounded-[32px]"
+            className="fixed inset-0 z-[100] bg-slate-950/95 flex flex-col items-center justify-center p-6 text-white overflow-hidden"  /* fixed — 스크롤 상태에서도 화면 중앙(2026-08-05) */
           >
             {/* Immersive deep sea ambient background with animated floating nodes */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
