@@ -67,22 +67,65 @@ if (has('status')) {
   process.exit(0);
 }
 
-/** 다음 발행 슬롯을 KST 기준으로 계산. skip 만큼 뒤로 민다. */
-function nextSlot(skip = 0) {
-  const { publish_days, publish_hour, publish_minute } = config.schedule;
-  const KST = 9 * 60; // UTC+9
-  const now = new Date();
-  const kstNow = new Date(now.getTime() + (KST + now.getTimezoneOffset()) * 60000);
+const pad2 = (n) => String(n).padStart(2, '0');
 
+/** KST 기준 오늘 0시. */
+function kstToday() {
+  const now = new Date();
+  const kstNow = new Date(now.getTime() + (9 * 60 + now.getTimezoneOffset()) * 60000);
+  kstNow.setHours(0, 0, 0, 0);
+  return kstNow;
+}
+
+/**
+ * 이미 예약해 둔 글 중 가장 늦은 날짜. 없으면 null.
+ * 격일 발행이 여러 번에 나눠 돌려도 겹치지 않게 하려면 이게 기준점이어야 합니다.
+ * 예약을 취소하거나 앞당기고 싶으면 topic_queue.json 의 reserved_for 를 지우면 됩니다.
+ */
+function lastReservedDay(queue) {
+  const days = queue.topics
+    .map((t) => t.reserved_for)
+    .filter(Boolean)
+    .map((s) => new Date(`${s.replace(' ', 'T')}:00`))
+    .filter((d) => !Number.isNaN(d.getTime()));
+  if (!days.length) return null;
+  const max = new Date(Math.max(...days.map((d) => d.getTime())));
+  max.setHours(0, 0, 0, 0);
+  return max;
+}
+
+/**
+ * 다음 발행 슬롯을 KST 기준으로 계산. skip 만큼 뒤로 민다.
+ * schedule.interval_days 가 있으면 격일(N일 간격), 없으면 예전처럼 요일 지정 방식.
+ */
+function nextSlot(skip = 0, queue = null) {
+  const { interval_days, publish_days, publish_hour, publish_minute } = config.schedule;
+  const stamp = (d) =>
+    `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())} ${pad2(publish_hour)}:${pad2(publish_minute)}`;
+
+  if (interval_days) {
+    const today = kstToday();
+    const last = queue ? lastReservedDay(queue) : null;
+    // 이미 잡아둔 예약이 있으면 그 뒤로 잇습니다. 이때 skip 은 더하지 않습니다 —
+    // 한 편 예약할 때마다 큐에 reserved_for 가 쌓이므로 큐 자체가 진행 상태입니다.
+    // 큐에 아무것도 없을 때만(예약 없이 여러 편을 미리 계산할 때) skip 을 씁니다.
+    if (last && last >= today) {
+      const d = new Date(last);
+      d.setDate(d.getDate() + interval_days);
+      return stamp(d);
+    }
+    const d = new Date(today);
+    d.setDate(d.getDate() + interval_days * (skip + 1));
+    return stamp(d);
+  }
+
+  const kstNow = kstToday();
   let found = 0;
   for (let i = 1; i <= 60; i++) {
     const d = new Date(kstNow);
     d.setDate(d.getDate() + i);
     if (!publish_days.includes(d.getDay())) continue;
-    if (found === skip) {
-      const pad = (n) => String(n).padStart(2, '0');
-      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(publish_hour)}:${pad(publish_minute)}`;
-    }
+    if (found === skip) return stamp(d);
     found++;
   }
   throw new Error('발행 슬롯을 계산하지 못했습니다. config.json 의 publish_days 를 확인하세요.');
@@ -157,7 +200,7 @@ for (let n = 0; n < count; n++) {
   }
 
   const publishArgs = ['--post', outFile];
-  if (!has('now')) publishArgs.push('--reserve', nextSlot(n));
+  if (!has('now')) publishArgs.push('--reserve', nextSlot(n, queue));
   if (has('headed')) publishArgs.push('--headed');
   run('publish_naver.mjs', publishArgs);
 }

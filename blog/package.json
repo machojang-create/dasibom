@@ -12,6 +12,8 @@
     "expand": "node expand_queue.mjs --auto",
     "lint": "node lint_post.mjs --all",
     "cats": "node run.mjs --categories",
+    "stats": "node stats_import.mjs",
+    "rebalance": "node rebalance.mjs",
     "figures": "node gen_figures.mjs --all",
     "illust": "node gen_illust.mjs --all",
     "images": "node gen_blog_assets.mjs"

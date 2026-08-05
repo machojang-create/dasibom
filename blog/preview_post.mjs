@@ -71,14 +71,26 @@ const imgBlock = (it) =>
     : `<figure class="todo"><div class="tag">아직 안 만든 일러스트 ${it.n}</div><p>${esc(it.prompt)}</p>
        <small>npm run illust 을 돌리면 이 자리에 그림이 들어갑니다.</small></figure>`;
 
-// 발행기와 같은 순서 — 본문, 해마다 확인 안내, 운영 주체 카드.
+// 발행기와 같은 순서 — 본문, 해마다 확인 안내, 마무리 카드.
+// 카드 조립은 publish_naver.mjs 의 buildCard 와 같은 규칙이어야 합니다. 한쪽만 고치지 마세요.
 const card = config.footer_card;
-const notice = post.skip_notice ? null : config.writing.annual_notice;
-const body = [
-  post.body.trim(),
-  notice?.length ? notice.join('\n') : null,
-  card?.enabled && card.lines?.length ? card.lines.join('\n') : null,
-]
+const noticeCats = config.writing.notice_categories;
+const noticeAllowed = !noticeCats?.length || noticeCats.includes(post.category);
+const notice = post.skip_notice || !noticeAllowed ? null : config.writing.annual_notice;
+
+function buildCard() {
+  if (!card?.enabled) return null;
+  if (card.lines?.length) return card.lines.join('\n'); // 구버전 호환
+  const closing = card.closing?.[post.category] ?? card.closing?._default ?? [];
+  const block = [
+    card.divider ?? null,
+    closing.length ? closing.join('\n') : null,
+    card.sign?.length ? card.sign.join('\n') : null,
+  ].filter(Boolean);
+  return block.length ? block.join('\n\n') : null;
+}
+
+const body = [post.body.trim(), notice?.length ? notice.join('\n') : null, buildCard()]
   .filter(Boolean)
   .join('\n\n\n');
 

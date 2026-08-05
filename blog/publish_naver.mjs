@@ -78,15 +78,28 @@ if (!fs.existsSync(sessionFile)) {
 // 글 끝에 붙는 것 두 가지.
 // 1) 해마다 다시 확인하시라는 안내 — 자동 발행이라 시간이 지나면 내용이 낡습니다.
 //    글마다 쓰면 문구가 조금씩 달라지므로 여기서 한 번에 붙입니다.
-// 2) 운영 주체 카드 — 모든 글에 똑같이 하나. 글마다 다른 링크를 고르지 않습니다.
+// 2) 마무리 카드 — 구분선 + 카테고리별 감성 문구 + 서명.
+//    감성 문구만 카테고리에 따라 갈리고, 서명 두 줄은 모든 글이 똑같습니다.
+//    글 내용에 맞춰 링크를 고르지 않는다는 원칙은 그대로입니다.
 const card = config.footer_card;
-const notice = post.skip_notice ? null : config.writing.annual_notice;
+const noticeCats = config.writing.notice_categories;
+const noticeAllowed = !noticeCats?.length || noticeCats.includes(post.category);
+const notice = post.skip_notice || !noticeAllowed ? null : config.writing.annual_notice;
 
-const bodyWithCta = [
-  post.body.trim(),
-  notice?.length ? notice.join('\n') : null,
-  card?.enabled && card.lines?.length ? card.lines.join('\n') : null,
-]
+/** 마무리 카드를 조립합니다. 구조가 없으면(구버전 config) lines 를 그대로 씁니다. */
+function buildCard() {
+  if (!card?.enabled) return null;
+  if (card.lines?.length) return card.lines.join('\n'); // 구버전 호환
+  const closing = card.closing?.[post.category] ?? card.closing?._default ?? [];
+  const block = [
+    card.divider ?? null,
+    closing.length ? closing.join('\n') : null,
+    card.sign?.length ? card.sign.join('\n') : null,
+  ].filter(Boolean);
+  return block.length ? block.join('\n\n') : null;
+}
+
+const bodyWithCta = [post.body.trim(), notice?.length ? notice.join('\n') : null, buildCard()]
   .filter(Boolean)
   .join('\n\n\n');
 

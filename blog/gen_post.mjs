@@ -246,7 +246,12 @@ const post = {
   title: draft.title,
   body: draft.body,
   summary: draft.summary,
-  tags: [...new Set([...draft.tags, ...config.naver.tag_common])],
+  // 태그 세 층 — 글 고유 키워드 / 카테고리 고정 태그(관련글 묶음) / 블로그 공통.
+  // 카테고리 태그를 앞쪽에 두는 이유: 네이버는 태그를 누르면 같은 태그 글 목록으로 갑니다.
+  // 이 태그 하나가 그 카테고리 글끼리 서로를 이어 주는 통로입니다.
+  tags: [
+    ...new Set([...draft.tags, category.tag, ...config.naver.tag_common].filter(Boolean)),
+  ].slice(0, 10),
   // after 가 본문에 없으면 발행기가 그 그림을 못 넣습니다. 여기서 미리 걸러냅니다.
   illustrations: keepPlaceable(draft.illustrations, draft.body, 'illustrations'),
   figures: keepPlaceable(draft.figures, draft.body, 'figures'),
