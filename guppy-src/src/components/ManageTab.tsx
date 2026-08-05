@@ -116,7 +116,7 @@ export const ManageTab = React.memo(function ManageTab({
                     <GuppySVG 
                       bodyColor={guppy.data.body_color} 
                       tailColor={guppy.data.tail_color} 
-                      patternColor={guppy.data.pattern_color} 
+                      patternColor={guppy.data.pattern_color} tailType={(guppy.data as any).tail_type} 
                       expression={guppy.expression} 
                       pose="side"
                       hideFloaters
@@ -256,7 +256,7 @@ export const ManageTab = React.memo(function ManageTab({
             {released.slice().reverse().map((r, i) => (
               <div key={i} className="bg-white rounded-2xl border border-sky-100 p-3 flex flex-col items-center text-center shadow-sm">
                 <div className="w-14 h-10 mb-1">
-                  <GuppySVG bodyColor={r.body} tailColor={r.tail} patternColor={r.pattern} expression={null} pose="side" hideFloaters />
+                  <GuppySVG bodyColor={r.body} tailColor={r.tail} patternColor={r.pattern} tailType={(r as any).tailType} expression={null} pose="side" hideFloaters />
                 </div>
                 <span className="font-black text-[13px] text-slate-700 break-keep">{r.name}</span>
                 <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full mt-0.5 ${r.rarity === '전설' ? 'bg-pink-50 text-pink-500' : r.rarity === '희귀' ? 'bg-yellow-50 text-yellow-600' : 'bg-slate-50 text-slate-500'}`}>{r.rarity} · Lv.{r.level}</span>

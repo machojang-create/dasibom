@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { TailType } from '../types';
 
 interface GuppySVGProps {
   bodyColor: string;
@@ -8,22 +9,44 @@ interface GuppySVGProps {
   expression: string | null;
   pose?: 'main' | 'side' | 'top' | 'swim1' | 'swim2';
   hideFloaters?: boolean;
+  tailType?: TailType;   // 품종 실루엣(2026-08-05) — 없으면 mosaic
 }
 
-export const GuppySVG = React.memo(function GuppySVG({ 
-  bodyColor, 
-  tailColor, 
-  patternColor, 
+/* ── 품종별 실루엣 (2026-08-05 Macho: "패턴만 다를 뿐 크기나 모양 차이가 없잖아") ──
+   몸통·꼬리·등지느러미가 품종마다 다르다. 좌표는 scratchpad/guppy_impl.html에서 시각 확정.
+   색은 기존 3색(body/tail/pattern)을 그대로 받아 개체마다 다르게 입혀진다. */
+/* 2차 수정(2026-08-05 Macho): 몸통 변형이 벌레 느낌의 원인 — 전부 표준 몸으로.
+   품종 차이는 꼬리 모양으로만. 코브라는 제외(벌레 꼬리), 턱시도는 배지느러미 얇고 길게. */
+const BODY_PATH = "M 260 170 C 260 100, 170 80, 110 95 C 40 110, 30 190, 80 220 C 140 250, 260 220, 260 170 Z";
+const DORSAL_PATH = "M 180 110 Q 220 30 270 50 Q 240 110 200 125 Z";
+// 꼬리 외곽(클립 겸용)
+const TAIL_CLIPS: Record<string, string> = {
+  mosaic: "M 250 152 C 292 134, 332 104, 376 82 C 402 70, 420 80, 423 106 C 429 150, 429 190, 423 234 C 420 260, 402 270, 376 258 C 332 236, 292 206, 250 188 Z",
+  ribbon: "M 250 152 C 296 122, 344 100, 388 98 C 414 96, 426 116, 424 142 C 422 164, 422 180, 424 202 C 426 228, 414 248, 388 246 C 344 244, 296 222, 250 190 Z",
+  grass:  "M 248 166 C 248 102, 292 56, 358 54 C 416 53, 452 104, 456 168 C 452 232, 416 283, 358 282 C 292 280, 248 234, 248 174 Z",
+  tuxedo: "M 256 144 C 300 90, 358 62, 408 64 C 432 66, 442 84, 440 106 C 435 152, 435 190, 440 236 C 442 258, 432 276, 408 278 C 358 280, 300 252, 256 198 Z",
+};
+
+export const GuppySVG = React.memo(function GuppySVG({
+  bodyColor,
+  tailColor,
+  patternColor,
   expression,
   pose = 'main',
-  hideFloaters = false
+  hideFloaters = false,
+  tailType = 'mosaic'
 }: GuppySVGProps) {
   // 고유 ID 생성 (여러 구피가 동시에 렌더링될 때 ID 충돌 방지)
   const idPrefix = React.useId().replace(/:/g, '');
-  
-  // 뷰박스 크기 설정
-  const vbWidth = 440;
+
+  // 뷰박스 크기 설정 (그래스 부채꼴이 x=456까지 가서 470으로 넓힘)
+  const vbWidth = 470;
   const vbHeight = 340;
+  // 폐기 품종(cobra 등) 저장분은 기본 모자이크로 그린다
+  const tt = TAIL_CLIPS[tailType] ? tailType : 'mosaic';
+  const bodyPath = BODY_PATH;
+  const dorsalPath = DORSAL_PATH;
+  const tailClip = TAIL_CLIPS[tt];
 
   let wrapperTransform = "";
   if (pose === 'side') wrapperTransform = "scale(0.8) scaleX(0.9) rotate(-10deg)";
@@ -41,8 +64,13 @@ export const GuppySVG = React.memo(function GuppySVG({
         transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
       >
         <defs>
-          <clipPath id={`tailClip-${idPrefix}`}>
-            <path d="M 240 170 C 280 0, 460 20, 410 170 C 460 320, 280 340, 240 170 Z" />
+          {tailClip && (
+            <clipPath id={`tailClip-${idPrefix}`}>
+              <path d={tailClip} />
+            </clipPath>
+          )}
+          <clipPath id={`bodyClip-${idPrefix}`}>
+            <path d={bodyPath} />
           </clipPath>
 
           {/* 몸통 입체감을 위한 그라데이션 */}
@@ -72,15 +100,21 @@ export const GuppySVG = React.memo(function GuppySVG({
           </linearGradient>
         </defs>
 
-        {/* 뒤쪽 배 지느러미 */}
-        <motion.path 
-          d="M 160 210 Q 180 260 140 270 Q 130 230 150 210 Z" fill={tailColor} opacity="0.9" 
+        {/* 뒤쪽 배 지느러미 — 턱시도는 얇고 길게 뻗는다(2026-08-05 Macho) */}
+        <motion.path
+          d={tt === 'tuxedo'
+            ? "M 162 212 C 168 254, 158 292, 146 300 C 148 264, 152 236, 156 212 Z"
+            : "M 160 210 Q 180 260 140 270 Q 130 230 150 210 Z"}
+          fill={tailColor} opacity="0.9"
           style={{ originX: "160px", originY: "210px" }}
           animate={{ rotate: [0, -10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.path 
-          d="M 180 205 Q 210 240 180 250 Q 170 230 180 205 Z" fill={tailColor} opacity="0.7" 
+        <motion.path
+          d={tt === 'tuxedo'
+            ? "M 192 214 C 200 250, 194 282, 184 290 C 184 258, 186 234, 186 214 Z"
+            : "M 180 205 Q 210 240 180 250 Q 170 230 180 205 Z"}
+          fill={tailColor} opacity="0.7"
           style={{ originX: "180px", originY: "205px" }}
           animate={{ rotate: [0, -10, 0] }}
           transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.2 }}
@@ -92,8 +126,10 @@ export const GuppySVG = React.memo(function GuppySVG({
           animate={{ rotate: [0, 8, 0] }}
           transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
         >
-          <path d="M 180 110 Q 220 30 270 50 Q 240 110 200 125 Z" fill={tailColor} opacity="0.9" />
-          <path d="M 190 110 Q 230 50 250 60" stroke={patternColor} strokeWidth="2.5" fill="none" opacity="0.3" />
+          <path d={dorsalPath} fill={tailColor} opacity="0.9" />
+          {(tt === 'mosaic' || tt === 'ribbon') && (
+            <path d="M 190 110 Q 230 50 250 60" stroke={patternColor} strokeWidth="2.5" fill="none" opacity="0.3" />
+          )}
         </motion.g>
 
         {/* 거대한 꼬리 (핵심 포인트) */}
@@ -105,37 +141,66 @@ export const GuppySVG = React.memo(function GuppySVG({
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <path 
-            d="M 240 170 C 280 0, 460 20, 410 170 C 460 320, 280 340, 240 170 Z" 
-            fill={`url(#tailGrad-${idPrefix})`} 
-          />
-          {/* 꼬리 무늬 (원형 패턴들) */}
-          <g fill={patternColor} opacity="0.85" clipPath={`url(#tailClip-${idPrefix})`}>
-            <circle cx="310" cy="80" r="18" />
-            <circle cx="360" cy="90" r="24" />
-            <circle cx="400" cy="130" r="14" />
-            <circle cx="280" cy="135" r="20" />
-            <circle cx="340" cy="150" r="28" />
-            <circle cx="390" cy="180" r="20" />
-            <circle cx="310" cy="200" r="22" />
-            <circle cx="360" cy="230" r="26" />
-            <circle cx="280" cy="240" r="16" />
-            <circle cx="320" cy="280" r="18" />
-          </g>
-          {/* 꼬리 결(주름) */}
-          <g stroke={patternColor} strokeWidth="3" fill="none" opacity="0.15" strokeLinecap="round" clipPath={`url(#tailClip-${idPrefix})`}>
-            <path d="M 250 170 Q 320 100 380 80" />
-            <path d="M 250 170 Q 340 170 400 170" />
-            <path d="M 250 170 Q 320 240 380 260" />
-          </g>
+          {tt === 'mosaic' && (<>
+            <path d={tailClip} fill={`url(#tailGrad-${idPrefix})`} />
+            <g fill={patternColor} opacity="0.5" clipPath={`url(#tailClip-${idPrefix})`}>
+              <ellipse cx="300" cy="146" rx="13" ry="9" transform="rotate(-28 300 146)" /><ellipse cx="330" cy="126" rx="10" ry="7" />
+              <ellipse cx="360" cy="106" rx="14" ry="8" /><ellipse cx="318" cy="168" rx="15" ry="10" />
+              <ellipse cx="352" cy="154" rx="11" ry="8" /><ellipse cx="386" cy="138" rx="13" ry="8" />
+              <ellipse cx="338" cy="192" rx="12" ry="8" /><ellipse cx="372" cy="184" rx="14" ry="9" />
+              <ellipse cx="348" cy="218" rx="13" ry="8" /><ellipse cx="384" cy="214" rx="10" ry="8" />
+              <ellipse cx="398" cy="244" rx="9" ry="7" /><ellipse cx="404" cy="176" rx="9" ry="11" />
+            </g>
+          </>)}
+          {tt === 'ribbon' && (<>
+            <path d={tailClip} fill={`url(#tailGrad-${idPrefix})`} />
+            {/* 커튼처럼 흐르는 세로 물결 결 */}
+            <g stroke={patternColor} fill="none" opacity="0.4" strokeLinecap="round" clipPath={`url(#tailClip-${idPrefix})`}>
+              <path d="M 286 138 Q 292 172 286 208" strokeWidth="5" />
+              <path d="M 314 124 Q 322 172 314 222" strokeWidth="6" />
+              <path d="M 344 112 Q 353 172 344 234" strokeWidth="6" />
+              <path d="M 376 106 Q 385 172 376 240" strokeWidth="7" />
+              <path d="M 406 110 Q 414 172 406 236" strokeWidth="6" />
+            </g>
+            <g fill={patternColor} opacity="0.45" clipPath={`url(#tailClip-${idPrefix})`}>
+              <ellipse cx="300" cy="152" rx="6" ry="4" /><ellipse cx="332" cy="136" rx="5" ry="4" />
+              <ellipse cx="366" cy="148" rx="6" ry="4" /><ellipse cx="398" cy="136" rx="5" ry="4" />
+              <ellipse cx="316" cy="196" rx="6" ry="4" /><ellipse cx="352" cy="206" rx="6" ry="4" />
+              <ellipse cx="390" cy="200" rx="5" ry="4" /><ellipse cx="410" cy="176" rx="5" ry="4" />
+            </g>
+          </>)}
+          {tt === 'grass' && (<>
+            <path d={tailClip} fill={`url(#tailGrad-${idPrefix})`} />
+            <g fill={patternColor} opacity="0.55" clipPath={`url(#tailClip-${idPrefix})`}>
+              <ellipse cx="296" cy="116" rx="4" ry="2.6" /><ellipse cx="330" cy="94" rx="3.6" ry="2.4" /><ellipse cx="368" cy="82" rx="4" ry="2.6" />
+              <ellipse cx="406" cy="90" rx="3.6" ry="2.4" /><ellipse cx="432" cy="112" rx="4" ry="2.6" /><ellipse cx="306" cy="150" rx="4.2" ry="2.8" />
+              <ellipse cx="342" cy="132" rx="3.8" ry="2.4" /><ellipse cx="378" cy="122" rx="4.2" ry="2.6" /><ellipse cx="412" cy="134" rx="3.8" ry="2.4" />
+              <ellipse cx="438" cy="152" rx="4" ry="2.6" /><ellipse cx="300" cy="186" rx="4" ry="2.6" /><ellipse cx="336" cy="172" rx="4.4" ry="2.8" />
+              <ellipse cx="372" cy="166" rx="3.8" ry="2.4" /><ellipse cx="408" cy="174" rx="4.2" ry="2.6" /><ellipse cx="440" cy="190" rx="3.6" ry="2.4" />
+              <ellipse cx="310" cy="222" rx="4.2" ry="2.8" /><ellipse cx="346" cy="212" rx="3.8" ry="2.4" /><ellipse cx="382" cy="216" rx="4.2" ry="2.6" />
+              <ellipse cx="414" cy="228" rx="3.8" ry="2.4" /><ellipse cx="324" cy="254" rx="4" ry="2.6" /><ellipse cx="360" cy="250" rx="4.2" ry="2.8" />
+            </g>
+            <g stroke={patternColor} strokeWidth="1.6" fill="none" opacity="0.22" strokeLinecap="round" clipPath={`url(#tailClip-${idPrefix})`}>
+              <path d="M 252 162 Q 344 90 434 74" /><path d="M 252 168 Q 354 132 448 122" /><path d="M 252 172 Q 356 172 454 170" />
+              <path d="M 252 176 Q 354 212 448 218" /><path d="M 252 182 Q 344 250 434 266" />
+            </g>
+          </>)}
+          {tt === 'tuxedo' && (<>
+            <path d={tailClip} fill={`url(#tailGrad-${idPrefix})`} />
+            <g fill={patternColor} opacity="0.45" clipPath={`url(#tailClip-${idPrefix})`}>
+              <ellipse cx="330" cy="116" rx="6" ry="4" /><ellipse cx="374" cy="96" rx="5" ry="3.6" /><ellipse cx="408" cy="118" rx="6" ry="4" />
+              <ellipse cx="348" cy="158" rx="6" ry="4" /><ellipse cx="392" cy="150" rx="5" ry="4" /><ellipse cx="422" cy="170" rx="5" ry="4" />
+              <ellipse cx="336" cy="200" rx="6" ry="4" /><ellipse cx="378" cy="214" rx="5" ry="4" /><ellipse cx="412" cy="228" rx="5" ry="3.6" />
+            </g>
+          </>)}
         </motion.g>
 
-        {/* 오동통한 몸통 */}
-        <path 
-          d="M 260 170 C 260 100, 170 80, 110 95 C 40 110, 30 190, 80 220 C 140 250, 260 220, 260 170 Z" 
-          fill={`url(#bodyGrad-${idPrefix})`} 
-        />
-        
+        {/* 몸통 — 품종별 체형 */}
+        <path d={bodyPath} fill={`url(#bodyGrad-${idPrefix})`} />
+        {/* 턱시도: 몸 뒤가 정장처럼 검정 (몸 곡선을 따라 클립) */}
+        {tt === 'tuxedo' && (
+          <rect x="172" y="40" width="110" height="260" fill="#0f172a" opacity="0.82" clipPath={`url(#bodyClip-${idPrefix})`} />
+        )}
         {/* 몸통 비늘 텍스처 (은은하게) */}
         <g stroke={patternColor} strokeWidth="2.5" fill="none" opacity="0.15" strokeLinecap="round">
           <path d="M 190 120 Q 210 135 190 150" />

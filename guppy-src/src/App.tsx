@@ -597,6 +597,21 @@ export default function App() {
           const traits = ['body_color', 'tail_color', 'pattern_color'] as const;
           const babyData = { ...parentA.data };
           babyData.guppy_name = `${parentA.data.guppy_name.split(' ')[0]}네 아기`;
+
+          /* 품종 유전(2026-08-05 Macho): 같은 품종끼리면 그 품종 확정, 다르면 반반.
+             5%는 부모에게 없는 품종으로 변이 — 꽃잎 없이도 정성(만렙 두 마리)으로
+             희귀 품종을 얻는 길. 상점(200~2000잎)과 나란히 두 갈래 입수 경로가 된다. */
+          {
+            const ALL_TAILS = ['mosaic', 'ribbon', 'grass', 'tuxedo'] as const;   // 코브라 제외(2026-08-05)
+            const tA = (parentA.data as any).tail_type || 'mosaic';
+            const tB = (parentB.data as any).tail_type || 'mosaic';
+            let babyTail = Math.random() < 0.5 ? tA : tB;
+            if (Math.random() < 0.05) {
+              const others = ALL_TAILS.filter(t => t !== tA && t !== tB);
+              if (others.length) babyTail = others[Math.floor(Math.random() * others.length)];
+            }
+            (babyData as any).tail_type = babyTail;
+          }
           
           traits.forEach(trait => {
              const pAInheritance = parentA.stats.inheritance;
@@ -983,7 +998,7 @@ export default function App() {
 
     // ③ 떠나보낸 바다 기록 + 업적(5·15마리)
     const rec = { name: g.data.guppy_name, rarity, level: lv, at: Date.now(),
-      body: g.data.body_color, tail: g.data.tail_color, pattern: g.data.pattern_color };
+      body: g.data.body_color, tail: g.data.tail_color, pattern: g.data.pattern_color, tailType: (g.data as any).tail_type };
     setReleased(prev => {
       const next = [...prev, rec].slice(-60);
       releasedRef.current = next;
@@ -1482,6 +1497,7 @@ export default function App() {
                         bodyColor={guppy.data.body_color} 
                         tailColor={guppy.data.tail_color} 
                         patternColor={guppy.data.pattern_color}
+                        tailType={(guppy.data as any).tail_type}
                         expression={testExpression || guppy.expression || (waterQuality < 30 ? (parseInt(guppy.id, 36) % 2 === 0 ? '슬픔' : '잠') : null)}
                         pose="main"
                       />

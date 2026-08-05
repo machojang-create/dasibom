@@ -83,26 +83,42 @@ export function getSpecialShopGuppies() {
   ];
   const legendaryTheme = legendaryThemes[current3HourWindow % legendaryThemes.length];
 
+  /* 품종·색 정책(2026-08-05 Macho):
+       막구피(야생·200잎) = 파츠별 다양한 색 랜덤 / 고정구피 2종(1000·2000잎) = 파츠 색을 고급스럽게 통일.
+       200잎=리본테일, 1000잎=그래스(보석 팔레트), 2000잎=턱시도(금·은 팔레트). 코브라는 제외. */
+  const grassThemes = [
+    { body: '#2dd4bf', tail: '#0f766e', pattern: '#99f6e4' }, // 에메랄드
+    { body: '#60a5fa', tail: '#1e40af', pattern: '#bfdbfe' }, // 사파이어
+    { body: '#fb7185', tail: '#9f1239', pattern: '#fecdd3' }, // 루비
+    { body: '#a78bfa', tail: '#5b21b6', pattern: '#ddd6fe' }, // 자수정
+    { body: '#38bdf8', tail: '#0c4a6e', pattern: '#bae6fd' }, // 심해 청옥
+    { body: '#4ade80', tail: '#166534', pattern: '#bbf7d0' }, // 비취
+  ];
+  const grassTheme = grassThemes[current3HourWindow % grassThemes.length];
+
   return {
     normal: {
       body_color: randomHexSeeded(current3HourWindow, 1),
       tail_color: randomHexSeeded(current3HourWindow, 2),
       pattern_color: randomHexSeeded(current3HourWindow, 3),
+      tail_type: 'ribbon' as import('./types').TailType,
     },
     rare: {
-      body_color: randomHexSeeded(current3HourWindow, 4),
-      tail_color: randomHexSeeded(current3HourWindow, 5),
-      pattern_color: randomHexSeeded(current3HourWindow, 6),
+      body_color: grassTheme.body,
+      tail_color: grassTheme.tail,
+      pattern_color: grassTheme.pattern,
+      tail_type: 'grass' as import('./types').TailType,
     },
     legendary: {
       body_color: legendaryTheme.body,
       tail_color: legendaryTheme.tail,
       pattern_color: legendaryTheme.pattern,
+      tail_type: 'tuxedo' as import('./types').TailType,
     }
   };
 }
 
-export function generateSpawn(rarityBonus = false, fixedColors?: {body_color: string, tail_color: string, pattern_color: string}, fixedRarity?: string): GuppyResponse {
+export function generateSpawn(rarityBonus = false, fixedColors?: {body_color: string, tail_color: string, pattern_color: string, tail_type?: import('./types').TailType}, fixedRarity?: string): GuppyResponse {
   let bodyColor = fixedColors ? fixedColors.body_color : randomHex();
   let tailColor = fixedColors ? fixedColors.tail_color : randomHex();
   let patternColor = fixedColors ? fixedColors.pattern_color : randomHex();
@@ -135,7 +151,9 @@ export function generateSpawn(rarityBonus = false, fixedColors?: {body_color: st
       body_color: bodyColor,
       tail_color: tailColor,
       pattern_color: patternColor,
-      rarity: selectedRarity
+      rarity: selectedRarity,
+      // 야생(조개 뽑기)은 전부 모자이크 — 다른 품종은 상점(fixedColors.tail_type) 또는 번식 변이로만
+      tail_type: (fixedColors && fixedColors.tail_type) || 'mosaic'
     },
     timestamp: new Date().toISOString()
   }

@@ -251,7 +251,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                       <GuppySVG 
                         bodyColor={revealingGuppy.body_color} 
                         tailColor={revealingGuppy.tail_color} 
-                        patternColor={revealingGuppy.pattern_color} 
+                        patternColor={revealingGuppy.pattern_color} tailType={(revealingGuppy as any).tail_type} 
                         expression="반짝" 
                         pose="side" 
                         hideFloaters={true} 
@@ -392,7 +392,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <GuppySVG 
                     bodyColor={specialGuppies.normal.body_color} 
                     tailColor={specialGuppies.normal.tail_color} 
-                    patternColor={specialGuppies.normal.pattern_color} 
+                    patternColor={specialGuppies.normal.pattern_color} tailType={specialGuppies.normal.tail_type} 
                     expression="정면" 
                     pose="side" 
                     hideFloaters={true} 
@@ -417,7 +417,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <GuppySVG 
                     bodyColor={specialGuppies.rare.body_color} 
                     tailColor={specialGuppies.rare.tail_color} 
-                    patternColor={specialGuppies.rare.pattern_color} 
+                    patternColor={specialGuppies.rare.pattern_color} tailType={specialGuppies.rare.tail_type} 
                     expression="반짝" 
                     pose="side" 
                     hideFloaters={true} 
@@ -442,7 +442,7 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
                   <GuppySVG 
                     bodyColor={specialGuppies.legendary.body_color} 
                     tailColor={specialGuppies.legendary.tail_color} 
-                    patternColor={specialGuppies.legendary.pattern_color} 
+                    patternColor={specialGuppies.legendary.pattern_color} tailType={specialGuppies.legendary.tail_type} 
                     expression="반짝" 
                     pose="side" 
                     hideFloaters={true} 
