@@ -362,7 +362,11 @@ export default function App() {
         : (typeof prev === 'number' && prev >= d.balance) ? (prev - d.balance) : 0;
       const info = buyInfo(item);
       setToastMessage(null);   // '꽃잎 세는 중' 토스트 지우고 축하 연출로
-      setCele({ key: Date.now(), icon: info.icon, name: info.name, spent, balance: d.balance, tip: info.tip });
+      /* 랜덤 상자는 축하 연출을 건너뛴다(2026-08-05 Macho): 열기도 전에 봄이가
+         "전설 구피 획득!"을 말해 스포일러가 됐다. 등급은 상자를 연 순간 말한다. */
+      if (!item.startsWith('guppy_seed_rand_')) {
+        setCele({ key: Date.now(), icon: info.icon, name: info.name, spent, balance: d.balance, tip: info.tip });
+      }
       coinSfx();
       setPetals(d.balance); cb(true);
     });

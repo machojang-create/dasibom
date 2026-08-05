@@ -96,6 +96,17 @@ export const GuppyShopTab = React.memo(function GuppyShopTab({
     setTimeout(() => {
       setRevealed(true);
       setIsHatching(false);
+      /* 등급 발표는 상자가 열린 이 순간에(2026-08-05 Macho — 구매 직후 말하면 스포일러) */
+      try {
+        const w = window as any;
+        if (revealingGuppy && w.BomVoice && w.BomVoice.say && (w as any).DASIBOM_BOM !== false) {
+          const r = revealingGuppy.rarity;
+          const line = r === '전설' ? '대박! 전설 구피가 나왔어요! 최고의 행운이랍니다!'
+                     : r === '희귀' ? '두근두근! 희귀한 구피가 나왔네요! 운이 좋으세요!'
+                     : '새 구피가 나왔어요! 어떤 색인지 구경해 보세요.';
+          w.BomVoice.say(line);
+        }
+      } catch (e) {}
     }, 1500);
   };
 

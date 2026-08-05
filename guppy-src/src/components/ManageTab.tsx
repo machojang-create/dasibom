@@ -235,27 +235,8 @@ export const ManageTab = React.memo(function ManageTab({
         </div>
       )}
 
-      {/* 🌊 떠나보낸 바다 — 방생 기록 갤러리(2026-07-22) */}
-      {released && released.length > 0 && (
-        <div className="px-4 pb-6">
-          <h3 className="text-[15px] font-black text-slate-700 mb-2 flex items-center gap-1.5">
-            🌊 떠나보낸 바다 <span className="text-[11px] font-bold text-slate-400">넓은 바다로 떠난 친구 {released.length}마리</span>
-          </h3>
-          <div className="grid grid-cols-2 xl:grid-cols-3 gap-2.5">
-            {released.slice().reverse().map((r, i) => (
-              <div key={i} className="bg-white rounded-2xl border border-sky-100 p-3 flex flex-col items-center text-center shadow-sm">
-                <div className="w-14 h-10 mb-1">
-                  <GuppySVG bodyColor={r.body} tailColor={r.tail} patternColor={r.pattern} tailType={(r as any).tailType} expression={null} pose="side" hideFloaters />
-                </div>
-                <span className="font-black text-[13px] text-slate-700 break-keep">{r.name}</span>
-                <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full mt-0.5 ${r.rarity === '전설' ? 'bg-pink-50 text-pink-500' : r.rarity === '희귀' ? 'bg-yellow-50 text-yellow-600' : 'bg-slate-50 text-slate-500'}`}>{r.rarity} · Lv.{r.level}</span>
-                <span className="text-[10px] font-bold text-slate-400 mt-0.5">{new Date(r.at).toLocaleDateString('ko-KR')} 방생</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      
+      {/* 떠나보낸 바다 갤러리는 삭제(2026-08-05 Macho "의미없어").
+          released 기록 자체는 업적(5·15마리)용으로 데이터만 유지. */}
       <AnimatePresence>
         {releasingGuppy && (
           <motion.div
@@ -291,7 +272,6 @@ export const ManageTab = React.memo(function ManageTab({
                   {releasingGuppy.level >= 10
                     ? '🌈 만렙 배웅! 남아 있는 친구들이 ' + releasingGuppy.data.guppy_name + '의 가르침을 받아 모두 쑥 자라요.'
                     : '키운 정성(레벨 ' + Math.min(releasingGuppy.level,10) + ')만큼 황금 크릴로 돌아와요. 레벨 x 10개!'}
-                  <br/>떠난 친구는 🌊 떠나보낸 바다에 영원히 기억돼요.
                 </p>
               </div>
 
