@@ -23,7 +23,7 @@
       bom: '심심하실 땐 저랑 화투 한 판 어때요? 오늘 운수도 볼 겸요 🎴' },
     { cat: 'memory', key: 'trot',   color: '#A8875A', href: '/trot',   img: '/img/promo/trot.jpg',   face: 'bom_cheer.png',
       title: '다시봄 트로트 연대기', pop: 86,
-      bom: '그 시절 그 노래, 1970년부터 오늘까지 다 모아뒀어요 🎤' },
+      bom: '그 시절 가수들의 이야기, 책장처럼 한 장씩 넘겨보세요 📖' }   /* 노래 트는 곳 아님 — 기대 정확히(2026-08-06 Macho) */,
     { cat: 'mind',   key: 'plant',  color: '#93859F', href: '/plant',  img: '/img/promo/plant.jpg',  face: 'bom_smile.png',
       title: '수다쟁이 화분', pop: 74,
       bom: '구수한 사투리로 말 거는 화분 친구, 물 한 번 주러 오실래요? 🌱' },
