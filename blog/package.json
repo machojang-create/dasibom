@@ -16,7 +16,9 @@
     "rebalance": "node rebalance.mjs",
     "figures": "node gen_figures.mjs --all",
     "illust": "node gen_illust.mjs --all",
-    "images": "node gen_blog_assets.mjs"
+    "images": "node gen_blog_assets.mjs",
+    "setup": "node setup_naver.mjs",
+    "setup:scan": "node setup_naver.mjs --scan --headed"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.0",
