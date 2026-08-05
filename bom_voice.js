@@ -274,6 +274,7 @@ window.DasibomBomSkin = (function () {
     return want === src ? null : want;
   }
   function fix(el) {
+    if (el.hasAttribute && el.hasAttribute('data-noskin')) return;   // 옷장 미리보기 등은 갈아입히지 않는다
     var want = pathFor(el.getAttribute('src') || '');
     if (want) el.setAttribute('src', want);
   }

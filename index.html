@@ -2600,7 +2600,7 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
 })();
 </script>
 <script src="/fx.js?v=2"></script>
-<script src="/bom_voice.js?v=21"></script>
+<script src="/bom_voice.js?v=22"></script>
 <script>
 // ════ 홈 배경음악 — 피아노 3곡 이어서 반복재생 (fx.js 사운드토글·dasibom_sound 키 공유) ════
 (function(){
@@ -4749,6 +4749,73 @@ body.dark #dsbSoundInvite .si-text{color:#e8d9c2}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', apply);
   else apply();
   window._mkRevealApply=apply;   // QA용
+})();
+</script>
+<script>
+/* ── 봄이 옷장 (2026-08-05 Macho 확정: 의상 1벌 500꽃잎, 낱개 규칙) ──────────
+   에셋·전환 모듈(DasibomBomSkin)은 이미 라이브 — 여기는 파는 문만 단다.
+   보유 여부는 서버 unlocks(bomfit:키), 차감은 unlockItem(서버 권위). */
+(function(){
+  var OUTFITS=[
+    {key:'hanbok', name:'꽃단장 한복',   free:true },
+    {key:'hoodie', name:'포근한 후드',   free:false},
+    {key:'yellow', name:'노랑 멜빵 원피스', free:false}
+  ];
+  var PRICE=500, owned={}, bal=null;
+
+  function fn(name){ try{ if(window.firebase&&firebase.apps&&firebase.apps.length&&firebase.auth().currentUser) return firebase.app().functions('asia-northeast3').httpsCallable(name);}catch(e){} return null; }
+  function call(name,data,cb){ var t0=Date.now();(function go(){ var f=fn(name); if(f){ f(data).then(function(r){cb(r&&r.data);}).catch(function(){cb(null);}); return;} if(Date.now()-t0>6000){cb(null);return;} setTimeout(go,300); })(); }
+  function loadOwned(cb){ call('myUnlocks',{},function(r){ if(r&&r.ok){ owned=r.unlocks||{}; if(typeof r.balance==='number')bal=r.balance; } cb&&cb(); }); }
+  function has(k){ return !!owned['bomfit:'+k]; }
+
+  // 옷장 버튼 — 봄이 챗봇 버튼 바로 위
+  var wbtn=document.createElement('button');
+  wbtn.id='bomWardrobeBtn'; wbtn.setAttribute('aria-label','봄이 옷장');
+  wbtn.textContent='👗';
+  wbtn.style.cssText='position:fixed;right:24px;bottom:188px;z-index:940;width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:#fff;font-size:22px;box-shadow:0 6px 18px -6px rgba(180,120,40,.45),0 0 0 2px #FFD9A6';
+  document.body.appendChild(wbtn);
+
+  var ov=null;
+  function close(){ if(ov){ov.remove();ov=null;} }
+  function open(){
+    close();
+    var cur=(window.DasibomBomSkin&&DasibomBomSkin.get())||'hanbok';
+    ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:100030;background:rgba(40,30,20,.55);display:flex;align-items:center;justify-content:center;padding:18px';
+    var rows=OUTFITS.map(function(o){
+      var isCur=cur===o.key, mine=o.free||has(o.key);
+      return '<div style="display:flex;align-items:center;gap:12px;padding:10px;border:2px solid '+(isCur?'#E8A54B':'#F0E6D6')+';border-radius:16px;background:'+(isCur?'#FFF6E8':'#fff')+'">'+
+        '<img data-noskin src="/img/bom/'+(o.key==='hanbok'?'hanbok':o.key)+'/bom_face.png" alt="" style="width:64px;height:64px;object-fit:contain">'+
+        '<div style="flex:1;text-align:left"><div style="font-size:17px;font-weight:800;color:#4a3a28">'+o.name+'</div>'+
+        '<div style="font-size:13px;color:#9a8a75">'+(o.free?'기본 의상':(mine?'내 옷장에 있어요':'꽃잎 '+PRICE+'개'))+'</div></div>'+
+        '<button data-k="'+o.key+'" data-mine="'+(mine?1:0)+'" style="min-height:46px;padding:0 16px;border-radius:12px;border:0;cursor:pointer;font-size:15px;font-weight:800;'+
+        (isCur?'background:#EEE;color:#999':'background:#E8804B;color:#fff')+'">'+(isCur?'입는 중':(mine?'입기':'🌸 '+PRICE))+'</button></div>';
+    }).join('');
+    ov.innerHTML='<div style="background:#fffdf8;border-radius:22px;max-width:400px;width:100%;padding:20px;box-shadow:0 14px 44px rgba(0,0,0,.28)" role="dialog">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+      '<div style="font-size:20px;font-weight:800;color:#4a3a28">👗 봄이 옷장</div>'+
+      '<button id="bwClose" aria-label="닫기" style="width:44px;height:44px;border:0;background:none;font-size:22px;cursor:pointer;color:#9a8a75">✕</button></div>'+
+      '<div style="display:flex;flex-direction:column;gap:10px">'+rows+'</div>'+
+      '<div style="font-size:12px;color:#b0a08a;margin-top:10px;text-align:center">갈아입힌 옷은 모든 화면의 봄이에게 적용돼요</div></div>';
+    document.body.appendChild(ov);
+    ov.addEventListener('click',function(e){
+      if(e.target===ov||e.target.id==='bwClose'){close();return;}
+      var b=e.target.closest('button[data-k]'); if(!b)return;
+      var k=b.getAttribute('data-k'), mine=b.getAttribute('data-mine')==='1';
+      if(mine){ if(window.DasibomBomSkin)DasibomBomSkin.set(k); open(); return; }
+      b.disabled=true; b.textContent='꽃잎 세는 중…';
+      call('unlockItem',{kind:'bomfit',key:k},function(r){
+        if(r&&r.ok){ owned['bomfit:'+k]=true; if(window.DasibomBomSkin)DasibomBomSkin.set(k);
+          try{ if(window.BomVoice&&BomVoice.say)BomVoice.say('새 옷 정말 잘 어울리죠? 감사합니다!'); }catch(e){}
+          open();
+        } else if(r&&r.reason==='insufficient'){
+          b.disabled=false; b.textContent='🌸 '+PRICE;
+          alert('꽃잎이 조금 모자라요. 지금 '+(r.balance||0)+'개를 갖고 계세요.\n콘텐츠를 즐기시면 꽃잎이 쌓여요!');
+        } else { b.disabled=false; b.textContent='🌸 '+PRICE; alert('연결이 잠깐 어려워요. 잠시 뒤 다시 눌러주세요.'); }
+      });
+    });
+  }
+  wbtn.addEventListener('click',function(){ loadOwned(function(){ open(); }); });
 })();
 </script>
 </body>
