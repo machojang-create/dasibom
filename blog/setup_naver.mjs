@@ -305,8 +305,105 @@ try {
     report.categories = { made, missing, after };
   }
 
-  if (!has('scan') && !has('categories') && !doAll) {
-    console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --search / --all');
+  // ── 블로그 정보 ───────────────────────────────────────────────
+  if (has('info') || doAll) {
+    console.log('\n블로그 정보를 채웁니다.\n');
+    const a = config.blog_assets ?? {};
+    const want = {
+      papername: config.blog.name ?? '다시봄라이프',
+      nickname: config.blog.nickname ?? '다시봄',
+      introduce: (a.intro ?? []).join('\n'),
+    };
+
+    await page.goto(`https://admin.blog.naver.com/${blogId}/config/bloginfo`, {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
+    const f = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+
+    const before = await f.evaluate(() => ({
+      papername: document.querySelector('#papername')?.value ?? '',
+      nickname: document.querySelector('#frmNickname')?.value ?? '',
+      introduce: document.querySelector('#frmIntroduce')?.value ?? '',
+      subject: document.querySelector('#subject_btn')?.innerText?.trim() ?? '',
+    }));
+    console.log(`  지금: 블로그명="${before.papername}" 별명="${before.nickname}" 주제="${before.subject}"`);
+
+    await f.locator('#papername').fill(want.papername);
+    await f.locator('#frmNickname').fill(want.nickname);
+    if (want.introduce) await f.locator('#frmIntroduce').fill(want.introduce);
+
+    // 주제 — 단추를 눌러 목록(직접 만든 드롭다운)을 열고 글자로 고릅니다.
+    // 라디오가 아니라 li 목록이라 값이 아니라 보이는 글자로 찾아야 합니다.
+    // ⚠️ 목록을 열어 둔 채로 저장을 누르면 목록이 확인 단추를 가려 저장이 안 됩니다. 반드시 닫고 저장합니다.
+    const wantSubject = a.subject ?? '건강·의학';
+    if (!before.subject.includes(wantSubject)) {
+      await f.locator('#subject_btn').click();
+      await page.waitForTimeout(900);
+      const picked = await f.evaluate((label) => {
+        const norm = (s) => s.replace(/[·ㆍ・]/g, '').replace(/\s/g, '');
+        const target = norm(label);
+        for (const el of document.querySelectorAll('li, a, label, span')) {
+          if (el.children.length > 1) continue;
+          const t = (el.innerText || '').trim();
+          if (t && norm(t) === target) {
+            el.click();
+            return t;
+          }
+        }
+        return null;
+      }, wantSubject);
+      await page.waitForTimeout(700);
+      const nowSubject = await f.evaluate(
+        () => document.querySelector('#subject_btn')?.innerText?.trim() ?? '',
+      );
+      console.log(
+        picked
+          ? `  주제 고름: ${picked} (칸 표시: ${nowSubject})`
+          : `  주제 "${wantSubject}" 를 목록에서 못 찾았습니다`,
+      );
+      // 목록이 아직 열려 있으면 닫습니다.
+      await page.keyboard.press('Escape').catch(() => {});
+      await page.waitForTimeout(400);
+    }
+
+    await shot(page, 'info_before_save');
+    await f.locator('._btnConfirm').first().click();
+    await page.waitForTimeout(2500);
+    for (const sel of ['#ly_alert_confirm', '.popup_btn_confirm']) {
+      const b = page.locator(sel).first();
+      if (await b.isVisible().catch(() => false)) {
+        await b.click().catch(() => {});
+        break;
+      }
+    }
+    await page.waitForTimeout(2000);
+
+    // 저장됐는지 새로 읽어 확인합니다.
+    await page.goto(`https://admin.blog.naver.com/${blogId}/config/bloginfo`, {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
+    const f2 = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+    const after = await f2.evaluate(() => ({
+      papername: document.querySelector('#papername')?.value ?? '',
+      nickname: document.querySelector('#frmNickname')?.value ?? '',
+      introduce: document.querySelector('#frmIntroduce')?.value ?? '',
+      subject: document.querySelector('#subject_btn')?.innerText?.trim() ?? '',
+    }));
+    await shot(page, 'info_after');
+    console.log('\n  저장 결과');
+    console.log(`    블로그명 ${after.papername === want.papername ? '○' : '✗'} "${after.papername}"`);
+    console.log(`    별명     ${after.nickname === want.nickname ? '○' : '✗'} "${after.nickname}"`);
+    console.log(`    소개글   ${after.introduce.trim() ? '○' : '✗'} "${after.introduce.slice(0, 40)}..."`);
+    console.log(`    주제     ${after.subject.includes(wantSubject) ? '○' : '✗'} "${after.subject}"`);
+    report.info = { before, after };
+  }
+
+  if (!has('scan') && !has('categories') && !has('info') && !doAll) {
+    console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --all');
   }
 } catch (err) {
   console.error(`\n실패: ${err.message}`);
