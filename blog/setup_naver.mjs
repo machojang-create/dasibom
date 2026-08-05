@@ -146,7 +146,166 @@ try {
     console.log('\n이 결과를 보고 카테고리 생성 절차를 확정합니다.');
   }
 
-  if (!has('scan') && !doAll) {
+  // ── 카테고리 7개 ──────────────────────────────────────────────
+  if (has('categories') || doAll) {
+    console.log('\n카테고리를 만듭니다.\n');
+    const wanted = Object.values(config.naver.category_map);
+
+    const CAT_URL = `https://admin.blog.naver.com/${blogId}/config/blog`;
+
+    /** 카테고리 화면을 새로 열고 papermain 프레임을 돌려줍니다. */
+    async function openCategoryPage() {
+      await page.goto(CAT_URL, { waitUntil: 'networkidle', timeout: 30000 });
+      await page.waitForTimeout(1800);
+      const f = page.frames().find((x) => x.name() === 'papermain');
+      if (!f) throw new Error('카테고리 화면(papermain)을 찾지 못했습니다.');
+      return f;
+    }
+
+    // 카테고리 이름은 트리(#tree) 안의 span._categoryName 입니다.
+    // '카테고리 전체보기' 는 항목이 아니라 머리글이라 세지 않습니다.
+    const readTree = (f) =>
+      f.evaluate(() =>
+        [...document.querySelectorAll('#tree li span._categoryName')].map((s) =>
+          (s.innerText || '').trim(),
+        ),
+      );
+
+    /**
+     * 고른 항목의 이름을 바꿉니다.
+     *
+     * ⚠️ 한 글자씩 치면 마지막 글자가 잘립니다.
+     *    이름칸은 onkeyup 으로 트리에 값을 옮기는데, 마지막 글자의 keyup 이 나기 전에
+     *    다음 동작이 들어가면 그 글자만 빠진 채 저장됩니다("정책과 지원금" → "정책과 지원").
+     *    그래서 값을 한 번에 넣고 keyup 을 직접 일으켜 확실히 반영시킵니다.
+     */
+    async function rename(f, name) {
+      const nameInput = f.locator('#category_name');
+      await nameInput.click();
+      await nameInput.fill(name);
+      await f.evaluate(() => {
+        const el = document.querySelector('#category_name');
+        el.dispatchEvent(new KeyboardEvent('keyup', { bubbles: true }));
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      await page.waitForTimeout(300);
+      const shown = await readTree(f);
+      if (!shown.includes(name)) {
+        throw new Error(`이름이 트리에 반영되지 않았습니다: ${name} (현재: ${shown.join(', ')})`);
+      }
+    }
+
+    /** 확인을 눌러 저장합니다. */
+    async function save(f) {
+      await f.locator('#submit_button').click();
+      await page.waitForTimeout(1200);
+      for (const sel of ['#ly_alert_confirm', '.popup_btn_confirm']) {
+        const b = page.locator(sel).first();
+        if (await b.isVisible().catch(() => false)) {
+          await b.click().catch(() => {});
+          break;
+        }
+      }
+      await page.waitForTimeout(2000);
+    }
+
+    let frame = await openCategoryPage();
+    const before = await readTree(frame);
+    console.log(`  지금 있는 것: ${before.join(', ') || '(없음)'}`);
+
+    if (wanted.every((w) => before.includes(w))) {
+      console.log('  일곱 개가 이미 다 있습니다. 넘어갑니다.');
+    } else {
+      for (const w of wanted.filter((w) => before.includes(w))) {
+        console.log(`  건너뜀 (이미 있음): ${w}`);
+      }
+
+      // ⚠️ 한 번에 여러 개를 만들어 두고 마지막에 저장하면 중간 것들이 사라집니다.
+      //    네이버가 새 항목을 하나씩만 받아들입니다. 그래서 한 개 만들 때마다 저장하고
+      //    화면을 다시 엽니다. 느리지만 이 방법만 확실합니다.
+      const todo = wanted.filter((w) => !before.includes(w));
+      for (const name of todo) {
+        frame = await openCategoryPage();
+        const now = await readTree(frame);
+        if (now.includes(name)) {
+          console.log(`  건너뜀 (이미 있음): ${name}`);
+          continue;
+        }
+
+        // 이름이 어긋난 항목(처음의 '게시판', 지난번에 잘려 들어간 이름)이 있으면
+        // 새로 만들지 않고 그것의 이름만 고쳐 재활용합니다. 지우는 것보다 안전합니다.
+        const spare = now.filter((b) => !wanted.includes(b));
+        if (spare.length) {
+          const old = spare[0];
+          await frame.locator('#tree li span._categoryName').nth(now.indexOf(old)).click();
+          await page.waitForTimeout(400);
+          await rename(frame, name);
+          await save(frame);
+          console.log(`  이름 바꿈: ${old} → ${name}`);
+        } else {
+          await frame.locator('img._addCategoryView').click();
+          await page.waitForTimeout(900);
+          const nameInput = frame.locator('#category_name');
+          if (!(await nameInput.isEnabled().catch(() => false))) {
+            const n = await frame.locator('#tree li span._categoryName').count();
+            await frame.locator('#tree li span._categoryName').nth(n - 1).click();
+            await page.waitForTimeout(400);
+          }
+          await rename(frame, name);
+          await save(frame);
+          console.log(`  추가: ${name}`);
+        }
+      }
+    }
+
+    // ── 순서 맞추기 ──────────────────────────────────────────────
+    // 방문자가 처음 보는 순서가 곧 우선순위라, config 의 카테고리 차례대로 세웁니다.
+    // 원하는 순서대로 하나씩 '맨아래' 로 보내면 마지막엔 그 순서가 됩니다.
+    frame = await openCategoryPage();
+    let order = await readTree(frame);
+    if (wanted.every((w) => order.includes(w)) && order.join('|') !== wanted.join('|')) {
+      console.log(`\n  순서를 바로잡습니다. 지금: ${order.join(' → ')}`);
+      for (const name of wanted) {
+        frame = await openCategoryPage();
+        order = await readTree(frame);
+        const idx = order.indexOf(name);
+        if (idx < 0) continue;
+        await frame.locator('#tree li span._categoryName').nth(idx).click();
+        await page.waitForTimeout(400);
+        await frame.locator('img._moveLast').click();
+        await page.waitForTimeout(500);
+        await save(frame);
+      }
+      frame = await openCategoryPage();
+      order = await readTree(frame);
+      console.log(`  바뀐 뒤: ${order.join(' → ')}`);
+    }
+
+    // 저장 결과를 새로 읽어 확인합니다.
+    await page.goto(`https://admin.blog.naver.com/${blogId}/config/blog`, {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
+    const frame2 = page.frames().find((f) => f.name() === 'papermain');
+    const after = frame2
+      ? await frame2.evaluate(() =>
+          [...document.querySelectorAll('#tree li span._categoryName')].map((s) =>
+            (s.innerText || '').trim(),
+          ),
+        )
+      : [];
+    await shot(page, 'cat_after');
+
+    const made = wanted.filter((w) => after.includes(w));
+    const missing = wanted.filter((w) => !after.includes(w));
+    console.log(`\n  만들어진 카테고리 ${made.length}/${wanted.length}개`);
+    for (const m of made) console.log(`    ○ ${m}`);
+    for (const m of missing) console.log(`    ✗ ${m} — 안 만들어졌습니다`);
+    report.categories = { made, missing, after };
+  }
+
+  if (!has('scan') && !has('categories') && !doAll) {
     console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --search / --all');
   }
 } catch (err) {

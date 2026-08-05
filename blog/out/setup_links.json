@@ -1,0 +1,314 @@
+[
+  {
+    "text": "다시 보지 않기",
+    "href": "https://admin.blog.naver.com/dasibomlife#"
+  },
+  {
+    "text": "메뉴 바로가기",
+    "href": "https://admin.blog.naver.com/dasibomlife#lnbMenu"
+  },
+  {
+    "text": "본문 바로가기",
+    "href": "https://admin.blog.naver.com/dasibomlife#content"
+  },
+  {
+    "text": "blog",
+    "href": "https://section.blog.naver.com/"
+  },
+  {
+    "text": "관리",
+    "href": "https://admin.blog.naver.com/dasibomlife"
+  },
+  {
+    "text": "내 블로그",
+    "href": "https://blog.naver.com/MyBlog.naver"
+  },
+  {
+    "text": "글쓰기",
+    "href": "https://blog.naver.com/dasibomlife?Redirect=Write"
+  },
+  {
+    "text": "통계",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/today"
+  },
+  {
+    "text": "스킨 변경",
+    "href": "https://admin.blog.naver.com/dasibomlife/skin/list"
+  },
+  {
+    "text": "세부 디자인 설정",
+    "href": "https://admin.blog.naver.com/Remocon.naver?blogId=dasibomlife&Redirect=Remocon"
+  },
+  {
+    "text": "로그아웃",
+    "href": "https://nid.naver.com/nidlogin.logout?returl=https://blog.naver.com/dasibomlife"
+  },
+  {
+    "text": "기본 설정",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/bloginfo"
+  },
+  {
+    "text": "메뉴·글·동영상 관리",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/topmenu"
+  },
+  {
+    "text": "기본 서체 설정",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/defaulteditor"
+  },
+  {
+    "text": "블로그 초기화",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/bloginit"
+  },
+  {
+    "text": "방문집계 보호 설정",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/activity"
+  },
+  {
+    "text": "콘텐츠 공유 설정",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/share"
+  },
+  {
+    "text": "차단 설정",
+    "href": "https://admin.blog.naver.com/dasibomlife/userfilter/blacklist"
+  },
+  {
+    "text": "차단된 글목록",
+    "href": "https://admin.blog.naver.com/dasibomlife/userfilter/filteredlist"
+  },
+  {
+    "text": "댓글·안부글 권한",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/authority"
+  },
+  {
+    "text": "내가 추가한 이웃",
+    "href": "https://admin.blog.naver.com/dasibomlife/buddy/manage"
+  },
+  {
+    "text": "나를 추가한 이웃",
+    "href": "https://admin.blog.naver.com/dasibomlife/buddy/me"
+  },
+  {
+    "text": "서로이웃 신청",
+    "href": "https://admin.blog.naver.com/dasibomlife/buddy/relation"
+  },
+  {
+    "text": "내 스킨 관리",
+    "href": "https://admin.blog.naver.com/dasibomlife/skin/personalskin"
+  },
+  {
+    "text": "레이아웃·위젯 설정",
+    "href": "https://admin.blog.naver.com/LayoutSelect.naver?blogId=dasibomlife"
+  },
+  {
+    "text": "세부 디자인 설정",
+    "href": "https://admin.blog.naver.com/Remocon.naver?blogId=dasibomlife&loadType=admin&Redirect=Remocon"
+  },
+  {
+    "text": "타이틀 꾸미기",
+    "href": "https://admin.blog.naver.com/Remocon.naver?blogId=dasibomlife&loadType=admin&Redirect=Remocon&SelectedMenu=title"
+  },
+  {
+    "text": "글·댓글 스타일",
+    "href": "https://admin.blog.naver.com/Remocon.naver?blogId=dasibomlife&loadType=admin&Redirect=Remocon&SelectedMenu=poststyle"
+  },
+  {
+    "text": "퍼스나콘",
+    "href": "https://admin.blog.naver.com/dasibomlife/item/personacon"
+  },
+  {
+    "text": "뮤직",
+    "href": "https://admin.blog.naver.com/dasibomlife/item/music"
+  },
+  {
+    "text": "아이템 선물내역",
+    "href": "https://admin.blog.naver.com/dasibomlife/item/gift"
+  },
+  {
+    "text": "블로그",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/blog"
+  },
+  {
+    "text": "프롤로그",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/prologue"
+  },
+  {
+    "text": "블로그씨 질문",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/mrblog"
+  },
+  {
+    "text": "댓글",
+    "href": "https://admin.blog.naver.com/dasibomlife/userfilter/commentlist"
+  },
+  {
+    "text": "태그",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/tag"
+  },
+  {
+    "text": "글 저장",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/postexport"
+  },
+  {
+    "text": "내 동영상",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/my-video"
+  },
+  {
+    "text": "애드포스트 설정",
+    "href": "https://admin.blog.naver.com/dasibomlife/config/advertiseconfiguration"
+  },
+  {
+    "text": "조회수",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/visit_pv"
+  },
+  {
+    "text": "순방문자수",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/uv"
+  },
+  {
+    "text": "방문 횟수",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/visit"
+  },
+  {
+    "text": "평균 방문 횟수",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/frequency"
+  },
+  {
+    "text": "재방문율",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/retention"
+  },
+  {
+    "text": "평균 사용 시간",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/averageDuration"
+  },
+  {
+    "text": "유입분석",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/referer"
+  },
+  {
+    "text": "시간대 분석",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/hour_cv"
+  },
+  {
+    "text": "성별·연령별 분포",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/demo"
+  },
+  {
+    "text": "기기별 분포",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/device"
+  },
+  {
+    "text": "이웃 방문 현황",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/relationDist"
+  },
+  {
+    "text": "이웃 증감수",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/relationDelta"
+  },
+  {
+    "text": "이웃 증감 분석",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/relationDemo"
+  },
+  {
+    "text": "국가별 분포",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/country"
+  },
+  {
+    "text": "재생수분석",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/play_count"
+  },
+  {
+    "text": "재생시간분석",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/play_time"
+  },
+  {
+    "text": "시청자분석",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/uniq_watcher"
+  },
+  {
+    "text": "조회수 순위",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/rank_pv"
+  },
+  {
+    "text": "공감수 순위",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/rank_like"
+  },
+  {
+    "text": "댓글수 순위",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/rank_comment"
+  },
+  {
+    "text": "동영상 순위",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/rank_play_count"
+  },
+  {
+    "text": "블로그 평균 데이터",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/average_upperGroup"
+  },
+  {
+    "text": "지표 다운로드",
+    "href": "https://admin.blog.naver.com/dasibomlife/stat/download"
+  },
+  {
+    "text": "블로그 정보",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminUserBasic.naver',false);"
+  },
+  {
+    "text": "기본 서체 설정",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminDefaultEditor.naver',false);"
+  },
+  {
+    "text": "블로그 초기화",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminUserInitialize.naver',false);"
+  },
+  {
+    "text": "방문집계 보호 설정",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminActivityOpen.naver',false);"
+  },
+  {
+    "text": "콘텐츠 공유 설정",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/ContentsProtectUpdateForm.naver',false);"
+  },
+  {
+    "text": "차단 설정",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminUserFilter.naver',true);"
+  },
+  {
+    "text": "차단된 글목록",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminCommentFilteredView.naver',true);"
+  },
+  {
+    "text": "댓글·안부글 권한",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/AdminAuthority.naver',false);"
+  },
+  {
+    "text": "내가 추가한 이웃",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/BuddyListManage.naver',false);"
+  },
+  {
+    "text": "나를 추가한 이웃",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/BuddyMeManage.naver',false);"
+  },
+  {
+    "text": "서로이웃 신청",
+    "href": "javascript:adminMain.GotoPage('https://admin.blog.naver.com/BuddyInviteReceivedManage.naver',false);"
+  },
+  {
+    "text": "공지사항",
+    "href": "https://section.blog.naver.com/Notice.naver"
+  },
+  {
+    "text": "블로그 이용 Tip",
+    "href": "https://blog.naver.com/PostList.naver?blogId=blogpeople&from=postList&categoryNo=50&parentCategoryNo=50"
+  },
+  {
+    "text": "블로그 서비스 운영정책",
+    "href": "http://blog.naver.com/post/blog_use.htm"
+  },
+  {
+    "text": "팀블로그 공지 보러가기",
+    "href": "https://blog.naver.com/blogpeople/221788926430"
+  },
+  {
+    "text": "설정하기",
+    "href": "http://admin.blog.naver.com/Go.naver?action=config/share"
+  }
+]
