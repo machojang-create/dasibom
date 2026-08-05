@@ -1645,12 +1645,15 @@ export default function App() {
           { k: 'manage', icon: '💚', label: '생물 관리' },
           { k: 'guppy_shop', icon: '🐟', label: '구피 상점' },
           { k: 'shop', icon: '🍚', label: '먹이 상점' },
+          /* 선택 탭 가독성(2026-08-06 Macho): 글자색+밑줄만으로는 어느 메뉴인지 안 보인다
+             — 선택 = 채운 알약(진한 배경+흰 글자) */
         ] as const).map(t => (
           <button key={t.k} data-bomguide={t.k === 'manage' ? 'gmanage' : t.k === 'guppy_shop' ? 'gadopt' : t.k === 'shop' ? 'gfood' : undefined} onClick={() => setMainMenuTab(t.k)}
-            className={`flex-1 min-h-[60px] flex flex-col items-center justify-center gap-0.5 font-black text-[13px] transition-colors ${mainMenuTab === t.k ? 'text-teal-600' : 'text-slate-400'}`}>
-            <span className="text-[20px] leading-none">{t.icon}</span>
-            {t.label}
-            <div className={`w-8 h-1 rounded-full mt-0.5 ${mainMenuTab === t.k ? 'bg-teal-500' : 'bg-transparent'}`} />
+            className="flex-1 min-h-[64px] flex items-center justify-center py-2 px-1">
+            <span className={`flex flex-col items-center justify-center gap-0.5 font-black text-[13px] rounded-2xl px-3 py-1.5 min-w-[72px] transition-colors ${mainMenuTab === t.k ? 'bg-teal-600 text-white shadow-md' : 'text-slate-400'}`}>
+              <span className="text-[20px] leading-none">{t.icon}</span>
+              {t.label}
+            </span>
           </button>
         ))}
       </nav>

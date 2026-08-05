@@ -76,13 +76,13 @@ export const ShopTab = React.memo(function ShopTab({
         <div className="flex gap-2 bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200">
           <button 
             onClick={() => setShopTab('food')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-xs transition-colors ${shopTab === 'food' ? 'bg-white text-slate-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:bg-slate-200/50'}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-xs transition-colors ${shopTab === 'food' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-200/50'}`}
           >
             <span>🥫</span> 먹이 연구소
           </button>
           <button 
             onClick={() => setShopTab('decor')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-xs transition-colors ${shopTab === 'decor' ? 'bg-white text-slate-800 shadow-sm border border-slate-200' : 'text-slate-500 hover:bg-slate-200/50'}`}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-xs transition-colors ${shopTab === 'decor' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-200/50'}`}
           >
             <span>🏰</span> 장식품
           </button>
