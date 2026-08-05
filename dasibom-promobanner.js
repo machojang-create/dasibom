@@ -20,7 +20,7 @@
       bom: '살아온 이야기를 한 편의 책으로. 봄이가 곁에서 도와드릴게요.' },
     { cat: 'play',   key: 'matgo',  color: '#7C9A6D', href: '/matgo',  img: '/img/promo/matgo.jpg',  face: 'bom_grin.png',
       title: '봄이와 맞고 한 판', pop: 90,
-      bom: '심심하실 땐 저랑 화투 한 판 어때요? 오늘 운수도 볼 겸요 🎴' },
+      bom: '심심하실 땐 저랑 화투 한 판 어때요? 점수 계산은 제가 다 할게요 🎴' }   /* 운세 기능 없음 — 약속 금지(2026-08-06) */,
     { cat: 'memory', key: 'trot',   color: '#A8875A', href: '/trot',   img: '/img/promo/trot.jpg',   face: 'bom_cheer.png',
       title: '다시봄 트로트 연대기', pop: 86,
       bom: '그 시절 가수들의 이야기, 책장처럼 한 장씩 넘겨보세요 📖' }   /* 노래 트는 곳 아님 — 기대 정확히(2026-08-06 Macho) */,
