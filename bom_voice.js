@@ -255,3 +255,185 @@
     stop: function () { _reqSeq++; try { audio.pause(); } catch (e) {} }
   };
 })();
+
+/* ── 봄이 의상 갈아입히기 (2026-08-04) ────────────────────────────────
+   봄이 그림은 41개 파일 120곳에서 img/bom_*.png 로 직접 참조된다.
+   그 파일들을 전부 고치는 대신, 여기서 src만 갈아끼운다.
+   기본(한복)은 원래 경로 그대로 두므로 아무것도 하지 않는다 = 위험 0. */
+window.DasibomBomSkin = (function () {
+  var KEY = 'dasibom_bom_outfit';
+  var SETS = { hanbok: '', hoodie: 'bom/hoodie/', yellow: 'bom/yellow/' };   // 값은 img/ 아래 하위 폴더
+  var cur = '';
+
+  function pathFor(src) {
+    // cur이 ''(한복)이면 원래 경로로 되돌리는 계산이 된다 — 그래야 갈아입기가 양방향이 된다
+    // .../img/bom_smile.png  또는  .../img/bom/<의상>/bom_smile.png
+    var m = String(src).match(/^(.*\/|)img\/(?:bom\/[^/]+\/)?(bom_[a-z_]+\.png)(\?.*)?$/);
+    if (!m) return null;
+    var want = m[1] + 'img/' + cur + m[2] + (m[3] || '');
+    return want === src ? null : want;
+  }
+  function fix(el) {
+    var want = pathFor(el.getAttribute('src') || '');
+    if (want) el.setAttribute('src', want);
+  }
+  function sweep(root) {
+    var list = (root || document).querySelectorAll ? (root || document).querySelectorAll('img[src*="bom_"]') : [];
+    for (var i = 0; i < list.length; i++) fix(list[i]);
+  }
+
+  function apply(name) {
+    cur = SETS[name] || '';
+    try { localStorage.setItem(KEY, name); } catch (e) {}
+    sweep(document);
+  }
+
+  // 나중에 그려지는 봄이(팝업·말풍선·챗봇)도 잡는다
+  function watch() {
+    if (!window.MutationObserver) return;
+    new MutationObserver(function (recs) {
+      for (var i = 0; i < recs.length; i++) {
+        var r = recs[i];
+        if (r.type === 'attributes') { if (r.target.tagName === 'IMG') fix(r.target); continue; }
+        for (var j = 0; j < r.addedNodes.length; j++) {
+          var n = r.addedNodes[j];
+          if (n.nodeType !== 1) continue;
+          if (n.tagName === 'IMG') fix(n); else sweep(n);
+        }
+      }
+    }).observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+  }
+
+  var saved = 'hanbok';
+  try { saved = localStorage.getItem(KEY) || 'hanbok'; } catch (e) {}
+  cur = SETS[saved] || '';
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { sweep(document); watch(); });
+  else { sweep(document); watch(); }
+
+  return {
+    list: function () { return Object.keys(SETS); },
+    get: function () { return saved; },
+    set: function (n) { if (SETS[n] === undefined) return false; saved = n; apply(n); return true; }
+  };
+})();
+
+/* ── [홈으로]·봄이 챗봇 자리 통일 (2026-08-04) ──────────────────────────
+   전수 점검에서 나온 것들:
+     · 아예 없음 3곳(온기·가족·자서전)
+     · 스크롤 내리면 화면 밖으로 사라짐 6곳(건강돋보기는 2,129px 위)
+     · 자리 어긋남 — 홈으로가 위오른쪽(구독)/아래왼쪽(시시콜콜), 봄이가 위왼쪽(자서전·맞고)
+   20개 파일을 각각 고치는 대신 여기서 한 번에 맞춘다.
+   ★기존 헤더 버튼은 건드리지 않는다. 헤더에서 빼내면 그 줄의 배치가 무너진다.
+     대신 '스크롤로 사라지면' 그때 고정 칩을 띄운다. 없거나 자리가 틀린 페이지는 항상 띄운다. */
+(function () {
+  if (window.__dsbNav) return; window.__dsbNav = 1;
+
+  var path = location.pathname.replace(/\/index\.html$/, '/');
+  if (path === '/' || /\/index\.html$/.test(location.pathname) && path === '/') return;   // 홈에는 홈 버튼이 필요 없다
+  if (path === '/' || path === '') return;
+
+  function box(e) {
+    if (!e) return null;
+    var b = e.getBoundingClientRect(), s = getComputedStyle(e);
+    if (b.width < 6 || b.height < 6 || s.visibility === 'hidden' || +s.opacity < 0.1) return null;
+    return b;
+  }
+  function findHome() {
+    var els = document.querySelectorAll('a,button,div,span');
+    for (var i = 0; i < els.length; i++) {
+      var e = els[i], t = (e.textContent || '').replace(/\s+/g, ''), h = e.getAttribute('href') || '';
+      var cls = typeof e.className === 'string' ? e.className : '';
+      if (/홈으로|다시봄홈/.test(t) || h === '/' || h === '/index.html' || /dsb-exit/.test(cls)) {
+        var bx = box(e);
+        // '홈으로' 글자를 품은 큰 컨테이너(페이지 래퍼)를 버튼으로 오인하면 칩이 영영 숨는다
+        if (bx && bx.width < 300 && bx.height < 120 && t.length < 20) return e;
+      }
+    }
+    return null;
+  }
+  function findChat() {
+    var els = document.querySelectorAll('a,button,div,img');
+    for (var i = 0; i < els.length; i++) {
+      var e = els[i];
+      var id = (e.id || '') + ' ' + (typeof e.className === 'string' ? e.className : '');
+      var img = e.querySelector && e.querySelector('img[src*="bom_"]');
+      var self = e.tagName === 'IMG' && /bom_/.test(e.getAttribute('src') || '');
+      if (!/bomchat|bom-chat|bomFab|chatFab|bcp-fab|bompop/i.test(id) && !img && !self) continue;
+      var b = box(e);
+      if (b && b.width < 200 && b.height < 200) return e;
+    }
+    return null;
+  }
+
+  // 표준 고정 칩 — 왼쪽 위, 48px 이상(시니어 터치 규격)
+  var chip = document.createElement('a');
+  chip.href = '/?home=1';   // ★표식 필수 — 없으면 홈이 인트로·복귀 경로를 타서 두 번 움직인다
+  chip.setAttribute('aria-label', '다시봄 홈으로');
+  chip.textContent = '← 홈으로';
+  chip.style.cssText = 'position:fixed;left:12px;top:12px;z-index:99990;display:none;align-items:center;' +
+    'min-height:48px;padding:0 18px;border-radius:24px;background:rgba(255,253,248,.96);color:#5A4632;' +
+    'font:700 17px/1 "맑은 고딕",sans-serif;text-decoration:none;border:2px solid #E8C9A0;' +
+    'box-shadow:0 4px 14px rgba(0,0,0,.18);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)';
+
+  function place() {
+    var home = findHome();
+    var always = false;
+    if (!home) always = true;                                  // 아예 없는 페이지
+    else {
+      var b = home.getBoundingClientRect();
+      var topLeft = b.left < innerWidth / 2 && b.top < 180;
+      if (!topLeft) { try { home.style.display = 'none'; } catch (e) {} always = true; }  // 자리가 틀린 페이지
+    }
+    document.body.appendChild(chip);
+
+    function sync() {
+      if (always) { chip.style.display = 'flex'; return; }
+      var h = findHome();
+      var vis = h && h.getBoundingClientRect().bottom > 4;      // 헤더 버튼이 아직 보이면 칩은 숨김
+      chip.style.display = vis ? 'none' : 'flex';
+    }
+    sync();
+    dodge();
+    addEventListener('scroll', function(){ sync(); dodge(); }, { passive: true });
+    addEventListener('resize', sync);
+
+    /* 칩이 다른 고정 요소와 겹치면 그 아래로 내려준다.
+       겹친 채로 두면 시니어가 엉뚱한 걸 누른다. */
+    function dodge() {
+      if (chip.style.display === 'none') return;
+      chip.style.top = '12px';
+      var c = chip.getBoundingClientRect(), push = 0;
+      var all = document.querySelectorAll('body *');
+      for (var i = 0; i < all.length; i++) {
+        var e = all[i]; if (e === chip || chip.contains(e) || e.contains(chip)) continue;
+        var st = getComputedStyle(e);
+        if (st.position !== 'fixed' && st.position !== 'sticky') continue;
+        if (st.display === 'none' || st.visibility === 'hidden' || +st.opacity < 0.1) continue;
+        if (st.pointerEvents === 'none') continue;   // 누를 수 없는 투명 덮개(튜토리얼 스포트라이트 등)는 장애물이 아니다
+        var rh = e.getBoundingClientRect(); if (rh.height > innerHeight * 1.2) continue;   // 화면보다 큰 덮개도 제외
+        var r = e.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8 || r.top > 240) continue;
+        if (r.width > innerWidth * 0.96 && r.height > innerHeight * 0.8) continue;
+        var ox = Math.min(c.right, r.right) - Math.max(c.left, r.left);
+        var oy = Math.min(c.bottom, r.bottom) - Math.max(c.top, r.top);
+        if (ox > 6 && oy > 6) push = Math.max(push, r.bottom + 8);
+      }
+      if (push > 12) chip.style.top = Math.min(push, 200) + 'px';
+    }
+
+    // 봄이 챗봇 — 오른쪽 아래로 통일
+    var c = findChat();
+    if (c) {
+      var cb = c.getBoundingClientRect();
+      var rightBottom = cb.left > innerWidth / 2 && cb.top > innerHeight / 2;
+      if (!rightBottom) {
+        c.style.position = 'fixed';
+        c.style.right = '16px'; c.style.bottom = '92px';
+        c.style.left = 'auto'; c.style.top = 'auto';
+        c.style.zIndex = '99985';
+      }
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(place, 1200); });
+  else setTimeout(place, 1200);
+})();
