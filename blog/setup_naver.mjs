@@ -20,9 +20,8 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { chromium } from 'playwright';
 import { loadConfig, paths, ensureOutDir } from './lib/queue.mjs';
-import { firstVisible } from './lib/selectors.mjs';
+import { launchBrowser, lastUsedBrowser } from './lib/browser.mjs';
 
 const args = process.argv.slice(2);
 const has = (n) => args.includes(`--${n}`);
@@ -112,7 +111,8 @@ async function scanPage(page) {
   });
 }
 
-const browser = await chromium.launch({ headless: !headed, slowMo: headed ? 150 : 0 });
+const browser = await launchBrowser({ headless: !headed, slowMo: headed ? 150 : 0 }, config);
+console.log(`브라우저: ${lastUsedBrowser()}`);
 const context = await browser.newContext({
   storageState: sessionFile,
   locale: 'ko-KR',

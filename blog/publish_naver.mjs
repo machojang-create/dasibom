@@ -14,7 +14,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
-import { chromium } from 'playwright';
+import { launchBrowser } from './lib/browser.mjs';
 import { loadConfig, loadQueue, saveQueue, markTopic, paths, ensureOutDir } from './lib/queue.mjs';
 import { SEL, firstVisible, clickIfPresent } from './lib/selectors.mjs';
 
@@ -104,7 +104,7 @@ const bodyWithCta = [post.body.trim(), notice?.length ? notice.join('\n') : null
   .join('\n\n\n');
 
 let step = 'start';
-const browser = await chromium.launch({ headless: !headed, slowMo: headed ? 120 : 0 });
+const browser = await launchBrowser({ headless: !headed, slowMo: headed ? 120 : 0 }, config);
 const context = await browser.newContext({
   storageState: sessionFile,
   locale: 'ko-KR',

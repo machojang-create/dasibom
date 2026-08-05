@@ -25,3 +25,7 @@ out/*
 out/error_*.png
 out/dryrun_*.png
 out/preview_*.html
+
+# 세팅 정찰 산출물 — 커밋하지 않습니다
+out/setup_*.png
+out/setup_scan.json
