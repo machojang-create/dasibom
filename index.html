@@ -4197,22 +4197,46 @@ body.dark .bom-guide-text{color:#c8bba4}
   window._bomBubblePending=function(){ return bubLoad().filter(function(x){ return !x.done; }); };
   window._bomBubbleAll=function(){ return bubLoad(); };   // 창에는 최근 20개 전부(닫았다 열어도 유지)
   window._bomBubbleMarkDone=function(){ var a=bubLoad(); a.forEach(function(x){ x.done=true; }); bubSave(a); };
+
+  var _lastGreetText='';
+  function _petGreetCapped(){
+    var pg=_petGreet(); if(!pg) return null;
+    try{
+      var day=new Date(Date.now()+9*3600*1000).toISOString().slice(0,10);
+      var k='dsb_petgreet_'+day, c=parseInt(localStorage.getItem(k)||'0',10);
+      if(c>=3) return null;                       // 돌봄 알림은 하루 3번이면 충분
+      pg._countKey=k; pg._count=c;
+    }catch(e){}
+    return pg;
+  }
+  function _pickGreet(){
+    var pool=_floatingLines().slice();
+    var pg=_petGreetCapped();
+    if(pg){ pool.push(pg); pool.push(pg); }       // 돌봄은 2표 — 우선하되 독점하지 않는다
+    var pick=pool[Math.floor(Math.random()*pool.length)];
+    if(pick && pick.text===_lastGreetText && pool.length>1){   // 연속 같은 말 금지
+      pick=pool[Math.floor(Math.random()*pool.length)];
+    }
+    if(pick){ _lastGreetText=pick.text;
+      if(pick._countKey){ try{ localStorage.setItem(pick._countKey, String(pick._count+1)); }catch(e){} }
+    }
+    return pick;
+  }
+  window._greetPickTest=function(n){ var o={}; for(var i=0;i<(n||50);i++){ var p=_pickGreet(); var k=(p&&p.text||'').slice(0,12); o[k]=(o[k]||0)+1; } return o; };   // QA용 분포 확인
   var tries=0;
   (function waitHome(){
     if(homeReady()){
       setTimeout(function(){
-        var pg=_petGreet();
-        var lines=_floatingLines(), pick=pg || lines[Math.floor(Math.random()*lines.length)];
-        showFloatingGreet(pick.text, pick.face, pick.href);
+        var pick=_pickGreet();
+        if(pick) showFloatingGreet(pick.text, pick.face, pick.href);
       }, 1200);
     }
     else if(++tries<40){ setTimeout(waitHome, 800); }
   })();
   setInterval(function(){
     if(!homeReady()) return;
-    var pg=_petGreet();   // 돌봄이 필요하면 그게 먼저 — 진짜 알림이니까
-    var lines=_floatingLines(), pick=pg || lines[Math.floor(Math.random()*lines.length)];
-    showFloatingGreet(pick.text, pick.face, pick.href);
+    var pick=_pickGreet();   // 1차 중요 대사군 랜덤(돌봄은 2표, 독점 금지 — 2026-08-06 Macho)
+    if(pick) showFloatingGreet(pick.text, pick.face, pick.href);
   }, 40000);   // 60초 → 40초 (2026-08-04 Macho "빈도수도 높여서")
 
   // ── 봄이 자유 대화(AI) — 위험 주제는 클라에서도 즉시 차단(서버가 최종 권한) ──
