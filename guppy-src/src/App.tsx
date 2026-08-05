@@ -103,7 +103,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
   return (
     <>
       {decorations.includes('sand_castle') && (
-        <div className="absolute bottom-2 left-[50%] -translate-x-1/2 w-40 md:w-56 h-32 md:h-48 pointer-events-none opacity-90 z-0 drop-shadow-md">
+        <div className="absolute bottom-2 left-[50%] -translate-x-1/2 w-24 md:w-32 h-20 md:h-28 pointer-events-none opacity-90 z-0 drop-shadow-md">
           <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
             <path d="M 10 100 L 90 100 L 80 60 L 20 60 Z" fill="#d4a373" />
             <rect x="30" y="40" width="40" height="20" fill="#cc9a66" />
@@ -127,7 +127,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
         </div>
       )}
       {decorations.includes('log') && (
-        <div className="absolute bottom-4 left-[20%] w-40 md:w-56 h-24 md:h-32 pointer-events-none opacity-90 z-0">
+        <div className="absolute bottom-4 left-[20%] w-28 md:w-36 h-16 md:h-20 pointer-events-none opacity-90 z-0">
           <svg viewBox="0 0 200 100" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
             <ellipse cx="100" cy="50" rx="90" ry="30" fill="#78350f" />
             <ellipse cx="100" cy="50" rx="85" ry="25" fill="#92400e" />
@@ -145,7 +145,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
         </div>
       )}
       {decorations.includes('shell_bed') && (
-        <div className="absolute bottom-2 left-[58%] w-24 md:w-32 h-16 md:h-24 pointer-events-none opacity-90 z-0 drop-shadow-md">
+        <div className="absolute bottom-2 left-[58%] w-16 md:w-24 h-12 md:h-16 pointer-events-none opacity-90 z-0 drop-shadow-md">
           <svg viewBox="0 0 100 60" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
             <path d="M 50 55 C 15 55 10 25 25 12 C 35 4 65 4 75 12 C 90 25 85 55 50 55 Z" fill="#fce7f3" />
             <g stroke="#f9a8d4" strokeWidth="2.5" fill="none">
@@ -157,7 +157,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
         </div>
       )}
       {decorations.includes('stone_tower') && (
-        <div className="absolute bottom-2 right-[8%] w-16 md:w-20 h-28 md:h-36 pointer-events-none opacity-90 z-0 drop-shadow-md">
+        <div className="absolute bottom-2 right-[8%] w-14 md:w-18 h-32 md:h-44 pointer-events-none opacity-90 z-0 drop-shadow-md">
           <svg viewBox="0 0 60 120" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
             <ellipse cx="30" cy="112" rx="26" ry="8" fill="#475569" />
             <ellipse cx="30" cy="98" rx="20" ry="10" fill="#64748b" />
@@ -169,7 +169,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
         </div>
       )}
       {decorations.includes('lighthouse') && (
-        <div className="absolute bottom-0 left-[4%] w-14 md:w-20 h-36 md:h-48 pointer-events-none opacity-90 z-0 drop-shadow-md">
+        <div className="absolute bottom-0 left-[4%] w-20 md:w-28 h-56 md:h-72 pointer-events-none opacity-90 z-0 drop-shadow-md">
           <svg viewBox="0 0 60 140" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
             <path d="M 20 140 L 24 50 L 36 50 L 40 140 Z" fill="#ef4444" />
             <path d="M 22 118 L 38 118 L 38 104 L 22 104 Z" fill="#fef2f2" />
@@ -181,7 +181,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
         </div>
       )}
       {decorations.includes('submarine') && (
-        <div className="absolute top-[30%] right-[12%] w-24 md:w-32 h-16 md:h-20 pointer-events-none opacity-90 z-0 animate-sway drop-shadow-lg">
+        <div className="absolute top-[26%] right-[10%] w-36 md:w-48 h-24 md:h-32 pointer-events-none opacity-90 z-0 animate-sway drop-shadow-lg">
           <svg viewBox="0 0 120 60" width="100%" height="100%">
             <ellipse cx="55" cy="35" rx="45" ry="18" fill="#facc15" />
             <rect x="42" y="8" width="22" height="16" rx="6" fill="#eab308" />
@@ -195,7 +195,7 @@ const TankDecorations = React.memo(({ decorations }: { decorations: string[] }) 
         </div>
       )}
       {decorations.includes('treasure_chest') && (
-        <div className="absolute bottom-4 right-[20%] w-32 md:w-40 h-24 md:h-32 pointer-events-none opacity-90 z-0">
+        <div className="absolute bottom-4 right-[20%] w-20 md:w-24 h-16 md:h-20 pointer-events-none opacity-90 z-0">
           <svg viewBox="0 0 100 100" width="100%" height="100%" preserveAspectRatio="xMidYMax meet">
             <rect x="10" y="40" width="80" height="50" fill="#b45309" />
             <path d="M 10 40 L 50 10 L 90 40 Z" fill="#92400e" />

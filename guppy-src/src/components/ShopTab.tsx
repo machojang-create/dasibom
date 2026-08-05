@@ -269,15 +269,15 @@ export const ShopTab = React.memo(function ShopTab({
           const DECOR_ITEMS = [
             { id: 'log', emoji: '\ud83e\udeb5', name: '옹이 진 통나무', tag: '쉼터 — 배고픔 10% 천천히', desc: '구피들이 그늘에서 쉬어 가는 아늑한 통나무예요.', price: 30 },
             { id: 'seaweed', emoji: '\ud83c\udf3f', name: '초록 해초 숲', tag: '싱그러운 물결', desc: '살랑살랑 흔들리는 해초 사이로 숨바꼭질을 해요.', price: 40 },
-            { id: 'sand_castle', emoji: '\ud83c\udff0', name: '해저 모래성', tag: '포근한 안식처', desc: '구피들이 안식처로 삼기 좋은 모래성이에요.', price: 50 },
-            { id: 'shell_bed', emoji: '\ud83d\udc1a', name: '조개껍데기 침대', tag: '아늑한 잠자리', desc: '진주빛 조개 안에서 낮잠 자기 딱 좋아요.', price: 60 },
+            { id: 'sand_castle', emoji: '\ud83c\udff0', name: '해저 모래성', tag: '포근한 안식처', desc: '구피들이 안식처로 삼기 좋은 모래성이에요.', price: 60 },
+            { id: 'shell_bed', emoji: '\ud83d\udc1a', name: '조개껍데기 침대', tag: '아늑한 잠자리', desc: '진주빛 조개 안에서 낮잠 자기 딱 좋아요.', price: 50 },
             { id: 'treasure_chest', emoji: '\ud83d\udcb0', name: '가라앉은 보물상자', tag: '반짝이는 볼거리', desc: '금화가 삐져나온 신비한 보물상자예요.', price: 80 },
-            { id: 'stone_tower', emoji: '\ud83e\udea8', name: '소원 돌탑', tag: '어항의 운치', desc: '하나하나 쌓아 올린 돌탑에 소원을 빌어 보세요.', price: 100 },
-            { id: 'led_mood_light', emoji: '\ud83c\udf08', name: '무지개 무드등', tag: '은은한 빛 갈아입기', desc: '어항 물빛이 무지개색으로 천천히 물들어요.', price: 120 },
-            { id: 'neon_crystal', emoji: '\ud83d\udc8e', name: '네온 수정', tag: '보랏빛 광채', desc: '심해의 수정이 신비로운 보랏빛을 내뿜어요.', price: 150 },
-            { id: 'lighthouse', emoji: '\ud83d\uddfc', name: '꼬마 등대', tag: '밤을 지키는 불빛', desc: '밤이 되면 등대가 어항을 은은하게 밝혀요.', price: 180 },
-            { id: 'golden_statue', emoji: '\ud83d\uddff', name: '빛나는 황금 석상', tag: '희귀·전설 확률 2배', desc: '특별한 물고기가 태어날 확률을 크게 높여줘요.', price: 300 },
-            { id: 'submarine', emoji: '\ud83d\udea4', name: '노란 꼬마 잠수함', tag: '어항의 명물', desc: '뽀글뽀글 기포를 내는 귀여운 잠수함이에요.', price: 250 },
+            { id: 'stone_tower', emoji: '\ud83e\udea8', name: '소원 돌탑', tag: '어항의 운치', desc: '하나하나 쌓아 올린 돌탑에 소원을 빌어 보세요.', price: 120 },
+            { id: 'led_mood_light', emoji: '\ud83c\udf08', name: '무지개 무드등', tag: '은은한 빛 갈아입기', desc: '어항 물빛이 무지개색으로 천천히 물들어요.', price: 150 },
+            { id: 'neon_crystal', emoji: '\ud83d\udc8e', name: '네온 수정', tag: '보랏빛 광채', desc: '심해의 수정이 신비로운 보랏빛을 내뿜어요.', price: 180 },
+            { id: 'lighthouse', emoji: '\ud83d\uddfc', name: '우뚝 선 등대', tag: '어항의 랜드마크', desc: '어항에서 가장 높이 솟아 밤을 지켜요.', price: 250 },
+            { id: 'golden_statue', emoji: '\ud83d\uddff', name: '빛나는 황금 석상', tag: '희귀·전설 확률 2배', desc: '특별한 물고기가 태어날 확률을 크게 높여줘요.', price: 350 },
+            { id: 'submarine', emoji: '\ud83d\udea4', name: '노란 잠수함', tag: '어항의 명물 - 대형', desc: '뽀글뽀글 기포를 내며 떠다니는 큰 잠수함이에요.', price: 300 },
           ];
           return (
           <div className="flex flex-col gap-6">
