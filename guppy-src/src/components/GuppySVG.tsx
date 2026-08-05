@@ -39,8 +39,8 @@ export const GuppySVG = React.memo(function GuppySVG({
   // 고유 ID 생성 (여러 구피가 동시에 렌더링될 때 ID 충돌 방지)
   const idPrefix = React.useId().replace(/:/g, '');
 
-  // 뷰박스 크기 설정 (그래스 부채꼴이 x=456까지 가서 470으로 넓힘)
-  const vbWidth = 470;
+  // 뷰박스 크기 설정 (꼬리 1.15배 확대로 그래스가 x≈487까지 감 — 500으로 넓힘)
+  const vbWidth = 500;
   const vbHeight = 340;
   // 폐기 품종(cobra 등) 저장분은 기본 모자이크로 그린다
   const tt = TAIL_CLIPS[tailType] ? tailType : 'mosaic';
@@ -141,6 +141,8 @@ export const GuppySVG = React.memo(function GuppySVG({
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
+          {/* 꼬리 확대(2026-08-05 Macho "꼬리를 좀 더 키워야") — 뿌리 고정 1.15배 */}
+          <g transform="translate(250 170) scale(1.15) translate(-250 -170)">
           {tt === 'mosaic' && (<>
             <path d={tailClip} fill={`url(#tailGrad-${idPrefix})`} />
             <g fill={patternColor} opacity="0.5" clipPath={`url(#tailClip-${idPrefix})`}>
@@ -193,6 +195,7 @@ export const GuppySVG = React.memo(function GuppySVG({
               <ellipse cx="336" cy="200" rx="6" ry="4" /><ellipse cx="378" cy="214" rx="5" ry="4" /><ellipse cx="412" cy="228" rx="5" ry="3.6" />
             </g>
           </>)}
+          </g>
         </motion.g>
 
         {/* 몸통 — 품종별 체형 */}
@@ -231,13 +234,9 @@ export const GuppySVG = React.memo(function GuppySVG({
             <path d="M -28 5 Q 0 30 28 5" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" fill="none" />
           ) : expression === '크게 웃음' ? (
             <path d="M -28 5 Q 0 -25 28 5" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" fill="none" />
-          ) : expression === '신남' ? (
-            // 별모양 눈
-            <path d="M 0 15 L 12 -5 L 30 -5 L 15 -18 L 22 -35 L 0 -22 L -22 -35 L -15 -18 L -30 -5 L -12 -5 Z" fill="#facc15" />
-          ) : expression === '반짝' ? (
-            // 하트 눈
-            <path d="M 0 15 A 14 14 0 0 0 28 -10 A 14 14 0 0 0 0 -28 A 14 14 0 0 0 -28 -10 A 14 14 0 0 0 0 15 Z" fill="#ef4444" />
           ) : (
+            /* 별 눈·하트 눈 삭제(2026-08-05 Macho): 감정은 떠다니는 이모지가 이미 말한다.
+               눈알을 도형으로 갈아끼우면 물고기가 이상해 보인다 — 신남·반짝도 보통 눈. */
             <motion.g
                animate={expression !== '놀람' && expression !== '정면' ? { x: [0, -8, 0] } : {}}
                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
