@@ -4076,10 +4076,12 @@ body.dark .bom-guide-text{color:#c8bba4}
     /* 눌러서 들어온 그 한 줄뿐 아니라, 그동안 봄이가 한 말을 전부 순서대로 이어 붙인다.
        (누르지 않고 지나간 말풍선도 창을 열면 다 보여야 한다 — 2026-08-04 Macho) */
     try{
-      var pend=(window._bomBubblePending&&window._bomBubblePending())||[];
-      pend.forEach(function(x){ b.insertAdjacentHTML('beforeend', bomMsgRow(esc(x.t),'bom_smile')); });
-      if(pend.length && window._bomBubbleMarkDone) window._bomBubbleMarkDone();
-      if(_bomCarryLine && !pend.some(function(x){ return x.t===_bomCarryLine; }))
+      /* '아직 안 본 것'만이 아니라 최근 말풍선 전부(20개) — 닫았다 열어도 그대로 남아 있어야
+         "지금까지 한 말이 누적"이 된다(2026-08-04 Macho). done 표시는 새 말 알림점 용도로만 유지. */
+      var hist=(window._bomBubbleAll&&window._bomBubbleAll())||[];
+      hist.forEach(function(x){ b.insertAdjacentHTML('beforeend', bomMsgRow(esc(x.t),'bom_smile')); });
+      if(hist.length && window._bomBubbleMarkDone) window._bomBubbleMarkDone();
+      if(_bomCarryLine && !hist.some(function(x){ return x.t===_bomCarryLine; }))
         b.insertAdjacentHTML('beforeend', bomMsgRow(esc(_bomCarryLine),'bom_sparkle'));
     }catch(e){
       if(_bomCarryLine) b.insertAdjacentHTML('beforeend', bomMsgRow(esc(_bomCarryLine),'bom_sparkle'));
@@ -4188,6 +4190,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     a.push({t:t, done:false}); bubSave(a);
   }
   window._bomBubblePending=function(){ return bubLoad().filter(function(x){ return !x.done; }); };
+  window._bomBubbleAll=function(){ return bubLoad(); };   // 창에는 최근 20개 전부(닫았다 열어도 유지)
   window._bomBubbleMarkDone=function(){ var a=bubLoad(); a.forEach(function(x){ x.done=true; }); bubSave(a); };
   var tries=0;
   (function waitHome(){
