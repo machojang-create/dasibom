@@ -124,8 +124,16 @@ try {
   if (!frame) throw new Error('iframe 내용에 접근하지 못했습니다.');
 
   step = '팝업 정리';
-  await clickIfPresent(frame, SEL.restorePopupCancel); // 이전 작성글 불러오기 → 취소
-  await clickIfPresent(frame, SEL.helpClose); // 도움말 닫기
+  // 팝업은 화면이 뜬 뒤 한 박자 늦게 나옵니다. 남아 있으면 se-popup-dim 이 이후 모든 클릭을
+  // 가로막아 "발행 버튼을 못 찾았습니다" 처럼 엉뚱한 곳에서 실패합니다. 사라질 때까지 확인합니다.
+  for (let i = 0; i < 4; i++) {
+    // 팝업이 없을 때 헛짚어 실패해도 발행을 멈출 이유는 없습니다.
+    await clickIfPresent(frame, SEL.restorePopupCancel, 3000).catch(() => {}); // 불러오기 → 취소
+    await clickIfPresent(frame, SEL.helpClose, 1500).catch(() => {}); // 도움말 닫기
+    const dim = frame.locator('.se-popup-dim');
+    if (!(await dim.first().isVisible().catch(() => false))) break;
+    await page.waitForTimeout(1000);
+  }
 
   if (has('pause')) {
     console.log('\n--pause: 브라우저를 열어둡니다. Inspector 로 셀렉터를 확인하세요.');
@@ -155,9 +163,14 @@ try {
     if (!fc) return false;
     await fc.setFiles(file);
     await page.waitForTimeout(2500); // 업로드 대기
-    const back = await firstVisible(frame, SEL.body, 5000);
-    if (back) await back.click();
-    await page.keyboard.press('End');
+
+    // ⚠️ 그림을 넣으면 커서가 그림으로 옮겨갑니다. 반드시 글의 맨 끝으로 되돌려야 합니다.
+    //    여기서 첫 문단을 클릭하면(firstVisible 은 첫 번째를 잡습니다) 커서가 글 맨 앞으로 가서,
+    //    이후 문장이 전부 글 앞쪽에 끼어듭니다 — 마무리 카드 뒤에 본문이 이어지는 사고가 납니다.
+    const paras = frame.locator(SEL.body[0]);
+    const n = await paras.count().catch(() => 0);
+    if (n) await paras.nth(n - 1).click().catch(() => {});
+    await page.keyboard.press('Control+End');
     await page.keyboard.press('Enter');
     return true;
   };
@@ -196,24 +209,24 @@ try {
   }
 
   step = '발행 패널 열기';
-  const publishBtn = await firstVisible(page, SEL.publishOpen, 8000);
+  const publishBtn = await firstVisible(frame, SEL.publishOpen, 8000);
   if (!publishBtn) throw new Error('발행 버튼을 못 찾았습니다.');
   await publishBtn.click();
   await page.waitForTimeout(1200);
 
   step = '카테고리 선택';
   if (post.naver_category) {
-    const catBtn = await firstVisible(page, SEL.categorySelect, 5000);
+    const catBtn = await firstVisible(frame, SEL.categorySelect, 5000);
     if (catBtn) {
       await catBtn.click();
-      const option = await firstVisible(page, SEL.categoryOption(post.naver_category), 4000);
+      const option = await firstVisible(frame, SEL.categoryOption(post.naver_category), 4000);
       if (option) await option.click();
       else console.log(`  (카테고리 "${post.naver_category}" 를 못 찾아 기본값으로 둡니다)`);
     }
   }
 
   step = '태그 입력';
-  const tagEl = await firstVisible(page, SEL.tagInput, 5000);
+  const tagEl = await firstVisible(frame, SEL.tagInput, 5000);
   if (tagEl) {
     await tagEl.click();
     for (const tag of post.tags.slice(0, 10)) {
@@ -226,12 +239,46 @@ try {
     step = '예약 발행 설정';
     const [date, time] = reserveAt.split(' ');
     const [hh, mm] = (time ?? '09:00').split(':');
-    await clickIfPresent(page, SEL.reserveRadio, 4000);
-    const dateEl = await firstVisible(page, SEL.reserveDate, 4000);
-    if (dateEl) await dateEl.fill(date.replace(/-/g, '.'));
-    const hourEl = await firstVisible(page, SEL.reserveHour, 3000);
+    await clickIfPresent(frame, SEL.reserveRadio, 4000);
+    await page.waitForTimeout(600);
+
+    // 날짜칸은 읽기 전용입니다. 눌러서 달력을 열고 그 날짜를 골라야 합니다.
+    const [yy, mo, dd] = date.split('-').map(Number);
+    const dateEl = await firstVisible(frame, SEL.reserveDate, 4000);
+    if (dateEl) {
+      await dateEl.click();
+      await page.waitForTimeout(900);
+
+      // 목표 달이 나올 때까지 '다음 달' 을 누릅니다(최대 12번).
+      for (let i = 0; i < 12; i++) {
+        const shown = await frame
+          .locator('.ui-datepicker-title')
+          .first()
+          .innerText()
+          .catch(() => '');
+        const m = shown.match(/(\d{4}).*?(\d{1,2})/);
+        if (m && Number(m[1]) === yy && Number(m[2]) === mo) break;
+        const next = frame.locator('.ui-datepicker-next');
+        if (!(await next.isVisible().catch(() => false))) break;
+        await next.click();
+        await page.waitForTimeout(500);
+      }
+
+      // 그 달의 해당 날짜를 누릅니다.
+      // ⚠️ 날짜는 <a> 가 아니라 <button> 입니다. 지난 날짜는 ui-state-disabled 라 눌리지 않습니다.
+      const day = frame
+        .locator('.ui-datepicker td:not(.ui-state-disabled) button')
+        .filter({ hasText: new RegExp(`^${dd}$`) });
+      if (await day.count().catch(() => 0)) {
+        await day.first().click();
+      } else {
+        console.log(`  (달력에서 ${mo}월 ${dd}일을 못 찾았습니다. 날짜를 확인하세요)`);
+      }
+      await page.waitForTimeout(700);
+    }
+    const hourEl = await firstVisible(frame, SEL.reserveHour, 3000);
     if (hourEl) await hourEl.selectOption(hh);
-    const minEl = await firstVisible(page, SEL.reserveMinute, 3000);
+    const minEl = await firstVisible(frame, SEL.reserveMinute, 3000);
     if (minEl) await minEl.selectOption(String(Math.floor(Number(mm) / 10) * 10).padStart(2, '0'));
   }
 
@@ -245,7 +292,7 @@ try {
   }
 
   step = '발행';
-  const confirm = await firstVisible(page, SEL.publishConfirm, 6000);
+  const confirm = await firstVisible(frame, SEL.publishConfirm, 6000);
   if (!confirm) throw new Error('최종 발행 버튼을 못 찾았습니다.');
   await confirm.click();
   await page.waitForTimeout(5000);

@@ -382,9 +382,11 @@ function lint(post) {
 // ── 실행 ──────────────────────────────────────────────────────────
 let files = [];
 if (has('all')) {
+  // out/ 에는 원고 말고도 통계·정찰 결과 같은 json 이 쌓입니다.
+  // 이름이 <글번호>_<제목>.json 인 것만 원고로 봅니다.
   files = fs
     .readdirSync(paths.out)
-    .filter((f) => f.endsWith('.json'))
+    .filter((f) => f.endsWith('.json') && /^[A-Z]\d+_/.test(f))
     .map((f) => path.join(paths.out, f));
 } else if (flag('post')) {
   files = [flag('post')];

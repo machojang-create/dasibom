@@ -12,15 +12,23 @@ export const SEL = {
   // 글쓰기 화면이 들어있는 iframe
   editorFrame: ['iframe#mainFrame', 'iframe[name="mainFrame"]'],
 
-  // "작성 중인 글이 있습니다" 팝업 — 취소를 눌러 새 글로 시작
+  // "작성 중인 글이 있습니다" 팝업 — 취소를 눌러 새 글로 시작.
+  // ⚠️ 이 팝업은 화면이 뜬 뒤 한 박자 늦게 나옵니다. 놓치면 그 뒤 모든 클릭을 가로막습니다
+  //    (se-popup-dim 이 pointer event 를 먹습니다). 글자 기반 후보를 뒤에 둡니다.
   restorePopupCancel: [
     '.se-popup-button-cancel',
     'button.se-popup-button-cancel',
     '.se-popup-alert-confirm .se-popup-button-cancel',
+    '.se-popup-alert-confirm button:has-text("취소")',
+    '.se-popup button:has-text("취소")',
   ],
 
   // 도움말 레이어 닫기
-  helpClose: ['.se-help-panel-close-button', 'button.se-help-panel-close-button'],
+  helpClose: [
+    '.se-help-panel-close-button',
+    'button.se-help-panel-close-button',
+    '.se-help-panel button[class*="close"]',
+  ],
 
   title: ['.se-documentTitle .se-text-paragraph', 'span.se-placeholder.__se_placeholder'],
   body: ['.se-component.se-text .se-text-paragraph', '.se-section-text .se-text-paragraph'],

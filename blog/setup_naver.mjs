@@ -515,8 +515,78 @@ try {
     console.log('\n  결과 화면: setup_images_after.png');
   }
 
-  if (!has('scan') && !has('categories') && !has('info') && !has('images') && !doAll) {
-    console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --images / --all');
+  // ── 스킨 ──────────────────────────────────────────────────────
+  if (has('skin') || doAll) {
+    console.log('\n스킨을 고릅니다.\n');
+    // 배경 무늬나 색이 강한 스킨은 우리가 만든 타이틀 그림과 싸웁니다.
+    // 읽는 분이 시니어라 글이 잘 보이는 흰 배경이 우선입니다.
+    const wantSkin = config.naver.skin ?? '화이트 라벨';
+
+    await page.goto(`https://admin.blog.naver.com/${blogId}/skin/list`, {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2200);
+    const f = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+
+    const picked = await f.evaluate((label) => {
+      for (const r of document.querySelectorAll('input[type=radio][id^=naverSkinListRadio]')) {
+        const t = (r.closest('li,td,div')?.innerText ?? '').trim();
+        if (t.startsWith(label)) {
+          r.click();
+          return t.split('\n')[0];
+        }
+      }
+      return null;
+    }, wantSkin);
+
+    if (!picked) {
+      console.log(`  "${wantSkin}" 스킨을 목록에서 못 찾았습니다.`);
+    } else {
+      await page.waitForTimeout(600);
+      await f.locator('._skinSave').first().click();
+      await page.waitForTimeout(1500);
+      for (const sel of ['#ly_alert_confirm', '.popup_btn_confirm', 'button:has-text("확인")']) {
+        const b = page.locator(sel).first();
+        if (await b.isVisible().catch(() => false)) {
+          await b.click().catch(() => {});
+          break;
+        }
+      }
+      await page.waitForTimeout(3000);
+
+      // 정말 걸렸는지 화면을 새로 읽어 확인합니다.
+      await page.goto(`https://admin.blog.naver.com/${blogId}/skin/list`, {
+        waitUntil: 'networkidle',
+        timeout: 30000,
+      });
+      await page.waitForTimeout(2000);
+      const f2 = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+      const checked = await f2.evaluate(() => {
+        const r = [...document.querySelectorAll('input[type=radio][id^=naverSkinListRadio]')].find(
+          (x) => x.checked,
+        );
+        return r ? (r.closest('li,td,div')?.innerText ?? '').trim().split('\n')[0] : null;
+      });
+      console.log(
+        checked === picked
+          ? `  ○ 스킨 적용됨: ${checked}`
+          : `  ✗ 고른 것은 "${picked}" 인데 지금 걸린 것은 "${checked ?? '없음'}" 입니다`,
+      );
+      report.skin = { picked, checked };
+    }
+    await shot(page, 'skin_after');
+  }
+
+  if (
+    !has('scan') &&
+    !has('categories') &&
+    !has('info') &&
+    !has('images') &&
+    !has('skin') &&
+    !doAll
+  ) {
+    console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --images / --skin / --all');
   }
 } catch (err) {
   console.error(`\n실패: ${err.message}`);
