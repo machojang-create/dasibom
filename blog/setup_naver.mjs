@@ -402,8 +402,121 @@ try {
     report.info = { before, after };
   }
 
-  if (!has('scan') && !has('categories') && !has('info') && !doAll) {
-    console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --all');
+  // ── 프로필·모바일커버 이미지 ──────────────────────────────────
+  if (has('images') || doAll) {
+    console.log('\n이미지를 올립니다.\n');
+    const assetDir = path.join(outDir, 'assets');
+    const jobs = [
+      { label: '프로필', file: path.join(assetDir, 'profile.png'), btn: '._btnProfileImageUpload' },
+      {
+        label: '모바일 커버',
+        file: path.join(assetDir, 'mobile_cover.png'),
+        btn: '._btnMobileTitleImageUpload',
+      },
+    ];
+
+    /** 지금 화면에 실제로 어떤 이미지가 걸려 있는지 읽습니다. 올렸다고 믿지 않고 확인합니다. */
+    async function currentImages() {
+      const fr = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+      return fr
+        .evaluate(() => ({
+          profile: document.querySelector('#profile_thumb img, .profile_img img')?.src ?? '',
+          all: [...document.querySelectorAll('img')].map((i) => i.src).join(' '),
+        }))
+        .catch(() => ({ profile: '', all: '' }));
+    }
+
+    for (const job of jobs) {
+      if (!fs.existsSync(job.file)) {
+        console.log(`  건너뜀 — 파일이 없습니다: ${path.basename(job.file)}`);
+        console.log('    node gen_blog_assets.mjs 로 먼저 만드세요.');
+        continue;
+      }
+
+      await page.goto(`https://admin.blog.naver.com/${blogId}/config/bloginfo`, {
+        waitUntil: 'networkidle',
+        timeout: 30000,
+      });
+      await page.waitForTimeout(1800);
+      const f = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+
+      try {
+        // 등록을 누르면 새 창이 뜨고, 그 안에 파일칸(name=file1)이 있습니다.
+        const [popup] = await Promise.all([
+          context.waitForEvent('page', { timeout: 15000 }),
+          f.locator(job.btn).first().click(),
+        ]);
+        await popup.waitForLoadState('domcontentloaded');
+        await popup.waitForTimeout(2500);
+
+        // ⚠️ 파일칸은 팝업의 본문이 아니라 그 안의 iframe 에 있습니다. 프레임을 찾아 들어갑니다.
+        let target = null;
+        for (const fr of popup.frames()) {
+          const n = await fr.locator('input[type=file]').count().catch(() => 0);
+          if (n > 0) {
+            target = fr;
+            break;
+          }
+        }
+        if (!target) throw new Error('파일 넣는 칸을 못 찾았습니다');
+
+        await target.locator('input[type=file]').first().setInputFiles(job.file);
+        await popup.waitForTimeout(1500);
+
+        // '이미지 첨부' 단추는 파일칸과 다른 프레임에 있습니다. 팝업의 모든 프레임을 뒤집니다.
+        const ATTACH =
+          'a:has-text("이미지 첨부"), button:has-text("이미지 첨부"), input[value="이미지 첨부"], img[alt="이미지 첨부"]';
+        let clicked = false;
+        for (const fr of popup.frames()) {
+          const loc = fr.locator(ATTACH).first();
+          if (await loc.count().catch(() => 0)) {
+            await loc.click({ timeout: 8000 }).catch(() => {});
+            clicked = true;
+            break;
+          }
+        }
+        if (!clicked) throw new Error('"이미지 첨부" 단추를 못 찾았습니다');
+        await popup.waitForTimeout(4000);
+        if (!popup.isClosed()) await popup.close().catch(() => {});
+        await page.waitForTimeout(1500);
+
+        // 본문 화면에서 저장까지 눌러야 남습니다.
+        const f2 = page.frames().find((x) => x.name() === 'papermain') ?? page.mainFrame();
+        await f2.locator('._btnConfirm').first().click().catch(() => {});
+        await page.waitForTimeout(2500);
+
+        // 화면을 새로 읽어 정말 걸렸는지 봅니다. 올렸다고 말만 하지 않습니다.
+        await page.goto(`https://admin.blog.naver.com/${blogId}/config/bloginfo`, {
+          waitUntil: 'networkidle',
+          timeout: 30000,
+        });
+        await page.waitForTimeout(1800);
+        const now = await currentImages();
+        const stillEmpty = /no_image/.test(now.all) && job.label === '프로필';
+        if (stillEmpty) {
+          console.log(`  ✗ ${job.label} — 눌렀지만 화면에 걸리지 않았습니다`);
+          report.imageFailed = [...(report.imageFailed ?? []), job.label];
+        } else {
+          console.log(`  ○ ${job.label} 올림 (${path.basename(job.file)})`);
+        }
+      } catch (err) {
+        console.log(`  실패: ${job.label} — ${err.message.split('\n')[0]}`);
+        console.log('    이 하나는 관리 화면에서 직접 올려 주세요.');
+      }
+    }
+
+    // 결과 확인
+    await page.goto(`https://admin.blog.naver.com/${blogId}/config/bloginfo`, {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+    await page.waitForTimeout(2000);
+    await shot(page, 'images_after');
+    console.log('\n  결과 화면: setup_images_after.png');
+  }
+
+  if (!has('scan') && !has('categories') && !has('info') && !has('images') && !doAll) {
+    console.log('무엇을 할지 지정해 주세요. --scan / --categories / --info / --images / --all');
   }
 } catch (err) {
   console.error(`\n실패: ${err.message}`);
