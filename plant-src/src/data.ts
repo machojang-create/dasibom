@@ -244,3 +244,18 @@ export const GRADUATION_EMOTIONAL_PHRASES: Record<DialectType, string[]> = {
     "인제 내 걱정은 마시라요. 니 인생도 활짝 꽃피우시라요. 내 항상 응원하갔어."
   ]
 };
+
+/* ── 제철 씨앗(2026-08-05 Macho 하수구 1안) ────────────────────────────
+   계절꽃 12종은 '그 계절에만' 판다(200꽃잎, 상시 16종은 100꽃잎 그대로).
+   씨앗은 소모품이라 계절이 돌 때마다 다시 살 이유가 생긴다 — 도감 완성 욕구와 맞물림. */
+export const SEASONAL_PLANTS: Record<string, 'spring' | 'summer' | 'autumn' | 'winter'> = {
+  p17: 'spring', p18: 'spring', p22: 'spring',   // 진달래·개나리·라일락
+  p5: 'summer', p20: 'summer', p21: 'summer',    // 해바라기·나팔꽃·봉숭아
+  p16: 'autumn', p13: 'autumn', p24: 'autumn',   // 코스모스·국화·단풍나무
+  p19: 'winter', p14: 'winter', p9: 'winter',    // 동백꽃·매화·소나무
+};
+export const SEASON_KO: Record<string, string> = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
+export function currentSeason(): 'spring' | 'summer' | 'autumn' | 'winter' {
+  const m = new Date().getMonth() + 1;
+  return m >= 3 && m <= 5 ? 'spring' : m >= 6 && m <= 8 ? 'summer' : m >= 9 && m <= 11 ? 'autumn' : 'winter';
+}

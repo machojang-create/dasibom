@@ -1,20 +1,53 @@
-import { PLANT_TYPES } from '../data';
+import { PLANT_TYPES, SEASONAL_PLANTS, SEASON_KO, currentSeason } from '../data';
 import { PlantData } from '../types';
 import { X } from 'lucide-react';
 import Petal from './Petal';
 import PlantArt from './PlantArt';
 
-/* 씨앗 상점 — 다시봄 톤(따뜻한 크림)·스프링 팝업·시니어 글씨(2026-07-21 리디자인) */
+/* 씨앗 상점 — 다시봄 톤(따뜻한 크림)·스프링 팝업·시니어 글씨(2026-07-21 리디자인)
+   제철 씨앗(2026-08-05 Macho): 계절꽃 12종은 그 계절에만 200꽃잎, 상시 16종은 100꽃잎. */
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onBuySeed: (plant: PlantData) => void;
+  onBuySeed: (plant: PlantData, seasonal: boolean) => void;
   money: number;
   isSlotFull: boolean;
 }
 
 export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: Props) {
   if (!isOpen) return null;
+  const season = currentSeason();
+  const inSeason = PLANT_TYPES.filter(p => SEASONAL_PLANTS[p.id] === season);
+  const offSeason = PLANT_TYPES.filter(p => SEASONAL_PLANTS[p.id] && SEASONAL_PLANTS[p.id] !== season);
+  const always = PLANT_TYPES.filter(p => !SEASONAL_PLANTS[p.id]);
+
+  const card = (plant: PlantData, price: number, locked: boolean) => {
+    const cannotAfford = money < price;
+    const isDisabled = isSlotFull || cannotAfford || locked;
+    return (
+      <button
+        key={plant.id}
+        onClick={() => { if (!locked) onBuySeed(plant, price === 200); }}
+        disabled={locked}
+        className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
+      >
+        <div className="w-20 h-[72px] bg-gradient-to-b from-[#F6FBF2] to-[#eaf4e2] rounded-xl flex items-end justify-center mb-2 group-hover:scale-110 transition-transform shadow-inner overflow-hidden pt-1">
+          <PlantArt type={plant.type} bloom className="w-14 h-16" />
+        </div>
+        <span className="text-[#4a3a26] font-black text-[15px] text-center">{plant.name}</span>
+        <span className="text-[11px] text-[#9a7a52] font-bold mb-2 text-center leading-tight">{plant.accent.replace(' 사투리', '')}</span>
+        {locked ? (
+          <span className="text-[13px] font-black px-3 py-1 rounded-full bg-slate-100 text-slate-400">
+            {SEASON_KO[SEASONAL_PLANTS[plant.id]]}에 만나요
+          </span>
+        ) : (
+          <span className={`text-[13px] font-black px-3 py-1 rounded-full flex items-center gap-1 ${cannotAfford ? 'text-red-400 bg-red-50' : 'text-[#a14d68] bg-pink-50'}`}>
+            <Petal className="w-3.5 h-3.5" /> {price} 꽃잎
+          </span>
+        )}
+      </button>
+    );
+  };
 
   return (
     <div className="fixed inset-0 bg-black/45 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -36,27 +69,19 @@ export default function Shop({ isOpen, onClose, onBuySeed, money, isSlotFull }: 
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-3 relative z-10 overflow-y-auto no-scrollbar pb-2 flex-1">
-          {PLANT_TYPES.map(plant => {
-            const cannotAfford = money < 100;
-            const isDisabled = isSlotFull || cannotAfford;
-            return (
-              <button
-                key={plant.id}
-                onClick={() => onBuySeed(plant)}
-                className={`p-4 bg-white border-2 rounded-2xl flex flex-col items-center transition-all group shadow-sm ${isDisabled ? 'opacity-45 cursor-not-allowed border-[#EFE4D2]' : 'border-[#EFE4D2] hover:border-[#d4a95f] hover:shadow-md active:scale-[0.97]'}`}
-              >
-                <div className="w-20 h-[72px] bg-gradient-to-b from-[#F6FBF2] to-[#eaf4e2] rounded-xl flex items-end justify-center mb-2 group-hover:scale-110 transition-transform shadow-inner overflow-hidden pt-1">
-                  <PlantArt type={plant.type} bloom className="w-14 h-16" />
-                </div>
-                <span className="text-[#4a3a26] font-black text-[15px] text-center">{plant.name}</span>
-                <span className="text-[11px] text-[#9a7a52] font-bold mb-2 text-center leading-tight">{plant.accent.replace(' 사투리','')}</span>
-                <span className={`text-[13px] font-black px-3 py-1 rounded-full flex items-center gap-1 ${cannotAfford ? 'text-red-400 bg-red-50' : 'text-[#a14d68] bg-pink-50'}`}>
-                  <Petal className="w-3.5 h-3.5" /> 100 꽃잎
-                </span>
-              </button>
-            );
-          })}
+        <div className="relative z-10 overflow-y-auto no-scrollbar pb-2 flex-1">
+          {/* 제철 한정 — 지금 계절에만 */}
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-[15px] font-black text-[#a14d68]">🌸 {SEASON_KO[season]} 제철 씨앗</span>
+            <span className="text-[11px] font-bold text-[#9a7a52]">이 계절이 지나면 들여올 수 없어요</span>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4">{inSeason.map(p => card(p, 200, false))}</div>
+
+          <div className="mb-2 text-[15px] font-black text-[#5b3a1a]">🪴 사계절 씨앗</div>
+          <div className="grid grid-cols-2 gap-3 mb-4">{always.map(p => card(p, 100, false))}</div>
+
+          <div className="mb-2 text-[15px] font-black text-[#8a6a48]">⏳ 계절을 기다리는 씨앗</div>
+          <div className="grid grid-cols-2 gap-3">{offSeason.map(p => card(p, 200, true))}</div>
         </div>
       </div>
     </div>

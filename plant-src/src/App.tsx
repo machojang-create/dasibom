@@ -318,10 +318,10 @@ export default function App() {
     if (!firedSlot) { plantSay('한 박자만 기다리 주라. 준비 중이데이!'); lastUserSpeakRef.current = Date.now(); }
   };
 
-  const buySeed = (plant: PlantData) => {
+  const buySeed = (plant: PlantData, seasonal?: boolean) => {
     if (currentPlant) { setIsShopOpen(false); plantSay('이 화분엔 이미 친구가 살고 있어요. 빈 화분에 심어주세요!'); lastUserSpeakRef.current = Date.now(); return; }
     const slotIdx = currentSlotIndex;   // ★구매 완료 시점이 아니라 '누른 순간'의 화분에 심는다
-    const firedSeed = guardedSpend('seed', (err: any, d: any) => {
+    const firedSeed = guardedSpend(seasonal ? 'seed_season' : 'seed', (err: any, d: any) => {   // 제철 씨앗은 200꽃잎(서버 권위)
       if (err || !d || !d.ok) { if (d && d.balance != null) setMoney(d.balance); setIsShopOpen(false); nopeSfx(); plantSay(NO_PETAL_MSG_FN()); return; }
       setMoney(d.balance); coinSfx();
       const newPlant: UserPlant = {
