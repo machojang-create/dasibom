@@ -2600,7 +2600,7 @@ footer a[href^="mailto:"]{overflow-wrap:anywhere;word-break:break-all}
 })();
 </script>
 <script src="/fx.js?v=2"></script>
-<script src="/bom_voice.js?v=12"></script>
+<script src="/bom_voice.js?v=21"></script>
 <script>
 // ════ 홈 배경음악 — 피아노 3곡 이어서 반복재생 (fx.js 사운드토글·dasibom_sound 키 공유) ════
 (function(){
@@ -4073,7 +4073,18 @@ body.dark .bom-guide-text{color:#c8bba4}
     _bomChatStarted=false; _bomFaceIdx=0;
     b.innerHTML=_bubble1();      // 첫 인사 한 마디만
     // 밖에서 보고 들어온 말풍선이 있으면 인사 다음에 그대로 이어 붙인다(같은 이야기의 연속으로)
-    if(_bomCarryLine){ b.insertAdjacentHTML('beforeend', bomMsgRow(esc(_bomCarryLine),'bom_sparkle')); _bomCarryLine=''; }
+    /* 눌러서 들어온 그 한 줄뿐 아니라, 그동안 봄이가 한 말을 전부 순서대로 이어 붙인다.
+       (누르지 않고 지나간 말풍선도 창을 열면 다 보여야 한다 — 2026-08-04 Macho) */
+    try{
+      var pend=(window._bomBubblePending&&window._bomBubblePending())||[];
+      pend.forEach(function(x){ b.insertAdjacentHTML('beforeend', bomMsgRow(esc(x.t),'bom_smile')); });
+      if(pend.length && window._bomBubbleMarkDone) window._bomBubbleMarkDone();
+      if(_bomCarryLine && !pend.some(function(x){ return x.t===_bomCarryLine; }))
+        b.insertAdjacentHTML('beforeend', bomMsgRow(esc(_bomCarryLine),'bom_sparkle'));
+    }catch(e){
+      if(_bomCarryLine) b.insertAdjacentHTML('beforeend', bomMsgRow(esc(_bomCarryLine),'bom_sparkle'));
+    }
+    _bomCarryLine='';
     b.scrollTop=b.scrollHeight;
     _startTalkCycle();           // 이후 1분마다 이어서 말 걸기
   }
@@ -4146,6 +4157,7 @@ body.dark .bom-guide-text{color:#c8bba4}
     var g=document.getElementById('bomGreet'), p=document.getElementById('bomChatPanel');
     if(!g || !p || p.classList.contains('open')) return;
     g.innerHTML=esc(text); g.style.display='block'; greetShown=true;
+    try{ bubAdd(text); }catch(e){}    // 뜨는 즉시 쌓아둔다 — 눌렀는지와 상관없이 창에 남아야 한다
     paintFabFace(face);
     _greetHref=href||null;
     /* ★읽는 시간 규칙(2026-08-04 FGT ②): 9초 고정이라 긴 말풍선은 다 읽기 전에 사라졌다.
@@ -4160,6 +4172,23 @@ body.dark .bom-guide-text{color:#c8bba4}
     _bomCarryLine=(this.textContent||'').trim();
     bomChatToggle(true);
   });
+
+  /* ★말풍선 누적 (2026-08-04 Macho 반복 지적) ──────────────────────────
+     지금까지는 '말풍선을 눌렀을 때'만 그 한 줄이 창으로 넘어갔다.
+     그냥 지나간 말은 전부 사라져서, 창을 열면 봄이가 방금 한 말이 없었다.
+     → 봄이가 한 말은 뜨는 즉시 쌓아두고, 창을 열 때 아직 안 옮긴 것을 순서대로 넣는다.
+     페이지를 옮겨 다녀도 이어지도록 localStorage에 둔다. */
+  var BUB_KEY='dasibom_bom_bubbles', BUB_MAX=20;
+  function bubLoad(){ try{ return JSON.parse(localStorage.getItem(BUB_KEY)||'[]'); }catch(e){ return []; } }
+  function bubSave(a){ try{ localStorage.setItem(BUB_KEY, JSON.stringify(a.slice(-BUB_MAX))); }catch(e){} }
+  function bubAdd(text){
+    var t=String(text||'').replace(/\s+/g,' ').trim(); if(!t) return;
+    var a=bubLoad();
+    if(a.length && a[a.length-1].t===t) return;      // 같은 말이 연달아 뜨면 한 번만
+    a.push({t:t, done:false}); bubSave(a);
+  }
+  window._bomBubblePending=function(){ return bubLoad().filter(function(x){ return !x.done; }); };
+  window._bomBubbleMarkDone=function(){ var a=bubLoad(); a.forEach(function(x){ x.done=true; }); bubSave(a); };
   var tries=0;
   (function waitHome(){
     if(homeReady()){
