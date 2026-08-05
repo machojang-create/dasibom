@@ -1104,7 +1104,7 @@ exports.awardPoints = functions
    가격은 서버 권위(클라 표시는 장식). 트랜잭션으로 잔액 검사→차감. */
 const PLANT_PRICES = {
   // 수다쟁이 화분
-  normal_nut: 15, premium_nut: 40, seed: 100,   // 생명(씨앗)은 비싸게 — Macho 밸런스 철학
+  normal_nut: 5, premium_nut: 10, seed: 100,   // 영양제 인하(2026-08-05 Macho: 15/40 -> 5/10)   // 생명(씨앗)은 비싸게 — Macho 밸런스 철학
   seed_season: 200,   // 제철 한정 씨앗(2026-08-05 Macho 하수구 1안) — 그 계절에만 판다
   pot2: 50, pot3: 100, pot4: 150, pot5: 200, pot6: 75, pot7: 125,
   pot8: 300, pot9: 175, pot10: 90, pot11: 500, pot12: 25, pot13: 400,

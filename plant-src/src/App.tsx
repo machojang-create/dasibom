@@ -121,6 +121,13 @@ export default function App() {
   });
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   useEffect(() => { mountButtonSfx(); }, []);   // 🔘 말랑 버튼음 — 모든 버튼 공통
+  // ★첫 진입: 화면(스크롤)과 선택 인덱스를 일치 — 어긋나면 물이 딴 화분에 들어간다(2026-08-05 Macho)
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (scrollRef.current) scrollRef.current.scrollLeft = currentSlotIndex * scrollRef.current.clientWidth;
+    }, 80);
+    return () => clearTimeout(t);
+  }, []);
   // 돌봄 연출/표정(2026-07-23): 물주기·영양제 순간의 물뿌리개·주사기 애니 + 잠깐의 반응 표정
   const [careFx, setCareFx] = useState<{ slot: number; kind: 'water' | 'nutrient' | null; key: number }>({ slot: -1, kind: null, key: 0 });
   useEffect(() => {
@@ -507,7 +514,7 @@ export default function App() {
     }
     if (!dsb()) { plantSay('시방 연결이 잘 안 되네... 쪼매 있다 다시 온나!'); return; }
     // ★순서 결정성(2026-07-29 Macho): 성장 연출을 서버 콜백 밖으로 — 결제 슬롯을 잡는 즉시 연출·성장, 결제는 백그라운드.
-    const nutCost = type === 'premium_nut' ? 40 : 15;
+    const nutCost = type === 'premium_nut' ? 10 : 5;   // 2026-08-05 Macho: 영양제 인하(15/40 → 5/10)
     if (money < nutCost) { plantSay(NO_PETAL_MSG_FN()); lastUserSpeakRef.current = Date.now(); return; }
     const nSnapIdx = currentSlotIndex;
     const nSnap = slots[nSnapIdx] ? JSON.parse(JSON.stringify(slots[nSnapIdx])) : null;
@@ -918,8 +925,8 @@ export default function App() {
           const todayKST = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
           const waterIsPaid = !!currentPlant && (currentPlant as any).lastWaterDay === todayKST;
           const waterShort = waterIsPaid && money < 1;
-          const normalShort = money < 15;
-          const premiumShort = money < 40;
+          const normalShort = money < 5;
+          const premiumShort = money < 10;
           return (
         <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-2 md:gap-4 px-2 pointer-events-auto">
           <button data-bomguide="pw" onClick={() => applyItem('water')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#52b5e9] to-[#3498c9] rounded-2xl border-4 ${waterShort ? 'grayscale opacity-60 saturate-[.5]' : timeOfDay === 'day' ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
@@ -941,7 +948,7 @@ export default function App() {
             ) : normalShort ? (
               <span className="font-bold text-[11px] md:text-[12px] bg-red-500/85 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">🌸 부족해요</span>
             ) : (
-              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />15</span>
+              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />5</span>
             )}
           </button>
           <button data-bomguide="pp" onClick={() => applyItem('premium_nut')} disabled={!currentPlant} className={`relative flex flex-col items-center justify-center w-[30vw] max-w-[104px] h-28 md:w-28 md:h-28 bg-gradient-to-b from-[#f29c38] to-[#d67b18] ${(premiumShort || isOld) ? "grayscale opacity-60 saturate-[.5]" : ""} rounded-2xl border-4 ${timeOfDay === 'night' && !premiumShort && !isOld ? 'border-yellow-300 shadow-[0_0_15px_rgba(253,224,71,0.8)]' : 'border-white'} shadow-lg transition-transform hover:scale-105 active:scale-95 text-white disabled:pointer-events-none disabled:opacity-50 disabled:grayscale`}>
@@ -953,7 +960,7 @@ export default function App() {
             ) : premiumShort ? (
               <span className="font-bold text-[11px] md:text-[12px] bg-red-500/85 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1">🌸 부족해요</span>
             ) : (
-              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />40</span>
+              <span className="font-bold text-[12px] md:text-[13px] bg-black/25 px-2.5 py-0.5 rounded-full mt-1 relative z-10 flex items-center gap-1"><Petal className="w-3.5 h-3.5" />10</span>
             )}
           </button>
         </div>
