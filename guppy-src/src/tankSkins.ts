@@ -1,13 +1,19 @@
 /* 어항 스킨(2026-07-22 신설) — 물빛 자체를 갈아입히는 프리미엄 꾸미기. 꽃잎 싱크.
    가격은 서버 PLANT_PRICES(guppy_skin_*)와 반드시 일치시킬 것. */
 export const TANK_SKINS: Record<string, { name: string; desc: string; grad: string; price: number }> = {
+  /* 물빛 밝기 개편(2026-08-05 Macho): 어항은 투명값이 높아야 프레시하다.
+     기본·라군을 밝고 투명하게 낮추고, '수정처럼 맑음'을 무료로 신설. */
   basic: {
     name: '맑은 민물', desc: '처음 만난 그 물빛 — 언제 봐도 편안해요',
-    grad: 'linear-gradient(180deg, rgba(34,211,238,0.95) 0%, rgba(37,99,235,0.95) 100%)', price: 0
+    grad: 'linear-gradient(180deg, rgba(125,226,252,0.62) 0%, rgba(96,165,250,0.66) 100%)', price: 0
+  },
+  crystal: {
+    name: '수정처럼 맑음', desc: '갓 갈아준 물처럼 투명하게 — 물고기 색이 제일 잘 보여요',
+    grad: 'linear-gradient(180deg, rgba(224,247,255,0.30) 0%, rgba(186,230,253,0.26) 50%, rgba(147,197,253,0.34) 100%)', price: 0
   },
   lagoon: {
     name: '산호초 라군', desc: '남태평양 얕은 바다의 에메랄드빛',
-    grad: 'linear-gradient(180deg, rgba(103,232,249,0.95) 0%, rgba(45,212,191,0.92) 45%, rgba(13,148,136,0.95) 100%)', price: 60
+    grad: 'linear-gradient(180deg, rgba(103,232,249,0.66) 0%, rgba(45,212,191,0.6) 45%, rgba(20,184,166,0.68) 100%)', price: 60
   },
   deepsea: {
     name: '고요한 심해', desc: '깊고 짙은 남빛 — 달빛 조명과 잘 어울려요',
@@ -15,11 +21,11 @@ export const TANK_SKINS: Record<string, { name: string; desc: string; grad: stri
   },
   sunset_sea: {
     name: '노을 바다', desc: '해질녘 주황과 보랏빛이 물에 녹아든 시간',
-    grad: 'linear-gradient(180deg, rgba(253,186,116,0.9) 0%, rgba(251,113,133,0.8) 35%, rgba(147,51,234,0.78) 65%, rgba(49,46,129,0.95) 100%)', price: 120
+    grad: 'linear-gradient(180deg, rgba(253,186,116,0.72) 0%, rgba(251,113,133,0.6) 35%, rgba(147,51,234,0.55) 65%, rgba(67,56,202,0.72) 100%)', price: 120
   },
   sumuk: {
     name: '수묵 담채', desc: '먹빛이 은은히 번진 한 폭의 산수화',
-    grad: 'linear-gradient(180deg, rgba(226,232,240,0.94) 0%, rgba(148,163,184,0.9) 45%, rgba(71,85,105,0.95) 100%)', price: 150
+    grad: 'linear-gradient(180deg, rgba(241,245,249,0.72) 0%, rgba(176,190,210,0.62) 45%, rgba(100,116,139,0.75) 100%)', price: 150
   }
 };
 

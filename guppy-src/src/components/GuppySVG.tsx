@@ -60,8 +60,11 @@ export const GuppySVG = React.memo(function GuppySVG({
       <motion.svg 
         viewBox={`0 0 ${vbWidth} ${vbHeight}`} 
         className="w-full h-full drop-shadow-2xl"
-        animate={pose === 'main' ? { y: [-8, 8, -8] } : {}}
-        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+        animate={pose === 'main' ? { y: [-8, 8, -8], rotate: [0, -1.6, 0, 1.6, 0] } : {}}
+        transition={{
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+          rotate: { duration: 7, repeat: Infinity, ease: "easeInOut" }   // 대기 중 몸이 살짝 갸웃갸웃(2026-08-05)
+        }}
       >
         <defs>
           {tailClip && (
@@ -141,8 +144,8 @@ export const GuppySVG = React.memo(function GuppySVG({
           }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         >
-          {/* 꼬리 확대(2026-08-05 Macho "꼬리를 좀 더 키워야") — 뿌리 고정 1.15배 */}
-          <g transform="translate(250 170) scale(1.15) translate(-250 -170)">
+          {/* 꼬리 확대 1.15배 + 몸쪽으로 14px 당김(꼬리가 몸에서 떨어져 보이던 것 — 2026-08-05 Macho) */}
+          <g transform="translate(250 170) scale(1.15) translate(-264 -170)">
           {tt === 'mosaic' && (<>
             <path d={tailClip} fill={`url(#tailGrad-${idPrefix})`} />
             <g fill={patternColor} opacity="0.5" clipPath={`url(#tailClip-${idPrefix})`}>
@@ -200,10 +203,12 @@ export const GuppySVG = React.memo(function GuppySVG({
 
         {/* 몸통 — 품종별 체형 */}
         <path d={bodyPath} fill={`url(#bodyGrad-${idPrefix})`} />
-        {/* 턱시도: 몸 뒤가 정장처럼 검정 (몸 곡선을 따라 클립) */}
-        {tt === 'tuxedo' && (
-          <rect x="172" y="40" width="110" height="260" fill="#0f172a" opacity="0.82" clipPath={`url(#bodyClip-${idPrefix})`} />
-        )}
+        {/* 턱시도: 몸 뒤 정장 — 고정 검정이 아니라 '그 테마의 진한 색'(2026-08-05 Macho:
+            전설이 옐로우인데 검정이 끼면 색 통일이 깨진다). 꼬리색 위에 어둠만 살짝 얹는다. */}
+        {tt === 'tuxedo' && (<>
+          <rect x="172" y="40" width="110" height="260" fill={tailColor} opacity="0.95" clipPath={`url(#bodyClip-${idPrefix})`} />
+          <rect x="172" y="40" width="110" height="260" fill="#000000" opacity="0.32" clipPath={`url(#bodyClip-${idPrefix})`} />
+        </>)}
         {/* 몸통 비늘 텍스처 (은은하게) */}
         <g stroke={patternColor} strokeWidth="2.5" fill="none" opacity="0.15" strokeLinecap="round">
           <path d="M 190 120 Q 210 135 190 150" />
@@ -222,8 +227,13 @@ export const GuppySVG = React.memo(function GuppySVG({
           <path d="M 180 185 Q 200 195 210 210" stroke={patternColor} strokeWidth="2" fill="none" opacity="0.4" strokeLinecap="round" />
         </motion.g>
 
-        {/* 얼굴 / 눈동자 그룹 */}
+        {/* 얼굴 / 눈동자 그룹 — 큰 눈이라 깜빡임이 있어야 살아 보인다(2026-08-05 Macho) */}
         <g transform="translate(110, 145)">
+          <motion.g
+            animate={{ scaleY: [1, 1, 0.06, 1, 1, 1, 0.06, 1, 1] }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut",
+                          times: [0, 0.4, 0.44, 0.48, 0.62, 0.9, 0.93, 0.96, 1] }}
+          >
           {/* 눈 흰자 (엄청 큼) */}
           <ellipse cx="0" cy="0" rx="34" ry="42" fill="#ffffff" />
           
@@ -268,7 +278,19 @@ export const GuppySVG = React.memo(function GuppySVG({
           {expression === '슬픔' && (
             <path d="M -25 -35 L 12 -28" stroke="#0f172a" strokeWidth="5" strokeLinecap="round" />
           )}
+          </motion.g>
         </g>
+
+        {/* 입에서 이따금 뽀글뽀글 — 대기 동작 보강(2026-08-05) */}
+        {[0, 1, 2].map((i) => (
+          <motion.circle
+            key={`bub-${i}`}
+            cx={44 - i * 4} cy={172} r={3 + i * 1.5}
+            fill="#ffffff" opacity="0"
+            animate={{ cy: [172, 118 - i * 10], opacity: [0, 0.55, 0], scale: [0.6, 1.15] }}
+            transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 5.6, delay: 2 + i * 0.5, ease: "easeOut" }}
+          />
+        ))}
 
         {/* 입 */}
         <g transform="translate(50, 180)">

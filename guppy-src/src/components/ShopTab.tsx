@@ -287,7 +287,7 @@ export const ShopTab = React.memo(function ShopTab({
             <p className="text-sm text-slate-500 mb-3 font-medium">어항의 물빛 자체가 바뀌어요. 한 번 들이면 언제든 갈아입힐 수 있어요.</p>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
               {Object.entries(TANK_SKINS).map(([id, sk]) => {
-                const owned = id === 'basic' || (ownedSkins || []).includes(id);
+                const owned = sk.price === 0 || (ownedSkins || []).includes(id);   // 무료 스킨(기본·수정맑음)은 바로 사용
                 const active = (tankSkin || 'basic') === id;
                 const afford = (petals ?? 0) >= sk.price;
                 return (

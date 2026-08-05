@@ -4,8 +4,25 @@ const rarities = ['일반', '일반', '일반', '희귀', '희귀', '전설'];
 const expressions = ['웃음', '정면', '놀람', '슬픔', '잠', '신남', '크게 웃음', '반짝'];
 const statuses = ['행복함', '배부름', '기분 최고', '평온함', '활기참'];
 
+/* 색 뽑기(2026-08-05 Macho): 완전 랜덤 hex는 연두·흙탕색 같은 안 어울리는 색이 나온다.
+   물고기에 어울리는 색상환 구간만 쓴다 — 라임·올리브 구간(60~150°)은 건너뛴다. */
+function hslHex(h: number, s: number, l: number): string {
+  const a = s * Math.min(l, 1 - l);
+  const f = (n: number) => {
+    const k = (n + h / 30) % 12;
+    const c = l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)));
+    return Math.round(255 * c).toString(16).padStart(2, '0');
+  };
+  return '#' + f(0) + f(8) + f(4);
+}
+function fishHue(r: number): number {
+  // 0~60(빨강~노랑) + 150~360(청록~파랑~보라~분홍) — 연두·올리브(60~150) 제외
+  const span = 60 + 210;
+  const x = r * span;
+  return x < 60 ? x : x + 90;
+}
 function randomHex() {
-  return '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+  return hslHex(fishHue(Math.random()), 0.62 + Math.random() * 0.25, 0.5 + Math.random() * 0.16);
 }
 
 function getKoreanColorName(hex: string): string {
@@ -66,7 +83,10 @@ function seedRandom(seed: number) {
 }
 
 function randomHexSeeded(seed: number, offset: number) {
-  return '#' + Math.floor(seedRandom(seed + offset)*16777215).toString(16).padStart(6, '0');
+  // 특별 분양 미리보기도 같은 물고기 팔레트(연두·흙탕 구간 제외)
+  return hslHex(fishHue(seedRandom(seed + offset)),
+                0.62 + seedRandom(seed + offset + 100) * 0.25,
+                0.5 + seedRandom(seed + offset + 200) * 0.16);
 }
 
 export function getSpecialShopGuppies() {
