@@ -3757,7 +3757,8 @@ body.dark .bom-guide-text{color:#c8bba4}
 </style>
 <div class="bomchat" id="bomChat">
   <div class="bomchat-panel" id="bomChatPanel" role="dialog" aria-label="봄이와 대화">
-    <div style="display:flex;justify-content:flex-end;padding:10px 12px 0;flex-shrink:0">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px 0;flex-shrink:0">
+      <button id="bomWardrobeBtn" aria-label="봄이 옷장" style="min-height:44px;padding:0 14px;border:2px solid #F0E0C8;border-radius:22px;background:#FFF9F0;color:#7a5a38;font-size:15px;font-weight:800;cursor:pointer">👗 옷장</button>
       <button class="bcp-x" onclick="bomChatToggle(false)" aria-label="닫기" style="background:rgba(0,0,0,.06)">✕</button>
     </div>
     <div class="bcp-body" id="bcpBody"></div>
@@ -4768,12 +4769,10 @@ body.dark #dsbSoundInvite .si-text{color:#e8d9c2}
   function loadOwned(cb){ call('myUnlocks',{},function(r){ if(r&&r.ok){ owned=r.unlocks||{}; if(typeof r.balance==='number')bal=r.balance; } cb&&cb(); }); }
   function has(k){ return !!owned['bomfit:'+k]; }
 
-  // 옷장 버튼 — 봄이 챗봇 버튼 바로 위
-  var wbtn=document.createElement('button');
-  wbtn.id='bomWardrobeBtn'; wbtn.setAttribute('aria-label','봄이 옷장');
-  wbtn.textContent='👗';
-  wbtn.style.cssText='position:fixed;right:24px;bottom:188px;z-index:940;width:48px;height:48px;border-radius:50%;border:none;cursor:pointer;background:#fff;font-size:22px;box-shadow:0 6px 18px -6px rgba(180,120,40,.45),0 0 0 2px #FFD9A6';
-  document.body.appendChild(wbtn);
+  /* 홈 고정 아이콘은 기각(2026-08-05 Macho: 고정 아이콘이 늘며 화면을 가림 — 배치 결정은 상의 후에).
+     옷장은 봄이 채팅창 머리의 [옷장] 버튼으로 — 봄이를 만나는 곳에서 꾸민다. */
+  var wbtn=document.getElementById('bomWardrobeBtn');
+  if(!wbtn) return;
 
   var ov=null;
   function close(){ if(ov){ov.remove();ov=null;} }
