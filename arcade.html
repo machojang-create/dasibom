@@ -1958,7 +1958,7 @@
 <script src="/a11y.js?v=10" defer></script>
 <script src="/dasibom-bgm.js?v=1"></script><!-- 공용 배경음(전역 스위치 하나) -->
 <script src="/dasibom-kiosk-usage.js" defer></script>
-<script src="/bom_voice.js?v=12" defer></script>
+<script src="/bom_voice.js?v=19" defer></script>
 <script src="/bom_tutorial.js?v=8" defer></script>
 <script>window.BOM_TUT={
   key:'arcade', face:'bom_cheer.png', name:'추억의 오락실',
@@ -1980,5 +1980,20 @@
 </script>
 <script src="/dasibom-points.js?v=3"></script>
 <script>window.DasibomPoints&&DasibomPoints.earnOnEngage("arcade");</script>
+<!-- 판당 꽃잎 문지기 (2026-08-04): 게임별로 하루 5판 무료, 6판째부터 꽃잎 5개 -->
+<script src="/dasibom-gate.js?v=1"></script>
+<script>
+(function () {
+  var GAME = { blast: 'arcade_blast', match3: 'arcade_match3', bubble: 'arcade_bubble' };
+  var real = window.startGame;
+  if (typeof real !== 'function') return;
+  // onclick은 누를 때 window.startGame을 찾으므로, 겉을 한 겹 씌우면 원본은 손대지 않아도 된다
+  window.startGame = function (type) {
+    var g = GAME[type];
+    if (!g || !window.DasibomGate) return real(type);
+    DasibomGate.play(g).then(function (r) { if (r && r.ok) real(type); });
+  };
+})();
+</script>
 </body>
 </html>

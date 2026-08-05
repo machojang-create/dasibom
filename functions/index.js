@@ -1154,6 +1154,119 @@ exports.spendPoints = functions
     } catch (e) { return { ok: false, reason: 'error' }; }
   });
 
+/* ── 꽃잎 하수구 확장 (2026-08-04 Macho 확정) ──────────────────────────
+   지금까지 꽃잎 쓸 곳은 화분·구피 두 군데뿐이었다. 그런데 FGT 타깃 선호를 보면
+   화분 6명·구피 0명 — 정작 좋아하는 콘텐츠(온기·라디오극장·게임)엔 쓸 데가 없었다.
+   벌이(PT_AWARD)를 좋아하는 콘텐츠로 넓혔던 것과 같은 수리를 소비 쪽에도 한다.
+
+   두 가지 형태가 필요하다.
+     ① 잠금 해제형 — 한 번 사면 영구(라디오극장 회차, 온기 소리)
+     ② 판당 차감형 — 하루 무료 횟수를 넘기면 판당 차감(오락실, 맞고)
+   가격·무료횟수는 전부 서버 권위. 클라가 보낸 값은 안 믿는다. */
+
+const UNLOCK_PRICES = {
+  yahwa_past: 50,      // 놓친 지난 회차 열람 — 최신 회차는 무료
+  yahwa_preview: 100,  // 아직 안 나온 다음 회차 미리 듣기
+  /* 온기 소리 1개 = 100꽃잎. ★낱개만 판다 — 묶음 할인은 넣지 않는다(2026-08-04 Macho).
+     여기만 패키지를 만들면 화분·구피·봄이 의상과 규칙이 달라져 통일성이 깨진다. */
+  ongi: 100
+};
+
+// ① 잠금 해제형 — 이미 산 것은 다시 안 받는다(중복 과금 방지)
+exports.unlockItem = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const kind = String((data && data.kind) || '');
+    const key = String((data && data.key) || '').slice(0, 60);
+    const cost = UNLOCK_PRICES[kind];
+    if (!cost || !key) return { ok: false, reason: 'bad_item' };
+    const field = kind + ':' + key;
+    const uref = admin.firestore().collection('users').doc(uid);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const u = await tx.get(uref);
+        const d = u.exists ? u.data() : {};
+        const unlocks = d.unlocks || {};
+        if (unlocks[field]) return { ok: true, already: true, balance: d.dsbPoints || 0 };
+        const bal = d.dsbPoints || 0;
+        if (bal < cost) return { ok: false, reason: 'insufficient', balance: bal, cost };
+        unlocks[field] = true;
+        tx.set(uref, { unlocks, dsbPoints: admin.firestore.FieldValue.increment(-cost) }, { merge: true });
+        tx.set(admin.firestore().collection('points_spend').doc(), {
+          uid, item: field, cost, at: admin.firestore.FieldValue.serverTimestamp()
+        });
+        return { ok: true, spent: cost, balance: bal - cost };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
+// 내가 산 것 목록 — 화면 그릴 때 필요(자물쇠를 뭘 열어뒀는지)
+exports.myUnlocks = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '128MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) return { ok: false, unlocks: {} };
+    try {
+      const u = await admin.firestore().collection('users').doc(context.auth.uid).get();
+      const d = u.exists ? u.data() : {};
+      return { ok: true, unlocks: d.unlocks || {}, balance: d.dsbPoints || 0 };
+    } catch (e) { return { ok: false, unlocks: {} }; }
+  });
+
+/* ② 판당 차감형 — 하루 무료 횟수까지는 공짜, 그 다음부터 차감.
+   ★오락실은 '게임별로 각 5회'(Macho 확정) — 합산이 아니다. */
+const PLAY_RULES = {
+  arcade_blast:  { free: 5,  cost: 5 },
+  arcade_match3: { free: 5,  cost: 5 },
+  arcade_bubble: { free: 5,  cost: 5 },
+  matgo:         { free: 10, cost: 10 }
+};
+
+exports.consumePlay = functions
+  .region('asia-northeast3')
+  .runWith({ timeoutSeconds: 10, memory: '256MB' })
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', '로그인이 필요합니다.');
+    const uid = context.auth.uid;
+    const game = String((data && data.game) || '');
+    const rule = PLAY_RULES[game];
+    if (!rule) return { ok: false, reason: 'bad_game' };
+    // peek=true — 실제로 쓰지 않고 "지금 시작하면 공짜인지 유료인지"만 물어보기(화면 표시용)
+    const peek = !!(data && data.peek);
+    const day = ptDay();
+    const dref = admin.firestore().collection('points_daily').doc(uid + '_' + day);
+    const uref = admin.firestore().collection('users').doc(uid);
+    try {
+      return await admin.firestore().runTransaction(async (tx) => {
+        const d = await tx.get(dref);
+        const plays = (d.exists && d.data().plays) || {};
+        const used = plays[game] || 0;
+        const isFree = used < rule.free;
+        const u = await tx.get(uref);
+        const bal = (u.exists && u.data().dsbPoints) || 0;
+        if (peek) {
+          return { ok: true, peek: true, free: isFree, used, freeLeft: Math.max(0, rule.free - used),
+                   cost: rule.cost, balance: bal };
+        }
+        if (!isFree && bal < rule.cost) return { ok: false, reason: 'insufficient', balance: bal, cost: rule.cost };
+        plays[game] = used + 1;
+        tx.set(dref, { plays, uid, updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
+        if (!isFree) {
+          tx.set(uref, { dsbPoints: admin.firestore.FieldValue.increment(-rule.cost) }, { merge: true });
+          tx.set(admin.firestore().collection('points_spend').doc(), {
+            uid, item: 'play:' + game, cost: rule.cost, at: admin.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        return { ok: true, free: isFree, spent: isFree ? 0 : rule.cost,
+                 balance: isFree ? bal : bal - rule.cost,
+                 freeLeft: Math.max(0, rule.free - used - 1), cost: rule.cost };
+      });
+    } catch (e) { return { ok: false, reason: 'error' }; }
+  });
+
 // ── 운영자 판정·uid 해석 공용 헬퍼(2026-07-21) ──
 const MASTER_EMAILS = ['machojang@gmail.com', 'machojang@naver.com'];
 async function isMasterCall(context) {

@@ -243,7 +243,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 <script src="/dasibom-bgm.js?v=1"></script><!-- 공용 배경음(전역 스위치 하나) -->
 
 <script src="/dasibom-kiosk-usage.js" defer></script>
-<script src="/bom_voice.js?v=12" defer></script>
+<script src="/bom_voice.js?v=19" defer></script>
 <script src="/bom_tutorial.js?v=8" defer></script>
 <script>window.BOM_TUT={
   key:'matgo', face:'bom_cheer.png', name:'봄이와 맞고',
@@ -650,11 +650,24 @@ function showDailyLimit(){
      {label:'다른 놀거리 구경', sub:true, fn:function(){ location.href='/'; }}]);
 }
 // 새 판은 반드시 이 문을 통과 (첫 진입·다시 하기·한 판 더 모두)
-function tryNewGame(){
-  if(!canPlay()){ showDailyLimit(); return; }
+function _openNewGame(){
   bumpPlays();
   try{ window.DasibomPoints && DasibomPoints.earn('matgo'); }catch(e){}  // 한 판 시작 = 맞고 꽃잎(하루1회)
   newGame();
+}
+/* 2026-08-04 Macho: 10판까지 무료, 11판째부터 꽃잎 10개.
+   ★판 세기는 서버(consumePlay)가 한다 — 그래서 무료 판도 반드시 문지기를 거쳐야
+     서버 카운트가 맞는다. 여기서만 세면 11판째에 서버는 "아직 0판"이라 공짜로 내준다. */
+function tryNewGame(){
+  if(!window.DasibomGate){                       // 문지기가 없으면 예전 방식대로
+    if(!canPlay()){ showDailyLimit(); return; }
+    _openNewGame(); return;
+  }
+  DasibomGate.play('matgo').then(function(r){
+    if(!r || !r.ok) return;                      // 취소했거나 꽃잎이 모자람 — 문지기가 이미 안내함
+    if(r.offline && !canPlay()){ showDailyLimit(); return; }  // 서버를 못 부를 땐 기기 기준으로라도 지킴
+    _openNewGame();
+  });
 }
 // ── 시작화면(2026-07-24 Macho) : 자동 시작 대신, 봄이가 반기고 진행상황을 기억해 보여준 뒤 [시작하기]로 판을 연다 ──
 function showStartScreen(){
@@ -2189,5 +2202,6 @@ BomPop.bind({ overlay:'#kjOverlay',   box:'.mm-box', face:'bom_think' }); // 국
 })();
 </script>
 <script src="/dasibom-points.js?v=3"></script>
+<script src="/dasibom-gate.js?v=1"></script>
 </body>
 </html>
