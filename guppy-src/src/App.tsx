@@ -410,7 +410,7 @@ export default function App() {
           let starveH = 0;              // 아픔 기능 제거(2026-07-27 Macho) — 굶주림 누적·발병 없음
           let sick = false;            // 복귀 시 기존 아픈 개체도 정상으로
           return {
-            id: g.id, data: g.data, level: g.level || 1, xp: g.xp || 0,
+            id: g.id, data: g.data, level: Math.min(g.level || 1, 10), xp: g.xp || 0,   // 상한 前 저장분(Lv.11 등) 교정
             hunger: newHunger, starveH,
             stats: g.stats || { speed: 1, turnRate: 1, vision: 1, reaction: 1, inheritance: 1, size: 1 },
             expression: null, targetFoodId: null,
@@ -868,6 +868,15 @@ export default function App() {
 
         swimPhase += dt * (Math.abs(vx) > 10 ? 10 : 3);
 
+        /* 몸 크기 = 레벨(2026-08-05 Macho): Lv.1=50%, 렙당 +5%, 만렙 100% (기준 성체 0.3).
+           프레임마다 목표를 향해 천천히 자라 레벨업 순간에도 튀지 않는다. */
+        {
+          const pct = level >= 10 ? 1 : 0.5 + (level - 1) * 0.05;
+          const targetScale = 0.3 * pct;
+          if (scale < targetScale) scale = Math.min(scale + 0.01, targetScale);
+          else if (scale > targetScale + 0.02) scale = targetScale;   // 상한 교정된 개체는 줄여준다
+        }
+
         // 성장 밸런스(2026-07-22 Macho): 이동 XP 삭제 — 방치 성장 차단, 먹이(재화)가 성장의 중심.
         // 목표: 하루 꽃잎 5개어치 먹이 기준 만렙까지 12~15일(화분과 동일 호흡).
         const nextLevelXp = level * 100;
@@ -880,7 +889,7 @@ export default function App() {
             reaction: stats.reaction * 1.05,
             size: Math.min(stats.size * 1.02, 1.2) // Max absolute size cap at 1.2
           };
-          scale = Math.min(scale + 0.02, stats.size); // grow slowly
+          // 크기는 레벨이 정한다(아래 프레임 루프에서 목표 크기로 자람)
           expression = '신남';
           if (level === 10) setTimeout(() => showToast('만렙이 됐어요 ✨', `${g.data.guppy_name}이(가) 다 컸어요! 만렙 짝을 만나면 평생 한 번, 아기를 가질 수 있어요 💕`, '🐠'), 0);
           
@@ -973,22 +982,11 @@ export default function App() {
     if (!g) return;
     const lv = g.level, rarity = g.data.rarity;
 
-    // ① 정성 비례 보상: 일반=사료 lv×2 / 희귀 +새우 lv / 전설 +크릴 lv (화폐 직지급 금지 원칙 유지)
-    const premium = Math.max(2, lv * 2);
-    const shrimp = (rarity === '희귀' || rarity === '전설') ? lv : 0;
-    const krill = rarity === '전설' ? lv : 0;
-    setFoodInventory(prev => ({ ...prev, premium: prev.premium + premium, shrimp: prev.shrimp + shrimp, krill: prev.krill + krill }));
-    const gifts: string[] = ['프리미엄 사료 ' + premium + '개'];
-    if (shrimp) gifts.push('새우 간식 ' + shrimp + '개');
-    if (krill) gifts.push('황금 크릴 ' + krill + '개');
-
-    // 보너스 드랍 35% + 레벨 보정, 만병통치약 비중 상향
-    if (Math.random() < 0.35 + lv * 0.02) {
-      const roll = Math.random();
-      if (roll < 0.4) { setMedicine(m => m + 1); gifts.push('만병통치약 1개'); }
-      else if (roll < 0.7) { setFoodInventory(p => ({ ...p, shrimp: p.shrimp + 3 })); gifts.push('보너스 새우 3개'); }
-      else { setFoodInventory(p => ({ ...p, krill: p.krill + 2 })); gifts.push('보너스 크릴 2개'); }
-    }
+    /* ① 방생 보상(2026-08-05 Macho 개편): 황금 크릴 10 × 레벨 — 등급 무관 단일 규칙.
+       사료·새우 섞어 주던 옛 규칙은 계산이 안 보인다는 지적으로 폐기. */
+    const krill = Math.min(lv, 10) * 10;
+    setFoodInventory(prev => ({ ...prev, krill: prev.krill + krill }));
+    const gifts: string[] = ['황금 크릴 ' + krill + '개'];
 
     // ② 만렙 '무지개 배웅': 남은 전원이 가르침을 받는다(+150 XP)
     const isMax = lv >= 10;

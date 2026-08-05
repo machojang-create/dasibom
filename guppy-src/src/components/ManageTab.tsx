@@ -76,12 +76,8 @@ export const ManageTab = React.memo(function ManageTab({
   };
 
   const getExpectedGold = (g: any) => Math.max(1, Math.round(_rawExpectedGold(g) / 50));
-  const expectedGifts = (g: GuppyInstance) => {
-    const parts = ['사료 ' + Math.max(2, g.level * 2)];
-    if (g.data.rarity === '희귀' || g.data.rarity === '전설') parts.push('새우 ' + g.level);
-    if (g.data.rarity === '전설') parts.push('크릴 ' + g.level);
-    return parts.join('·');
-  };
+  // 방생 보상(2026-08-05 Macho): 황금 크릴 10 x 레벨 — 등급 무관 단일 규칙
+  const expectedGifts = (g: GuppyInstance) => '황금 크릴 ' + (Math.min(g.level, 10) * 10) + '개';
 
   const handleRelease = (id: string, reward: number) => {
     onRelease(id, reward);
@@ -153,7 +149,7 @@ export const ManageTab = React.memo(function ManageTab({
               </div>
 
               {/* Progress Bars */}
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2.5">
                 <div>
                   <div className="flex justify-between text-xs font-bold text-slate-500 mb-1.5">
                     <span>체내 포만도 Satiety</span>
@@ -170,7 +166,7 @@ export const ManageTab = React.memo(function ManageTab({
                 <div>
                   <div className="flex justify-between text-xs font-bold text-slate-500 mb-1.5">
                     <span>경험치 (XP)</span>
-                    <span>{Math.floor(guppy.xp)} / {nextLevelXp}</span>
+                    <span>{Math.min(guppy.level,10) >= 10 ? '최대' : Math.floor(guppy.xp) + ' / ' + nextLevelXp}</span>
                   </div>
                   <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
                     <div 
@@ -189,22 +185,22 @@ export const ManageTab = React.memo(function ManageTab({
 
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2">
-                <div className="bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 border border-slate-100">
+                <div className="bg-slate-50 rounded-xl p-2 flex flex-col items-center justify-center gap-0.5 border border-slate-100">
                   <span className="text-[11px] text-slate-400 font-bold">눈썰미</span>
                   <span className="text-sm font-black text-slate-700">{Math.round((guppy.stats.vision / 800) * 100)}%</span>
                 </div>
-                <div className="bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 border border-slate-100">
+                <div className="bg-slate-50 rounded-xl p-2 flex flex-col items-center justify-center gap-0.5 border border-slate-100">
                   <span className="text-[11px] text-slate-400 font-bold">헤엄 실력</span>
                   <span className="text-sm font-black text-slate-700">{Math.round(guppy.stats.speed * 100)}%</span>
                 </div>
-                <div className="bg-slate-50 rounded-xl p-3 flex flex-col items-center justify-center gap-1 border border-slate-100">
+                <div className="bg-slate-50 rounded-xl p-2 flex flex-col items-center justify-center gap-0.5 border border-slate-100">
                   <span className="text-[11px] text-slate-400 font-bold">몸집</span>
-                  <span className="text-sm font-black text-slate-700">{Math.round((guppy.stats.size / 0.3) * 100)}%</span>
+                  <span className="text-sm font-black text-slate-700">{Math.min(guppy.level,10) >= 10 ? 100 : 50 + (Math.min(guppy.level,10) - 1) * 5}%</span>
                 </div>
               </div>
 
               {/* Special Ability */}
-              <div className="bg-blue-50/50 rounded-xl p-4 border border-blue-100">
+              <div className="bg-blue-50/50 rounded-xl p-3 border border-blue-100">
                 <div className="flex items-center gap-1.5 text-blue-600 font-bold text-sm mb-1">
                   <span className="text-yellow-500">✨</span> 타고난 재주: {guppy.data.rarity === '전설' ? '물살을 가르는 명수' : guppy.data.rarity === '희귀' ? '반짝이는 비늘' : '씩씩한 헤엄'}
                 </div>
@@ -219,17 +215,10 @@ export const ManageTab = React.memo(function ManageTab({
 
               {/* Actions */}
               <div className="flex gap-2 mt-auto pt-2">
-                <button 
-                  onClick={() => handleCommune(guppy.id)}
-                  className="flex-1 py-2.5 rounded-xl flex items-center justify-center gap-1 text-[13px] font-bold transition-colors bg-pink-50 text-pink-600 hover:bg-pink-100 active:scale-95"
-                >
-                  <Heart className="w-4 h-4" />
-                  쓰다듬기 (무료)
-                </button>
                 <button
                   data-bomguide="grelease"
                   onClick={() => setReleasingGuppy(guppy)}
-                  className="px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center gap-1 text-xs font-bold transition-colors"
+                  className="flex-1 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl flex items-center justify-center gap-1 text-[13px] font-bold transition-colors"
                 >
                   <span className="text-[11px] flex items-center mr-1">🎁 {expectedGifts(guppy)}</span>
                   보내주기
@@ -299,7 +288,7 @@ export const ManageTab = React.memo(function ManageTab({
                 <p className="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-200 leading-relaxed text-left">
                   {releasingGuppy.level >= 10
                     ? '🌈 만렙 배웅! 남아 있는 친구들이 ' + releasingGuppy.data.guppy_name + '의 가르침을 받아 모두 쑥 자라요.'
-                    : '함께한 정(' + releasingGuppy.level + '레벨 · ' + releasingGuppy.data.rarity + ')만큼 먹이로 돌아와요. 운이 좋으면 특별한 간식도 남기고 가요.'}
+                    : '키운 정성(레벨 ' + Math.min(releasingGuppy.level,10) + ')만큼 황금 크릴로 돌아와요. 레벨 x 10개!'}
                   <br/>떠난 친구는 🌊 떠나보낸 바다에 영원히 기억돼요.
                 </p>
               </div>
