@@ -1,0 +1,65 @@
+[
+  {
+    "key": "rooster",
+    "label": "새벽 닭 울음",
+    "title": "Kokrhající slepice a kohout, 2024-05-05, 07 43 39.mp3",
+    "artist": "Draceane",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Kokrhaj%C3%ADc%C3%AD_slepice_a_kohout%2C_2024-05-05%2C_07_43_39.mp3"
+  },
+  {
+    "key": "waves",
+    "label": "바닷가 파도",
+    "title": "Sea waves.wav",
+    "artist": "Ganesh Mohan T",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Sea_waves.wav"
+  },
+  {
+    "key": "wallclock",
+    "label": "괘종시계 초침",
+    "title": "WWS Wallclockwithweightticking.ogg",
+    "artist": "Work With Sounds / Technical Museum of Slovenia",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:WWS_Wallclockwithweightticking.ogg"
+  },
+  {
+    "key": "watermill",
+    "label": "물레방아",
+    "title": "Weald and Dowland water mill.ogg",
+    "artist": "(미상)",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Weald_and_Dowland_water_mill.ogg"
+  },
+  {
+    "key": "templebell",
+    "label": "산사 종소리",
+    "title": "Bonsyou5599.ogg",
+    "artist": "日:Jnn",
+    "license": "CC BY 2.1 jp",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.1/jp/deed.en",
+    "source": "https://commons.wikimedia.org/wiki/File:Bonsyou5599.ogg"
+  },
+  {
+    "key": "thunder",
+    "label": "여름 소나기",
+    "title": "Thunderstorm after hot summer day 17 minutes 01 of 04.ogg",
+    "artist": "stephan",
+    "license": "Public domain",
+    "licenseUrl": "",
+    "source": "https://commons.wikimedia.org/wiki/File:Thunderstorm_after_hot_summer_day_17_minutes_01_of_04.ogg"
+  },
+  {
+    "key": "cuckoo",
+    "label": "뻐꾸기 우는 오후",
+    "title": "Himalayan cuckoo.ogg",
+    "artist": "L. Shyamal",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "https://commons.wikimedia.org/wiki/File:Himalayan_cuckoo.ogg"
+  }
+]
