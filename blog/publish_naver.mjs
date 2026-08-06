@@ -140,6 +140,51 @@ try {
     await page.pause();
   }
 
+  // ── 이미 예약해 둔 글을 고쳐 쓰는 경우 ────────────────────────
+  // 예약 글은 목록에서 열면 에디터에 그대로 올라옵니다. 지우고 새로 올리지 않아도
+  // 내용을 비우고 다시 채운 뒤 발행하면 같은 글이 덮어써집니다(예약 시각도 유지).
+  if (has('replace')) {
+    step = '예약 글 열기';
+    const real = () => page.frames().find((f) => f.name() === 'mainFrame');
+    const opened = await real().evaluate((title) => {
+      const btn = [...document.querySelectorAll('button')].find((b) =>
+        /예약 발행/.test(b.innerText || ''),
+      );
+      if (!btn) return 'no-button';
+      btn.click();
+      return 'opened-list';
+    }, post.title);
+    if (opened === 'no-button') throw new Error('예약 발행 목록 단추를 못 찾았습니다.');
+    await page.waitForTimeout(2500);
+
+    const found = await real().evaluate((title) => {
+      const items = [...document.querySelectorAll('button.article_button__JNVjf')];
+      const hit = items.find((b) => (b.innerText || '').includes(title));
+      if (!hit) return false;
+      hit.click();
+      return true;
+    }, post.title);
+    if (!found) throw new Error(`예약 목록에서 "${post.title}" 을 못 찾았습니다.`);
+    await page.waitForTimeout(6000);
+
+    step = '기존 내용 비우기';
+    // 제목과 본문을 모두 지웁니다. 남아 있으면 새 내용이 뒤에 붙습니다.
+    const oldTitle = await firstVisible(frame, SEL.title, 10000);
+    if (oldTitle) {
+      await oldTitle.click();
+      await page.keyboard.press('Control+A');
+      await page.keyboard.press('Delete');
+      await page.waitForTimeout(400);
+    }
+    const oldBody = await firstVisible(frame, SEL.body, 10000);
+    if (oldBody) {
+      await oldBody.click();
+      await page.keyboard.press('Control+A');
+      await page.keyboard.press('Delete');
+      await page.waitForTimeout(800);
+    }
+  }
+
   step = '제목 입력';
   const titleEl = await firstVisible(frame, SEL.title, 10000);
   if (!titleEl) throw new Error('제목 입력란을 못 찾았습니다.');

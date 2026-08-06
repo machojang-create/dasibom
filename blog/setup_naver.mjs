@@ -119,6 +119,15 @@ const context = await browser.newContext({
   viewport: { width: 1440, height: 960 },
 });
 const page = await context.newPage();
+
+// ⚠️ 네이버 관리 화면은 저장할 때 알림창(confirm/alert)을 띄웁니다.
+//    playwright 는 기본값이 '취소' 라, 처리하지 않으면 저장이 조용히 실패합니다.
+//    스킨 적용이 계속 안 먹던 원인이 이것이었습니다.
+page.on('dialog', async (d) => {
+  console.log(`  (알림창: ${d.message().replace(/\s+/g, ' ').slice(0, 50)})`);
+  await d.accept().catch(() => {});
+});
+
 const report = { at: new Date().toISOString(), blogId, pages: {} };
 
 try {
@@ -463,20 +472,21 @@ try {
         await target.locator('input[type=file]').first().setInputFiles(job.file);
         await popup.waitForTimeout(1500);
 
-        // '이미지 첨부' 단추는 파일칸과 다른 프레임에 있습니다. 팝업의 모든 프레임을 뒤집니다.
-        const ATTACH =
-          'a:has-text("이미지 첨부"), button:has-text("이미지 첨부"), input[value="이미지 첨부"], img[alt="이미지 첨부"]';
+        // ⚠️ "이미지 첨부" 는 팝업의 **제목**입니다. 누를 것은 아래의 "확인" 입니다.
+        //    제목을 단추로 착각해 계속 헛클릭하다 업로드가 조용히 실패했습니다(2026-08-06).
+        const CONFIRM =
+          'button:has-text("확인"), a:has-text("확인"), input[value="확인"], input[type=submit][value*="확인"]';
         let clicked = false;
         for (const fr of popup.frames()) {
-          const loc = fr.locator(ATTACH).first();
+          const loc = fr.locator(CONFIRM).first();
           if (await loc.count().catch(() => 0)) {
             await loc.click({ timeout: 8000 }).catch(() => {});
             clicked = true;
             break;
           }
         }
-        if (!clicked) throw new Error('"이미지 첨부" 단추를 못 찾았습니다');
-        await popup.waitForTimeout(4000);
+        if (!clicked) throw new Error('팝업의 "확인" 단추를 못 찾았습니다');
+        await popup.waitForTimeout(4500);
         if (!popup.isClosed()) await popup.close().catch(() => {});
         await page.waitForTimeout(1500);
 
@@ -491,13 +501,27 @@ try {
           timeout: 30000,
         });
         await page.waitForTimeout(1800);
+        // 네이버 썸네일 주소에는 올린 날짜가 박혀 있습니다(MjAyNjA4MDY = 20260806).
+        // 그걸로 '오늘 올린 것' 인지 가려냅니다. 올렸다고 말만 하지 않습니다.
         const now = await currentImages();
-        const stillEmpty = /no_image/.test(now.all) && job.label === '프로필';
-        if (stillEmpty) {
+        const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+        const stamps = [...now.all.matchAll(/\/(MjAy[\w-]{8,})/g)].map((m) => {
+          try {
+            return Buffer.from(m[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64')
+              .toString()
+              .slice(0, 8);
+          } catch {
+            return '';
+          }
+        });
+        const freshCount = stamps.filter((s) => s === today).length;
+        const emptyProfile = /no_image/.test(now.all) && job.label === '프로필';
+
+        if (emptyProfile || freshCount < 1) {
           console.log(`  ✗ ${job.label} — 눌렀지만 화면에 걸리지 않았습니다`);
           report.imageFailed = [...(report.imageFailed ?? []), job.label];
         } else {
-          console.log(`  ○ ${job.label} 올림 (${path.basename(job.file)})`);
+          console.log(`  ○ ${job.label} 올림 (${path.basename(job.file)}, 오늘자 ${freshCount}장 확인)`);
         }
       } catch (err) {
         console.log(`  실패: ${job.label} — ${err.message.split('\n')[0]}`);
